@@ -314,6 +314,7 @@ SetOverwrite ifnewer
    File "..\lua\mw.lua"
    File "..\lua\movewindow.lua"
    File "..\lua\alphanum.lua"
+ ; File "..\lua\ppi.lua"
 
   ; Set output path to the scripts subdirectory.
   SetOutPath $INSTDIR\scripts
@@ -453,6 +454,7 @@ Section Uninstall
   Delete "$INSTDIR\lua\mw.lua" 
   Delete "$INSTDIR\lua\movewindow.lua" 
   Delete "$INSTDIR\lua\alphanum.lua" 
+; Delete "$INSTDIR\lua\ppi.lua"
   
   ; spell checker stuff
   Delete "$INSTDIR\spellchecker.lua"
