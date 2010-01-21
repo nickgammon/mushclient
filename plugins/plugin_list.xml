@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE muclient>
+<muclient>
+<plugin name="Plugin_list"
+  author="Nick Gammon"
+  language="vbscript"
+  id = "636a1df5adb9fb54adb38d8b"
+  purpose = "Lists installed plugins"
+  date_written = "2002-06-03 11:00:00"
+  date_modified = "2002-06-13 09:25"
+  version = "1.0"
+  >
+<description trim="y">
+<![CDATA[
+Type "plugin_list" to list installed plugins.
+]]>
+</description>
+
+</plugin>
+
+<!--  =============================================
+
+Alias:   plugin_list
+Script:  OnPluginList
+Purpose: Lists plugins
+
+ =============================================  -->
+      
+<aliases>
+   <alias
+    script="OnPluginList"
+    match="plugin_list"
+    enabled="y"
+   >
+   </alias>
+ </aliases>
+
+<script>
+<![CDATA[
+ sub OnPluginList (sName, sLine, wildcards)
+dim count
+
+  count = 0
+  world.colournote "orangered", "", _
+                   "------------- List of plugins ------------"
+  world.note ""
+  
+  for each x in world.GetPluginList
+  
+   count = count + 1
+   
+   world.colournote "white", "", _
+                    "Plugin " & count & ":    " & world.getplugininfo (x, 1)
+   world.note "Author:      " & world.getplugininfo (x, 2)
+   world.note "Purpose:     " & world.getplugininfo (x, 8)
+   world.note "Language:    " & world.getplugininfo (x, 5)
+   world.note "ID:          " & world.getplugininfo (x, 7)
+   world.note "Triggers:    " & world.getplugininfo (x, 9)
+   world.note "Aliases:     " & world.getplugininfo (x, 10)
+   world.note "Timers:      " & world.getplugininfo (x, 11)
+   world.note "Variables:   " & world.getplugininfo (x, 12)
+   world.note "Written on:  " & world.getplugininfo (x, 13)
+   world.note "Save state:  " & world.getplugininfo (x, 15)
+   world.note "Requires:    " & world.getplugininfo (x, 18)
+   world.note "Version:     " & world.getplugininfo (x, 19)
+  
+   world.note ""
+  next
+  
+ end sub
+]]>            
+ </script>
+
+<!--  =============================================
+
+Alias:   plugin_list:help
+Script:  OnHelp
+Purpose: Shows plugin help
+
+ =============================================  -->
+ 
+<aliases>
+   <alias
+    script="OnHelp"
+    match="plugin_list:help"
+    enabled="y"
+   >
+   </alias>
+ </aliases>
+
+<script>
+<![CDATA[
+ sub OnHelp (sName, sLine, wildcards)
+   world.note world.getplugininfo (world.getpluginid, 3)
+ end sub
+]]>            
+ </script> 
+
+
+</muclient>

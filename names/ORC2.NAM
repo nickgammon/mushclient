@@ -1,0 +1,81 @@
+/*****************************************************/
+/* ORC1.NAM                                          */
+/* Namnfil f”r orch-f”rnamn                          */
+/* av Johan Danforth och Tobias Petersson            */
+/* rader som b”rjar med / „r kommentar-rader         */
+/* varje section b”rjar med [xxx] enlig filen nedan  */
+/*****************************************************/
+[startstav]
+/* startstavelser skall sluta med en konsonant som b,k,t etc... */
+Head
+Face
+Eye
+Arm
+Foot
+Toe
+Ear
+Nose
+Hair
+Blood
+Nail
+Snotling
+Enemy
+Public
+Beast
+Man
+Finger
+Goblin
+Gretchin
+Hobbit
+Teeth
+Elf
+Rat
+Ball
+Ghoul
+Knife
+Axe
+Wraith
+Deamon
+Dragon
+Tooth
+Death
+Mother
+Horse
+Moon
+Dwarf
+Earth
+Human
+Grass
+[mittstav]
+/* mittstavelser skall b”rja och sluta med en vokal som a,o,u,i,e,y etc... */
+
+[slutstav]
+/* slutstavelser skall b”rja med en konsonant som b,k,t etc... */
+killer
+crucher
+lover
+thrower
+throttler
+eater
+hammer
+kicker
+walker
+punsher
+dragger
+stomper
+torturer
+ripper
+mangler
+hater
+poker
+chewer
+cutter
+slicer
+juggler
+raper
+smasher
+shooter
+drinker
+crawler
+[stop]
+/* h„r „r filen slut */

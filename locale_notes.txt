@@ -1,0 +1,84 @@
+Localization notes
+------------------
+
+Author: Nick Gammon
+Date:   18th June 2007
+Amended: 27th May 2008 to mention large/small monitor handling
+
+
+In the "locale" directory - which is a subdirectory under where the MUSHclient.exe program is stored, you should find the following files in the standard MUSHclient distribution:
+
+* locale_notes.txt  --> this file
+
+* Localize_template.lua  --> template for creating a new translation file
+
+* en.dll  --> resources for MUSHclient - in English (for screen resolution 1024 x 768 or larger)
+
+* en_small.dll  --> resources for MUSHclient - in English (for small screen resolutions)
+
+* count_locale_usage.lua  --> Lua script for counting which messages need translating the most
+
+* detect_locale_changes.lua  --> Lua script for detecting changes between one MUSHclient distribution and the next
+
+
+See the following forum posting for detailed descriptions about localizing MUSHclient:
+
+http://www.gammon.com.au/forum/?id=7953
+
+
+To localize
+-----------
+
+If you are planning to localize to another language, you would take these steps. Let us take French as an example, which has a locale code of FR.
+
+1. Copy en.dll as fr.dll (make a copy, rename the copy fr.dll)
+
+NOTE: You now have two resource files (en.dll and en_small.dll). One is designed for small monitors and one for larger ones. Use the appropriate file depending on the size monitor you plan to use.
+
+
+2. Copy Localize_template.lua as fr.lua (make a copy, rename the copy fr.lua)
+
+3. Use a resource editor (search the Internet for an appropriate tool) and edit fr.dll, changing menus, dialogs, and string resources to have the appropriate translations.
+
+An alternative is to download the Visual Studio project which built the resources file, change that with an appropriate tool (eg. Visual Studio) and recompile to build a new DLL from scratch.
+
+4. Use a text editor (such as Crimson Editor) to edit the fr.lua file, translating the "empty" strings for each message, into French. Read the forum posting mentioned above for how to handle the "formatted" part.
+
+You can get Crimson Editor from:
+
+http://www.crimsoneditor.com/
+
+Make sure you set the Document Encoding type to UTF-8 (w/o BOM).
+
+----
+
+To test, change the locale code in the MUSHclient Global Preferences -> General tab, to "FR".
+
+Then close and re-open MUSHclient. It should now detect the new files and show the translated messages.
+
+
+
+Counting translation usage
+--------------------------
+
+As there are around 750 messages to be translated in the Localize_template.lua file, you may prefer to concentrate on the ones that occur most frequently.
+
+To find out what they are, edit your xx.lua file (eg. fr.lua) and add this line to the bottom:
+
+dofile "locale/count_locale_usage.lua"
+
+This adds the extra debugging code into your local file. Then, after you have been using MUSHclient for a while, you can enter the following script command:
+
+/TranslateDebug ()
+
+This will display which messages were called upon to be translated, sorted into most frequent first, to least frequent.
+
+
+
+Checking if new messages appear
+-------------------------------
+
+With each new release of MUSHclient, you can check if new messages have been added to the file Localize_template.lua by running the Lua script detect_locale_changes.lua. This compares the messages in your locale file (eg. en.lua) to the new template file (ie. Localize_template.lua) and reports on any new ones.
+
+
+

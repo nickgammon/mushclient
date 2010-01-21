@@ -1,0 +1,30 @@
+<muclient>
+<plugin 
+  name="perlscript_test"
+  author="Nick Gammon"
+  language="perlscript"
+  purpose = "Testing perlscript in a plugin"
+  id = "3d3533dc6224d2ac7c89d2ba"
+  version = "1023"
+  >
+</plugin>
+
+
+<script>
+<![CDATA[
+
+ sub OnPluginInstall
+   {
+   $world->DoAfterNote (1, "Plugin " . $world->getpluginname  . " installed.");
+   $world->DoAfterNote (1, "Version number " . $world->getplugininfo ($world->getpluginid, 19));
+   }
+
+ sub OnPluginClose ()
+   {
+   $world->note ("Plugin " . $world->getpluginname . " closed.");
+   }
+
+]]>             
+</script>
+
+</muclient>

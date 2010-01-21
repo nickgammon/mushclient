@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="Current_Output_Window"
+   author="Nick Gammon"
+   id="391192793248409895090099"
+   language="Lua"
+   purpose="Redirects recent output to a miniwindow"
+   date_written="2009-02-05 17:00"
+   date_modified="2009-07-20"
+   save_state="y"
+   requires="4.42"
+   version="2.0"
+   >
+
+</plugin>
+
+<timers>
+  <timer second="0.50" 
+         enabled="y" 
+         script="heartbeat"
+         >
+  </timer>
+</timers>
+
+
+<!--  Script  -->
+
+
+<script>
+<![CDATA[
+
+-- configuration
+
+-- number of lines to show
+MAX_LINES = 20
+
+-- font
+FONT_NAME = "Dina"
+FONT_SIZE = 8
+
+-- where to put the window
+WINDOW_POSITION = 6  -- see below (6 is top right)
+
+--[[
+Useful positions:
+
+4 = top left
+5 = center left-right at top
+6 = top right
+7 = on right, center top-bottom
+8 = on right, at bottom
+9 = center left-right at bottom
+--]]
+
+
+-- colours
+WINDOW_BACKGROUND_COLOUR = ColourNameToRGB ("khaki")
+WINDOW_TEXT_COLOUR = ColourNameToRGB ("black")
+
+-- offset of text from edge
+TEXT_INSET = 5
+
+-- where to store the trace line
+lines = {}  -- table of recent trace lines
+
+-- display one line
+function Display_Line (line, text)
+
+  local left = TEXT_INSET
+  local top = (line - 1) * font_height + TEXT_INSET
+  
+  WindowText (win, "f", text, left, top, window_width - TEXT_INSET, 0, WINDOW_TEXT_COLOUR)
+  
+end -- Display_Line
+
+function add_line (line)
+  -- remove first line if filled up
+  if #lines >= MAX_LINES then
+    table.remove (lines, 1)
+  end -- if 
+
+  -- add new line
+  table.insert (lines, line)
+
+end -- add_line
+
+-- here on output to display
+function OnPluginScreendraw (type, log, line)
+
+  -- blank existing window contents
+  WindowRectOp (win, 2, 0, 0, 0, 0, WINDOW_BACKGROUND_COLOUR)
+  
+  -- draw drag bar rectangle
+  WindowRectOp (win, 2, 0, 0, 0, font_height, ColourNameToRGB ("darkgoldenrod"))
+    
+  -- wrap long lines, at a space if possible
+  while #line > wrap_column do
+  
+    -- find a space not followed by a space, closest to the end of the line
+    local col = string.find (line:sub (1, wrap_column), "%s%S*$")
+    
+    if col and col > 2 then
+      col = col - 1  -- use the space to indent
+    else
+      col = wrap_column  -- just cut off at wrap_column
+    end -- if
+
+    add_line (line:sub (1, col))
+    line = line:sub (col + 1) 
+    
+  end -- while line > max
+  
+  -- add remainder of line
+  add_line (line)
+  
+  local sz = WindowTextWidth (win, "fb", "Recent Output")
+  WindowText (win, "fb", "Recent Output", (window_width - sz) / 2, 0, window_width - TEXT_INSET, 0, WINDOW_TEXT_COLOUR)
+  
+  -- display all lines
+  for k, v in ipairs (lines) do
+    Display_Line (k + 1, v)
+  end -- for
+
+end -- end OnPluginScreendraw
+
+
+-- hide window on removal
+function OnPluginClose ()
+  WindowShow (win,  false)  -- hide it
+end -- OnPluginClose
+
+-- hide window on disable
+function OnPluginDisable ()
+  WindowShow (win,  false)  -- hide it
+end -- OnPluginDisable
+
+-- show window on enable
+function OnPluginEnable ()
+  if #lines > 0 then
+    WindowShow (win,  true)  -- show it
+  end -- if
+end -- OnPluginEnable
+
+function heartbeat (timername)
+  
+  if GetInfo (113) then
+    -- display window if output window paused and we have something to show
+    WindowShow (win,  GetInfo (114) and #lines > 0)
+  end -- if world active
+  
+end -- heartbeat
+
+function OnPluginSaveState ()
+  -- save window current location for next time  
+  movewindow.save_state (win)
+end -- function OnPluginSaveState
+
+-- startup stuff
+
+win = GetPluginID ()  -- get a unique name
+
+-- make the window
+WindowCreate (win, 0, 0, 1, 1, WINDOW_POSITION, 0, 
+                         WINDOW_BACKGROUND_COLOUR)  -- create window
+               
+-- grab a font
+WindowFont (win, "f", FONT_NAME, FONT_SIZE) -- define font
+WindowFont (win, "fb", FONT_NAME, FONT_SIZE, true) -- define font
+
+-- work out how high and wide it is
+font_height = WindowFontInfo (win, "f", 1)   -- height of the font  
+wrap_column = GetOption ("wrap_column")
+
+window_width = (wrap_column * WindowFontInfo (win, "f", 6)) + (TEXT_INSET * 2)
+window_height = (MAX_LINES + 1) * font_height + TEXT_INSET * 2  -- one more line for title
+
+require "movewindow"  -- load the movewindow.lua module
+
+-- install the window movement handler, get back the window position
+windowinfo = movewindow.install (win, WINDOW_POSITION)
+ 
+-- remake the window with the correct width
+WindowCreate (win, 
+               windowinfo.window_left, 
+               windowinfo.window_top, 
+               window_width, window_height,              
+               windowinfo.window_mode,   
+               windowinfo.window_flags,
+               WINDOW_BACKGROUND_COLOUR) 
+
+-- add the drag handler so they can move the window around
+movewindow.add_drag_handler (win, 0, 0, 0, font_height)
+
+fonts = utils.getfontfamilies ()
+
+if not fonts.Dina then
+  AddFont (GetInfo (66) .. "\\Dina.fon")
+end -- if Dina not installed
+      
+]]>
+</script>
+
+</muclient>
+

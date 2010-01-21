@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin 
+  name="Command_Filter"
+  author="Nick Gammon"
+  language="vbscript"
+  purpose = "Example of filtering commands, output"
+  date_written = "2002-06-10"  
+  id = "2438147bcb4fefe053eb65c4"
+  >
+
+  <description trim="y">
+  Example of filtering all commands through a plugin.
+  </description>
+
+</plugin>
+
+<script>
+<![CDATA[
+
+ Function OnPluginCommand (sText)
+  World.Note "Command '" & sText & "' received."
+  OnPluginCommand = vbTrue  ' process it
+ End Function
+
+ Function OnPluginSend (sText)
+  World.Note "About to send '" & sText & "'." 
+  OnPluginSend = vbTrue  ' process it
+ End Function
+
+ Function OnPluginLineReceived (sText)
+  World.Note "Received: '" & sText & "'" 
+  OnPluginLineReceived = vbTrue  ' display it
+ End Function
+ 
+ Sub OnPluginPacketReceived (sText)
+   World.Note "Received PACKET: '" & sText & "'" 
+ End Sub
+ 
+]]>            
+ </script> 
+
+</muclient>

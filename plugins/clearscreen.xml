@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="clearscreen"
+   author="Nick Gammon"
+   id="9cd2234d5d678d86d412f266"
+   language="Lua"
+   purpose="Clears output buffer on clearscreen character"
+   date_written="2005-01-08"
+   requires="3.59"
+   version="1.0"
+   >
+</plugin>
+
+<!--  Script  -->
+
+<script>
+<![CDATA[
+
+function OnPluginPacketReceived (s)
+
+ if string.find (s, string.char (12)) then
+   DeleteOutput ()
+ end -- if
+  
+end -- function OnPluginPacketReceived
+]]>
+</script>
+
+</muclient>

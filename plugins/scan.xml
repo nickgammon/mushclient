@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE muclient [
+  <!ENTITY timer_interval "5" > 
+]>
+
+
+<!--
+
+Plugin to do a "scan" every 5 seconds.
+  
+Change the "5" in "timer_interval" above to make it happen after a different
+number of seconds.
+
+-->
+
+<muclient>
+<plugin name="Scan"
+  author="Nick Gammon"
+  language="vbscript"
+  id = "5f2ab730145c150a2535677d"
+  purpose = "Does a &quot;scan&quot; every &timer_interval; seconds"
+  version = "1.0"
+  >
+<description trim="y">
+This plugin does a "scan" every &timer_interval; seconds.
+
+Commands
+--------
+
+scan:help       - shows this description in the output window
+scanon          - enables scanning
+scanoff         - disables scanning (for battle)
+</description>
+</plugin>
+
+<!--  Get our standard VB constants -->
+<include name="constants.vbs"/>
+ 
+<!--  =============================================
+
+Timer:   scan
+
+ =============================================  -->
+ 
+<timers>
+  <timer name="scan" 
+         enabled="y" 
+         second="&timer_interval;" >
+  <send>scan</send>
+
+  </timer>
+</timers>
+
+
+<!--  =============================================
+
+Alias:    scanon
+Script:   do_scanon
+Purpose:  Enables scanning timer
+
+ =============================================  -->
+
+<aliases>
+  <alias
+   script="do_scanon"
+   match="scanon"
+   enabled="y"
+  >
+  </alias>
+</aliases>
+
+
+<script>
+<![CDATA[
+
+sub do_scanon (sName, sLine, wildcards)
+  world.enabletimer "scan", 1
+  world.note "Scanning enabled"
+end sub
+
+]]>            
+ </script>
+ 
+<!--  =============================================
+
+Alias:    scanoff
+Script:   do_scanoff
+Purpose:  Disables scan timer (during battle)
+
+ =============================================  -->
+
+<aliases>
+  <alias
+   script="do_scanoff"
+   match="scanoff"
+   enabled="y"
+  >
+  </alias>
+</aliases>
+
+
+<script>
+<![CDATA[
+
+sub do_scanoff (sName, sLine, wildcards)
+  world.enabletimer "scan", 0
+  world.note "Scanning disabled"
+end sub
+
+]]>            
+ </script>
+
+
+<!--  =============================================
+
+Alias:   scan:help
+Script:  OnHelp
+Purpose: Shows plugin help
+
+ =============================================  -->
+ 
+<aliases>
+   <alias
+    script="OnHelp"
+    match="scan:help"
+    enabled="y"
+   >
+   </alias>
+ </aliases>
+
+<script>
+<![CDATA[
+ sub OnHelp (sName, sLine, wildcards)
+   world.note world.getplugininfo (world.getpluginid, 3)
+ end sub
+]]>            
+ </script> 
+ 
+ </muclient>

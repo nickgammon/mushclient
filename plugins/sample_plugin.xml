@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE muclient [
+  <!ENTITY test1 "testing 1 2 3" > 
+  <!ENTITY test2 "testing 4 5 6" > 
+]>
+
+<!--  =============================================
+
+WRITING YOUR OWN PLUGIN
+
+1. Change the attributes below:
+    * name - helpful short name (up to 32 characters)
+    * author - your name (up to 32 characters)
+    * language - vbscript, perlscript or jscript
+    * purpose - short description (up to 100 characters)
+    * save_state - "y" if you need to retain variable values
+    * date_written - when you wrote it (for documentation)
+    * date_modified - when last modified
+    * requires - if this plugin depends on a feature in a particular MUSHclient version
+        (or later) - such as a world.xxx routine - enter the minimum required version number
+      NB - only use "requires" if necessary, don't just put it in unless you are sure you
+           are using a new feature that older versions do not support.
+    * version - use this to identify different versions of your plugin. (eg. 1.01, 2.03)
+    
+    * id - UNIQUE id - very important, do not copy existing IDs
+      
+      To get one, type: /world.note world.getuniqueid
+      This will generate a unique ID - use this for each new plugin
+      
+      The unique ID is used to identify plugins (names might be reused
+      by different authors). Please make sure you generate a new, unique,
+      ID for each plugin using the method described above.
+      
+      In this file the ID has been "xxxx"'d out so that you aren't tempted to re-use it.
+      Thus, it won't load unchanged. You can test it by generating your own ID and then
+      loading it into MUSHclient.
+ 
+ 2. The <description> tag is used for a length (any length) description of the
+    plugin purpose, how to use, how to customise, general hints for the player.
+    
+ 3. You can use <include name="xxx" /> to include shared routines, or constants.
+ 
+ 4. After that you can put in:
+    * triggers
+    * aliases
+    * timers
+    * variables
+    * script snippets
+    
+    The order is not important. You can bunch up all the scripts into one big tag,
+    or put each one under the item it relates to, as in the example.
+    
+    Inside the <script> and <description> tags you might find it helpful to use:
+    
+    <![CDATA[ ... some text here ... ]]> 
+    
+    Inside the CDATA block you can use the special characters "<", "&" and so on without
+    worrying about having to convert them to &lt; and &amp;, etc.
+    
+5. Hints
+
+   a) A script can find its own unique ID with: world.GetPluginID
+   b) A script can find its own name with: world.GetPluginName
+   c) A script can find other attributes with:  world.GetPluginInfo
+   d) The whole plugin can be enabled or disabled with: world.EnablePlugin
+      Disabled plugins do not match triggers/timers/aliases
+   e) One plugin can call a script in another plugin with: world.CallPlugin
+   f) You can find information about other plugin's triggers etc. with:
+       GetPluginTriggerList, GetPluginTriggerInfo
+       GetPluginAliasList, GetPluginAliasInfo
+       GetPluginTimerList, GetPluginTimerInfo
+       GetPluginVariableList, GetPluginVariable
+        Also, to find *global* variables etc. (ie. not in any plugin) use the above
+        routines, with an empty plugin ID.  eg. 
+          x = World.GetPluginVariable ("", "target")
+   g) You can find all installed plugins with: world.GetPluginList
+   h) You can find if a particular plugin is installed with: world.IsPluginInstalled
+   i) You can load other plugins with: world.LoadPlugin
+   j) Use the OnPluginInstall callback routine to do any customising you might want
+      when the plugin is first loaded (eg. setting up variables). You might also use this
+      opportunity to move variables from MUSHclient variables to local variables.
+   k) Use the OnPluginSaveState callback routine to prepare for having the state saved.
+      For example, you might move variables from local variables back into MUSHclient
+      variables, so they are saved.
+   l) Any variables that are specific to a particular world should be in the "save state"
+      file, not the plugin file (that way you can share the plugin between different world
+      files). You might use OnPluginInstall to create the variable if it isn't there the
+      first time the plugin is run.
+   m) When the plugin is first loaded, the output window has not been set up yet, so any
+      world.note which you might do to announce its presence will not be seen.
+      If you want each plugin to announce itself, use something like:
+      
+   				world.DoAfterNote 1, "Plugin " & world.getpluginname & " installed."      
+
+			That way, the announcement is delayed a second, and will appear once the output window
+			is set up.
+			
+6. If there is something people are likely to want to customise (eg. the name of a 
+   command, or a friend) you could put it into an <!ENTITY> tag inside the <!DOCTYPE>    
+   at the start of the plugin (see examples above). Then the entity can be used later on
+   (eg. in a trigger), to save the end-user hunting through the entire plugin to work
+   out what to change.
+   
+   
+ 
+      
+ =============================================  -->
+
+<muclient>
+<plugin 
+  name="Sample_plugin"
+  author="Author Name"
+  language="vbscript"
+  purpose = "Example plugin"
+  save_state = "y"
+  date_written = "2002-06-06"
+  date_modified = "2002-06-07"
+  requires="3.23"
+  version="1.00"
+  
+  id = "7ca39xxxxxxxxxxxxxxfb75b"
+  >
+<description trim="y">
+<![CDATA[
+Put your description of what the plugin does here, and how to use it.
+
+sample:help       - shows this description in the output window
+]]>            
+</description>
+</plugin>
+
+<!--  Get our standard VB constants -->
+<include name="constants.vbs"/>
+
+<!--  =============================================
+
+Alias:   sample
+Script:  OnSample
+Purpose: Demonstrates an alias
+
+Example demonstrates using an entity (from DOCTYPE above) to customise
+plugin behaviour.
+
+ =============================================  -->
+ 
+<aliases>
+   <alias
+    script="OnSample"
+    match="sample"
+    enabled="y"
+   >
+   </alias>
+ </aliases>
+
+<script>
+ sub OnSample (sName, sLine, wildcards)
+   world.note "&test1;"
+   world.note "&test2;"
+ end sub
+
+ </script> 
+<!--  =============================================
+
+Alias:   sample:help
+Script:  OnHelp
+Purpose: Shows plugin help
+
+ =============================================  -->
+ 
+<aliases>
+   <alias
+    script="OnHelp"
+    match="sample:help"
+    enabled="y"
+   >
+   </alias>
+ </aliases>
+
+<script>
+<![CDATA[
+ sub OnHelp (sName, sLine, wildcards)
+   world.note world.getplugininfo (world.getpluginid, 3)
+ end sub
+
+]]>   
+ </script> 
+
+<!--  =============================================
+
+Example of script that could be called from another plugin.
+
+This script will display a message.
+
+Example of use:
+
+/world.callplugin "7ca39xxxxxxxxxxxxxxfb75b", "OnDoSomethingUseful", "My Message"
+
+ =============================================  -->
+
+<script>
+<![CDATA[
+ sub OnDoSomethingUseful (sText)
+   world.note "OnDoSomethingUseful called."
+   world.note "Argument = " & sText
+ end sub
+
+]]>   
+ </script> 
+       
+<!--  =============================================
+
+Standard callback routines.
+
+MUSHclient will call these at the appropriate time.
+
+The samples just display a world.note.
+
+ =============================================  -->
+
+<script>
+<![CDATA[
+
+ sub OnPluginInstall
+   world.DoAfterNote 1, "Plugin " & world.getpluginname & " installed."
+   world.DoAfterNote 1, "Version number " & world.getplugininfo (world.getpluginid, 19)
+ end sub
+
+ sub OnPluginClose
+   world.note "Plugin " & world.getpluginname & " closed."
+ end sub
+
+ sub OnPluginConnect
+   world.note "Plugin " & world.getpluginname & " - world connected."
+ end sub
+
+ sub OnPluginDisconnect
+   world.note "Plugin " & world.getpluginname & " - world disconnected."
+ end sub
+
+ sub OnPluginSaveState
+   world.note "Plugin " & world.getpluginname & " - saved state."
+ end sub
+
+ sub OnPluginEnable
+   world.note "Plugin " & world.getpluginname & " - enabled."
+ end sub
+
+ sub OnPluginDisable
+   world.note "Plugin " & world.getpluginname & " - disabled."
+ end sub
+
+]]>            
+ </script> 
+
+</muclient>

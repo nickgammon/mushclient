@@ -1,0 +1,56 @@
+/*****************************************************/
+/* Deverry2.nam                                      */
+/* Namnfil f”r namn fr†n Deverry (kvinnor)           */
+/* av Johan Danforth                                 */
+/* rader som b”rjar med / „r kommentar-rader         */
+/* varje section b”rjar med [xxx] enlig filen nedan  */
+/*****************************************************/
+[startstav]
+/* startstavelser skall sluta med en konsonant som b,k,t etc... */
+Al
+Br
+C
+Cl
+D
+El
+Gw
+J
+L
+M
+N
+Mer
+S
+R
+Ys
+[mittstav]
+/* mittstavelser skall b”rja och sluta med en vokal som a,o,u,i,e,y etc... */
+a
+ae
+e
+ea
+i
+o
+u
+y
+w
+[slutstav]
+/* slutstavelser skall b”rja med en konsonant som b,k,t etc... */
+brylla
+cla
+dda
+ll
+lla
+llyra
+lonna
+lyan
+na
+ngwen
+niver
+noic
+ra
+rka
+ryan
+ssa
+vyan
+[stop]
+/* h„r „r filen slut */

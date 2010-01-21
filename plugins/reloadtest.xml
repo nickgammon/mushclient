@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+<muclient>
+<plugin
+   name="AutoUpdater"
+   author="Poromenos"
+   id="e17f476a9a92ddb464f419f3"
+   language="VBscript"
+   purpose="Updates plugins automatically."
+   save_state="y"
+   date_written="2004-05-29 01:06:58"
+   requires="3.49"
+   version="1.0"
+   >
+
+</plugin>
+<aliases>
+  <alias
+   script="sbReload"
+   match="test"
+   enabled="y"
+   sequence="100"
+  >
+  </alias>
+</aliases>
+<script>
+<![CDATA[
+Sub sbReload(strName, strLine, strWildcards)
+    Dim lstPlugins
+
+    lstPlugins = World.GetPluginList
+
+    If Not IsEmpty (lstPlugins) Then
+
+        For Each itmPlugin In lstPlugins
+'            If itmPlugin <> "e17f476a9a92ddb464f419f3" Then
+'                ReloadPlugin itmPlugin
+				DoAfterSpecial 2, "ReloadPlugin """ & itmPlugin & """", 12
+
+                Note "Reloaded " & itmPlugin & " (" & GetPluginInfo (itmPlugin, 1) & ")"
+'            Else
+ '               note "hi"
+'            End If
+        Next
+
+    End If
+End Sub
+]]>
+</script>
+</muclient>

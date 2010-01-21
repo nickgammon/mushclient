@@ -1,0 +1,30 @@
+<muclient>
+<plugin 
+  name="Jscript_test"
+  author="Nick Gammon"
+  language="jscript"
+  purpose = "Testing jscript in a plugin"
+  id = "c1265187b59b84f0289c1154"
+  version = "23.245"
+  >
+</plugin>
+
+
+<script>
+<![CDATA[
+
+ function OnPluginInstall ()
+   {
+   world.DoAfterNote (1, "Plugin " + world.getpluginname + " installed.");
+   world.DoAfterNote (1, "Version number " + world.getplugininfo (world.getpluginid, 19));
+   }
+
+ function OnPluginClose ()
+   {
+   world.note ("Plugin " + world.getpluginname + " closed.");
+   }
+
+]]>             
+</script>
+
+</muclient>

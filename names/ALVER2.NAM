@@ -1,0 +1,82 @@
+/*****************************************************/
+/* ALVER.NAM                                         */
+/* Namnfil f”r alv-namn                              */
+/* av Johan Danforth                                 */
+/* rader som b”rjar med / „r kommentar-rader         */
+/* varje section b”rjar med [xxx] enlig filen nedan  */
+/*****************************************************/
+[startstav]
+/* startstavelser skall sluta med en konsonant som b,k,t etc... */
+An
+Am
+Bel
+Cel
+C
+Cal
+Del
+El
+Elr
+Elv
+Eow
+Eär
+F
+G
+Gal
+Gl
+H
+Is
+Leg
+Lóm
+M
+N
+P
+R
+S
+T
+Thr
+Tin
+Ur
+Un
+V
+[mittstav]
+/* mittstavelser skall b”rja och sluta med en vokal som a,o,u,i,e,y etc... */
+a
+á
+adrie
+ara
+e
+é
+ebri
+i
+io
+ithra
+ilma
+il-Ga
+o
+orfi
+ó
+u
+y
+[slutstav]
+/* slutstavelser skall b”rja med en konsonant som b,k,t etc... */
+clya
+lindë
+dë
+dien
+dith
+dia
+lith
+lia
+ndra
+ng
+nia
+niel
+rith
+thien
+thiel
+viel
+wen
+wien
+wiel
+[stop]
+/* h„r „r filen slut */

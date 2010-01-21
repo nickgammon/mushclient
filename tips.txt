@@ -1,0 +1,81 @@
+You can drag the "game" toolbar alongside the "file" toolbar, to save room at the top of the screen.
+You can customise the colours used to show output from your MUD by using: Game > World Configuration > Colours
+Use tab-completion to save typing. Type part of a word, and press <tab> to have that word completed with one that matches it in recent output.
+Aliases can be used to save typing. For example, set up an alias "k *" to expand to "kill %1". Then, if you see a monster, just type "k monster".
+You can bookmark interesting lines in the output window. Press SHIFT + CTRL + B to make a bookmark. Press CTRL + B to go back to a bookmark. Make as many bookmarks as you like.
+You can store up to 500,000 lines of output from the MUD. The exact number stored is customised in the "output" configuration screen.
+You can play a sound (.WAV, .MID or .RMI file) when a trigger fires.
+You can colour individual words by making a trigger to match on that word, checking "regular expression" and selecting a custom colour.
+You can use regular expressions to match complex things (eg. "fish|chips" will match fish OR chips).
+Scripting lets you build in tests and conditional behaviour into your triggers and aliases.
+You can copy and paste triggers, timers, aliases and other things from one world to another.
+You can match partial commands by entering part of a command and pressing ALT + UP.
+You can customise the font used in the output window.
+You can customise the text and background colour of the command (input) window by using: Game > World Configuration > Commands
+You can customise the font used in the command (input) window by using: Game > World Configuration > Commands.
+You can echo what you type into the MUD in a different colour, to make your input stand out. Also, any aliases are expanded so you know exactly what is sent to the MUD.
+You can use "speed walking" to quickly move from one location to another. You choose what "prefix" enables speed walking. For example: /w 2N3E  will take you North twice and then East three times.
+You can use "command stacking" to type multiple commands on one line. You can choose which character is used to stack commands together. For example: take sword; kill dragon
+You can use the "notes" tab in the World Configuration screen to keep free-format notes about things of interest in the current world.
+You can use the numeric keypad to quickly move around. The actual commands sent by the keypad are customisable by you.
+If you use the numeric keypad, or commands on the "Actions" menu, then any command you have typed into the command area is preserved. This way you can use the numeric keypad to walk around, whilst typing in a lengthy command at the same time.
+You can automatically log onto a world by specifying a character name and password in the "Connecting" tab of the World Configuration screen.
+You can automatically send one or more commands to the MUD when you connect (such as WHO)
+You can use the "Activity" window to monitor all worlds (if you are connected to multiple worlds at once) and see if you have received messages from worlds other than the current one.
+You can quickly switch to different worlds by using Ctrl+n where "n" is the "world number" in the Activity window. eg. Ctrl+2 will switch to World number 2 in the Activity window.
+You can sort the Activity window into alphabetical order of any column by just clicking on that column heading. Click twice on a heading to sort in reverse order.
+You can use triggers to highlight incoming messages by setting a trigger to match on a message prefix, and setting it to colour that message.
+By turning on "auto-pause" the output window will automatically pause when you scroll back to read a previous message.
+You can get the last command you entered to re-appear by turning on "auto-repeat".
+You can connect to MUDs that support the MUD Client Compression protocol for faster access.
+You can configure Netscape Navigator to call MUSHclient as your "telnet" application.
+You can use "Quick Connect" to quickly connect to a new world.
+You can use "select all" (Ctrl+A) to select all text in the command or output window.
+You can turn loggging on or off from a script.
+You can customise keystrokes by using the script command "Accelerator".
+Lua scripting is easy to learn and very powerful.
+You can use the chat system to chat to other players privately.
+You can put variables into trigger and aliases by using @VARIABLE_NAME syntax.
+You can use the DoAfter script routine to make a script do something in a few seconds.
+You can use scripting to move world and notepad windows around and resize them.
+You can do simple scripting by putting script commands into the "send" box for triggers, aliases and timers, and selecting "send to script".
+You can use the spell checker to spell-check each command before you send it.
+The spell-checker can be customised to only spell-check certain types of commands.
+You can use regular expressions to "name" wildcards in your triggers, thus simplifying writing scripts for them.
+You can write multi-line triggers to match complex things, like stats rollers, or an inventory list.
+You can customise your notepad colours and fonts with a couple of script calls.
+You can use plugins to enhance your client. Various plugins are supplied with MUSHclient, and others are available from the web site.
+Lua is the recommended scripting language now, as it is easy to learn, and ships with MUSHclient.
+Plugins can process "callbacks" which are special functions called at various stages of processing, such as input received from the MUD.
+The MUSHclient forum has extensive tips and information: http://www.mushclient.com/forum/
+The "Global Replace" dialog in the built-in Notepad lets you find and replace using regular expressions.
+You can edit scripts using an external editor. Crimson Editor is one such editor, and is free: http://www.crimsoneditor.com/
+Crimson Editor can be customised to display help from the MUSHclient help file for the function name that the cursor is over.
+Pressing SHIFT + TAB when editing scripts brings up a "function-name completion" menu, to help get script function names correct.
+Stuck for a name for your character? Use Edit menu -> Generate Character Name.
+Want to find a particular line amongst thousands? Use Display menu -> Recall Text to specify a search criteria.
+Trying to manage hundreds of triggers or aliases? You can reduce the number displayed by using the "Filter by" option.
+You can use the ImportXML script function to generate triggers, aliases, timers at runtime, specifying all options in a simple format.
+Auto-say lets you have lengthy chats without having to type "say" on every line.
+All script functions are documented in the help file that ships with MUSHclient.
+Some extra script functions are available in Lua only, see the help topic "Lua script extensions".
+You can make a context menu from aliases by checking the "Menu" box for some aliases. Then CTRL + LH-CLICK will display that menu.
+There is a context menu in both the command and output windows. RH-CLICK to see it.
+Use the Plugin Wizard to easily generate a plugin from your triggers, aliases, timers, and scripts. See File menu -> Plugin Wizard.
+There is an option in the File -> Global Preferences -> Tray/Taskbar, which lets you have MUSHclient be shown in the System Tray.
+Boss coming? Press CTRL + M to minimize the program.
+For an immersive experience, use Full Screen mode. Type Ctrl + Alt + F. Type it again to restore normal operation.
+In Full Screen mode, all MUSHclient menus are available from the context menu. RH + CLICK to see it.
+Double-click to select a word in the output window.
+SHIFT + double-click to select an entire paragraph in the output window.
+Use the Game menu -> Test Trigger dialog, to simulate input from the MUD, when testing triggers.
+Annoyed by the "unable to connect" dialog box? You can disable that in File menu -> Global Preferences -> General tab.
+Mis-typed the MUD's address? Stop the world trying to connect by using Connection menu -> Disconnect.
+Don't like the colour scheme used by your MUD? Try changing ANSI colour settings for the world. If that fails, there is a script function MapColour that lets you change one colour to another.
+For a bit of fun, try "random colours" in the ANSI colour settings for your world.
+For a colour notepad, you can make a dummy world which doesn't connect to any MUD, and script ColourNote messages to it.
+Extensive documentation about using Regular Expressions is in the file RegularExpressions.txt which ships in the "docs" subdirectory of your MUSHclient installation.
+The output from macros (such as ALT + A) are sent through the command processor, so they can do scripting, speedwalks, or invoke aliases.
+You can script MUSHclient in Python, JScript, VBscript, Perl, TCL, PHP and Lua.
+MUD prompt not being displayed on its own line? Then try enabling World Properties->Output->Convert EOR/GA to newline.
+You can use SQL databases from MUSHclient. Look in the plugins directory for examples.

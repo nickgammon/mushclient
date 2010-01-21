@@ -1,0 +1,15 @@
+/*****************************************************/
+/* MALL.NAM                                          */
+/* Namnfil f”r namn fr†n xxxxxxxxxxx                 */
+/* av Johan Danforth                                 */
+/* rader som b”rjar med / „r kommentar-rader         */
+/* varje section b”rjar med [xxx] enlig filen nedan  */
+/*****************************************************/
+[startstav]
+/* startstavelser skall sluta med en konsonant som b,k,t etc... */
+[mittstav]
+/* mittstavelser skall b”rja och sluta med en vokal som a,o,u,i,e,y etc... */
+[slutstav]
+/* slutstavelser skall b”rja med en konsonant som b,k,t etc... */
+[stop]
+/* h„r „r filen slut */

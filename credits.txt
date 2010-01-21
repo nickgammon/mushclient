@@ -1,0 +1,69 @@
+MUSHclient
+----------
+
+MUSHclient was designed and written by Nick Gammon of Gammon Software Solutions.
+
+MUSHclient is Copyright (C) 1999 by Gammon Software Solutions.
+
+All rights are reserved worldwide.
+
+Web page:  http://www.gammon.com.au
+Email:     Nick Gammon <nick@gammon.com.au>
+
+
+Installer
+---------
+
+The installer for this product was created using Installer VISE from MindVision Software. For more information on Installer VISE, contact: 
+
+MindVision Software 
+7201 North 7th Street 
+Lincoln, NE 68521-8913 
+
+Voice: (402) 477-3269 
+Fax: (402) 477-1395 
+E-mail: mindvision@mindvision.com 
+http://www.mindvision.com 
+
+
+Scripting Engines
+-----------------
+
+VBScript and JScript technologies supplied by Microsoft Corporation.
+
+
+History of MUDs
+---------------
+
+The world of MUDs is a co-operative effort by many people. For a very interesting history of MUDs (and the Internet in general) see the paper "Cultural Formations in Text-Based Virtual Realities" by Elizabeth M. Reid at: 
+
+http://www.ee.mu.oz.au/papers/emr/cult-form.html 
+
+
+Bug reports
+-----------
+
+Please submit bug reports or suggested enhancements to:
+
+Nick Gammon <nick@gammon.com.au>
+
+I am maintaining a "bug list" page on the Web, you may wish to check that page first to see if the bug you are reporting is already known. The bug list page is at:
+
+http://www.gammon.com.au/mushclient/buglist.htm
+
+
+FAQ
+---
+
+I am maintaining a MUSHclient FAQ (Frequently Asked Questions) page. It is at:
+
+http://www.gammon.com.au/mushclient/mushclifaq.htm
+
+
+
+MUSHclient home page
+--------------------
+
+The MUSHclient home page on the Web is:
+
+http://www.gammon.com.au/mushclient/mushclient.htm

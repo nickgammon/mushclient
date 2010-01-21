@@ -1,0 +1,53 @@
+<muclient>
+<plugin 
+  name="Baron_Dude"
+  author="Nick Gammon"
+  language="vbscript"
+  purpose = "Find that Baron Dude"
+  id = "5ba4633a105829f800796d53"
+  >
+</plugin>
+
+<aliases>
+  <alias
+   match="fs"
+   enabled="y"
+  >
+  <send>cast &quot;farsight&quot;</send>
+  </alias>
+</aliases>
+
+<triggers>
+  <trigger
+   custom_colour="1"
+   match="^\*Baron Dude\* (.*?)$"
+   name="BaronDudeTrigger"
+   regexp="y"
+   script="OnBaronDudeTrigger"
+   sequence="100"
+  >
+  <send>gtell *Baron Dude* %1</send>
+  </trigger>
+  <trigger
+   custom_colour="2"
+   enabled="y"
+   match="You can momentarily see in all directions"
+   name="FarSiteTrigger"
+   regexp="y"
+   script="OnFarSiteTrigger"
+   sequence="100"
+  >
+  </trigger>
+</triggers>
+
+<script>
+sub OnBaronDudeTrigger (sName, sLine, wildcards)
+  world.enabletrigger "BaronDudeTrigger", vbFalse
+end sub
+
+sub OnFarSiteTrigger (sName, sLine, wildcards)
+  world.enabletrigger "BaronDudeTrigger", vbTrue
+end sub
+</script>
+
+</muclient>

@@ -1,0 +1,1624 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE muclient []>
+
+<!--	===============================================================
+		EQUIPMENT HANDLING SCRIPT
+		for 'Ages of Despair'
+
+		This plugin was written to offer a set of aliases and script
+		that would make handling equipment on 'Ages of Despair' an
+		easy task. Once installed, use "eqhelp" to learn more.  :)
+		=========================================================== -->
+
+<muclient>
+<plugin
+	name="AOD_EQ"
+	date_written = "2002-07-04"
+	date_modified = "2002-08-04"
+	version = "1.01"
+	author="Magnum"
+	id = "6a6edfa2c71dae3c97f1c82c"
+	purpose = "Assorted aliases to manipulate equipment."
+	language="vbscript"
+	save_state = "y"
+	>
+<description trim="y">
+<![CDATA[
+This plugin was written to offer a set of aliases and script
+that would make handling equipment on 'Ages of Despair' an
+easy task. Once installed, use "eqhelp" to learn more.  :)
+
+Commands
+--------
+
+The following aliases are available for manipulating your EQ:
+ 
+eqt:    Declare the name of the equipment set you would like to use.
+eqset:  Declare an individual item & chest in the current equipment set.
+eqxa:   Add an extra! item & chest in the current equipment set.
+eqxr:   Remove an extra! item & chest from the current equipment set.
+eqlist: List all items in the current set of equipment.
+eqg:    Get all items from their configured locations.
+eqd:    Drop/Put all items in their configured locations.
+eqon:   Hold/Wear/Wield all items in your current equipment set.
+eqoff:  Remove/Unhold/Unwield all items in your current equipment set.
+eqfix:  Fix all items that are damaged beyond the point indicated in 'eqlvl'.
+eqlvl:  Set the minimum acceptable damage condition for equipment.
+eqsw:   Switch your weapons to opposite hands.
+ 
+Use 'eqhelp <Alias>' for detailed help for an alias.
+ 
+! Extra items are those that are not held/wielded/worn.
+ 
+You must be at the repair shop for 'eqfix' to work properly.
+ 
+Each set of EQ is stored in a text file, in the same directory as this script file.
+The only way to delete a set of EQ is to delete the file manually. Sorry.
+ 
+If this is your first time using the script, you will want to name your
+first set of EQ, using the 'eqt' alias, before doing anything else.
+]]>
+</description>
+</plugin>
+
+<script>
+<![CDATA[
+
+Sub OnPluginInstall
+	World.Note "--------------------------------------------------------------------"
+	World.Note "Plugin: " & Chr(34) & World.GetPluginName & Chr(34) & " - Installed."
+	World.Note " "
+	World.Note "StatePath: " & StatePath
+	Display_PluginInfo
+End Sub
+
+Sub OnPluginClose
+	World.Note "Plugin: " & Chr(34) & World.GetPluginName & Chr(34) & " - Closed."
+End Sub
+
+Sub OnPluginConnect
+	World.Note "Plugin: " & Chr(34) & World.GetPluginName & Chr(34) & " - Connected."
+	Display_PluginInfo
+End Sub
+
+Sub OnPluginDisconnect
+	World.Note "Plugin: " & Chr(34) & World.GetPluginName & Chr(34) & " - Disconnected."
+End Sub
+
+Sub OnPluginSaveState
+	World.Note "Plugin: " & Chr(34) & World.GetPluginName & Chr(34) & " - Saved state."
+End Sub
+
+Sub OnPluginEnable
+	World.Note "Plugin: " & Chr(34) & World.GetPluginName & Chr(34) & " - Enabled."
+	Display_PluginInfo
+End Sub
+
+Sub OnPluginDisable
+	World.Note "Plugin: " & Chr(34) & World.GetPluginName & Chr(34) & " - Ddisabled."
+End Sub
+
+Dim EqItemList
+Dim EqDamageLevels
+EqItemList = "bweap, lweap, rweap, head, neck, arms, hands, cloak, torso, belt, legs, feet, lring, rring, shield, lhold, rhold"
+EqDamageLevels = "perfect,great,good,quite good,mediocre,quite bad,bad,very bad,trashed,broken"
+
+Dim EqDamagedItems
+
+Dim StatePath, StatePrefix
+StatePath = World.GetInfo(60) & "state\" & World.GetPluginName & "\"
+StatePrefix = World.GetAlphaOption("id") & "-" & World.GetPluginID & "-"
+Validate_StatePath
+
+If World.GetVariable("EQType") = Empty Then
+	World.SetVariable "EQType", "Default"
+	World.SetVariable "EQTypeStatus", "EQType: " & CStr(World.GetVariable("EQType"))
+End If
+
+Sub AddNewFolder (path, folderName)
+	Dim fso, f, fc, nf
+	Set fso = CreateObject("Scripting.FileSystemObject")
+	Set f = fso.GetFolder(path)
+	Set fc = f.SubFolders
+	Set nf = fc.Add(folderName)
+End Sub
+
+Sub Validate_StatePath
+	Dim FSO
+	Dim PluginStatePath
+	Dim WorldName
+	PluginStatePath = World.GetInfo(60) & "state\"
+	WorldName = World.GetPluginName
+   Set FSO = CreateObject("Scripting.FileSystemObject")
+   If NOT (FSO.FolderExists(StatePath)) Then
+   	If NOT (FSO.FolderExists(PluginStatePath)) Then
+			World.Note "The plugin " & WorldName & " could not be installed."
+			World.Note " "
+			World.Note "Could not find this directory path:"
+			World.Note PluginStatePath
+			World.Note " "
+			World.Note "You must configure the PLUGIN directory path in MUSHclient."
+			World.Note "Select 'File, Global Preferences, Worlds"
+			World.Note "Click the button 'Plugins Directory', and choose a directory path."
+			World.EnablePlugin World.GetPluginId, vbFalse
+		End If
+		AddNewFolder PluginStatePath, WorldName
+   End If
+End Sub
+
+Sub Display_PluginInfo
+	World.Note "--------------------------------------------------------------------"
+	World.Note PadLeft("Plugin: ", 17) & PadRight(World.GetPluginName, 25) & World.GetPluginID
+	World.Note PadLeft("Version number: ", 17) & World.GetpluginInfo(World.getpluginID, 19)
+	World.Note PadLeft("Current World: ", 17) & PadRight(World.GetAlphaOption("name"), 25) & _
+		World.GetAlphaOption("id")
+	World.Note "--------------------------------------------------------------------"
+	World.Note PadLeft("Current EQType: ", 17) & World.GetVariable("EQType")
+	World.Note "--------------------------------------------------------------------"
+End Sub
+
+]]>
+</script>
+
+<!--	===== Set Equipment Type ====================================== -->
+
+<aliases>
+  <alias
+   name="EQ_Set_Equipment_Type"
+   script="Set_EQType"
+   match="eqt *"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+
+Sub Set_EQType (thename, theoutput, arrWildcards)
+	World.SetVariable "EQType", Trim(arrWildcards(1))
+	World.SetVariable "EQTypeStatus", "EQType: " & CStr(World.GetVariable("EQType"))
+	World.Note World.GetVariable("EQTypeStatus")
+	EQ_Load_File "Set_EQType", theoutput, arrWildcards
+End Sub
+
+Sub Set_EQType_By_Trigger (thename, theoutput, arrWildcards)
+	World.SetVariable "EQType", Trim(thename)
+	World.SetVariable "EQTypeStatus", "EQType: " & CStr(World.GetVariable("EQType"))
+	World.Note World.GetVariable("EQTypeStatus")
+	World.EchoInput = vbTrue
+	EQ_Load_File "Set_EQType", theoutput, arrWildcards
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Load & Save File ======================================== -->
+
+<script>
+<![CDATA[
+
+Sub EQ_Load_File (thename, theoutput, arrWildcards)
+	Dim arrItems
+	Dim EqItem, EqStore
+	Dim FSO, EqFileName
+	Dim arrFileContents
+	Dim F
+	Dim x
+	If CInt(World.GetVariable("EQTotalExtras")) > 0 Then
+		For x = 1 to CInt(World.GetVariable("EQTotalExtras"))
+			World.DeleteVariable "EQ_x_" & CStr(x)
+			World.DeleteVariable "EQstr_x_" & CStr(x)
+		Next
+	End If
+	EqFileName = StatePath & StatePrefix & World.GetVariable("EQType") & ".txt"
+	arrItems = Split(EQItemList, ", ")
+	Set FSO = CreateObject("Scripting.FileSystemObject")
+	If (FSO.FileExists(EqFileName)) Then
+		Set F = FSO.OpenTextFile(EqFileName, 1)
+		World.SetVariable "EqFixLevel", F.ReadLine
+		World.SetVariable "EqFixLevelStatus", "[" & World.GetVariable("EqFixLevel") & "] " _
+			& EQ_MapDamageLevel(World.GetVariable("EqFixLevel"))
+		For x = LBound(arrItems) to UBound(arrItems)
+			EqItem = "EQ_" & arrItems(x)
+			EqStore = "EQstr_" & arrItems(x)
+			arrFileContents = Split(F.ReadLine, "|||")
+			World.SetVariable EqItem, arrFilecontents(0)
+			World.SetVariable EqStore, arrFilecontents(1)
+		Next
+		World.SetVariable "EQTotalExtras", F.ReadLine
+		If CInt(World.GetVariable("EQTotalExtras")) > 0 Then
+			For x = 1 to CInt(World.GetVariable("EQTotalExtras"))
+				EqItem = "EQ_x_" & CStr(x)
+				EqStore = "EQstr_x_" & CStr(x)
+				arrFileContents = Split(F.ReadLine, "|||")
+				World.SetVariable EqItem, arrFilecontents(0)
+				World.SetVariable EqStore, arrFilecontents(1)
+			Next
+		End If
+		F.Close
+		Set F = Nothing
+		Set FSO = Nothing
+	Else
+		For x = LBound(arrItems) to UBound(arrItems)
+			EqItem = "EQ_" & arrItems(x)
+			EqStore = "EQstr_" & arrItems(x)
+			World.SetVariable EqItem, "none"
+			World.SetVariable EqStore, "none"
+		Next
+		World.SetVariable "EqFixLevel", 7
+		World.SetVariable "EqFixLevelStatus", "[" & World.GetVariable("EqFixLevel") & "] " _
+			& EQ_MapDamageLevel(World.GetVariable("EqFixLevel"))
+		World.SetVariable "EQTotalExtras", 0
+		EQ_Save_File "EQ_Load_File", theoutput, arrWildcards
+	End If
+End Sub
+
+Sub EQ_Save_File (thename, theoutput, arrWildcards)
+	Dim arrItems
+	Dim EqItem, EqStore
+	Dim FSO, EqFileName
+	Dim F
+	Dim x
+	EqFileName = StatePath & StatePrefix & World.GetVariable("EQType") & ".txt"
+	Set FSO = CreateObject("Scripting.FileSystemObject")
+	Set F = FSO.CreateTextFile(EQFileName, True, False)
+	F.WriteLine World.GetVariable("EqFixLevel")
+	arrItems = Split(EQItemList, ", ")
+	For x = LBound(arrItems) to UBound(arrItems)
+		EqItem = "EQ_" & arrItems(x)
+		EqStore = "EQstr_" & arrItems(x)
+		F.WriteLine World.GetVariable(EqItem) & "|||" & World.GetVariable(EqStore)
+	Next
+	F.WriteLine World.GetVariable("EQTotalExtras")
+	If CInt(World.GetVariable("EQTotalExtras")) > 0 Then
+		For x = 1 to CInt(World.GetVariable("EQTotalExtras"))
+			EqItem = "EQ_x_" & CStr(x)
+			EqStore = "EQstr_x_" & CStr(x)
+			F.WriteLine World.GetVariable(EqItem) & "|||" & World.GetVariable(EqStore)
+		Next
+	End If
+	F.Close
+	Set F = Nothing
+	Set FSO = Nothing
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Display Inventory ======================================= -->
+
+<aliases>
+  <alias
+   name="EQ_List_Items"
+   script="EQ_Display_Inventory"
+   match="eqlist"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+
+Sub EQ_Display_Inventory (thename, theoutput, arrWildcards)
+	Dim arrItems
+	Dim EqItem, EqStore
+	Dim x
+	arrItems = Split(EQItemList, ", ")
+	World.Note " " & World.GetVariable("EqTypeStatus")
+	World.Note "Fix Lvl: " & World.GetVariable("EqFixLevelStatus")
+	World.Note " "
+	For x = LBound(arrItems) to UBound(arrItems)
+		EqItem = "EQ_" & arrItems(x)
+		EqStore = "EQstr_" & arrItems(x)
+		World.Note PadLeft(arrItems(x), 7) & ": " & PadRight(World.GetVariable(EqItem), 30) _
+		& "[" & World.GetVariable(EQStore) & "]"
+	Next
+	For x = 1 to World.GetVariable("EQTotalExtras")
+		EqItem = "EQ_x_" & CStr(x)
+		EqStore = "EQstr_x_" & CStr(x)
+		World.Note PadLeft("Extra", 7) & ": " & PadRight(World.GetVariable(EqItem), 30) _
+		& "[" & World.GetVariable(EQStore) & "]"
+	Next
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Set Item ================================================ -->
+
+<aliases>
+  <alias
+   name="EQ_Set_Item"
+   script="EQ_Set_Item"
+   match="eqset *"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+
+Sub EQ_Set_Item (thename, theoutput, arrWildcards)
+	Dim arrArguments
+	Dim ItemType
+	Dim ItemStore
+	Dim ItemName
+	Dim x
+	Dim ValidType
+	Dim ValidStore
+	ItemName = Empty
+	arrArguments = Split(arrWildcards(1), " ")
+	ItemType = Trim(Lcase(arrArguments(0)))
+	If UBound(arrArguments) > 0 Then
+		ItemStore = Trim(Lcase(arrArguments(1)))
+	Else
+		ItemName = "none"
+		ItemStore = "-none"
+	End If
+	For x = (LBound(arrArguments) + 2) to UBound(arrArguments)
+		ItemName = ItemName & " " & CStr(arrArguments(x))
+	Next
+	ItemName = Trim(Lcase(ItemName))
+	ValidStore = True
+	If Left(Itemstore, 1) <> "-" Then
+		ValidStore = False
+	Else
+		ItemStore = Right(ItemStore, (Len(ItemStore)-1))
+	End If
+	x = InStr(1, EQItemList, ItemType, vbTextCompare)
+	If x <> 0 Then
+		Select Case ItemType
+			Case "bweap"
+				If ItemName = "none" Then
+					ValidType = True
+				Else
+					If (World.GetVariable("EQ_lweap") <> "none") OR _
+						(World.GetVariable("EQ_rweap") <> "none") OR _
+						(World.GetVariable("EQ_lhold") <> "none") OR _
+						(World.GetVariable("EQ_rhold") <> "none") OR _
+						(World.GetVariable("EQ_shield") <> "none") Then
+						World.Note "You must set lweap, rweap, lhold, rhold and shield to 'none' before you can set this item."
+						ValidType = False
+					Else
+						ValidType = True
+					End If
+				End If
+			Case "lweap"
+				If ItemName = "none" Then
+					ValidType = True
+				Else
+					If (World.GetVariable("EQ_bweap") <> "none") OR _
+						(World.GetVariable("EQ_lhold") <> "none") OR _
+						(World.GetVariable("EQ_shield") <> "none") Then
+						World.Note "You must set bweap, lhold and shield to 'none' before you can set this item."
+						ValidType = False
+					Else
+						ValidType = True
+					End If
+				End If
+			Case "rweap"
+				If ItemName = "none" Then
+					ValidType = True
+				Else
+					If (World.GetVariable("EQ_bweap") <> "none") OR _
+						(World.GetVariable("EQ_rhold") <> "none") Then
+						World.Note "You must set bweap and rhold to 'none' before you can set this item."
+						ValidType = False
+					Else
+						ValidType = True
+					End If
+				End If
+			Case "lhold"
+				If ItemName = "none" Then
+					ValidType = True
+				Else
+					If (World.GetVariable("EQ_bweap") <> "none") OR _
+						(World.GetVariable("EQ_lweap") <> "none") OR _
+						(World.GetVariable("EQ_shield") <> "none") Then
+						World.Note "You must set bweap, lweap and shield to 'none' before you can set this item."
+						ValidType = False
+					Else
+						ValidType = True
+					End If
+				End If
+			Case "rhold"
+				If ItemName = "none" Then
+					ValidType = True
+				Else
+					If (World.GetVariable("EQ_bweap") <> "none") OR _
+						(World.GetVariable("EQ_rweap") <> "none") Then
+						World.Note "You must set bweap and rweap to 'none' before you can set this item."
+						ValidType = False
+					Else
+						ValidType = True
+					End If
+				End If
+			Case "shield"
+				If ItemName = "none" Then
+					ValidType = True
+				Else
+					If (World.GetVariable("EQ_bweap") <> "none") OR _
+						(World.GetVariable("EQ_lweap") <> "none") OR _
+						(World.GetVariable("EQ_lhold") <> "none") Then
+						World.Note "You must set bweap, lweap and lhold to 'none' before you can set this item."
+						ValidType = False
+					Else
+						ValidType = True
+					End If
+				End If
+			Case Else
+				ValidType = True
+		End Select
+	Else
+		World.Note "ItemType not recognized. Syntax:  eqset ItemType -ChestName ItemName"
+		World.Note "For a list of valid types, use the 'eqlist' command."
+		World.Note "Use 'eqset ItemType' by itself to set both chest and item to 'none'."
+	End If
+	If ValidType Then
+		If ValidStore Then
+			World.SetVariable("EQ_" & ItemType), ItemName
+			World.SetVariable("EQstr_" & ItemType), ItemStore
+			EQ_Save_File "EQ_Set_Item", theoutput, arrWildcards
+			World.Note ItemType & ": [" & ItemStore & "] " & ItemName
+		Else
+			World.Note "ChestName not recognized. Syntax:  eqset ItemType -ChestName ItemName"
+			World.Note " "
+			World.Note "The ChestName must be the second argument, and must start with a '-'."
+			World.Note "The '-' is to ensure you know the syntax, it will be removed from name."
+			World.Note "Use '-none' for unstorable items, '-locker' for items to be dropped."
+			World.Note "Use 'eqset ItemType' by itself to set both chest and item to 'none'."
+		End If
+	End If
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Add Extra Item ========================================== -->
+
+<aliases>
+  <alias
+   name="EQ_Extra_Add"
+   script="EQ_Extra_Item_Add"
+   match="eqxa *"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+
+Sub EQ_Extra_Item_Add (thename, theoutput, arrWildcards)
+	Dim arrArguments
+	Dim ItemStore
+	Dim ItemName
+	Dim x
+	Dim ValidStore
+	ItemName = Empty
+	arrArguments = Split(arrWildcards(1), " ")
+	ItemStore = Trim(Lcase(arrArguments(0)))
+	For x = (LBound(arrArguments) + 1) to UBound(arrArguments)
+		ItemName = ItemName & " " & CStr(arrArguments(x))
+	Next
+	ItemName = Trim(Lcase(ItemName))
+	ValidStore = True
+	If Left(Itemstore, 1) <> "-" Then
+		ValidStore = False
+	Else
+		ItemStore = Right(ItemStore, (Len(ItemStore)-1))
+	End If
+	If ItemStore = "none" Then ValidStore = False
+	If (ItemName <> Empty) AND (ValidStore) Then
+		World.SetVariable "EQTotalExtras", CInt(World.GetVariable("EQTotalExtras")) + 1
+		World.SetVariable "EQ_x_" & CStr(World.Getvariable("EQTotalExtras")), ItemName
+		World.SetVariable "EQStr_x_" & CStr(World.Getvariable("EQTotalExtras")), ItemStore
+		EQ_Save_File "EQ_Extra_Item_Add", theoutput, arrWildcards
+		World.Note "Extra: [" & ItemStore & "] " & ItemName
+	ElseIf (ValidStore) AND (ItemName = Empty) Then
+		World.Note "You didn't specify an item!"
+		World.Note " "
+		World.Note "Syntax: eqxa -ChestName ItemName"
+	Else
+		World.Note "ChestName not recognized. Syntax:  eqxa -ChestName ItemName"
+		World.Note " "
+		World.Note "The ChestName must be the first argument, and must start with a '-'."
+		World.Note "The '-' is to ensure you know the syntax, it will be removed from name."
+		World.Note "Use '-locker' for items to be dropped."
+		World.Note "Do NOT use '-none' for Extra items, there is no point, it's a waste."
+	End If
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Remove Extra Item ======================================= -->
+
+<aliases>
+  <alias
+   name="EQ_Extra_Remove"
+   script="EQ_Extra_Item_Remove"
+   match="eqxr *"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+
+Sub EQ_Extra_Item_Remove (thename, theoutput, arrWildcards)
+	Dim arrArguments
+	Dim ItemName
+	Dim ChestName
+	Dim x
+	Dim Tx
+	Dim MatchedNum
+	ItemName = Empty
+	Tx = CInt(World.GetVariable("EQTotalExtras"))
+	arrArguments = Split(arrWildcards(1), " ")
+	If Left(arrArguments(0), 1) <> "-" Then
+		ItemName = Trim(Lcase(arrWildcards(1)))
+		ChestName = Empty
+	Else
+		For x = (LBound(arrArguments) + 1) to UBound(arrArguments)
+			ItemName = ItemName & " " & Lcase(arrArguments(x))
+		Next
+		ItemName = Trim(ItemName)
+		ChestName = Right(arrArguments(0), (Len(arrArguments(0))-1))
+		ChestName = Trim(Lcase(ChestName))
+	End If
+	If Tx < 1 Then
+		World.SetVariable "EQTotalExtras", 0
+		EQ_Save_File "EQ_Extra_Item_Remove", theoutput, arrWildcards
+		World.Note "You have no extra items configured."
+	Else
+		MatchedNum = 0
+		For x = 1 to Tx
+			If World.GetVariable("EQ_x_" & CStr(x)) = ItemName Then
+				If ChestName <> Empty Then
+					If World.GetVariable("EQstr_x_" & CStr(x)) = ChestName Then
+						MatchedNum = x
+					End If
+				Else
+					MatchedNum = x
+				End If
+			End If
+		Next
+	End If
+	If MatchedNum > 0 Then
+		World.SetVariable "EQ_x_" & CStr(MatchedNum), World.GetVariable("EQ_x_" & Tx)
+		World.SetVariable "EQstr_x_" & CStr(MatchedNum), World.GetVariable("EQstr_x_" & Tx)
+		World.DeleteVariable "EQ_x_" & Tx
+		World.DeleteVariable "EQstr_x_" & Tx
+		World.SetVariable "EQTotalExtras", Tx - 1
+		EQ_Save_File "EQ_Extra_Item_Remove", theoutput, arrWildcards
+		World.Note "Removed Extra: " & ItemName
+	ElseIf Tx > 0 Then
+		If ChestName <> Empty Then ChestName = " [" & ChestName & "]"
+		World.Note "You do not have any extra items named: " & ItemName & ChestName
+		World.Note " "
+		World.Note "Syntax: eqxr -ChestName ItemName"
+	End If
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Get Equipment =========================================== -->
+
+<aliases>
+  <alias
+   name="EQ_Get_Items"
+   script="EQ_Get"
+   match="eqg"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+
+Sub EQ_Get (thename, theoutput, arrWildcards)
+	Dim arrItems
+	Dim EqItem, EqStore
+	Dim NextStore, LastStore
+	Dim x
+	arrItems = Split(EQItemList, ", ")
+	For x = LBound(arrItems) to UBound(arrItems)
+		EqItem = World.GetVariable("EQ_" & arrItems(x))
+		EqStore = World.GetVariable("EQstr_" & arrItems(x))
+		If x > LBound(arrItems) Then
+			LastStore = World.GetVariable("EQStr_" & arrItems(x-1))
+		Else
+			LastStore = "none"
+		End if
+		If x < UBound(arrItems) Then
+			NextStore = World.GetVariable("EQStr_" & arrItems(x+1))
+		Else
+			NextStore = "none"
+		End If
+		If EqStore <> "none" Then
+			If (EqStore <> LastStore) AND (EqStore <> "locker") Then LogSend "open " & EqStore
+			If EqStore <> "locker" Then
+				LogSend "do get " & EqItem & " from " & EqStore & ",keep " & EqItem
+			Else
+				LogSend "get " & EqItem
+				LogSend "keep " & EqItem
+			End If
+			If (EqStore <> NextStore) AND (EqStore <> "locker") Then LogSend "close " & EqStore
+		End If
+	Next
+	If CInt(World.GetVariable("EQTotalExtras")) > 0 Then
+		For x = 1 to CInt(World.GetVariable("EQTotalExtras"))
+			EqItem = World.GetVariable("EQ_x_" & CStr(x))
+			EqStore = World.GetVariable("EQstr_x_" & CStr(x))
+			If x > 1 Then
+				LastStore = World.GetVariable("EQStr_x_" & CStr(x-1))
+			Else
+				LastStore = "none"
+			End if
+			If x < World.GetVariable("EQTotalExtras") Then
+				NextStore = World.GetVariable("EQStr_x_" & CStr(x+1))
+			Else
+				NextStore = "none"
+			End If
+			If EqStore <> "none" Then
+				If (EqStore <> LastStore) AND (EqStore <> "locker") Then LogSend "open " & EqStore
+				If EqStore <> "locker" Then
+					LogSend "do get " & EqItem & " from " & EqStore & ",keep " & EqItem
+				Else
+					LogSend "get " & EqItem
+					LogSend "keep " & EqItem
+				End If
+				If (EqStore <> NextStore) AND (EqStore <> "locker") Then LogSend "close " & EqStore
+			End If
+		Next
+	End If
+	LogSend "i"
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Store Equipment ========================================= -->
+
+<aliases>
+  <alias
+   name="EQ_Drop_Items"
+   script="EQ_Drop"
+   match="eqd"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+
+Sub EQ_Drop (thename, theoutput, arrWildcards)
+	Dim arrItems
+	Dim EqItem, EqStore
+	Dim NextStore, LastStore
+	Dim x
+	arrItems = Split(EQItemList, ", ")
+	For x = LBound(arrItems) to UBound(arrItems)
+		EqItem = World.GetVariable("EQ_" & arrItems(x))
+		EqStore = World.GetVariable("EQstr_" & arrItems(x))
+		If x > LBound(arrItems) Then
+			LastStore = World.GetVariable("EQStr_" & arrItems(x-1))
+		Else
+			LastStore = "none"
+		End if
+		If x < UBound(arrItems) Then
+			NextStore = World.GetVariable("EQStr_" & arrItems(x+1))
+		Else
+			NextStore = "none"
+		End If
+		If EqStore <> "none" Then
+			If (EqStore <> LastStore) AND (EqStore <> "locker") Then LogSend "open " & EqStore
+			If EqStore <> "locker" Then
+				LogSend "do unkeep " & EqItem & ",put " & EqItem & " in " & EqStore
+			Else
+				LogSend "unkeep " & EqItem
+				LogSend "drop " & EqItem
+			End If
+			If (EqStore <> NextStore) AND (EqStore <> "locker") Then LogSend "close " & EqStore
+		End If
+	Next
+	If CInt(World.GetVariable("EQTotalExtras")) > 0 Then
+		For x = 1 to CInt(World.GetVariable("EQTotalExtras"))
+			EqItem = World.GetVariable("EQ_x_" & CStr(x))
+			EqStore = World.GetVariable("EQstr_x_" & CStr(x))
+			If x > 1 Then
+				LastStore = World.GetVariable("EQStr_x_" & CStr(x-1))
+			Else
+				LastStore = "none"
+			End if
+			If x < CInt(World.GetVariable("EQTotalExtras")) Then
+				NextStore = World.GetVariable("EQStr_x_" & CStr(x+1))
+			Else
+				NextStore = "none"
+			End If
+			If EqStore <> "none" Then
+				If (EqStore <> LastStore) AND (EqStore <> "locker") Then LogSend "open " & EqStore
+				If EqStore <> "locker" Then
+					LogSend "do unkeep " & EqItem & ",put " & EqItem & " in " & EqStore
+				Else
+					LogSend "unkeep " & EqItem
+					LogSend "drop " & EqItem
+				End If
+				If (EqStore <> NextStore) AND (EqStore <> "locker") Then LogSend "close " & EqStore
+			End If
+		Next
+	End If
+	LogSend "i"
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Wear Equipment ========================================== -->
+
+<aliases>
+  <alias
+   name="EQ_Wear_Items"
+   script="EQ_Wear"
+   match="eqon"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+
+Sub EQ_Wear (thename, theoutput, arrWildcards)
+	Dim arrItems
+	Dim ItemType
+	Dim EqItem
+	Dim x
+	arrItems = Split(EQItemList, ", ")
+	For x = UBound(arrItems) to LBound(arrItems) Step -1
+		ItemType = arrItems(x)
+		EqItem = World.GetVariable("EQ_" & ItemType)
+		If EqItem <> "none" Then
+			Select Case ItemType
+				Case "bweap"
+					LogSend "wield " & EqItem & " in both hands"
+				Case "rweap"
+					LogSend "wield " & EqItem & " in right hand"
+				Case "lweap"
+					If EqItem = World.GetVariable("EQ_rweap") Then
+						LogSend "wield " & EqItem & " 2 in left hand"
+					Else
+						LogSend "wield " & EqItem & " in left hand"
+					End If
+				Case "rhold"
+					LogSend "hold " & EqItem & " in right hand"
+				Case "lhold"
+					If EqItem = World.GetVariable("EQ_rhold") Then
+						LogSend "hold " & EqItem & " 2 in left hand"
+					Else
+						LogSend "hold " & EqItem & " in left hand"
+					End If
+				Case "lring"
+					If EqItem = World.GetVariable("EQ_rring") Then
+						LogSend "wear " & EqItem & " 2"
+					Else
+						LogSend "wear " & EqItem
+					End If
+				Case Else
+					LogSend "wear " & EqItem
+			End Select
+		End if
+	Next
+	LogSend "eq"
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Unwear Equipment ======================================== -->
+
+<aliases>
+  <alias
+   name="EQ_Remove_Items"
+   script="EQ_Remove"
+   match="eqoff"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+
+Sub EQ_Remove (thename, theoutput, arrWildcards)
+	Dim arrItems
+	Dim ItemType
+	Dim EqItem
+	Dim x
+	arrItems = Split(EQItemList, ", ")
+	For x = LBound(arrItems) to UBound(arrItems)
+		ItemType = arrItems(x)
+		EqItem = World.GetVariable("EQ_" & ItemType)
+		If EqItem <> "none" Then
+			Select Case ItemType
+				Case "bweap"
+					LogSend "unwield " & EqItem
+				Case "rweap"
+					If EqItem = World.GetVariable("EQ_lweap") Then
+						LogSend "unwield " & EqItem & " 2"
+					Else
+						LogSend "unwield " & EqItem
+					End If
+				Case "lweap"
+					LogSend "unwield " & EqItem
+				Case "rhold"
+					If EqItem = World.GetVariable("EQ_lhold") Then
+						LogSend "unhold " & EqItem & " 2"
+					Else
+						LogSend "unhold " & EqItem
+					End If
+				Case "lhold"
+					LogSend "unhold " & EqItem
+				Case "rring"
+					If EqItem = World.GetVariable("EQ_lring") Then
+						LogSend "remove " & EqItem & " 2"
+					Else
+						LogSend "remove " & EqItem
+					End If
+				Case Else
+					LogSend "remove " & EqItem
+			End Select
+		End if
+	Next
+	LogSend "eq"
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Fix Equipment =========================================== -->
+
+<aliases>
+  <alias
+   name="EQ_Fix"
+   script="EQ_Fix_Items"
+   match="eqfix"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+  <alias
+   name="EQ_Set_Damage_Level"
+   script="EQ_Set_Damage_Level"
+   match="eqlvl *"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+<triggers>
+  <trigger
+   match="^\[(HEAD|NECK|ARMS|HANDS|LRING|RRING|LBODY|TORSO|BELT|LEGS|FEET|WPN-L|WPN-R)( )*\](.*?)\[(.*?)\]$"
+   name="EQ_Grab_Damage_List"
+   regexp="y"
+   script="EQ_Grab_Damaged_Items"
+   sequence="100"
+  >
+  </trigger>
+</triggers>
+
+<script>
+<![CDATA[
+
+Function EQ_MapDamageLevel(DamageValue)
+	Dim arrDamageLevels
+	Dim x
+	DamageValue = CInt(DamageValue)
+	arrDamageLevels = Split(EqDamageLevels, ",")
+	If (DamageValue < LBound(arrDamageLevels) + 1) OR (DamageValue > UBound(arrDamageLevels) + 1) Then
+		World.Note "Script Error. Improper value passed to Function: EQ_MapDamageLevel"
+	Else
+		Eq_MapDamageLevel = arrDamageLevels(DamageValue - 1)
+	End If
+End Function
+
+Sub EQ_Set_Damage_Level (thename, theoutput, arrWildcards)
+	Dim arrDamageLevels
+	Dim CurrentLevel
+	Dim x
+	arrDamageLevels = Split(EqDamageLevels, ",")
+	If IsNumeric(Trim(arrWildcards(1))) Then
+		CurrentLevel = CInt(Trim(arrWildcards(1)))
+	Else
+		For x = LBound(arrDamageLevels) to UBound(arrDamageLevels)
+			If Trim(LCase(arrWildcards(1))) = arrDamageLevels(x) Then CurrentLevel = x + 1
+		Next
+	End If
+	If (CurrentLevel < 1) or (CurrentLevel > UBound(arrDamageLevels) + 1) Then
+		World.Note "Invalid argument: " & arrWildcards(1)
+		World.Note " "
+		EQ_Help_eqlvl "EQ_Set_Damage_Level", theoutput, arrWildcards
+	Else
+		World.SetVariable "EqFixLevel", CurrentLevel
+		World.SetVariable "EqFixLevelStatus", "[" & CStr(CurrentLevel) & "] " & EQ_MapDamageLevel(CurrentLevel)
+		World.Note "Items will be repaired if they are in worse condition than:"
+		World.Note World.GetVariable("EqFixLevelStatus")
+		EQ_Save_File "EQ_Set_Damage_Level", theoutput, arrWildcards
+	End If
+End Sub
+
+Sub EQ_Fix_Items (thename, theoutput, arrWildcards)
+	EqDamagedItems = Empty
+	World.EnableTrigger "EQ_Grab_Damage_List", vbTrue
+	LogSend "eqcond"
+End Sub
+
+Sub EQ_Grab_Damaged_Items (thename, theoutput, arrWildcards)
+	Dim arrDamageLevels
+	Dim ItemType
+	Dim ItemDamageString, ItemDamage
+	Dim x
+	arrDamageLevels = Split(EqDamageLevels, ",")
+	ItemType = Trim(LCase(ArrWildcards(1)))
+	ItemDamageString = Trim(LCase(ArrWildcards(4)))
+	Select Case ItemType
+		Case "lbody"
+			ItemType = "cloak"
+		Case "wpn-r"
+			ItemType = "rweap"
+		Case "wpn-l"
+			ItemType = "lweap"
+		Case "rheld"
+			ItemType = "rhold"
+		Case "lheld" 
+			ItemType = "lhold"
+	End Select
+	For x = LBound(arrDamageLevels) to UBound(arrDamageLevels)
+		If ItemDamageString = arrDamageLevels(x) Then ItemDamage = x + 1
+	Next
+	If ItemDamage > CInt(World.GetVariable("EqFixLevel")) Then
+		If EqDamagedItems <> Empty Then EqDamagedItems = EqDamagedItems & ","
+		EqDamagedItems = EqDamagedItems & ItemType
+	End If
+	World.AddTimer "EQ_Repair_Timer", 0, 0, 3, "", 5, "EQ_Repair_ByTimer"
+End Sub
+
+Sub EQ_Repair_ByTimer (TimerName)
+	Dim arrDamagedItems
+	Dim EqItem
+	Dim x
+	World.Note "Fixing items below: " & World.GetVariable("EqFixLevelStatus")
+	World.Note "Items to repair: " & EqDamagedItems
+	arrDamagedItems = Split(EqDamagedItems, ",")
+	For x = LBound(arrDamagedItems) to UBound(arrDamagedItems)
+		EqItem = World.GetVariable("EQ_" & arrDamagedItems(x))
+		Select Case arrDamagedItems(x)
+			Case "bweap"
+				LogSend "do unwield " & EqItem & ",buy 2 " & EqItem & ",wield " & EqItem & " in both hands"
+			Case "rweap"
+				If EqItem = World.GetVariable("EQ_lweap") Then
+					LogSend "do unwield " & EqItem & " 2,buy 2 " & EqItem & " 2,wield " & EqItem & " 2 in right hand"
+				Else
+					LogSend "do unwield " & EqItem & ",buy 2 " & EqItem & ",wield " & EqItem & " in right hand"
+				End If
+			Case "lweap"
+				LogSend "do unwield " & EqItem & ",buy 2 " & EqItem & ",wield " & EqItem & " in left hand"
+			Case "rhold"
+				If EqItem = World.GetVariable("EQ_lhold") Then
+					LogSend "do unhold " & EqItem & " 2,buy 1 " & EqItem & " 2,hold " & EqItem & " 2 in right hand"
+				Else
+					LogSend "do unhold " & EqItem & ",buy 1 " & EqItem & ",hold " & EqItem & " in right hand"
+				End If
+			Case "lhold"
+				LogSend "do unhold " & EqItem & ",buy 1 " & EqItem & ",hold " & EqItem & " in left hand"
+			Case "rring"
+				If EqItem = World.GetVariable("EQ_lring") Then
+					LogSend "do remove " & EqItem & " 2,buy 1 " & EqItem & " 2,wear " & EqItem & " 2"
+				Else
+					LogSend "do remove " & EqItem & ",buy 1 " & EqItem & ",wear " & EqItem
+				End If
+			Case Else
+				LogSend "do remove " & EqItem & ",buy 1 " & EqItem & ",wear " & EqItem
+		End Select
+	Next	
+	EqDamagedItems = Empty
+	World.EnableTrigger "EQ_Grab_Damage_List", vbFalse
+	World.Note "Done."
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Switch Weapons ========================================== -->
+
+<aliases>
+  <alias
+   name="EQ_Switch_Weapons"
+   script="EQ_Switch_Weapons"
+   match="eqsw"
+   enabled="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+
+Sub EQ_Switch_Weapons (thename, theoutput, arrWildcards)
+	Dim WeaponL,WeaponR
+	WeaponL = World.GetVariable("EQ_lweap")
+	WeaponR = World.GetVariable("EQ_rweap")
+	If WeaponL = WeaponR Then
+		World.Send "do unwield " & WeaponL & "," & "unwield " & WeaponR & " 2"
+	Else
+		World.Send "do unwield " & WeaponL & "," & "unwield " & WeaponR
+	End If
+	World.SetVariable "EQ_lweap", WeaponR
+	World.SetVariable "EQ_rweap", WeaponL
+	If WeaponL = WeaponR Then
+		World.Send "do wield " & WeaponL & " in right hand," & "wield " & WeaponR & " 2 in left hand"
+	Else
+		World.Send "do wield " & WeaponL & " in right hand," & "wield " & WeaponR & " in left hand"
+	End If
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Equipment Plugin Help =================================== -->
+
+<aliases>
+  <alias
+   name="EQ_Display_Help"
+   script="EQ_Help"
+   match="^eqhelp(.*)$"
+   enabled="y"
+   regexp="y"
+   ignore_case="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+
+Sub EQ_Help_eqt (thename, theoutput, arrWildcards)
+	World.Note "eqt <Name of EQ Set>"
+	World.Note " "
+	World.Note "Examples: 'eqt SoloEQ' or 'eqt PartyEQ' or 'eqt DexStuff'"
+	World.Note " "
+	World.Note "Use to declare the set of equipment that you would like to"
+	World.Note "make the current set. The script creates a mushclient variable"
+	World.Note "called 'EQType' which stores the name of the equipment set."
+	World.Note " "
+	World.Note "Once you have used this alias to name your set of EQ, you can"
+	World.Note "declare individual items using the 'eqset' alias."
+	World.Note " "
+	World.Note "You can build triggers to set the EQType automatically. To do"
+	World.Note "so, have the trigger call this routine: 'Set_EQType_By_Trigger'."
+	World.Note "Set the label of the trigger to the EQType you would like to use."
+	World.Note "(Useful for setting the 'EQType' automatically when you enter a room)."
+End Sub
+
+Sub EQ_Help_eqset (thename, theoutput, arrWildcards)
+	World.Note "eqset <ItemType> -<ChestName> <ItemName>"
+	World.Note " "
+	World.Note "Example: 'eqset head -bluechest steel crown'"
+	World.Note "Example: 'eqset rweap -none deathblade'"
+	World.Note "Example: 'eqset rweap -locker rune sword'"
+	World.Note "Example: 'eqset legs'"
+	World.Note " "
+	World.Note "Use to declare an item in your current EQ Type."
+	World.Note " "
+	World.Note "To get a list of valid 'ItemType' arguments, use the 'eqlist' alias."
+	World.Note "The ChestName must be preceded with a '-' sign, to ensure you are"
+	World.Note "passing the arguments in the correct order. The ChestName can not"
+	World.Note "have a space in the name. The ItemName CAN have spaces in the name."
+	World.Note " "
+	World.Note "Use '-none' as the ChestName, if the object should not be handled"
+	World.Note "during 'get' and 'drop' operations."
+	World.Note " "
+	World.Note "Use '-locker' if the item should be dropped [to the ground] and"
+	World.Note "picked up [from the ground] during 'get' and 'drop' operations."
+	World.Note " "
+	World.Note "If you only provide the 'ItemType' as an argument, then the script"
+	World.Note "will assume you want to clear that item, and will set the ChestName"
+	World.Note "to '-none' and the ItemName to 'none' for that ItemType."
+	World.Note " "
+	World.Note "The script may not allow you to set some items, if your hands do not"
+	World.Note "appear to be free. (Can't set lweap if you have something in lhand)."
+	World.Note " "
+	World.Note "Don't try and use ItemNames like 'ring 2'. The script should handle"
+	World.Note "that itself. If not, consider it a bug to be fixed."
+	World.Note " "
+	World.Note "Every time this alias is used, the entire EQ set is saved to a file."
+	World.Note "Currently, there is no way to delete a file via alias. Sorry."
+	World.Note " "
+	World.Note "Each item and it's chest are stored in MUSHclient variables. You can"
+	World.Note "create your own specialized aliases to handle an item. Use the client"
+	World.Note "interface to view the variable names."
+End Sub
+
+Sub EQ_Help_eqxa (thename, theoutput, arrWildcards)
+	World.Note "eqxa -<ChestName> <ItemName>"
+	World.Note " "
+	World.Note "Example: 'eqxa -stuff poison'"
+	World.Note "Example: 'eqxa -locker torch'"
+	World.Note "Example: 'eqxa -redchest gems'"
+	World.Note " "
+	World.Note "Extra items are those that you carry around with you, but don't"
+	World.Note "hold/wield/wear."
+	World.Note " "
+	World.Note "This alias is used to add an 'extra' item in your current EQ Type."
+	World.Note " "
+	World.Note "The ChestName must be preceded with a '-' sign, to ensure you are"
+	World.Note "passing the arguments in the correct order. The ChestName can not"
+	World.Note "have a space in the name. The ItemName CAN have spaces in the name."
+	World.Note " "
+	World.Note "Do not use '-none' as a ChestName, there is no point. Without a"
+	World.Note "valid storage location, there is nothing for the script to do with"
+	World.Note "an extra item."
+	World.Note " "
+	World.Note "Use '-locker' if the item should be dropped [to the ground] and"
+	World.Note "picked up [from the ground] during 'get' and 'drop' operations."
+	World.Note " "
+	World.Note "Don't try and use ItemNames like 'ring 2'. It shouldn't be required"
+	World.Note "for 'extra' items."
+	World.Note " "
+	World.Note "Every time this alias is used, the entire EQ set is saved to a file."
+	World.Note "Currently, there is no way to delete a file via alias. Sorry."
+End Sub
+
+Sub EQ_Help_eqxr (thename, theoutput, arrWildcards)
+	World.Note "eqxr -{ChestName} <ItemName>"
+	World.Note " "
+	World.Note "Example: 'eqxr -stuff poison'"
+	World.Note "Example: 'eqxr -locker torch'"
+	World.Note "Example: 'eqxr gems'"
+	World.Note " "
+	World.Note "Extra items are those that you carry around with you, but don't"
+	World.Note "hold/wield/wear."
+	World.Note " "
+	World.Note "This alias is used to remove an 'extra' item from your current EQ Type."
+	World.Note " "
+	World.Note "The last matching item, of all your extra's, will be removed from your"
+	World.Note "'eqlist'. You must use the identical name you provided when you added"
+	World.Note "the item using 'eqxa'."
+	World.Note " "
+	World.Note "The ChestName is optional, you are not required to provide it. If you"
+	World.Note "use the same extra item in multiple chests, it is HIGHLY advised you"
+	World.Note "provide the ChestName so the script does not pick the wrong one."
+	World.Note " "
+	World.Note "Don't try and use ItemNames like 'ring 2'. It shouldn't be required"
+	World.Note "for 'extra' items."
+	World.Note " "
+	World.Note "Every time this alias is used, the entire EQ set is saved to a file."
+	World.Note "Currently, there is no way to delete a file via alias. Sorry."
+End Sub
+
+Sub EQ_Help_eqlist (thename, theoutput, arrWildcards)
+	World.Note "eqlist"
+	World.Note " "
+	World.Note "Use to list the items in your current EQType (your current set)."
+End Sub
+
+Sub EQ_Help_eqg (thename, theoutput, arrWildcards)
+	World.Note "eqg"
+	World.Note " "
+	World.Note "Use to get all items from their configured locations."
+	World.Note " "
+	World.Note "The script will attempt to 'get <ItemName> from <ChestName>'"
+	World.Note "according to the configuration of your various items. If the"
+	World.Note "<ChestName> for a particular item is '-locker', then the"
+	World.Note "script will simply attempt 'get <ItemName>'. Items which"
+	World.Note "have '-none' set as the <ChestName> will be ignored."
+	World.Note " "
+	World.Note "The script assumes you are in the correct MUD Room!"
+	World.Note "The script does NOT equip the items, use 'eqon' seperately."
+	World.Note " "
+	World.Note "The script will 'keep' each item after picking it up."
+End Sub
+
+Sub EQ_Help_eqd (thename, theoutput, arrWildcards)
+	World.Note "eqd"
+	World.Note " "
+	World.Note "Use to store/drop all items in their configured locations."
+	World.Note " "
+	World.Note "The script will attempt to 'put <ItemName> in <ChestName>'"
+	World.Note "according to the configuration of your various items. If the"
+	World.Note "<ChestName> for a particular item is '-locker', then the"
+	World.Note "script will simply attempt 'drop <ItemName>'. Items which"
+	World.Note "have '-none' set as the <ChestName> will be ignored."
+	World.Note " "
+	World.Note "The script assumes you are in the correct MUD Room!"
+	World.Note "The script does NOT unequip the items, use 'eqoff' seperately."
+	World.Note " "
+	World.Note "The script will 'unkeep' each item before storing it."
+End Sub
+
+Sub EQ_Help_eqon (thename, theoutput, arrWildcards)
+	World.Note "eqon"
+	World.Note " "
+	World.Note "Use to hold/wear/wield all your configured items."
+End Sub
+
+Sub EQ_Help_eqoff (thename, theoutput, arrWildcards)
+	World.Note "eqoff"
+	World.Note " "
+	World.Note "Use to remove/unhold/unwield all your configured items."
+End Sub
+
+Sub EQ_Help_eqfix (thename, theoutput, arrWildcards)
+	World.Note "eqfix"
+	World.Note " "
+	World.Note "Use to repair all equipped items that are damaged beyond the point"
+	World.Note "indicated with the 'eqlvl' command."
+	World.Note " "
+	World.Note "You must be at the repair shop to use this command successfully."
+	World.Note " "
+	World.Note "There is a 3 second delay after this command is initiated, to allow"
+	World.Note "for the full list of equipped items to be displayed by the mud."
+End Sub
+
+Sub EQ_Help_eqlvl (thename, theoutput, arrWildcards)
+	Dim x
+	Dim arrDamageLevels
+	arrDamageLevels = Split(EqDamageLevels, ",")
+	World.Note "eqlvl <DamageLevel>"
+	World.Note " "
+	World.Note "Example: 'eqlvl 5'"
+	World.Note "Example: 'eqlvl mediocre'"
+	World.Note " "
+	World.Note "Use to indicate the mimimum acceptable damage condition for"
+	World.Note "equipped items."
+	World.Note " "
+	World.Note "Items will be repaired if they are below, but not at, the"
+	World.Note "condition indicated. Use 'eqfix' to perform repairs while"
+	World.Note "you are at a repair shop."
+	World.Note " "
+	World.Note "The repair level is linked to the EqType you currently have"
+	World.Note "selected. (The value is saved with the other info). You can"
+	World.Note "set a different value for each set of EQ!"
+	World.Note " "
+	World.Note "The argument must be a number or string from the following"
+	World.Note "chart:"
+	World.Note " "
+	World.Note "Damage condition levels:"
+	World.Note "~~~~~~~~~~~~~~~~~~~~~~~~"
+	For x = LBound(arrDamageLevels) to UBound(arrDamageLevels)
+		World.Note PadLeft(CStr(x + 1) & ": ", 6) & arrDamageLevels(x)
+	Next
+End Sub
+
+Sub EQ_Help_eqsw (thename, theoutput, arrWildcards)
+	World.Note "eqsw"
+	World.Note " "
+	World.Note "Use to switch your weapons. You will unwield both, then re-wield"
+	World.Note "them in opposite hands."
+End Sub
+
+Sub EQ_Help_General (thename, theoutput, arrWildcards)
+	Display_PluginInfo
+	World.Note "The following aliases are available for manipulating your EQ:"
+	World.Note " "
+	World.Note "eqt:    Declare the name of the equipment set you would like to use."
+	World.Note "eqset:  Declare an individual item & chest in the current equipment set."
+	World.Note "eqxa:   Add an extra! item & chest in the current equipment set."
+	World.Note "eqxr:   Remove an extra! item & chest from the current equipment set."
+	World.Note "eqlist: List all items in the current set of equipment."
+	World.Note "eqg:    Get all items from their configured locations."
+	World.Note "eqd:    Drop/Put all items in their configured locations."
+	World.Note "eqon:   Hold/Wear/Wield all items in your current equipment set."
+	World.Note "eqoff:  Remove/Unhold/Unwield all items in your current equipment set."
+	World.Note "eqfix:  Fix all items that are damaged beyond the point indicated in 'eqlvl'."
+	World.Note "eqlvl:  Set the minimum acceptable damage condition for equipment."
+	World.Note "eqsw:   Switch your weapons to opposite hands."
+	World.Note " "
+	World.Note "Use 'eqhelp <Alias>' for detailed help for an alias."
+	World.Note " "
+	World.Note "! Extra items are those that are not held/wielded/worn."
+	World.Note " "
+	World.Note "You must be at the repair shop for 'eqfix' to work properly."
+	World.Note " "
+	World.Note "Each set of EQ is stored in a text file, in the Plugin State directory."
+	World.Note "The only way to delete a set of EQ is to delete the file manually. Sorry."
+	World.Note " "
+	World.Note "If this is your first time using the script, you will want to name your"
+	World.Note "first set of EQ, using the 'eqt' alias, before doing anything else."
+End Sub
+
+Sub EQ_Help (thename, theoutput, arrWildcards)
+	Dim HelpArgument
+	HelpArgument = Trim(LCase(ArrWildcards(1)))
+	Select Case HelpArgument
+		Case "eqt"
+			EQ_Help_eqt "EQ_Help", theoutput, arrWildcards
+		Case "eqset"
+			EQ_Help_eqset "EQ_Help", theoutput, arrWildcards
+		Case "eqxa"
+			EQ_Help_eqxa "EQ_Help", theoutput, arrWildcards
+		Case "eqxr"
+			EQ_Help_eqxr "EQ_Help", theoutput, arrWildcards
+		Case "eqlist"
+			EQ_Help_eqlist "EQ_Help", theoutput, arrWildcards
+		Case "eqg"
+			EQ_Help_eqg "EQ_Help", theoutput, arrWildcards
+		Case "eqd"
+			EQ_Help_eqd "EQ_Help", theoutput, arrWildcards
+		Case "eqon"
+			EQ_Help_eqon "EQ_Help", theoutput, arrWildcards
+		Case "eqoff"
+			EQ_Help_eqoff "EQ_Help", theoutput, arrWildcards
+		Case "eqfix"
+			EQ_Help_eqfix "EQ_Help", theoutput, arrWildcards
+		Case "eqlvl"
+			EQ_Help_eqlvl "EQ_Help", theoutput, arrWildcards
+		Case "eqsw"
+			EQ_Help_eqsw "EQ_Help", theoutput, arrWildcards
+		Case Else
+			EQ_Help_General "EQ_Help", theoutput, arrWildcards
+	End Select
+End Sub
+
+]]>
+</script>
+
+<!--	=============================================================== -->
+
+<!--	===== Magnum's Aliases and Triggers =========================== 
+
+			All of these aliases and triggers below are commented, so that
+			they are NOT actually installed as part of the plugin.  They
+			serve as examples of what can be done with the information kept
+			with this plugin. I can also use them myself by editing the
+			XML comment markers. :)													-->
+
+<!--	===== Magnum's Triggers ======= Set EQType by Trigger ========= 
+
+			These are triggers that I use to automatically establish which
+			set of equipment I want to make the currently active Type. The
+			name (label) of the trigger is the actual name of the EQ set,
+			or "EQType", as it is referred to in this code.					
+
+<triggers>
+  <trigger
+   enabled="y"
+   match="^Party Equipment$"
+   name="Party"
+   regexp="y"
+   script="Set_EQType_By_Trigger"
+   sequence="100"
+  >
+  </trigger>
+  <trigger
+   enabled="y"
+   match="^Garden of Poison$"
+   name="Poison"
+   regexp="y"
+   script="Set_EQType_By_Trigger"
+   sequence="100"
+  >
+  </trigger>
+  <trigger
+   enabled="y"
+   match="^Solo Equipment$"
+   name="Solo"
+   regexp="y"
+   script="Set_EQType_By_Trigger"
+   sequence="100"
+  >
+  </trigger>
+</triggers>
+
+		=============================================================== -->
+<!--	===== Magnum's Triggers ===== Other Miscelaneous Triggers ===== 
+
+<triggers>
+  <trigger
+   enabled="y"
+   expand_variables="y"
+   match="House of Baneful Bite"
+   name="LOCATION_Baneful_Bite"
+   sequence="100"
+  >
+  <send>insert @EQ_lweap into snake
+insert @EQ_rweap into snake</send>
+  </trigger>
+</triggers>
+
+		=============================================================== -->
+<!--	===== Magnum's Aliases and Extra Script ======================= 
+
+			These are extra bits of aliases and script that I elected not
+			to include as a functional part of this plugin because they
+			do not serve every type of character.  They are less formal
+			than the rest of the plugin, in that they do not adhere as
+			tightly to alias naming conventions, etc...						-->
+
+<!--	===== Fix Items Manually ====================================== 
+
+    	===== fixl and fixr are not foolproof! They don't check to ====
+    	===== see if you are using 2 copies of the same kind of    ====
+    	===== weapon. (If so, it may mishandle the second).        ====
+    	===== 'reveal item' is a thief related skill.              ==== 
+
+<aliases>
+  <alias
+   name="EQ_Fix_Armour_Manually"
+   match="fixa *"
+   enabled="y"
+   ignore_case="y"
+  >
+  <send>do buy 1 %1,reveal item %1,wear %1</send>
+  </alias>
+  <alias
+   name="EQ_Fix_BWeapon_Manually"
+   match="fixb"
+   enabled="y"
+   expand_variables="y"
+   ignore_case="y"
+  >
+  <send>do buy 2 @EQ_bweap,reveal item @EQ_bweap,wield @EQ_bweap in both hands</send>
+  </alias>
+  <alias
+   name="EQ_Fix_LWeapon_Manually"
+   match="fixl"
+   enabled="y"
+   expand_variables="y"
+   ignore_case="y"
+  >
+  <send>do buy 2 @EQ_lweap,reveal item @EQ_lweap,wield @EQ_lweap in left hand</send>
+  </alias>
+  <alias
+   name="EQ_Fix_RWeapon_Manually"
+   match="fixr"
+   enabled="y"
+   expand_variables="y"
+   ignore_case="y"
+  >
+  <send>do buy 2 @EQ_rweap,reveal item @EQ_rweap,wield @EQ_rweap in right hand</send>
+  </alias>
+</aliases>
+
+		=============================================================== -->
+<!--	===== Robe On/Off ============================================= 
+
+<aliases>
+  <alias
+   name="EQ_Black_Robe_Off"
+   match="roff"
+   enabled="y"
+   expand_variables="y"
+  >
+  <send>do remove black temple robe,wear @EQ_cloak</send>
+  </alias>
+  <alias
+   name="EQ_Black_Robe_On"
+   match="ron"
+   enabled="y"
+   expand_variables="y"
+  >
+  <send>do remove @EQ_cloak,wear black temple robe</send>
+  </alias>
+</aliases>
+
+		=============================================================== -->
+<!--	===== Poison Weapons ========================================== 
+
+    	===== pwl and pwr are not foolproof! They don't check to ======
+    	===== see if you are using 2 copies of the same kind of  ======
+    	===== weapon. (If so, it may mishandle the second).      ====== 
+
+<aliases>
+  <alias
+   name="EQ_Poison_LWeapon"
+   match="pwl"
+   enabled="y"
+   expand_variables="y"
+   ignore_case="y"
+  >
+  <send>do unwield @EQ_lweap,smear poison on @EQ_lweap,wield @EQ_lweap in left hand</send>
+  </alias>
+  <alias
+   name="EQ_Poison_RWeapon"
+   match="pwr"
+   enabled="y"
+   expand_variables="y"
+   ignore_case="y"
+  >
+  <send>do unwield @EQ_rweap,smear poison on @EQ_rweap,wield @EQ_rweap in right hand</send>
+  </alias>
+</aliases>
+
+		=============================================================== -->
+
+<!--	===== Plugin Support Routines ================================= -->
+
+<script>
+<![CDATA[
+
+' ------------------------------------------------------------
+'   STRING MANIPULATION
+' ------------------------------------------------------------
+Function PadLeft (String, Length)
+	Dim StringLength
+	StringLength = Len(String)
+	If StringLength < Length Then
+		String = Space(Length - StringLength) + String
+	End If
+	PadLeft = String
+End Function
+
+Function PadRight (String, Length)
+	Dim StringLength
+	StringLength = Len(String)
+	If StringLength < Length Then
+		String = String + Space(Length - StringLength)
+	End If
+	PadRight = String
+End Function
+
+' ------------------------------------------------------------
+'   LOGGING
+' ------------------------------------------------------------
+Sub LogSend (SendString)
+	Dim Preamble, Postamble
+	Dim CommandColour
+	World.Send SendString
+	If World.GetOption("log_html") Then
+		CommandColour = World.CustomColourText(World.GetOption("echo_colour"))
+		Preamble = World.GetAlphaOption("log_line_preamble_input")
+'		Preamble = Preamble & "<font color='" & CommandColour & "'>"
+		Postamble = World.GetAlphaOption("log_line_postamble_input")
+'		Postamble = "</font>" & Postamble
+		World.WriteLog Preamble & World.FixupHTML(SendString) & Postamble
+	Else
+		World.WriteLog SendString
+	End If
+End Sub
+
+]]>
+</script>
+</muclient>

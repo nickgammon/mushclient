@@ -1,0 +1,52 @@
+/*****************************************************/
+/* MALL.NAM                                          */
+/* Namnfil f”r namn fr†n xxxxxxxxxxx                 */
+/* av Johan Danforth                                 */
+/* rader som b”rjar med / „r kommentar-rader         */
+/* varje section b”rjar med [xxx] enlig filen nedan  */
+/*****************************************************/
+/* balin durin bofur bifur bombur belin */
+[startstav]
+/* startstavelser skall sluta med en konsonant som b,k,t etc... */
+B
+D
+F
+G
+Gl
+H
+K
+L
+M
+N
+R
+S
+T
+V
+[mittstav]
+/* mittstavelser skall b”rja och sluta med en vokal som a,o,u,i,e,y etc... */
+a
+e
+i
+o
+oi
+u
+[slutstav]
+/* slutstavelser skall b”rja med en konsonant som b,k,t etc... */
+bur
+fur
+gan
+gnus
+gnar
+li
+lin
+lir
+mli
+nar
+nus
+rin
+ran
+sin
+sil
+sur
+[stop]
+/* h„r „r filen slut */

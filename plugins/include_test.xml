@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Some comment here -->
+
+<!DOCTYPE script>
+<script>
+<![CDATA[
+AppendToNotepad ('test', "plugin location: ", GetPluginInfo (GetPluginID (), 6), "\r\n")
+
+AppendToNotepad ('test', "in include file: ", GetInfo (64), "\r\n")
+
+require ("luascript.lua")
+
+]]>            
+ </script>

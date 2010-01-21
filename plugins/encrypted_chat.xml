@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="Encrypted_Chat"
+   author="Nick Gammon"
+   id="af3df750c88cf6defc48799a"
+   language="Lua"
+   purpose="Encrypt chat sessions"
+   date_written="2004-12-10 09:25"
+   date_modified="2004-12-10 11:50"
+   requires="3.58"
+   version="1.0"
+   >
+
+<description trim="y">
+Converts chat sessions to encrypted for the users and keys nominated in the plugin.
+</description>
+
+</plugin>
+
+<!--  Script  -->
+
+<script>
+<![CDATA[
+
+-- amend list of accepted users here (case sensitive)
+-- for each user you specify the key you use to exchange messages
+
+keys = 
+  {
+  Nick = "swordfish",
+  Peter = "tunafish",
+  }
+
+-- routine to compress, encrypt and encode a string
+
+function compress_encrypt_encode (s, k)
+  return utils.base64encode (aes.encrypt (utils.compress (s), k))
+end -- compress_encrypt_encode 
+
+-- routine to decode, decrypt, and decompress a string
+
+function decode_decrypt_uncompress (s, k)
+  return utils.decompress (aes.decrypt (utils.base64decode (s), k))
+end  -- decode_decrypt_uncompress 
+
+function OnPluginInstall ()
+
+  if not package.loadlib then
+    error ("package.loadlib not available - " ..
+           "please enable in global preferences")
+  end -- no loadlib
+
+  -- install AES encryption library
+
+  if not aes then -- if not installed
+    f, e = package.loadlib ("aes.dll", "luaopen_aes")
+    if e then
+      error ("Could not install Encrypted Chat plugin " ..
+             "(loading aes.dll): " .. e)
+    end -- if
+    f ()  -- install it
+  end -- if not installed already
+
+  Note "Encrypted Chat installed"
+
+end -- function OnPluginInstall 
+
+-- decrypt incoming messages
+
+function OnPluginChatMessage (id, message, text)
+
+  user = GetChatInfo (id, 2) -- find who they are
+
+  if message >= 204 and message <= 206 then
+    key = keys [user]
+    if key then
+      status, result = pcall (decode_decrypt_uncompress, text, key)
+      if status then
+        ChatNote (message - 200, result) 
+      else
+        ColourNote ("white", "red", "Cannot decrypt message from " .. user)
+      end -- bad result
+      return false  -- we have handled it
+    end -- one of our known users
+  end -- if special message
+ 
+  return true  -- normal processing
+
+end -- function OnPluginChatMessage
+
+-- encrypt outgoing messages
+
+function OnPluginChatMessageOut (id, message, text)
+
+  user = GetChatInfo (id, 2) -- find who they are
+  if message >= 4 and message <= 6 then
+    key = keys [user]
+    if key then
+      ChatMessage (id, message + 200, 
+        compress_encrypt_encode (text, key)) 
+      return false  -- we have handled it
+    end -- one of our known users
+  end -- if message for everybody/personal/group
+ 
+  return true  -- normal processing
+
+end -- function
+
+]]>
+</script>
+
+</muclient>

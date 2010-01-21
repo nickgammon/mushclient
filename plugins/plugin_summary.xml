@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE muclient>
+<muclient>
+<plugin name="Plugin_Summary"
+  author="Nick Gammon"
+  language="vbscript"
+  id = "402d5b187f593a46bc68beb9"
+  purpose = "Summarizes installed plugins"
+  date_written = "2002-08-12 07:48"
+  version = "1.0"
+  >
+<description trim="y">
+<![CDATA[
+Type "plugins" to summarize installed plugins.
+]]>
+</description>
+
+</plugin>
+
+<!--  =============================================
+
+Alias:   plugins
+Script:  OnPluginSummary
+Purpose: Lists plugins
+
+ =============================================  -->
+      
+<aliases>
+   <alias
+    script="OnPluginSummary"
+    match="plugins"
+    enabled="y"
+   >
+   </alias>
+ </aliases>
+
+<script>
+<![CDATA[
+sub OnPluginSummary (sName, sLine, wildcards)
+dim count, version
+
+  count = 0
+  
+  for each x in world.GetPluginList
+  
+   count = count + 1
+   
+   world.tell world.getplugininfo (x, 1)  ' name
+   version = world.getplugininfo (x, 19)
+   if version <> 0 then
+      world.tell " v" & version
+   end if
+   world.note " - " & world.getplugininfo (x, 8) ' purpose
+  next
+
+ world.note count & " plugin(s)"
+  
+ end sub
+            
+]]>            
+ </script>
+
+<!--  =============================================
+
+Alias:   plugins:help
+Script:  OnHelp
+Purpose: Shows plugin help
+
+ =============================================  -->
+ 
+<aliases>
+   <alias
+    script="OnHelp"
+    match="plugins:help"
+    enabled="y"
+   >
+   </alias>
+ </aliases>
+
+<script>
+<![CDATA[
+ sub OnHelp (sName, sLine, wildcards)
+   world.note world.getplugininfo (world.getpluginid, 3)
+ end sub
+]]>            
+ </script> 
+
+
+</muclient>

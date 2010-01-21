@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+<!-- Saved on Sunday, February 06, 2005, 3:53:56 PM -->
+<!-- MuClient version 3.70 -->
+
+<!--
+Comments:
+-->
+
+<muclient>
+<plugin
+  name="Main"
+  author="Tsunami"
+  id="c3fda3e0e77a5fbebf3c5e10"
+  language="Lua"
+  save_state="y"
+  date_written="2006-02-06 15:53:56"
+  requires="3.7"
+  version="4.0"
+>
+</plugin>
+
+<include name="modules\Secondary.xml"/>
+
+<aliases>
+
+</aliases>
+<triggers>
+</triggers>
+
+<script>
+<![CDATA[
+
+--defined in Secondary.xml
+if(not MODULE) then world.Note('ERROR - MISSING MODULE') end
+
+function OnPluginInstall()
+end
+function OnPluginSaveState()
+end
+
+]]>
+</script> 
+</muclient>

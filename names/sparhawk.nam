@@ -1,0 +1,63 @@
+/*****************************************************/
+/* Sparhawk names                                    */
+/*****************************************************/
+/* Sparhawk, Kalten, Khalad, Ehlana, Berit, Sarabian, Zalasta, Stragen,
+/* Caladoor, Kurik, Dolman, Setras, Aphrael, Danae, Flute, Talen, Krager, Emban, Vanion, Sephrenia,
+/* Oscagne, Itagne, Melidere
+[startstav]
+/* startstavelser skall sluta med en konsonant som b,k,t etc... */
+K
+Kh
+Ber
+Sar
+Str
+Cal
+Kur
+Kr
+D
+Osc
+Zal
+B
+It
+Mel
+Z
+S
+T
+Van
+Emb
+Aphr
+Sephr
+[mittstav]
+a
+a
+ae
+anae
+e
+io
+o
+i
+u
+/* mittstavelser skall b”rja och sluta med en vokal som a,o,u,i,e,y etc... */
+[slutstav]
+/* slutstavelser skall b”rja med en konsonant som b,k,t etc... */
+
+
+n
+nia
+len
+ger
+gne
+dere
+rik
+lman
+door
+bian
+l
+sta
+tras
+gen
+lten
+lad
+rit
+[stop]
+/* h„r „r filen slut */
