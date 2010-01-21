@@ -2,7 +2,7 @@
 //
 
 /*
-Copyright (C) 2000 Nick Gammon.
+Copyright © 2000 Nick Gammon.
 
 */
 
@@ -518,12 +518,8 @@ CString strContents;
 
 void CTextDocument::SetReadOnly (BOOL bReadOnly)
   {
-// don't bother asking if they want to save an empty document
 CTextView* pView = (CTextView*) m_viewList.GetHead();
   
-	if (GetText (pView->GetEditCtrl ()).IsEmpty ())
-    return;
-
   if (pView)
     pView->GetEditCtrl ().SetReadOnly (bReadOnly);
 
