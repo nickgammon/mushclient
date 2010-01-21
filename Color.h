@@ -4,7 +4,7 @@ Projekt: Farbverwaltung
 Inhalt : CColor Deklaration
 Datum  : 10.01.1999
 Autor  : Christian Rodemeyer
-Hinweis: © 1999 by Christian Rodemeyer
+Hinweis: (C) 1999 by Christian Rodemeyer
 \****************************************************************************/
 #pragma once
 

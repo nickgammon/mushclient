@@ -8,3 +8,4 @@ mushclient_prefs.sqlite
 MUSHclient.ini
 *.ncb
 *.plg
+*.bak

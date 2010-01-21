@@ -2,7 +2,7 @@
 #define AFX_TEXTVIEW_H__D2527D40_0F59_11D4_BB0A_0080AD7972EF__INCLUDED_
 
 /*
-Copyright © 2000 Nick Gammon.
+Copyright (C) 2000 Nick Gammon.
 
 */
 

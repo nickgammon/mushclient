@@ -4,7 +4,7 @@ Projekt: Farbverwaltung
 Inhalt : CColor Implementierung
 Datum  : 10.01.1999
 Autor  : Christian Rodemeyer
-Hinweis: © 1999 by Christian Rodemeyer
+Hinweis: (C) 1999 by Christian Rodemeyer
          Info über HLS Konvertierungsfunktion
          - Foley and Van Dam: "Fundamentals of Interactive Computer Graphics"  
          - MSDN: 'HLS Color Spaces'
