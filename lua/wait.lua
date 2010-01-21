@@ -90,9 +90,11 @@ function time (seconds)
   local hours, minutes, seconds = convert_seconds (seconds)
 
   check (AddTimer (id, hours, minutes, seconds, "",
-                 timer_flag.Enabled + timer_flag.OneShot + 
-                 timer_flag.Temporary + timer_flag.Replace, 
-                 "wait.timer_resume"))
+                  bit.bor (timer_flag.Enabled,
+                           timer_flag.OneShot,
+                           timer_flag.Temporary,
+                           timer_flag.Replace), 
+                   "wait.timer_resume"))
 
   return coroutine.yield ()
 end -- function time
@@ -100,15 +102,18 @@ end -- function time
 -- ----------------------------------------------------------
 -- wait.regexp: we call this to wait for a trigger with a regexp
 -- ----------------------------------------------------------
-function regexp (regexp, timeout)
+function regexp (regexp, timeout, flags)
   local id = "wait_trigger_" .. GetUniqueNumber ()
   threads [id] = assert (coroutine.running (), "Must be in coroutine")
-
+            
   check (AddTriggerEx (id, regexp, 
             "-- added by wait.regexp",  
-            trigger_flag.Enabled + trigger_flag.RegularExpression + 
-            trigger_flag.Temporary + trigger_flag.Replace +
-            trigger_flag.OneShot,
+            bit.bor (flags or 0, -- user-supplied extra flags, like omit from output
+                     trigger_flag.Enabled, 
+                     trigger_flag.RegularExpression,
+                     trigger_flag.Temporary,
+                     trigger_flag.Replace,
+                     trigger_flag.OneShot),
             custom_colour.NoChange, 
             0, "",  -- wildcard number, sound file name
             "wait.trigger_resume", 
@@ -121,8 +126,10 @@ function regexp (regexp, timeout)
     -- if timer fires, it deletes this trigger
     check (AddTimer (id, hours, minutes, seconds, 
                    "DeleteTrigger ('" .. id .. "')",
-                   timer_flag.Enabled + timer_flag.OneShot + 
-                   timer_flag.Temporary + timer_flag.Replace, 
+                   bit.bor (timer_flag.Enabled,
+                            timer_flag.OneShot,
+                            timer_flag.Temporary,
+                            timer_flag.Replace), 
                    "wait.timer_resume"))
 
     check (SetTimerOption (id, "send_to", "12"))  -- send to script
@@ -138,9 +145,9 @@ end -- function regexp
 -- ----------------------------------------------------------
 -- wait.match: we call this to wait for a trigger (not a regexp)
 -- ----------------------------------------------------------
-function match (match, timeout)
-  return regexp (MakeRegularExpression (match), timeout)
-end -- function waitfor 
+function match (match, timeout, flags)
+  return regexp (MakeRegularExpression (match), timeout, flags)
+end -- function match 
 
 -- ----------------------------------------------------------
 -- wait.make: makes a coroutine and resumes it
