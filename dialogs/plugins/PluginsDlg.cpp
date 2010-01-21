@@ -228,7 +228,7 @@ void CPluginsDlg::OnColumnclickPluginsList(NMHDR* pNMHDR, LRESULT* pResult)
   m_ctlPluginList.SortItems (CompareFunc, m_reverse << 8 | m_last_col); 
 	
 	*pResult = 0;
-}
+} // end of CPluginsDlg::OnColumnclickPluginsList
 
 void CPluginsDlg::OnShowDescription() 
 {       
@@ -254,12 +254,12 @@ for (int nItem = -1;
   m_pDoc->ActivateNotepad (strTitle);
 
   } // end of doing all selected ones
-}
+}  // end of CPluginsDlg::OnShowDescription
 
 void CPluginsDlg::OnUpdateNeedSelection(CCmdUI* pCmdUI) 
 {
   pCmdUI->Enable (m_ctlPluginList.GetSelectedCount () > 0);
-}
+}  // end of CPluginsDlg::OnUpdateNeedSelection
 
 void CPluginsDlg::OnUpdateNeedDescription(CCmdUI* pCmdUI) 
 {
@@ -291,7 +291,7 @@ for (int nItem = -1;
 
 pCmdUI->Enable (FALSE);
 
-}
+}  // end of CPluginsDlg::OnUpdateNeedDescription
 
 LRESULT CPluginsDlg::OnKickIdle(WPARAM, LPARAM)
   {
@@ -522,7 +522,7 @@ LoadList ();
 if (bChanged)
   m_pDoc->PluginListChanged ();
 
-  }
+  }      // end of CPluginsDlg::OnReload
 
 void CPluginsDlg::OnDestroy() 
 {
@@ -534,7 +534,7 @@ void CPluginsDlg::OnDestroy()
   CWindowPlacement wp;
   wp.Save ("Plugins List", this);
 
-}
+}  // end of CPluginsDlg::OnDestroy
 
 void CPluginsDlg::EditPlugin (const CString strName)
   {
@@ -578,14 +578,14 @@ for (int nItem = -1;
   EditPlugin (p->m_strSource);
 
   } // end of loop
-}
+}  // end of CPluginsDlg::OnEdit
 
 void CPluginsDlg::OnDblclkPluginsList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
   OnEdit ();
 	
 	*pResult = 0;
-}
+}  // end of CPluginsDlg::OnDblclkPluginsList
 
 
 // helpful macro for adjusting button positions
@@ -724,11 +724,13 @@ void CPluginsDlg::OnRdblclkPluginsList(NMHDR* pNMHDR, LRESULT* pResult)
   } // end of loop
 	
 	*pResult = 0;
-}
+}  // end of CPluginsDlg::OnRdblclkPluginsList
 
 
 void CPluginsDlg::OnEnable() 
 {
+bool bChanged = false;
+
 // iterate through list 
 for (int nItem = -1;
       (nItem = m_ctlPluginList.GetNextItem(nItem, LVNI_SELECTED)) != -1;)
@@ -742,11 +744,15 @@ for (int nItem = -1;
       continue;
 
   m_pDoc->EnablePlugin (p->m_strID, TRUE);
+  bChanged = true;
 
   } // end of loop
 	
   LoadList ();
-}
+
+  if (bChanged)
+    m_pDoc->PluginListChanged ();
+}  // end of CPluginsDlg::OnEnable
 
 void CPluginsDlg::OnDisable() 
 {
@@ -772,7 +778,7 @@ for (int nItem = -1;
 
   LoadList ();
 
-if (bChanged)
-  m_pDoc->PluginListChanged ();
+  if (bChanged)
+    m_pDoc->PluginListChanged ();
   
-}
+}  // end of CPluginsDlg::OnDisable
