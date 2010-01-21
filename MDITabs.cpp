@@ -4,7 +4,7 @@ Projekt: MDITabs, a tabcontrol for switching between MDI-views
 Inhalt : CMDITabs implementation
 Datum  : 03.10.2001
 Autor  : Christian Rodemeyer
-Hinweis: © 2001 by Christian Rodemeyer
+Hinweis: 2001 by Christian Rodemeyer
 \****************************************************************************/
 
 #include "stdafx.h"
