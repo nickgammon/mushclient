@@ -9,10 +9,10 @@
 #include "worldsock.h"
 #include "chatsock.h"
 #include "chatlistensock.h"
-#include "ColourComboBox.h"
-#include "prefspropertypages.h"
+#include "dialogs\ColourComboBox.h"
+#include "dialogs\world_prefs\prefspropertypages.h"
 #include "TimerWnd.h"
-#include "xmlparse.h"
+#include "xml\xmlparse.h"
 #include "paneline.h"
 
 #define COMPRESS_BUFFER_LENGTH 1024   // size of decompression buffer
@@ -2071,7 +2071,6 @@ protected:
 	afx_msg void OnUpdateStatuslineTime(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateStatuslineLog(CCmdUI* pCmdUI);
 	afx_msg void OnGamePreferences();
-	afx_msg void OnGameTestcommand();
 	afx_msg void OnGamePastefile();
 	afx_msg void OnConnectionConnect();
 	afx_msg void OnUpdateConnectionConnect(CCmdUI* pCmdUI);
