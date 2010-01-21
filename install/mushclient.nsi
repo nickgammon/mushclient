@@ -46,7 +46,7 @@ SetDateSave on
 ; license
 
 LicenseText "Please read the following agreement and click on 'Next' if you agree to it:"
-LicenseData "..\..\mushclient_resources\text\agreement.txt"
+LicenseData "..\docs\agreement.txt"
 
 ; install types
 
@@ -86,16 +86,15 @@ Section "-MUSHclient program (required)"
 
   File "..\WinRel\mushclient.exe"
   ; File "..\MUSHclient.exe.manifest"
-  File "..\StatusBar.exe"
   File "..\WinRel\lua5.1.dll"
-  File "..\..\lua51_dll\Release\lua5.1.lib"
+  File "..\lua5.1.lib"
   File "..\mushclient.HLP"
   File "..\mushclient.cnt"
   File "..\install\mushclient.ico"
   File "..\tips.txt"
   File "..\Example_Filters.lua"
   File "..\names.txt"
-  File /oname=license.txt "..\..\mushclient_resources\text\agreement.txt"
+  File /oname=license.txt "..\docs\agreement.txt"
   File "..\Dina.fon"
 
   ; Write the installation path into the registry
@@ -150,7 +149,7 @@ Section "-MUSHclient program (required)"
   SetOutPath $INSTDIR\locale
    
   File "..\Localize_template.lua"
-  File "..\..\mushclient_resources\Release\en.dll"
+  File "..\WinRel\locale\en.dll"
   File "..\WinRel\locale\en_small.dll"
   File "..\count_locale_usage.lua"
   File "..\detect_locale_changes.lua"
@@ -228,7 +227,7 @@ Section "Spell checker"
   SetOutPath $INSTDIR
 
   ; New spell checker
-  File "..\spellchecker.lua"
+  File "..\WinRel\spellchecker.lua"
 
 SectionEnd
 
@@ -321,11 +320,11 @@ SetOverwrite ifnewer
 
   ; Put files there
 SetOverwrite ifnewer
-  File "..\exampscript.vbs"
-  File "..\exampscript.js"
-  File "..\exampscript.pl"
-  File "..\exampscript.pys"
-  File "..\exampscript.lua"
+  File "..\scripting\exampscript.vbs"
+  File "..\scripting\exampscript.js"
+  File "..\scripting\exampscript.pl"
+  File "..\scripting\exampscript.pys"
+  File "..\scripting\exampscript.lua"
 SetOverwrite on
   File "..\WinRel\MUSHclient.tlb"
 SectionEnd
