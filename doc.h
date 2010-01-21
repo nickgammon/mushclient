@@ -9,10 +9,10 @@
 #include "worldsock.h"
 #include "chatsock.h"
 #include "chatlistensock.h"
-#include "dialogs\ColourComboBox.h"
-#include "dialogs\world_prefs\prefspropertypages.h"
+#include "ColourComboBox.h"
+#include "prefspropertypages.h"
 #include "TimerWnd.h"
-#include "xml\xmlparse.h"
+#include "xmlparse.h"
 #include "paneline.h"
 
 #define COMPRESS_BUFFER_LENGTH 1024   // size of decompression buffer
@@ -21,8 +21,8 @@
 
 // New versions - things to change
 
-#define THISVERSION 445                       // Step 1.
-const CString MUSHCLIENT_VERSION = "4.45";    // Step 2.
+#define THISVERSION 446                       // Step 1.
+const CString MUSHCLIENT_VERSION = "4.46";    // Step 2.
 // Step 3. Don't forget VERSION resource in Resources tab
 // Step 4. Remember: README.TXT 
 
@@ -183,6 +183,7 @@ enum {
       eInputFromServer = 8,         // input arrived (eg. packet received)
       eWorldAction = 9,             // some sort of world action (eg. world open, connect, got focus)
       eLuaSandbox = 10,             // executing Lua sandbox
+      eHotspotCallback = 11,        // miniwindow hotspot callback
   };
 
 // MCCP (Mud Client Compression Protocol) stuff
@@ -1788,6 +1789,12 @@ public:
   bool ExecuteAliasScript (CAlias * alias_item,
                              const CString strCurrentLine);
                                
+  void ExecuteHotspotScript (DISPID & dispid,  // dispatch ID, will be set to DISPID_UNKNOWN on an error
+                            LPCTSTR szProcedure,      // what name was in the hotspot callback
+                            long iFlags,              // flags: ctrl, shift, whatever
+                            LPCTSTR szHotspotID       // which hotspot
+                            );
+
   void ShowErrorLines (const int iLine);  // show script file around the error point
 
   void ShowStatusLine (const bool bNow = false); // update the status line
@@ -2064,6 +2071,7 @@ protected:
 	afx_msg void OnUpdateStatuslineTime(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateStatuslineLog(CCmdUI* pCmdUI);
 	afx_msg void OnGamePreferences();
+	afx_msg void OnGameTestcommand();
 	afx_msg void OnGamePastefile();
 	afx_msg void OnConnectionConnect();
 	afx_msg void OnUpdateConnectionConnect(CCmdUI* pCmdUI);
