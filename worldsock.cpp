@@ -82,8 +82,6 @@ bool bWasClosed = m_pDoc->m_iConnectPhase == eConnectNotConnected;
 
   m_pDoc->m_iConnectPhase = eConnectDisconnecting;
 
-	m_pDoc->ProcessPendingRead();   // pull in any outstanding data (see http://www.gammon.com.au/forum/?id=9696)
-
   m_pDoc->UpdateAllViews (NULL);
 
   m_pDoc->MXP_Off (true);   // turn off MXP now
