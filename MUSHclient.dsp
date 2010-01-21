@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir ".\WinDebug"
 # PROP Ignore_Export_Lib 0
 # ADD BASE CPP /nologo /MT /W3 /GX /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /FR /Yu"stdafx.h" /c
-# ADD CPP /nologo /MTd /W3 /Gm /Gi /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "ZLIB_DLL" /D "LUA51" /Fr /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MTd /W3 /Gm /Gi /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "LUA51" /Fr /Yu"stdafx.h" /FD /c
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -135,10 +135,6 @@ SOURCE=.\doc_construct.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\documentation.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\evaluate.cpp
 # End Source File
 # Begin Source File
@@ -203,11 +199,11 @@ SOURCE=.\NameGeneration.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ProcessPreviousLine.cpp
+SOURCE=.\plugins.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ProgDlg.cpp
+SOURCE=.\ProcessPreviousLine.cpp
 # End Source File
 # Begin Source File
 
@@ -220,11 +216,6 @@ SOURCE=.\Replace.cpp
 # Begin Source File
 
 SOURCE=.\serialize.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\shs.c
-# SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
@@ -272,470 +263,6 @@ SOURCE=.\worldsock.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl;fi;fd"
-# Begin Source File
-
-SOURCE=.\activitychildfrm.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ActivityDoc.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ActivityView.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\aliasdlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\AsciiArtDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ButtonColour.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ChatCallDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ChatDetailsDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ChatListDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\CHATSOCK.H
-# End Source File
-# Begin Source File
-
-SOURCE=.\ChatToAllDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\childfrm.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ChooseNotepadDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\cmdhist.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ColourComboBox.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ColourPickerDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\CommandOptionsDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\CompleteWordDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ConfirmPreamble.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\connectd.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\CreditsDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\CWorldPrefs.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\CWorldPrefsSheet.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\DebugLuaDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\DebugWorldInputDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\DelayDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\doc.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\EasterEggDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\EditDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\editmac.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\EditMultiLine.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\editstr.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\EditVariable.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\EmoteToAllDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\errors.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\FindDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\flags.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\FunctionListDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\GeneratedNameDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\genprint.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\GlobalChangeDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\HighlightPhraseDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\hostsite.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ImmediateDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ImportXMLdlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\InsertUnicodeDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\KeyNameDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\logdlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\lua\lstate.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\lua_helpers.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\LuaChooseBox.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\LuaChooseList.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\LuaChooseListMulti.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\LuaGsubDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\LuaInputBox.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\LuaInputEditDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\mainfrm.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MapCommentDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MapDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MapMoveDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MissingEntryPoints.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MudDetailsDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MudListDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MultiLineTriggerDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MUSHclient.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\mushview.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\mxp.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MXPscriptRoutinesDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MySplitterWnd.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MyStatusBar.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\OtherTypes.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\PaneChildWnd.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\PaneView.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\password.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pcre_internal.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\PluginsDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\PluginWizard.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\PluginWizardSheet.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\PrefsPropertyPages.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\PrefsPropertySheet.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ProgDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ProxyServerPasswordDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\QuickConnectDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\RecallDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\RecallSearchDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\RegexpProblemDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\RegisterMUSHclient.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\RegistrationPropertyPage17.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\RegistrationPropertyPages.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\RegistrationPropertySheet.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ScriptErrorDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SendToAll.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SendToAllDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\sendvw.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\shs.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SpellCheckDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Splash.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\stdafx.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TabDefaultsDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\testcomm.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\testrslt.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TextAttributesDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TextDocument.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TextView.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TimerDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TimerWnd.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TipDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\triggdlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\trigtest.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\UDPsocket.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\UniqueIDDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\welcome.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\welcome1.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\winplace.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\WinsockInfoDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\WorldConfiguration.h
-# End Source File
 # End Group
 # Begin Group "Resource Files"
 
@@ -762,303 +289,327 @@ SOURCE=.\res\MUSHclient.ico
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\CommandOptionsDlg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\configuration.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\genpropertypage.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\GlobalPrefs.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\GlobalPrefsSheet.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\PrefsPropertyPages.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\PrefsPropertySheet.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\scriptingoptions.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\TreePropertySheet.cpp
 # End Source File
 # End Group
 # Begin Group "Dialogs"
 
 # PROP Default_Filter ""
+# Begin Group "chat"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\dialogs\chat\ChatCallDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialogs\chat\ChatDetailsDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialogs\chat\ChatListDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialogs\chat\ChatToAllDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialogs\chat\EmoteToAllDlg.cpp
+# End Source File
+# End Group
+# Begin Group "global_prefs"
+
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\aliasdlg.cpp
+SOURCE=.\dialogs\global_prefs\GlobalPrefs.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\AsciiArtDlg.cpp
+SOURCE=.\dialogs\global_prefs\GlobalPrefsSheet.cpp
 # End Source File
+# End Group
+# Begin Group "world_prefs"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\dialogs\world_prefs\aliasdlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialogs\world_prefs\ButtonColour.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialogs\world_prefs\CommandOptionsDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialogs\world_prefs\configuration.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dialogs\world_prefs\editmac.cpp
+# End Source File
 # Begin Source File
 
-SOURCE=.\ButtonColour.cpp
+SOURCE=.\dialogs\world_prefs\EditVariable.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ChatCallDlg.cpp
+SOURCE=.\dialogs\world_prefs\genpropertypage.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ChatDetailsDlg.cpp
+SOURCE=.\dialogs\world_prefs\MissingEntryPoints.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ChatListDlg.cpp
+SOURCE=.\dialogs\world_prefs\prefspropertypages.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ChatToAllDlg.cpp
+SOURCE=.\dialogs\world_prefs\PrefsPropertySheet.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ChooseNotepadDlg.cpp
+SOURCE=.\dialogs\world_prefs\TabDefaultsDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\cmdhist.cpp
+SOURCE=.\dialogs\world_prefs\TimerDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ColourComboBox.cpp
+SOURCE=.\dialogs\world_prefs\TreePropertySheet.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ColourPickerDlg.cpp
+SOURCE=.\dialogs\world_prefs\triggdlg.cpp
 # End Source File
+# End Group
+# Begin Group "plugins"
+
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\CompleteWordDlg.cpp
+SOURCE=.\dialogs\plugins\PluginsDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConfirmPreamble.cpp
+SOURCE=.\dialogs\plugins\PluginWizard.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\CreditsDlg.cpp
+SOURCE=.\dialogs\plugins\PluginWizardSheet.cpp
 # End Source File
+# End Group
 # Begin Source File
 
-SOURCE=.\DebugLuaDlg.cpp
+SOURCE=.\dialogs\AsciiArtDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DebugWorldInputDlg.cpp
+SOURCE=.\dialogs\ChooseNotepadDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\EditDlg.cpp
+SOURCE=.\dialogs\cmdhist.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\editmac.cpp
+SOURCE=.\dialogs\ColourComboBox.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\EditMultiLine.cpp
+SOURCE=.\dialogs\ColourPickerDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\EditVariable.cpp
+SOURCE=.\dialogs\CompleteWordDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\EmoteToAllDlg.cpp
+SOURCE=.\dialogs\ConfirmPreamble.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\FindDlg.cpp
+SOURCE=.\dialogs\CreditsDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\FunctionListDlg.cpp
+SOURCE=.\dialogs\DebugLuaDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\GeneratedNameDlg.cpp
+SOURCE=.\dialogs\DebugWorldInputDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\GlobalChangeDlg.cpp
+SOURCE=.\dialogs\EditDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\GoToLineDlg.cpp
+SOURCE=.\dialogs\EditMultiLine.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\HighlightPhraseDlg.cpp
+SOURCE=.\dialogs\FindDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ImmediateDlg.cpp
+SOURCE=.\dialogs\FunctionListDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ImportXMLdlg.cpp
+SOURCE=.\dialogs\GeneratedNameDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\InsertUnicodeDlg.cpp
+SOURCE=.\dialogs\GlobalChangeDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\KeyNameDlg.cpp
+SOURCE=.\dialogs\GoToLineDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\logdlg.cpp
+SOURCE=.\dialogs\HighlightPhraseDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\LuaChooseBox.cpp
+SOURCE=.\dialogs\ImmediateDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\LuaChooseList.cpp
+SOURCE=.\dialogs\ImportXMLdlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\LuaChooseListMulti.cpp
+SOURCE=.\dialogs\InsertUnicodeDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\LuaGsubDlg.cpp
+SOURCE=.\dialogs\KeyNameDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\LuaInputBox.cpp
+SOURCE=.\dialogs\logdlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\LuaInputEditDlg.cpp
+SOURCE=.\dialogs\LuaChooseBox.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\MapCommentDlg.cpp
+SOURCE=.\dialogs\LuaChooseList.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\MapDlg.cpp
+SOURCE=.\dialogs\LuaChooseListMulti.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\MapMoveDlg.cpp
+SOURCE=.\dialogs\LuaGsubDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\MissingEntryPoints.cpp
+SOURCE=.\dialogs\LuaInputBox.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\MultiLineTriggerDlg.cpp
+SOURCE=.\dialogs\LuaInputEditDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\MXPscriptRoutinesDlg.cpp
+SOURCE=.\dialogs\MapCommentDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\password.cpp
+SOURCE=.\dialogs\MapDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\PluginsDlg.cpp
+SOURCE=.\dialogs\MapMoveDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ProxyServerPasswordDlg.cpp
+SOURCE=.\dialogs\MultiLineTriggerDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\QuickConnectDlg.cpp
+SOURCE=.\dialogs\MXPscriptRoutinesDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\RecallDlg.cpp
+SOURCE=.\dialogs\password.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\RecallSearchDlg.cpp
+SOURCE=.\dialogs\ProgDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\RegexpProblemDlg.cpp
+SOURCE=.\dialogs\ProxyServerPasswordDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ScriptErrorDlg.cpp
+SOURCE=.\dialogs\QuickConnectDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SendToAllDlg.cpp
+SOURCE=.\dialogs\RecallDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SpellCheckDlg.cpp
+SOURCE=.\dialogs\RecallSearchDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TabDefaultsDlg.cpp
+SOURCE=.\dialogs\RegexpProblemDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\testcomm.cpp
+SOURCE=.\dialogs\ScriptErrorDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\testrslt.cpp
+SOURCE=.\dialogs\SendToAllDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TextAttributesDlg.cpp
+SOURCE=.\dialogs\SpellCheckDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TimerDlg.cpp
+SOURCE=.\dialogs\Splash.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TipDlg.cpp
+SOURCE=.\dialogs\TextAttributesDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\triggdlg.cpp
+SOURCE=.\dialogs\TipDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\UniqueIDDlg.cpp
+SOURCE=.\dialogs\UniqueIDDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\welcome.cpp
+SOURCE=.\dialogs\welcome.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\welcome1.cpp
+SOURCE=.\dialogs\welcome1.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\WinsockInfoDlg.cpp
+SOURCE=.\dialogs\WinsockInfoDlg.cpp
 # End Source File
 # End Group
 # Begin Group "Views"
@@ -1098,15 +649,7 @@ SOURCE=.\MySplitterWnd.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\PaneChildWnd.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\sendvw.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Splash.cpp
 # End Source File
 # Begin Source File
 
@@ -1122,59 +665,59 @@ SOURCE=.\TextView.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\mxp.cpp
+SOURCE=.\mxp\mxp.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxp_phases.cpp
+SOURCE=.\mxp\mxp_phases.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxpClose.cpp
+SOURCE=.\mxp\mxpClose.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxpCloseAtomic.cpp
+SOURCE=.\mxp\mxpCloseAtomic.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxpDefs.cpp
+SOURCE=.\mxp\mxpDefs.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxpEnd.cpp
+SOURCE=.\mxp\mxpEnd.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxpEntities.cpp
+SOURCE=.\mxp\mxpEntities.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxpError.cpp
+SOURCE=.\mxp\mxpError.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxpinit.cpp
+SOURCE=.\mxp\mxpinit.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxpMode.cpp
+SOURCE=.\mxp\mxpMode.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxpOnOff.cpp
+SOURCE=.\mxp\mxpOnOff.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxpOpenAtomic.cpp
+SOURCE=.\mxp\mxpOpenAtomic.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxpStart.cpp
+SOURCE=.\mxp\mxpStart.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mxputils.cpp
+SOURCE=.\mxp\mxputils.cpp
 # End Source File
 # End Group
 # Begin Group "zlib"
@@ -1182,183 +725,63 @@ SOURCE=.\mxputils.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\zlib\adler32.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\adler32.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=..\zlib\compress.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\compress.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=..\zlib\crc32.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\crc32.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=..\zlib\deflate.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\deflate.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=..\zlib\gzio.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\gzio.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=..\zlib\inffast.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\inffast.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=..\zlib\inflate.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\inflate.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=..\zlib\inftrees.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\inftrees.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=..\zlib\minigzip.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\minigzip.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=..\zlib\trees.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\trees.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=..\zlib\uncompr.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\uncompr.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=..\zlib\zutil.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /D "ZLIB_DLL" /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\zlib\zutil.c
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # End Group
 # Begin Group "XML"
@@ -1366,35 +789,19 @@ SOURCE=..\zlib\zutil.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\xml_load_world.cpp
+SOURCE=.\xml\xml_load_world.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\xml_save_world.cpp
+SOURCE=.\xml\xml_save_world.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\xml_serialize.cpp
+SOURCE=.\xml\xml_serialize.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\xmlparse.cpp
-# End Source File
-# End Group
-# Begin Group "Plugins"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\Plugins.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\PluginWizard.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\PluginWizardSheet.cpp
+SOURCE=.\xml\xmlparse.cpp
 # End Source File
 # End Group
 # Begin Group "Panes"
@@ -1404,98 +811,90 @@ SOURCE=.\PluginWizardSheet.cpp
 
 SOURCE=.\paneline.cpp
 # End Source File
-# Begin Source File
-
-SOURCE=.\PaneView.cpp
-# End Source File
 # End Group
 # Begin Group "scripting"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\bits.c
+SOURCE=.\scripting\bits.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\functionlist.cpp
+SOURCE=.\scripting\functionlist.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\lbc.c
+SOURCE=.\scripting\lbc.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\lpeg.c
+SOURCE=.\scripting\lpeg.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\lrexlib.c
+SOURCE=.\scripting\lrexlib.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua_compress.c
+SOURCE=.\scripting\lua_compress.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua_methods.cpp
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-!ENDIF 
-
+SOURCE=.\scripting\lua_methods.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua_progressdlg.cpp
+SOURCE=.\scripting\lua_progressdlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua_scripting.cpp
+SOURCE=.\scripting\lua_scripting.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\lua_utils.cpp
+SOURCE=.\scripting\lua_utils.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\md5.c
+SOURCE=.\scripting\md5.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\methods.cpp
+SOURCE=.\scripting\methods.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mt19937ar.c
+SOURCE=.\scripting\mt19937ar.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\number.c
+SOURCE=.\scripting\number.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\scriptengine.cpp
+SOURCE=.\scripting\scriptengine.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\scripting.cpp
+SOURCE=.\scripting\scripting.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\sha256.c
+SOURCE=.\scripting\sha256.c
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\shs.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # End Group
@@ -1504,275 +903,129 @@ SOURCE=.\sha256.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\pcre_chartables.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\chartables.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_compile.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_chartables.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_exec.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_compile.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_fullinfo.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_config.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_get.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_dfa_exec.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_globals.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_exec.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_maketables.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_fullinfo.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_newline.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_get.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_ord2utf8.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_globals.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_study.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_info.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_tables.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_maketables.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_try_flipped.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_newline.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_ucd.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_ord2utf8.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_valid_utf8.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_refcount.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_version.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_study.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre_xclass.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+SOURCE=.\pcre\pcre_tables.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
 
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
+SOURCE=.\pcre\pcre_try_flipped.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
 
-!ENDIF 
+SOURCE=.\pcre\pcre_ucd.c
+# ADD CPP /D "HAVE_CONFIG_H"
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
 
+SOURCE=.\pcre\pcre_valid_utf8.c
+# ADD CPP /D "HAVE_CONFIG_H"
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\pcre\pcre_version.c
+# ADD CPP /D "HAVE_CONFIG_H"
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\pcre\pcre_xclass.c
+# ADD CPP /D "HAVE_CONFIG_H"
+# SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # End Group
 # Begin Group "PNG"
@@ -1780,104 +1033,107 @@ SOURCE=.\pcre_xclass.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\png.c
+SOURCE=.\png\png.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngerror.c
+SOURCE=.\png\pngerror.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pnggccrd.c
+SOURCE=.\png\pnggccrd.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngget.c
+SOURCE=.\png\pngget.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngmem.c
+SOURCE=.\png\pngmem.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngpread.c
+SOURCE=.\png\pngpread.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngread.c
+SOURCE=.\png\pngread.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngrio.c
+SOURCE=.\png\pngrio.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngrtran.c
+SOURCE=.\png\pngrtran.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngrutil.c
+SOURCE=.\png\pngrutil.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngset.c
+SOURCE=.\png\pngset.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngtrans.c
+SOURCE=.\png\pngtrans.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngvcrd.c
+SOURCE=.\png\pngwio.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngwio.c
+SOURCE=.\png\pngwrite.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngwrite.c
+SOURCE=.\png\pngwtran.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
-SOURCE=.\pngwtran.c
-# SUBTRACT CPP /YX /Yc /Yu
-# End Source File
-# Begin Source File
-
-SOURCE=.\pngwutil.c
+SOURCE=.\png\pngwutil.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # End Group
-# Begin Group "Sqlite"
+# Begin Group "sqlite3"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\lsqlite3.c
-# SUBTRACT CPP /YX /Yc /Yu
-# End Source File
-# Begin Source File
-
-SOURCE=.\sqlite3.c
+SOURCE=.\sqlite3\sqlite3.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # End Group
+# Begin Group "lsqlite"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\lsqlite\lsqlite3.c
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=.\.gitignore
+# End Source File
 # Begin Source File
 
 SOURCE=.\manifest.xml
@@ -1890,19 +1146,6 @@ SOURCE=.\install\readme.txt
 # End Project
 # Section MUSHclient : {00000000-0001-0000-0000-000000000000}
 # 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
-# End Section
-# Section MUSHclient : {F3B1306C-16CC-11D0-B7D0-00A0247B3BFD}
-# 	0:8:Splash.h:D:\SOURCE\MUSHclient\Splash.h
-# 	0:10:Splash.cpp:D:\SOURCE\MUSHclient\Splash.cpp
-# 	1:10:IDB_SPLASH:102
-# 	2:10:ResHdrName:resource.h
-# 	2:11:ProjHdrName:stdafx.h
-# 	2:10:WrapperDef:_SPLASH_SCRN_
-# 	2:12:SplClassName:CSplashWnd
-# 	2:21:SplashScreenInsertKey:4.0
-# 	2:10:HeaderName:Splash.h
-# 	2:10:ImplemName:Splash.cpp
-# 	2:7:BmpID16:IDB_SPLASH
 # End Section
 # Section MUSHclient : {F3B13065-16CC-11D0-B7D0-00A0247B3BFD}
 # 	0:8:TipDlg.h:D:\SOURCE\MUSHclient\TipDlg.h
@@ -1928,6 +1171,19 @@ SOURCE=.\install\readme.txt
 # 	2:13:IDB_LIGHTBULB:IDB_LIGHTBULB
 # 	2:18:CG_IDS_FILE_ABSENT:CG_IDS_FILE_ABSENT
 # 	2:10:TipDlg.cpp:TipDlg.cpp
+# End Section
+# Section MUSHclient : {F3B1306C-16CC-11D0-B7D0-00A0247B3BFD}
+# 	0:8:Splash.h:D:\SOURCE\MUSHclient\Splash.h
+# 	0:10:Splash.cpp:D:\SOURCE\MUSHclient\Splash.cpp
+# 	1:10:IDB_SPLASH:102
+# 	2:10:ResHdrName:resource.h
+# 	2:11:ProjHdrName:stdafx.h
+# 	2:10:WrapperDef:_SPLASH_SCRN_
+# 	2:12:SplClassName:CSplashWnd
+# 	2:21:SplashScreenInsertKey:4.0
+# 	2:10:HeaderName:Splash.h
+# 	2:10:ImplemName:Splash.cpp
+# 	2:7:BmpID16:IDB_SPLASH
 # End Section
 # Section MUSHclient : {00000000-0000-0000-0000-000000000000}
 # 	1:22:CG_IDR_POPUP_SEND_VIEW:124

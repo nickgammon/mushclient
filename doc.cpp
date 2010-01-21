@@ -18,7 +18,6 @@
 #include "dialogs\DebugWorldInputDlg.h"
 #include "dialogs\ImportXMLdlg.h"
 #include "dialogs\plugins\PluginsDlg.h"
-#include "PaneView.h"
 #include "dialogs\KeyNameDlg.h"
 
 #include "dialogs\logdlg.h"   // for logging session

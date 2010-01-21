@@ -8,7 +8,7 @@ bunzip2 pcre-8.00.tar.bz2
 tar xvf pcre-8.00.tar
 
 
-2. Copy the following files to the mushclient source "pcre" directory:
+3. Copy the following files to the mushclient source "pcre" directory:
 
 chartables.c
 pcre.h
@@ -35,7 +35,7 @@ pcre_version.c
 pcre_xclass.c
 ucp.h
 
-3. Edit: pcre_compile.c, pcre_dfa_exec.c, pcre_exec.c (individually) and  add:
+4. Edit: pcre_compile.c, pcre_dfa_exec.c, pcre_exec.c (individually) and  add:
 
 #pragma warning(disable: 4018)
 

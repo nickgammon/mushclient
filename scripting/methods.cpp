@@ -13,7 +13,6 @@
 #include "TextView.h"
 #include "TextDocument.h"
 #include "dialogs\ChooseNotepadDlg.h"
-#include "PaneView.h"
 #include "dialogs\ColourPickerDlg.h"
 #include "MakeWindowTransparent.h"
 

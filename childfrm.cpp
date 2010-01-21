@@ -9,7 +9,6 @@
 #include "MUSHview.h"
 #include "mainfrm.h"
 #include "sendvw.h"
-#include "PaneView.h"
 
 
 #include "winplace.h"

@@ -3,7 +3,6 @@
 #include "doc.h"
 #include "mxp\mxp.h"
 #include "sendvw.h"
-#include "PaneView.h"
 #include "Color.h"
 
 // my debugging

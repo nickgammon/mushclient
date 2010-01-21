@@ -17,7 +17,6 @@
 #include "MUSHview.h"
 #include "ActivityView.h"
 #include "TextView.h"
-#include "PaneView.h"
 
 #include "winplace.h"
 #include "StatLink.h"

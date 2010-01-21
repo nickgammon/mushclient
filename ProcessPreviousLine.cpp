@@ -11,7 +11,6 @@
 #include "sendvw.h"
 #include "mxp\mxp.h"
 #include "scripting\errors.h"
-#include "PaneView.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
