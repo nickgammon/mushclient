@@ -16,7 +16,7 @@
 #include "dialogs\ColourPickerDlg.h"
 #include "MakeWindowTransparent.h"
 
-#include "errors.h"
+#include "scripting\errors.h"
 #include "flags.h"
 #include "mxp\mxp.h"
 #include "color.h"
@@ -5255,6 +5255,8 @@ VARIANT CMUSHclientDoc::GetPluginInfo(LPCTSTR PluginID, short InfoType)
       SetUpVariantLong   (vaResult, pPlugin->m_iLoadOrder); 
       }
       break;
+
+    case  22: SetUpVariantDate   (vaResult, COleDateTime (pPlugin->m_tDateInstalled.GetTime ()));  break;
 
     default:
       vaResult.vt = VT_NULL;
@@ -12700,6 +12702,13 @@ long CMUSHclientDoc::WindowCreate(LPCTSTR Name,
                                   long Flags, 
                                   long BackgroundColour) 
   {
+
+  if (strlen (Name) == 0) 
+    return eNoNameSpecified;    // empty name throws out various things
+
+  if (Width < 0 || Height < 0)
+    return eBadParameter;
+
   MiniWindowMapIterator it = m_MiniWindows.find (Name);
 
   CMiniWindow * pMiniWindow = NULL;
@@ -12770,6 +12779,9 @@ long CMUSHclientDoc::WindowCircleOp(LPCTSTR Name, short Action,
                                     long BrushColour, long BrushStyle, 
                                     long Extra1, long Extra2, long Extra3, long Extra4) 
 {
+  if (strlen (Name) == 0) 
+    return eNoNameSpecified;    // empty name throws out various things
+
   MiniWindowMapIterator it = m_MiniWindows.find (Name);
     
   if (it == m_MiniWindows.end ())
@@ -12812,6 +12824,9 @@ long CMUSHclientDoc::WindowText(LPCTSTR Name,      // which window
                                 long Colour,       // colour to show it in
                                 BOOL Unicode)      // true if UTF8
 {
+  if (strlen (Name) == 0) 
+    return -1;    // empty name throws out various things
+
   MiniWindowMapIterator it = m_MiniWindows.find (Name);
     
   if (it == m_MiniWindows.end ())
@@ -13180,12 +13195,11 @@ long CMUSHclientDoc::WindowAddHotspot(LPCTSTR Name,
 
   string sPluginID;
 
-  if (!m_CurrentPlugin)                            
-	  return eNotAPlugin;                       
+  if (m_CurrentPlugin)                            
+    sPluginID = m_CurrentPlugin->m_strID;
 
-  sPluginID = m_CurrentPlugin->m_strID;
-
-  return it->second->AddHotspot (HotspotId, 
+  return it->second->AddHotspot (this, 
+                               HotspotId, 
                                sPluginID,
                                Left, Top, Right, Bottom, 
                                MouseOver, 
@@ -13277,6 +13291,10 @@ long CMUSHclientDoc::WindowImageOp(LPCTSTR Name, short Action,
 long CMUSHclientDoc::WindowCreateImage(LPCTSTR Name, LPCTSTR ImageId, 
                                        long Row1, long Row2, long Row3, long Row4, long Row5, long Row6, long Row7, long Row8) 
 {
+
+  if (strlen (Name) == 0) 
+    return eNoNameSpecified;    // empty name throws out various things
+
   MiniWindowMapIterator it = m_MiniWindows.find (Name);
     
   if (it == m_MiniWindows.end ())
@@ -13373,6 +13391,7 @@ long CMUSHclientDoc::TextRectangle(long Left, long Top, long Right, long Bottom,
 	    }	
     }
 
+  SendWindowSizes (m_nWrapColumn);  // notify of different window height
   Redraw ();
 	return eOK;
 }   // end of CMUSHclientDoc::TextRectangle
@@ -14000,12 +14019,10 @@ long CMUSHclientDoc::WindowDragHandler(LPCTSTR Name, LPCTSTR HotspotId, LPCTSTR 
 
   string sPluginID;
 
-  if (!m_CurrentPlugin)                            
-	  return eNotAPlugin;                       
+  if (m_CurrentPlugin)                            
+    sPluginID = m_CurrentPlugin->m_strID;
 
-  sPluginID = m_CurrentPlugin->m_strID;
-
-  return it->second->DragHandler (HotspotId, sPluginID, MoveCallback, ReleaseCallback, Flags);
+  return it->second->DragHandler (this, HotspotId, sPluginID, MoveCallback, ReleaseCallback, Flags);
 }   // end of CMUSHclientDoc::WindowDragHandler
 
 

@@ -27,6 +27,7 @@ CMiniWindow::CMiniWindow ()  :
   {
   dc.CreateCompatibleDC(NULL);
   dc.SetTextAlign (TA_LEFT | TA_TOP);
+  m_tDateInstalled = CTime::GetCurrentTime();  // when miniwindow loaded
   }  // end CMiniWindow::CMiniWindow  (constructor)
 
 CMiniWindow::~CMiniWindow ()  // destructor
@@ -614,6 +615,12 @@ static void SetUpVariantBool (VARIANT & tVariant, const BOOL iContents)
   tVariant.boolVal = iContents; 
   }   // end of SetUpVariantBool
 
+static void SetUpVariantDate (VARIANT & tVariant, const COleDateTime iContents)
+  {
+  VariantClear (&tVariant);
+  tVariant.vt = VT_DATE;
+  tVariant.date = iContents; 
+  }   // end of SetUpVariantDate
 
 // return info about the select font
 void CMiniWindow::FontInfo (LPCTSTR FontId, long InfoType, VARIANT & vaResult)
@@ -943,8 +950,9 @@ void CMiniWindow::Info (long InfoType, VARIANT & vaResult)
     case 17:  SetUpVariantLong    (vaResult, m_client_mouseposition.x); break; //  last client mouse x position
     case 18:  SetUpVariantLong    (vaResult, m_client_mouseposition.y); break; //  last client mouse y position
 
-    case 19:  SetUpVariantString (vaResult, m_sMouseOverHotspot.c_str ()); break; // mouse-over hotspot
-    case 20:  SetUpVariantString (vaResult, m_sMouseDownHotspot.c_str ()); break; // mouse-down hotspot
+    case 19:  SetUpVariantString  (vaResult, m_sMouseOverHotspot.c_str ()); break; // mouse-over hotspot
+    case 20:  SetUpVariantString  (vaResult, m_sMouseDownHotspot.c_str ()); break; // mouse-down hotspot
+    case 21:  SetUpVariantDate    (vaResult, COleDateTime (m_tDateInstalled.GetTime ()));  break;
 
     default:
       vaResult.vt = VT_NULL;
@@ -1607,7 +1615,8 @@ long CMiniWindow::Position(long Left, long Top,
   */
 
 // add a hotspot for handling mouse-over, mouse up/down events
-long CMiniWindow::AddHotspot(LPCTSTR HotspotId, 
+long CMiniWindow::AddHotspot(CMUSHclientDoc * pDoc,
+                             LPCTSTR HotspotId, 
                              string sPluginID,
                              long Left, long Top, long Right, long Bottom, 
                              LPCTSTR MouseOver, 
@@ -1663,6 +1672,18 @@ long CMiniWindow::AddHotspot(LPCTSTR HotspotId,
   pHotspot->m_Cursor            = Cursor;
   pHotspot->m_Flags             = Flags;
 
+  // if not in a plugin, look in main world for hotspot callbacks, and remember the dispatch ID
+  if (sPluginID.empty ())
+    {
+    CString strErrorMessage;
+
+    pHotspot->m_dispid_MouseOver        = pDoc->GetProcedureDispid (MouseOver, "mouse over", "", strErrorMessage);
+    pHotspot->m_dispid_CancelMouseOver  = pDoc->GetProcedureDispid (CancelMouseOver, "cancel mouse over", "", strErrorMessage);
+    pHotspot->m_dispid_MouseDown        = pDoc->GetProcedureDispid (MouseDown, "mouse down", "", strErrorMessage);
+    pHotspot->m_dispid_CancelMouseDown  = pDoc->GetProcedureDispid (CancelMouseDown, "cancel mouse down", "", strErrorMessage);
+    pHotspot->m_dispid_MouseUp          = pDoc->GetProcedureDispid (MouseUp, "mouse up", "", strErrorMessage);
+    }
+    
   m_Hotspots [HotspotId] = pHotspot;
 
   return eOK;
@@ -3639,7 +3660,7 @@ CPoint menupoint (Left, Top);
 
   }  // end of CMiniWindow::Menu
 
-long CMiniWindow::DragHandler(LPCTSTR HotspotId, string sPluginID, LPCTSTR MoveCallback, LPCTSTR ReleaseCallback, long Flags)
+long CMiniWindow::DragHandler(CMUSHclientDoc * pDoc, LPCTSTR HotspotId, string sPluginID, LPCTSTR MoveCallback, LPCTSTR ReleaseCallback, long Flags)
   {
 
   if (strlen (MoveCallback) > 0 && CheckLabel (MoveCallback, true))
@@ -3661,6 +3682,17 @@ long CMiniWindow::DragHandler(LPCTSTR HotspotId, string sPluginID, LPCTSTR MoveC
   pHotspot->m_sMoveCallback = MoveCallback;
   pHotspot->m_sReleaseCallback = ReleaseCallback;
   pHotspot->m_DragFlags = Flags;
+
+
+  // if not in a plugin, look in main world for hotspot callbacks, and remember the dispatch ID
+  if (sPluginID.empty ())
+    {
+
+    CString strErrorMessage;
+
+    pHotspot->m_dispid_MoveCallback     = pDoc->GetProcedureDispid (MoveCallback, "mouse move", "", strErrorMessage);
+    pHotspot->m_dispid_ReleaseCallback  = pDoc->GetProcedureDispid (ReleaseCallback, "mouse release", "", strErrorMessage);
+    }
 
   return eOK;
 

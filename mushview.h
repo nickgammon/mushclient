@@ -60,6 +60,8 @@ public:
 
   string m_sPreviousMiniWindow;
 
+  BOOL m_mousedover;
+
 // Operations
 public:
 
@@ -90,7 +92,8 @@ void Blit_Bitmap (CDC* pDestDC, CDC* pSrcDC,
                   const bool bTransparent = false,
                   const COLORREF TransparentColour = 0);
 
-void Send_Mouse_Event_To_Plugin (const string m_sPluginID, 
+void Send_Mouse_Event_To_Plugin (DISPID iDispatchID,
+                                 const string m_sPluginID, 
                                  const string sRoutineName, 
                                  const string HotspotId,
                                  long Flags = 0);
@@ -166,6 +169,7 @@ void SelectionChanged (void);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView);
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation

@@ -919,6 +919,7 @@ class CPlugin :public CObject
   CTime   m_tDateModified;    // date last modified
   double  m_dVersion;         // plugin version
   double  m_dRequiredVersion; // minimum MUSHclient version required
+  CTime   m_tDateInstalled;   // date installed
 
   CScriptEngine * m_ScriptEngine; // script engine for script, if any
 
@@ -1121,7 +1122,15 @@ class CHotspot
 
   public:
 
-  CHotspot () : m_Cursor (0),  m_Flags (0), m_DragFlags (0) {}  // constructor
+  CHotspot () : m_Cursor (0),  m_Flags (0), m_DragFlags (0),
+                m_dispid_MouseOver        (DISPID_UNKNOWN),
+                m_dispid_CancelMouseOver  (DISPID_UNKNOWN),
+                m_dispid_MouseDown        (DISPID_UNKNOWN),
+                m_dispid_CancelMouseDown  (DISPID_UNKNOWN),
+                m_dispid_MouseUp          (DISPID_UNKNOWN),
+                m_dispid_MoveCallback     (DISPID_UNKNOWN),
+                m_dispid_ReleaseCallback  (DISPID_UNKNOWN)
+                {}  // constructor
 
   CRect  m_rect;           // where it is
 
@@ -1140,6 +1149,15 @@ class CHotspot
   string m_sMoveCallback;    // callback when mouse moves
   string m_sReleaseCallback; // callback when mouse released
   long   m_DragFlags;        // drag-and-drop flags
+
+  // dispids for calling functions from NOT in a plugin (ignored in a plugin)
+  DISPID m_dispid_MouseOver;       // function to call on mouseover
+  DISPID m_dispid_CancelMouseOver; // function to call when mouse moves away or is clicked
+  DISPID m_dispid_MouseDown;       // mouse down here  (might cancel mouseover first)
+  DISPID m_dispid_CancelMouseDown; // they let go somewhere else
+  DISPID m_dispid_MouseUp;         // mouse up following a mouse-down in this hotspot
+  DISPID m_dispid_MoveCallback;    // callback when mouse moves
+  DISPID m_dispid_ReleaseCallback; // callback when mouse released
 
   };   // end of class  CStringValuePair
 
@@ -1191,6 +1209,7 @@ class CMiniWindow
 
   CPoint m_client_mouseposition;
 
+  CTime   m_tDateInstalled;   // date installed
 
   string  m_sMouseOverHotspot;    // last hotspot we moused over
   string  m_sMouseDownHotspot;    // last hotspot we mouse clicked in
@@ -1282,7 +1301,8 @@ class CMiniWindow
                 long Flags); 
 
 
-  long AddHotspot(LPCTSTR HotspotId, 
+  long AddHotspot(CMUSHclientDoc * pDoc,
+                   LPCTSTR HotspotId, 
                    string sPluginID,
                    long Left, long Top, long Right, long Bottom, 
                    LPCTSTR MouseOver, 
@@ -1336,7 +1356,8 @@ class CMiniWindow
   CString Menu(long Left, long Top, LPCTSTR Items, CMUSHView* pView);
 
 
-  long DragHandler(LPCTSTR HotspotId, 
+  long DragHandler(CMUSHclientDoc * pDoc, 
+                   LPCTSTR HotspotId, 
                    string sPluginID,
                    LPCTSTR MoveCallback, 
                    LPCTSTR ReleaseCallback, 

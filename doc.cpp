@@ -2595,6 +2595,73 @@ long i = 1;
 
   } // end of CMUSHclientDoc::ExecuteTriggerScript 
 
+void CMUSHclientDoc::ExecuteHotspotScript (DISPID & dispid,  // dispatch ID, will be set to DISPID_UNKNOWN on an error
+                          LPCTSTR szProcedure,      // what name was in the hotspot callback
+                          long iFlags,              // flags: ctrl, shift, whatever
+                          LPCTSTR szHotspotID       // which hotspot
+                          )
+
+  {
+  long nInvocationCount = 0;     // don't care
+
+  if (CheckScriptingAvailable ("Hotspot", dispid, szProcedure))
+   return;
+
+  CString strType = "hotspot";
+  CString strReason =  Translate ("processing hotspot callback");
+
+  if (GetScriptEngine () && GetScriptEngine ()->IsLua ())
+    {
+    list<double> nparams;
+    list<string> sparams;
+    nparams.push_back (iFlags);
+    sparams.push_back ((LPCTSTR) szHotspotID);
+    GetScriptEngine ()->ExecuteLua (dispid, 
+                                   szProcedure, 
+                                   eHotspotCallback,
+                                   strType, 
+                                   strReason, 
+                                   nparams,
+                                   sparams, 
+                                   nInvocationCount,
+                                   NULL,        // no regexp
+                                   NULL,        // no map of strings
+                                   NULL);       // no styled line
+    return;
+    }   // end of Lua
+
+long i = 1;
+
+  // prepare for the arguments:
+  //   1. Flags
+  //   2. Hotspot ID
+
+  // WARNING - arguments should appear in REVERSE order to what the sub expects them!
+  
+  enum
+    {
+    eHotspotID,
+    eFlags,
+    eArgCount,     // this MUST be last
+    };    
+
+  COleVariant args [eArgCount]; // arguments to script
+  DISPPARAMS params = { args, NULL, eArgCount, 0 };
+
+
+  args [eHotspotID] = szHotspotID;
+  args [eFlags] = iFlags;
+
+  ExecuteScript (dispid,  
+                 szProcedure,
+                 eHotspotCallback,
+                 strType, 
+                 strReason,
+                 params, 
+                 nInvocationCount); 
+
+  }   // end of CMUSHclientDoc::ExecuteHotspotScript
+
 void CMUSHclientDoc::OnFileLogsession() 
 {
 
@@ -5877,7 +5944,7 @@ void CMUSHclientDoc::SendWindowSizes (const int iNewWidth)
 
       RECT r;
 
-      pmyView->GetClientRect (&r);
+      pmyView->GetTextRect (&r);
 
       WORD height = (r.bottom - r.top - m_iPixelOffset) / m_FontHeight;
 

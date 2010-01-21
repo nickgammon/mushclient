@@ -39,7 +39,7 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
   void ShowInvalidatedRect (CMUSHView * pView, RECT & r, 
                             COLORREF colour = RGB (0, 255, 255))  // cyan?
     {
-	  CClientDC dc(pView);
+    CClientDC dc(pView);
     CBrush br;
     br.CreateSolidBrush (colour);    
     dc.TYPE_OF_RECT_FILL (&r, &br); 
@@ -48,7 +48,7 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
 
   void ShowInvalidatedRgn (CMUSHView * pView, CRgn & r)
     {
-	  CClientDC dc(pView);
+    CClientDC dc(pView);
     CBrush br;
     br.CreateSolidBrush (RGB (0, 255, 255));    // cyan?
     dc.TYPE_OF_RGN_FILL (&r, &br); 
@@ -87,130 +87,130 @@ int iAction = 0;
 IMPLEMENT_DYNCREATE(CMUSHView, CView)
 
 BEGIN_MESSAGE_MAP(CMUSHView, CView)
-	ON_WM_CONTEXTMENU()
-	//{{AFX_MSG_MAP(CMUSHView)
-	ON_COMMAND(ID_TEST_END, OnTestEnd)
-	ON_COMMAND(ID_TEST_PAGEDOWN, OnTestPagedown)
-	ON_COMMAND(ID_TEST_PAGEUP, OnTestPageup)
-	ON_COMMAND(ID_TEST_START, OnTestStart)
-	ON_WM_LBUTTONDOWN()
-	ON_WM_LBUTTONUP()
-	ON_WM_MOUSEMOVE()
-	ON_WM_SETCURSOR()
-	ON_COMMAND(ID_TEST_LINEDOWN, OnTestLinedown)
-	ON_COMMAND(ID_TEST_LINEUP, OnTestLineup)
-	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
-	ON_WM_ERASEBKGND()
-	ON_COMMAND(ID_KEYS_ACTIVATECOMMANDVIEW, OnKeysActivatecommandview)
-	ON_WM_SIZE()
-	ON_COMMAND(ID_DISPLAY_FREEZEOUTPUT, OnDisplayFreezeoutput)
-	ON_UPDATE_COMMAND_UI(ID_DISPLAY_FREEZEOUTPUT, OnUpdateDisplayFreezeoutput)
-	ON_UPDATE_COMMAND_UI(ID_STATUSLINE_FREEZE, OnUpdateStatuslineFreeze)
-	ON_COMMAND(ID_WINDOW_MINIMIZE, OnWindowMinimize)
-	ON_UPDATE_COMMAND_UI(ID_WINDOW_MINIMIZE, OnUpdateWindowMinimize)
-	ON_WM_CHAR()
-	ON_WM_SYSCHAR()
-	ON_COMMAND(ID_DISPLAY_FIND, OnDisplayFind)
-	ON_COMMAND(ID_DISPLAY_FINDAGAIN, OnDisplayFindagain)
-	ON_COMMAND(ID_FILE_PRINT_WORLD, OnFilePrintWorld)
-	ON_WM_VSCROLL()
-	ON_COMMAND(ID_FILE_SAVESELECTION, OnFileSaveselection)
-	ON_COMMAND(ID_FIND_AGAIN_BACKWARDS, OnFindAgainBackwards)
-	ON_UPDATE_COMMAND_UI(ID_FIND_AGAIN_BACKWARDS, OnUpdateFindAgainBackwards)
-	ON_COMMAND(ID_FIND_AGAIN_FORWARDS, OnFindAgainForwards)
-	ON_UPDATE_COMMAND_UI(ID_FIND_AGAIN_FORWARDS, OnUpdateFindAgainForwards)
-	ON_COMMAND(ID_DISPLAY_GOTOURL, OnDisplayGotourl)
-	ON_UPDATE_COMMAND_UI(ID_DISPLAY_GOTOURL, OnUpdateNeedSelection)
-	ON_COMMAND(ID_DISPLAY_SENDMAILTO, OnDisplaySendmailto)
-	ON_COMMAND(ID_EDIT_SELECT_ALL, OnEditSelectAll)
-	ON_WM_LBUTTONDBLCLK()
-	ON_COMMAND(ID_DISPLAY_GOTOBOOKMARK, OnDisplayGotobookmark)
-	ON_COMMAND(ID_DISPLAY_BOOKMARKSELECTION, OnDisplayBookmarkselection)
-	ON_WM_MOUSEWHEEL()
-	ON_COMMAND(ID_ALT_UPARROW, OnAltUparrow)
-	ON_COMMAND(ID_ALT_DOWNARROW, OnAltDownarrow)
-	ON_COMMAND(ID_DISPLAY_TEXTATTRIBUTES, OnDisplayTextattributes)
-	ON_COMMAND(ID_EDIT_NOTESWORKAREA, OnEditNotesworkarea)
-	ON_COMMAND(ID_DISPLAY_RECALLTEXT, OnDisplayRecalltext)
-	ON_WM_KEYDOWN()
-	ON_WM_KEYUP()
-	ON_WM_SYSKEYDOWN()
-	ON_WM_SYSKEYUP()
-	ON_COMMAND(ID_DISPLAY_GOTOLINE, OnDisplayGotoline)
-	ON_COMMAND(ID_GAME_COMMANDHISTORY, OnGameCommandhistory)
-	ON_COMMAND(ID_FILE_CTRL_N, OnFileCtrlN)
-	ON_COMMAND(ID_FILE_CTRL_P, OnFileCtrlP)
-	ON_COMMAND(ID_EDIT_CTRL_Z, OnEditCtrlZ)
-	ON_COMMAND(ID_EDIT_COPYASHTML, OnEditCopyashtml)
-	ON_COMMAND(ID_DISPLAY_HIGHLIGHTPHRASE, OnDisplayHighlightphrase)
-	ON_COMMAND(ID_DISPLAY_MULTILINETRIGGER, OnDisplayMultilinetrigger)
-	ON_COMMAND(ID_WINDOW_MAXIMIZE, OnWindowMaximize)
-	ON_COMMAND(ID_WINDOW_RESTORE, OnWindowRestore)
-	ON_WM_SYSCOMMAND()
-	ON_WM_RBUTTONUP()
-	ON_WM_RBUTTONDOWN()
-	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY, OnUpdateNeedSelectionForCopy)
-	ON_UPDATE_COMMAND_UI(ID_FILE_SAVESELECTION, OnUpdateNeedSelection)
-	ON_UPDATE_COMMAND_UI(ID_DISPLAY_SENDMAILTO, OnUpdateNeedSelection)
-	ON_COMMAND(ID_KEYS_TAB, OnKeysActivatecommandview)
-	ON_COMMAND(ID_KEYS_ESCAPE, OnKeysActivatecommandview)
-	ON_UPDATE_COMMAND_UI(ID_DISPLAY_TEXTATTRIBUTES, OnUpdateNeedSelection)
-	ON_UPDATE_COMMAND_UI(ID_EDIT_COPYASHTML, OnUpdateNeedSelectionForCopy)
-	ON_WM_RBUTTONDBLCLK()
-	//}}AFX_MSG_MAP
+  ON_WM_CONTEXTMENU()
+  //{{AFX_MSG_MAP(CMUSHView)
+  ON_COMMAND(ID_TEST_END, OnTestEnd)
+  ON_COMMAND(ID_TEST_PAGEDOWN, OnTestPagedown)
+  ON_COMMAND(ID_TEST_PAGEUP, OnTestPageup)
+  ON_COMMAND(ID_TEST_START, OnTestStart)
+  ON_WM_LBUTTONDOWN()
+  ON_WM_LBUTTONUP()
+  ON_WM_MOUSEMOVE()
+  ON_WM_SETCURSOR()
+  ON_COMMAND(ID_TEST_LINEDOWN, OnTestLinedown)
+  ON_COMMAND(ID_TEST_LINEUP, OnTestLineup)
+  ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
+  ON_WM_ERASEBKGND()
+  ON_COMMAND(ID_KEYS_ACTIVATECOMMANDVIEW, OnKeysActivatecommandview)
+  ON_WM_SIZE()
+  ON_COMMAND(ID_DISPLAY_FREEZEOUTPUT, OnDisplayFreezeoutput)
+  ON_UPDATE_COMMAND_UI(ID_DISPLAY_FREEZEOUTPUT, OnUpdateDisplayFreezeoutput)
+  ON_UPDATE_COMMAND_UI(ID_STATUSLINE_FREEZE, OnUpdateStatuslineFreeze)
+  ON_COMMAND(ID_WINDOW_MINIMIZE, OnWindowMinimize)
+  ON_UPDATE_COMMAND_UI(ID_WINDOW_MINIMIZE, OnUpdateWindowMinimize)
+  ON_WM_CHAR()
+  ON_WM_SYSCHAR()
+  ON_COMMAND(ID_DISPLAY_FIND, OnDisplayFind)
+  ON_COMMAND(ID_DISPLAY_FINDAGAIN, OnDisplayFindagain)
+  ON_COMMAND(ID_FILE_PRINT_WORLD, OnFilePrintWorld)
+  ON_WM_VSCROLL()
+  ON_COMMAND(ID_FILE_SAVESELECTION, OnFileSaveselection)
+  ON_COMMAND(ID_FIND_AGAIN_BACKWARDS, OnFindAgainBackwards)
+  ON_UPDATE_COMMAND_UI(ID_FIND_AGAIN_BACKWARDS, OnUpdateFindAgainBackwards)
+  ON_COMMAND(ID_FIND_AGAIN_FORWARDS, OnFindAgainForwards)
+  ON_UPDATE_COMMAND_UI(ID_FIND_AGAIN_FORWARDS, OnUpdateFindAgainForwards)
+  ON_COMMAND(ID_DISPLAY_GOTOURL, OnDisplayGotourl)
+  ON_UPDATE_COMMAND_UI(ID_DISPLAY_GOTOURL, OnUpdateNeedSelection)
+  ON_COMMAND(ID_DISPLAY_SENDMAILTO, OnDisplaySendmailto)
+  ON_COMMAND(ID_EDIT_SELECT_ALL, OnEditSelectAll)
+  ON_WM_LBUTTONDBLCLK()
+  ON_COMMAND(ID_DISPLAY_GOTOBOOKMARK, OnDisplayGotobookmark)
+  ON_COMMAND(ID_DISPLAY_BOOKMARKSELECTION, OnDisplayBookmarkselection)
+  ON_WM_MOUSEWHEEL()
+  ON_COMMAND(ID_ALT_UPARROW, OnAltUparrow)
+  ON_COMMAND(ID_ALT_DOWNARROW, OnAltDownarrow)
+  ON_COMMAND(ID_DISPLAY_TEXTATTRIBUTES, OnDisplayTextattributes)
+  ON_COMMAND(ID_EDIT_NOTESWORKAREA, OnEditNotesworkarea)
+  ON_COMMAND(ID_DISPLAY_RECALLTEXT, OnDisplayRecalltext)
+  ON_WM_KEYDOWN()
+  ON_WM_KEYUP()
+  ON_WM_SYSKEYDOWN()
+  ON_WM_SYSKEYUP()
+  ON_COMMAND(ID_DISPLAY_GOTOLINE, OnDisplayGotoline)
+  ON_COMMAND(ID_GAME_COMMANDHISTORY, OnGameCommandhistory)
+  ON_COMMAND(ID_FILE_CTRL_N, OnFileCtrlN)
+  ON_COMMAND(ID_FILE_CTRL_P, OnFileCtrlP)
+  ON_COMMAND(ID_EDIT_CTRL_Z, OnEditCtrlZ)
+  ON_COMMAND(ID_EDIT_COPYASHTML, OnEditCopyashtml)
+  ON_COMMAND(ID_DISPLAY_HIGHLIGHTPHRASE, OnDisplayHighlightphrase)
+  ON_COMMAND(ID_DISPLAY_MULTILINETRIGGER, OnDisplayMultilinetrigger)
+  ON_COMMAND(ID_WINDOW_MAXIMIZE, OnWindowMaximize)
+  ON_COMMAND(ID_WINDOW_RESTORE, OnWindowRestore)
+  ON_WM_SYSCOMMAND()
+  ON_WM_RBUTTONUP()
+  ON_WM_RBUTTONDOWN()
+  ON_UPDATE_COMMAND_UI(ID_EDIT_COPY, OnUpdateNeedSelectionForCopy)
+  ON_UPDATE_COMMAND_UI(ID_FILE_SAVESELECTION, OnUpdateNeedSelection)
+  ON_UPDATE_COMMAND_UI(ID_DISPLAY_SENDMAILTO, OnUpdateNeedSelection)
+  ON_COMMAND(ID_KEYS_TAB, OnKeysActivatecommandview)
+  ON_COMMAND(ID_KEYS_ESCAPE, OnKeysActivatecommandview)
+  ON_UPDATE_COMMAND_UI(ID_DISPLAY_TEXTATTRIBUTES, OnUpdateNeedSelection)
+  ON_UPDATE_COMMAND_UI(ID_EDIT_COPYASHTML, OnUpdateNeedSelectionForCopy)
+  ON_WM_RBUTTONDBLCLK()
+  //}}AFX_MSG_MAP
 
   // macros
-	ON_COMMAND_EX(ID_MACRO_CTRL_F10, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_CTRL_F11, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_CTRL_F12, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_CTRL_F2, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_CTRL_F3, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_CTRL_F5, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_CTRL_F7, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_CTRL_F8, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_CTRL_F9, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F10, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F11, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F12, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F2, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F3, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F4, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F5, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F7, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F8, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F9, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_SHIFT_F10, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_SHIFT_F11, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_SHIFT_F12, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_SHIFT_F2, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_SHIFT_F3, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_SHIFT_F4, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_SHIFT_F5, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_SHIFT_F7, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_SHIFT_F8, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_SHIFT_F9, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_A, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_B, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_J, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_K, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_L, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_M, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_N, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_O, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_P, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_Q, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_R, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_S, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_T, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_U, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_X, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_Y, OnMacroCommand)
-	ON_COMMAND_EX(ID_ALT_Z, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F1, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_CTRL_F1, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_SHIFT_F1, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_F6, OnMacroCommand)
-	ON_COMMAND_EX(ID_MACRO_CTRL_F6, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_CTRL_F10, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_CTRL_F11, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_CTRL_F12, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_CTRL_F2, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_CTRL_F3, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_CTRL_F5, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_CTRL_F7, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_CTRL_F8, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_CTRL_F9, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F10, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F11, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F12, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F2, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F3, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F4, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F5, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F7, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F8, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F9, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_SHIFT_F10, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_SHIFT_F11, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_SHIFT_F12, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_SHIFT_F2, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_SHIFT_F3, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_SHIFT_F4, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_SHIFT_F5, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_SHIFT_F7, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_SHIFT_F8, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_SHIFT_F9, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_A, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_B, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_J, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_K, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_L, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_M, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_N, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_O, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_P, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_Q, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_R, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_S, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_T, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_U, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_X, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_Y, OnMacroCommand)
+  ON_COMMAND_EX(ID_ALT_Z, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F1, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_CTRL_F1, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_SHIFT_F1, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_F6, OnMacroCommand)
+  ON_COMMAND_EX(ID_MACRO_CTRL_F6, OnMacroCommand)
 
   // numeric keypad  
   ON_COMMAND_EX(ID_KEYPAD_0, OnKeypadCommand)
@@ -243,9 +243,9 @@ BEGIN_MESSAGE_MAP(CMUSHView, CView)
   ON_COMMAND_EX(ID_CTRL_KEYPAD_PLUS, OnKeypadCommand)
   ON_COMMAND_EX(ID_CTRL_KEYPAD_SLASH, OnKeypadCommand)
   ON_COMMAND_EX(ID_CTRL_KEYPAD_STAR, OnKeypadCommand)
-	// Standard printing commands
-	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
-	ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
+  // Standard printing commands
+  ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
+  ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
 
   // MXP pop-up menu
   ON_COMMAND_RANGE(MXP_FIRST_MENU, 
@@ -257,7 +257,7 @@ BEGIN_MESSAGE_MAP(CMUSHView, CView)
                    ACCELERATOR_FIRST_COMMAND + ACCELERATOR_COUNT - 1, 
                    OnAcceleratorCommand)
 
-END_MESSAGE_MAP()
+  END_MESSAGE_MAP()
 
 //#define new DEBUG_NEW 
 
@@ -278,6 +278,7 @@ CMUSHView::CMUSHView()
   m_nLastToolTipLine = 0;
   m_nLastToolTipColumn = 0;
   m_scroll_position = 0;
+  m_mousedover = false;
 
   m_iPauseStatus = ePauseUninitialised;
 
@@ -573,53 +574,53 @@ int iUnicodeCharacters;
 
 class CMyMemDC : public CDC {
 private:
-	CBitmap m_bitmap; // Offscreen bitmap
-	CBitmap* m_oldBitmap; // bitmap originally found in CMyMemDC
-	CDC* m_pDC; // Saves CDC passed in constructor
-	CRect m_rect; // Rectangle of drawing area.
-	BOOL m_bMemDC; // TRUE if CDC really is a Memory DC.
+  CBitmap m_bitmap; // Offscreen bitmap
+  CBitmap* m_oldBitmap; // bitmap originally found in CMyMemDC
+  CDC* m_pDC; // Saves CDC passed in constructor
+  CRect m_rect; // Rectangle of drawing area.
+  BOOL m_bMemDC; // TRUE if CDC really is a Memory DC.
 public:
-	CMyMemDC(CDC* pDC, RECT rect) : CDC(), m_oldBitmap(NULL), m_pDC(pDC), m_rect (rect)
-	{
-		ASSERT(m_pDC != NULL); // If you asserted here, you passed in a NULL CDC.
+  CMyMemDC(CDC* pDC, RECT rect) : CDC(), m_oldBitmap(NULL), m_pDC(pDC), m_rect (rect)
+  {
+    ASSERT(m_pDC != NULL); // If you asserted here, you passed in a NULL CDC.
 
-		m_bMemDC = !pDC->IsPrinting();
+    m_bMemDC = !pDC->IsPrinting();
 
-		if (m_bMemDC){
-			// Create a Memory DC
-			CreateCompatibleDC(pDC);
-			m_bitmap.CreateCompatibleBitmap(pDC, m_rect.Width(), m_rect.Height());
-			m_oldBitmap = SelectObject(&m_bitmap);
-			SetWindowOrg(m_rect.left, m_rect.top);
-		} else {
-			// Make a copy of the relevent parts of the current DC for printing
-			m_bPrinting = pDC->m_bPrinting;
-			m_hDC = pDC->m_hDC;
-			m_hAttribDC = pDC->m_hAttribDC;
-		}
-	}
+    if (m_bMemDC){
+      // Create a Memory DC
+      CreateCompatibleDC(pDC);
+      m_bitmap.CreateCompatibleBitmap(pDC, m_rect.Width(), m_rect.Height());
+      m_oldBitmap = SelectObject(&m_bitmap);
+      SetWindowOrg(m_rect.left, m_rect.top);
+    } else {
+      // Make a copy of the relevent parts of the current DC for printing
+      m_bPrinting = pDC->m_bPrinting;
+      m_hDC = pDC->m_hDC;
+      m_hAttribDC = pDC->m_hAttribDC;
+    }
+  }
 
-	~CMyMemDC()
-	{
-		if (m_bMemDC) {
-			// Copy the offscreen bitmap onto the screen.
-			m_pDC->BitBlt(m_rect.left, m_rect.top, m_rect.Width(), m_rect.Height(),
-				this, m_rect.left, m_rect.top, SRCCOPY);
-			//Swap back the original bitmap.
-			SelectObject(m_oldBitmap);
-		} else {
-			// All we need to do is replace the DC with an illegal value,
-			// this keeps us from accidently deleting the handles associated with
-			// the CDC that was passed to the constructor.
-			m_hDC = m_hAttribDC = NULL;
-		}
-	}
+  ~CMyMemDC()
+  {
+    if (m_bMemDC) {
+      // Copy the offscreen bitmap onto the screen.
+      m_pDC->BitBlt(m_rect.left, m_rect.top, m_rect.Width(), m_rect.Height(),
+        this, m_rect.left, m_rect.top, SRCCOPY);
+      //Swap back the original bitmap.
+      SelectObject(m_oldBitmap);
+    } else {
+      // All we need to do is replace the DC with an illegal value,
+      // this keeps us from accidently deleting the handles associated with
+      // the CDC that was passed to the constructor.
+      m_hDC = m_hAttribDC = NULL;
+    }
+  }
 
-	// Allow usage as a pointer
-	CMyMemDC* operator->() {return this;}
+  // Allow usage as a pointer
+  CMyMemDC* operator->() {return this;}
 
-	// Allow usage as a pointer
-	operator CMyMemDC*() {return this;}
+  // Allow usage as a pointer
+  operator CMyMemDC*() {return this;}
 };
 
 /* modes: 
@@ -780,35 +781,35 @@ void CMUSHView::Blit_Bitmap (CDC* pDestDC, CDC* pSrcDC,
     if (bTransparent)
       {
       COLORREF crOldBack = pDestDC->SetBkColor (RGB (255, 255, 255));    // white
-	    COLORREF crOldText = pDestDC->SetTextColor (RGB (0, 0, 0));        // black
-	    CDC dcTrans;   // transparency mask
+      COLORREF crOldText = pDestDC->SetTextColor (RGB (0, 0, 0));        // black
+      CDC dcTrans;   // transparency mask
 
 
-	    // Create a memory dc for the mask
-	    dcTrans.CreateCompatibleDC(pDestDC);
+      // Create a memory dc for the mask
+      dcTrans.CreateCompatibleDC(pDestDC);
 
-	    // Create the mask bitmap for the subset of the main image
-	    CBitmap bitmapTrans;
-	    bitmapTrans.CreateBitmap(iWidth, iHeight, 1, 1, NULL);
+      // Create the mask bitmap for the subset of the main image
+      CBitmap bitmapTrans;
+      bitmapTrans.CreateBitmap(iWidth, iHeight, 1, 1, NULL);
 
-	    // Select the mask bitmap into the appropriate dc
-	    CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
+      // Select the mask bitmap into the appropriate dc
+      CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
 
       // Set transparency colour
       COLORREF crOldBackground = pSrcDC->SetBkColor (TransparentColour);
 
-	    // Build mask based on transparent colour at location 0, 0
-	    dcTrans.BitBlt (0, 0, iWidth, iHeight, pSrcDC, 0, 0, SRCCOPY);
+      // Build mask based on transparent colour at location 0, 0
+      dcTrans.BitBlt (0, 0, iWidth, iHeight, pSrcDC, 0, 0, SRCCOPY);
 
-	    // Do the work 
-	    pDestDC->BitBlt (rect.left, rect.top, iWidth, iHeight, pSrcDC, 0, 0, SRCINVERT);
-	    pDestDC->BitBlt (rect.left, rect.top, iWidth, iHeight, &dcTrans, 0, 0, SRCAND);
-	    pDestDC->BitBlt (rect.left, rect.top, iWidth, iHeight, pSrcDC, 0, 0, SRCINVERT);
+      // Do the work 
+      pDestDC->BitBlt (rect.left, rect.top, iWidth, iHeight, pSrcDC, 0, 0, SRCINVERT);
+      pDestDC->BitBlt (rect.left, rect.top, iWidth, iHeight, &dcTrans, 0, 0, SRCAND);
+      pDestDC->BitBlt (rect.left, rect.top, iWidth, iHeight, pSrcDC, 0, 0, SRCINVERT);
 
-	    // Restore settings
-	    dcTrans.SelectObject(pOldBitmapTrans);
-	    pDestDC->SetBkColor(crOldBack);
-	    pDestDC->SetTextColor(crOldText);
+      // Restore settings
+      dcTrans.SelectObject(pOldBitmapTrans);
+      pDestDC->SetBkColor(crOldBack);
+      pDestDC->SetTextColor(crOldText);
       pSrcDC->SetBkColor(crOldBackground);
       }
     else    // not transparent
@@ -850,10 +851,10 @@ void CMUSHView::OnDraw(CDC* dc)
 {
 
 // this stuff stops the flicker when redawing stuff that is almost identical to last time
-CRect	rcBounds;
+CRect rcBounds;
 GetClientRect(&rcBounds);
 
-CMyMemDC	pDC(dc, rcBounds);
+CMyMemDC  pDC(dc, rcBounds);
 
 int startline,
     endline,
@@ -1304,26 +1305,26 @@ COLORREF iBackColour = BLACK;
 
 void CMUSHView::OnInitialUpdate()
 {
-	CMUSHclientDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CMUSHclientDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
 
-	CView::OnInitialUpdate();
+  CView::OnInitialUpdate();
 
-	CSize sizeTotal;
+  CSize sizeTotal;
 
-	sizeTotal.cx = sizeTotal.cy = 100;
-	SetScrollSizes(sizeTotal, sizeTotal, sizeTotal);
+  sizeTotal.cx = sizeTotal.cy = 100;
+  SetScrollSizes(sizeTotal, sizeTotal, sizeTotal);
 
   sizewindow ();
 
   FixupTitle ();
 
-	if (m_ToolTip.Create(this, TTS_ALWAYSTIP | TTS_NOPREFIX | 0x40) && m_ToolTip.AddTool(this))
-	{
-		m_ToolTip.SendMessage(TTM_SETMAXTIPWIDTH, 0, SHRT_MAX);
-		m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_AUTOPOP, 5000);
-		m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_INITIAL, 400);
-		m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_RESHOW, 400);
+  if (m_ToolTip.Create(this, TTS_ALWAYSTIP | TTS_NOPREFIX | 0x40) && m_ToolTip.AddTool(this))
+  {
+    m_ToolTip.SendMessage(TTM_SETMAXTIPWIDTH, 0, SHRT_MAX);
+    m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_AUTOPOP, 5000);
+    m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_INITIAL, 400);
+    m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_RESHOW, 400);
 
     // add icon and title to tooltip
    // TTI_NONE     = 0 - no icon
@@ -1334,11 +1335,11 @@ void CMUSHView::OnInitialUpdate()
 //   m_ToolTip.SendMessage (TTM_SETTITLE, TTI_INFO, (LPARAM) Translate ("Line information") );
 
    m_ToolTip.SetMaxTipWidth(500);
-	}
-	else
-	{
-		TRACE("Error in creating ToolTip");
-	}
+  }
+  else
+  {
+    TRACE("Error in creating ToolTip");
+  }
 
   } // end CMUSHView::OnInitialUpdate
 
@@ -1347,18 +1348,18 @@ void CMUSHView::OnInitialUpdate()
 
 BOOL CMUSHView::OnPreparePrinting(CPrintInfo* pInfo)
 {
-	// default preparation
-	return DoPreparePrinting(pInfo);
+  // default preparation
+  return DoPreparePrinting(pInfo);
 }
 
 void CMUSHView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: add extra initialization before printing
+  // TODO: add extra initialization before printing
 }
 
 void CMUSHView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: add cleanup after printing
+  // TODO: add cleanup after printing
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1367,18 +1368,18 @@ void CMUSHView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 #ifdef _DEBUG
 void CMUSHView::AssertValid() const
 {
-	CView::AssertValid();
+  CView::AssertValid();
 }
 
 void CMUSHView::Dump(CDumpContext& dc) const
 {
-	CView::Dump(dc);
+  CView::Dump(dc);
 }
 
 CMUSHclientDoc* CMUSHView::GetDocument() // non-debug version is inline
 {
-	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CMUSHclientDoc)));
-	return (CMUSHclientDoc*)m_pDocument;
+  ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CMUSHclientDoc)));
+  return (CMUSHclientDoc*)m_pDocument;
 }
 #endif //_DEBUG
 
@@ -1441,7 +1442,7 @@ pt.y += GetOutputWindowHeight () - pDoc->m_FontHeight;
 lastline = pDoc->GetLastLine ();
 
 if (pt.y > ((lastline * pDoc->m_FontHeight) - GetOutputWindowHeight ()))
-	pt.y =  (lastline * pDoc->m_FontHeight) - GetOutputWindowHeight ();
+  pt.y =  (lastline * pDoc->m_FontHeight) - GetOutputWindowHeight ();
 
 ScrollToPosition (pt, false);
 
@@ -1457,7 +1458,7 @@ CPoint pt = GetScrollPosition ();
 pt.y -= GetOutputWindowHeight () - pDoc->m_FontHeight;
 
 if (pt.y < 0)
-	pt.y = 0;
+  pt.y = 0;
 
 ScrollToPosition (pt, false);
 
@@ -1556,7 +1557,7 @@ CSize sizeTotal (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_Fon
       sizePage  (GetOutputWindowWidth () - pDoc->m_iPixelOffset, GetOutputWindowHeight ()),
       sizeLine  (pDoc->m_FontWidth, pDoc->m_FontHeight);
 
- 	SetScrollSizes (sizeTotal, sizePage, sizeLine);
+  SetScrollSizes (sizeTotal, sizePage, sizeLine);
 
   pDoc->SendWindowSizes (pDoc->m_nWrapColumn);
 
@@ -1581,7 +1582,7 @@ CSize sizeTotal (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_Fon
       sizePage  (GetOutputWindowWidth () - pDoc->m_iPixelOffset, GetOutputWindowHeight ()),
       sizeLine  (pDoc->m_FontWidth, pDoc->m_FontHeight);
 
- 	SetScrollSizes (sizeTotal, sizePage, sizeLine);
+  SetScrollSizes (sizeTotal, sizePage, sizeLine);
 
 // pretend they pressed "End" to force the view to update.
 
@@ -1759,11 +1760,11 @@ ASSERT_VALID(pDoc);
 CPoint menupoint = point;
 
   CMenu menu;
-	VERIFY(menu.LoadMenu(IDR_MXP_MENU));
+  VERIFY(menu.LoadMenu(IDR_MXP_MENU));
 
-	CMenu* pPopup = menu.GetSubMenu(0);
-	ASSERT(pPopup != NULL);
-	CWnd* pWndPopupOwner = this;
+  CMenu* pPopup = menu.GetSubMenu(0);
+  ASSERT(pPopup != NULL);
+  CWnd* pWndPopupOwner = this;
 
   pPopup->DeleteMenu (0, MF_BYPOSITION);  // get rid of dummy item
 
@@ -1846,8 +1847,8 @@ CPoint menupoint = point;
     } // end of some menu items
 
 
-	while (pWndPopupOwner->GetStyle() & WS_CHILD)
-		pWndPopupOwner = pWndPopupOwner->GetParent();
+  while (pWndPopupOwner->GetStyle() & WS_CHILD)
+    pWndPopupOwner = pWndPopupOwner->GetParent();
 
   ClientToScreen(&point);
 
@@ -1855,10 +1856,10 @@ CPoint menupoint = point;
   Frame.m_bAutoMenuEnable  = FALSE;
 
   iAction = ACTION_ALIAS;
-	pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, 
+  pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, 
                         point.x, 
                         point.y,
-			                  pWndPopupOwner);
+                        pWndPopupOwner);
 
   // put things back how they were
   Frame.m_bAutoMenuEnable  = TRUE;
@@ -1912,12 +1913,12 @@ int line,
   CPoint orig_point = point;  // for AliasMenu
 
 
-	// CView changes the viewport origin and mapping mode.
-	// It's necessary to convert the point from device coordinates
-	// to logical coordinates, such as are stored in the document.
-	CClientDC dc(this);
-	OnPrepareDC(&dc);
-	dc.DPtoLP(&point);
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
+  CClientDC dc(this);
+  OnPrepareDC(&dc);
+  dc.DPtoLP(&point);
 
   // if click in mini-window, don't continue
   if (Mouse_Down_MiniWindow (pDoc, point, 0x10))  // LH mouse, single click
@@ -1932,7 +1933,7 @@ int line,
   if (GetKeyState (VK_CONTROL) < 0)  // ctrl+click
     {
     AliasMenu (orig_point);
-	  return;
+    return;
     } // end of ctrl+click
 
   dc.SelectObject(pDoc->m_font [0]);
@@ -2090,7 +2091,7 @@ int line,
 
           OnKeysActivatecommandview ();
           }   // end of not execute wanted
-	      return;
+        return;
         } // end of ACTION_SEND  or  ACTION_PROMPT
       else
       if ((iStyle & ACTIONTYPE) == ACTION_HYPERLINK)
@@ -2129,7 +2130,7 @@ int line,
   if (oldrgn.PtInRegion (point))
     {
     oldrgn.DeleteObject ();
-	  return;
+    return;
     }
 
 // if shift key down, extend (or shrink) the current selection
@@ -2153,11 +2154,11 @@ int line,
   newrgn.DeleteObject ();
   oldrgn.DeleteObject ();
 
-	SetCapture();       // Capture the mouse until button up.
+  SetCapture();       // Capture the mouse until button up.
 
-	return;
-	
-	// CView::OnLButtonDown(nFlags, point);
+  return;
+  
+  // CView::OnLButtonDown(nFlags, point);
 }
                
 void CMUSHView::OnRButtonDown(UINT nFlags, CPoint point) 
@@ -2166,19 +2167,19 @@ CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
 
-	// CView changes the viewport origin and mapping mode.
-	// It's necessary to convert the point from device coordinates
-	// to logical coordinates, such as are stored in the document.
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
   CPoint mwpoint = point;
-	CClientDC dc(this);
-	OnPrepareDC(&dc);
-	dc.DPtoLP(&mwpoint);
+  CClientDC dc(this);
+  OnPrepareDC(&dc);
+  dc.DPtoLP(&mwpoint);
 
   // if click in mini-window, don't continue
   if (Mouse_Down_MiniWindow (pDoc, mwpoint, 0x20))  // RH mouse, single click
     return;
-	
-	CView::OnRButtonDown(nFlags, point);
+  
+  CView::OnRButtonDown(nFlags, point);
 }
 
 
@@ -2194,22 +2195,22 @@ int line,
     return;
 
 
-	CClientDC dc(this);
+  CClientDC dc(this);
 
-	// CView changes the viewport origin and mapping mode.
-	// It's necessary to convert the point from device coordinates
-	// to logical coordinates, such as are stored in the document.
-	OnPrepareDC(&dc);  // set up mapping mode and viewport origin
-	dc.DPtoLP(&point);
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
+  OnPrepareDC(&dc);  // set up mapping mode and viewport origin
+  dc.DPtoLP(&point);
 
 
   // if miniwindow handles it, don't continue
   if (Mouse_Up_MiniWindow (pDoc, point, 0x10))
     return;
 
-	if (GetCapture() != this)
-		return; // If this window (view) didn't capture the mouse,
-				// then the user isn't selecting in this window.
+  if (GetCapture() != this)
+    return; // If this window (view) didn't capture the mouse,
+        // then the user isn't selecting in this window.
 
   dc.SelectObject(pDoc->m_font [0]);
 
@@ -2244,12 +2245,12 @@ int line,
   newrgn.DeleteObject ();
   oldrgn.DeleteObject ();
 
-	ReleaseCapture();   // Release the mouse capture established at
-    	    					// the beginning of the mouse drag.
+  ReleaseCapture();   // Release the mouse capture established at
+                    // the beginning of the mouse drag.
 
-	return;
-	
-//	CView::OnLButtonUp(nFlags, point);
+  return;
+  
+//  CView::OnLButtonUp(nFlags, point);
 }
 
 
@@ -2259,22 +2260,22 @@ CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
 
-	CClientDC dc(this);
+  CClientDC dc(this);
 
-	// CView changes the viewport origin and mapping mode.
-	// It's necessary to convert the point from device coordinates
-	// to logical coordinates, such as are stored in the document.
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
   CPoint mwpoint = point;
-	OnPrepareDC(&dc);  // set up mapping mode and viewport origin
-	dc.DPtoLP(&mwpoint);
+  OnPrepareDC(&dc);  // set up mapping mode and viewport origin
+  dc.DPtoLP(&mwpoint);
 
 
   // if miniwindow handles it, don't continue
   if (Mouse_Up_MiniWindow (pDoc, mwpoint, 0x20))
     return;
 
-	
-	CView::OnRButtonUp(nFlags, point);
+  
+  CView::OnRButtonUp(nFlags, point);
 }
 
 
@@ -2290,13 +2291,13 @@ int line,
   if (!pDoc->m_FontHeight)
     return;
 
-	CClientDC dc(this);
-	// CView changes the viewport origin and mapping mode.
-	// It's necessary to convert the point from device coordinates
-	// to logical coordinates, such as are stored in the document.
-	OnPrepareDC(&dc);
+  CClientDC dc(this);
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
+  OnPrepareDC(&dc);
 
-	dc.DPtoLP(&point);
+  dc.DPtoLP(&point);
 
   // if over miniwindow, don't keep going
   if (Mouse_Move_MiniWindow (pDoc, point))
@@ -2315,18 +2316,18 @@ int line,
 
   // tooltips stuff
 
-	if (::IsWindow(m_ToolTip.m_hWnd))
-	{
+  if (::IsWindow(m_ToolTip.m_hWnd))
+  {
 
   // test for changed line or column here
 
-		if (line != m_nLastToolTipLine || col != m_nLastToolTipColumn)
+    if (line != m_nLastToolTipLine || col != m_nLastToolTipColumn)
        RemoveToolTip ();
 
-		m_ToolTip.Activate(TRUE);
+    m_ToolTip.Activate(TRUE);
     m_nLastToolTipLine = line;
     m_nLastToolTipColumn = col;
-	}
+  }
 
   // first work out the line/column the mouse is over
 
@@ -2337,11 +2338,11 @@ int line,
 CLine * pLine = pDoc->m_LineList.GetAt (pDoc->GetLinePosition (line));
 
   // only if the user is currently drawing a new stroke by dragging
-	// the captured mouse.
+  // the captured mouse.
 
-	if (GetCapture() != this)
-		return; // If this window (view) didn't capture the mouse,
-				// then the user isn't drawing in this window.
+  if (GetCapture() != this)
+    return; // If this window (view) didn't capture the mouse,
+        // then the user isn't drawing in this window.
 
 
   m_last_mouse_position = point;
@@ -2386,10 +2387,9 @@ RECT r;
   newrgn.DeleteObject ();
   oldrgn.DeleteObject ();
 
-	return;
+  return;
 
 }   // end CMUSHView::OnMouseMove
-
 
 int CMUSHView::mouse_still_down (void)
   {
@@ -2403,21 +2403,21 @@ int line,
     return 0;
 
   // only if the user is currently drawing a new stroke by dragging
-	// the captured mouse.
+  // the captured mouse.
 
-	if (GetCapture() != this)
-		return 0; // If this window (view) didn't capture the mouse,
-				// then the user isn't drawing in this window.
+  if (GetCapture() != this)
+    return 0; // If this window (view) didn't capture the mouse,
+        // then the user isn't drawing in this window.
 
   // if we have a mini window ID, then we must have clicked in that
   if (!m_sPreviousMiniWindow.empty ())
     return 0;
 
-	CClientDC dc(this);
-	// CView changes the viewport origin and mapping mode.
-	// It's necessary to convert the point from device coordinates
-	// to logical coordinates, such as are stored in the document.
-	OnPrepareDC(&dc);
+  CClientDC dc(this);
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
+  OnPrepareDC(&dc);
   dc.SelectObject(pDoc->m_font [0]);
 
 // mouse will still be in the same spot, or we would have got a "mouse move"
@@ -2473,7 +2473,7 @@ RECT r;
   oldrgn.DeleteObject ();
 
 
-  	return 1;   // want another idle loop
+    return 1;   // want another idle loop
 
   } // end of CMUSHView::mouse_still_down
 
@@ -2495,8 +2495,8 @@ right = r.right;
 
 CPoint pt = GetScrollPosition ();
 
-	CClientDC dc(this);
-	OnPrepareDC(&dc);
+  CClientDC dc(this);
+  OnPrepareDC(&dc);
 
   // if selection past end of data return empty region
   if (m_selstart_line > pDoc->GetLastLine ())
@@ -2597,14 +2597,14 @@ BOOL CMUSHView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
-	
+  
   if (nHitTest != HTCLIENT)
     return CView::OnSetCursor(pWnd, nHitTest, message);
 
   // so where is the cursor
-	CPoint point;
-	::GetCursorPos(&point);
-	ScreenToClient(&point);
+  CPoint point;
+  ::GetCursorPos(&point);
+  ScreenToClient(&point);
 
   // see if we moused over one of our miniwindows
 
@@ -2650,9 +2650,9 @@ ASSERT_VALID(pDoc);
   // turn cursor into hand over hyperlinks
 
 
-	CClientDC dc(this);
-	OnPrepareDC(&dc);
-	dc.DPtoLP(&point);
+  CClientDC dc(this);
+  OnPrepareDC(&dc);
+  dc.DPtoLP(&point);
   dc.SelectObject(pDoc->m_font [0]);
 
   int line,
@@ -2746,7 +2746,7 @@ if (m_freeze)
 
   CPoint orig_top = GetScrollPosition ();
   
-	orig_top.y -= JUMP_SIZE * pDoc->m_FontHeight;
+  orig_top.y -= JUMP_SIZE * pDoc->m_FontHeight;
 
   if (orig_top.y < 0)
     {
@@ -2809,10 +2809,10 @@ pt.y += pDoc->m_FontHeight;
 lastline = pDoc->GetLastLine ();
 
 //if (pt.y > (pDoc->m_iPixelOffset + (lastline * pDoc->m_FontHeight) - r.bottom))
-//	pt.y = pDoc->m_iPixelOffset + (lastline * pDoc->m_FontHeight) - r.bottom;
+//  pt.y = pDoc->m_iPixelOffset + (lastline * pDoc->m_FontHeight) - r.bottom;
 
 if (pt.y > ((lastline * pDoc->m_FontHeight) - GetOutputWindowHeight ()))
-	pt.y =  (lastline * pDoc->m_FontHeight) - GetOutputWindowHeight ();
+  pt.y =  (lastline * pDoc->m_FontHeight) - GetOutputWindowHeight ();
 
 ScrollToPosition (pt, App.m_bSmoothScrolling);
 
@@ -2828,7 +2828,7 @@ CPoint pt = GetScrollPosition ();
 pt.y -= pDoc->m_FontHeight;
 
 if (pt.y < 0)
-	pt.y = 0;
+  pt.y = 0;
 
 ScrollToPosition (pt, App.m_bSmoothScrolling);
 
@@ -2932,14 +2932,14 @@ ASSERT_VALID(pDoc);
 
 void CMUSHView::OnKeysActivatecommandview() 
 {
-	m_owner_frame->SetActiveView((CView*) m_bottomview);
+  m_owner_frame->SetActiveView((CView*) m_bottomview);
 }
 
 
 void CMUSHView::OnSize(UINT nType, int cx, int cy) 
 {
-	CView::OnSize(nType, cx, cy);
-	
+  CView::OnSize(nType, cx, cy);
+  
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
@@ -2957,7 +2957,7 @@ CSize sizeTotal (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_Fon
       sizePage  (GetOutputWindowWidth () - pDoc->m_iPixelOffset, GetOutputWindowHeight ()),
       sizeLine  (pDoc->m_FontWidth, pDoc->m_FontHeight);
 
-	SetScrollSizes (sizeTotal, sizePage, sizeLine);
+  SetScrollSizes (sizeTotal, sizePage, sizeLine);
 
   // very bizarre bug - fixed in 4.39
   // we seem to get size messages if we are maximized and in the background
@@ -3015,12 +3015,12 @@ if (wp.showCmd != SW_MINIMIZE &&
     CFont font;
 
      font.CreateFont(lfHeight, // int nHeight, 
-				    0, // int nWidth, 
-				    0, // int nEscapement, 
-				    0, // int nOrientation, 
-				    pDoc->m_font_weight, // int nWeight, 
-				    0, // BYTE bItalic, 
-				    0, // BYTE bUnderline, 
+            0, // int nWidth, 
+            0, // int nEscapement, 
+            0, // int nOrientation, 
+            pDoc->m_font_weight, // int nWeight, 
+            0, // BYTE bItalic, 
+            0, // BYTE bUnderline, 
             0, // BYTE cStrikeOut, 
             pDoc->m_font_charset, // BYTE nCharSet, 
             0, // BYTE nOutPrecision, 
@@ -3080,7 +3080,7 @@ void CMUSHView::OnDisplayFreezeoutput()
 
   if (!m_freeze)
     OnTestEnd ();   
-	
+  
 }
 
 void CMUSHView::OnUpdateDisplayFreezeoutput(CCmdUI* pCmdUI) 
@@ -3154,8 +3154,8 @@ ASSERT_VALID(pDoc);
 
   m_iPauseStatus = ePauseUninitialised;
 
-	if (bActivate)
-	  {
+  if (bActivate)
+    {
 
     pDoc->m_pActiveOutputView = this;
     Frame.FixUpTitleBar ();
@@ -3165,7 +3165,7 @@ ASSERT_VALID(pDoc);
       App.m_bUpdateActivity = TRUE;
       }
     else
-      pDoc->m_new_lines = 0;	  
+      pDoc->m_new_lines = 0;    
 
 // make sure title is MUSH name
 
@@ -3219,8 +3219,8 @@ ASSERT_VALID(pDoc);
     // make sure status line is updated
     pDoc->ShowStatusLine ();
 
-	  }
-	else
+    }
+  else
     {
     pDoc->m_pActiveOutputView = NULL;
     Frame.FixUpTitleBar ();
@@ -3271,7 +3271,7 @@ ASSERT_VALID(pDoc);
     }
 
   
-	CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
+  CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
 
   // update which world has the tick
   if (App.m_pActivityView && App.m_pActivityDoc)
@@ -3282,17 +3282,17 @@ ASSERT_VALID(pDoc);
 
 void CMUSHView::OnWindowMinimize() 
 {
-	
-	if (GetParentFrame ()->IsIconic ())
-	  GetParentFrame ()->ShowWindow(SW_RESTORE);
+  
+  if (GetParentFrame ()->IsIconic ())
+    GetParentFrame ()->ShowWindow(SW_RESTORE);
   else
-	  GetParentFrame ()->ShowWindow(SW_MINIMIZE);
-		
+    GetParentFrame ()->ShowWindow(SW_MINIMIZE);
+    
 }
 
 void CMUSHView::OnUpdateWindowMinimize(CCmdUI* pCmdUI) 
 {
-	if (GetParentFrame ()->IsIconic ())
+  if (GetParentFrame ()->IsIconic ())
     pCmdUI->SetCheck (TRUE);
   else
     pCmdUI->SetCheck (FALSE);
@@ -3357,16 +3357,16 @@ void CMUSHView::OnContextMenu(CWnd*, CPoint point)
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
-		if (point.x == -1 && point.y == -1)
+    if (point.x == -1 && point.y == -1)
       {
-			//keystroke invocation
-			CRect rect;
-			GetClientRect(rect);
-			ClientToScreen(rect);
+      //keystroke invocation
+      CRect rect;
+      GetClientRect(rect);
+      ClientToScreen(rect);
 
-			point = rect.TopLeft();
-			point.Offset(5, 5);
-		}
+      point = rect.TopLeft();
+      point.Offset(5, 5);
+    }
 
 
 // new, for MXP - see if they clicked on a hyperlink
@@ -3381,12 +3381,12 @@ ASSERT_VALID(pDoc);
         col;
 
 
-	  // CView changes the viewport origin and mapping mode.
-	  // It's necessary to convert the point from device coordinates
-	  // to logical coordinates, such as are stored in the document.
-	  CClientDC dc(this);
-	  OnPrepareDC(&dc);
-	  dc.DPtoLP(&point);
+    // CView changes the viewport origin and mapping mode.
+    // It's necessary to convert the point from device coordinates
+    // to logical coordinates, such as are stored in the document.
+    CClientDC dc(this);
+    OnPrepareDC(&dc);
+    dc.DPtoLP(&point);
     dc.SelectObject(pDoc->m_font [0]);
 
   // find which line and column the mouse position is at
@@ -3431,11 +3431,11 @@ ASSERT_VALID(pDoc);
              hintsList.RemoveHead ();
 
           CMenu menu;
-		      VERIFY(menu.LoadMenu(IDR_MXP_MENU));
+          VERIFY(menu.LoadMenu(IDR_MXP_MENU));
 
-		      CMenu* pPopup = menu.GetSubMenu(0);
-		      ASSERT(pPopup != NULL);
-		      CWnd* pWndPopupOwner = this;
+          CMenu* pPopup = menu.GetSubMenu(0);
+          ASSERT(pPopup != NULL);
+          CWnd* pWndPopupOwner = this;
 
           pPopup->DeleteMenu (0, MF_BYPOSITION);  // get rid of dummy item
 
@@ -3467,27 +3467,27 @@ ASSERT_VALID(pDoc);
             }
 
           iAction = iStyle & ACTIONTYPE;
-		      while (pWndPopupOwner->GetStyle() & WS_CHILD)
-			      pWndPopupOwner = pWndPopupOwner->GetParent();
+          while (pWndPopupOwner->GetStyle() & WS_CHILD)
+            pWndPopupOwner = pWndPopupOwner->GetParent();
 
 
-		      pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, 
+          pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, 
                                 menupoint.x, 
                                 menupoint.y,
-			                          pWndPopupOwner);
+                                pWndPopupOwner);
 
-	        return;
+          return;
           } // we have ACTION_SEND or ACTION_PROMPT
         else
         if ((iStyle & ACTIONTYPE) == ACTION_HYPERLINK)
           {
 
           CMenu menu;
-		      VERIFY(menu.LoadMenu(IDR_MXP_MENU));
+          VERIFY(menu.LoadMenu(IDR_MXP_MENU));
 
-		      CMenu* pPopup = menu.GetSubMenu(0);
-		      ASSERT(pPopup != NULL);
-		      CWnd* pWndPopupOwner = this;
+          CMenu* pPopup = menu.GetSubMenu(0);
+          ASSERT(pPopup != NULL);
+          CWnd* pWndPopupOwner = this;
 
           pPopup->DeleteMenu (0, MF_BYPOSITION);  // get rid of dummy item
 
@@ -3500,33 +3500,33 @@ ASSERT_VALID(pDoc);
           strMXP_menu_item [0] = pStyle->pAction->m_strAction;
 
           iAction = iStyle & ACTIONTYPE;
-		      while (pWndPopupOwner->GetStyle() & WS_CHILD)
-			      pWndPopupOwner = pWndPopupOwner->GetParent();
+          while (pWndPopupOwner->GetStyle() & WS_CHILD)
+            pWndPopupOwner = pWndPopupOwner->GetParent();
 
-		      pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, 
+          pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, 
                                 menupoint.x, 
                                 menupoint.y,
-			                          pWndPopupOwner);
+                                pWndPopupOwner);
 
-	        return;
+          return;
           }  // end of ACTION_HYPERLINK
 
       } // end of column found
 
     }   // end of MXP active
 
-		CMenu menu;
-		VERIFY(menu.LoadMenu(CG_IDR_POPUP_MUSHVIEW));
+    CMenu menu;
+    VERIFY(menu.LoadMenu(CG_IDR_POPUP_MUSHVIEW));
 
-		CMenu* pPopup = menu.GetSubMenu(0);
-		ASSERT(pPopup != NULL);
-		CWnd* pWndPopupOwner = this;
+    CMenu* pPopup = menu.GetSubMenu(0);
+    ASSERT(pPopup != NULL);
+    CWnd* pWndPopupOwner = this;
     CMenu mainmenu;
 
     // in full-screen mode, give access to all menu items
     if (Frame.IsFullScreen ())
       {
-		  VERIFY(mainmenu.LoadMenu(IDR_MUSHCLTYPE));
+      VERIFY(mainmenu.LoadMenu(IDR_MUSHCLTYPE));
 
       pPopup->AppendMenu (MF_SEPARATOR, 0, ""); 
       pPopup->AppendMenu (MF_POPUP | MF_ENABLED, (UINT ) mainmenu.m_hMenu, 
@@ -3534,12 +3534,12 @@ ASSERT_VALID(pDoc);
 
       }
 
-		while (pWndPopupOwner->GetStyle() & WS_CHILD &&
+    while (pWndPopupOwner->GetStyle() & WS_CHILD &&
           pWndPopupOwner != pWndPopupOwner->GetParent())
-			pWndPopupOwner = pWndPopupOwner->GetParent();
+      pWndPopupOwner = pWndPopupOwner->GetParent();
 
     pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, menupoint.x, menupoint.y,
-			pWndPopupOwner);
+      pWndPopupOwner);
 }
 
 /* If AllTypingToCommandWindow is enabled we redirect character messages to 
@@ -3547,20 +3547,20 @@ ASSERT_VALID(pDoc);
 
 void CMUSHView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
-	if (App.m_bAllTypingToCommandWindow) {
-		OnKeysActivatecommandview();
-		m_bottomview->SendMessage(WM_CHAR, nChar, nRepCnt | (nFlags << 16));
-	} else
-		CView::OnChar(nChar, nRepCnt, nFlags);
+  if (App.m_bAllTypingToCommandWindow) {
+    OnKeysActivatecommandview();
+    m_bottomview->SendMessage(WM_CHAR, nChar, nRepCnt | (nFlags << 16));
+  } else
+    CView::OnChar(nChar, nRepCnt, nFlags);
 }
 
 void CMUSHView::OnSysChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (App.m_bAllTypingToCommandWindow) {
-		OnKeysActivatecommandview();
-		m_bottomview->SendMessage(WM_SYSCHAR, nChar, nRepCnt | (nFlags << 16));
-	} else
-		CView::OnSysChar(nChar, nRepCnt, nFlags);
+  if (App.m_bAllTypingToCommandWindow) {
+    OnKeysActivatecommandview();
+    m_bottomview->SendMessage(WM_SYSCHAR, nChar, nRepCnt | (nFlags << 16));
+  } else
+    CView::OnSysChar(nChar, nRepCnt, nFlags);
 }
 
 
@@ -3631,7 +3631,7 @@ t_print_control_block pcb;
 
   if (pcb.pd->m_pd.Flags & PD_SELECTION)
     {
-	  line = m_selstart_line;
+    line = m_selstart_line;
     pos = pDoc->GetLinePosition (m_selstart_line);
     }
   else
@@ -3865,34 +3865,34 @@ void CMUSHView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 void CMUSHView::OnFileSaveselection() 
 {
-	  CFileDialog	dlg(FALSE,						// FALSE for FileSave
-					  "txt",						// default extension
-					  "selection.txt",
-					  OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_PATHMUSTEXIST,
-					  "Text files (*.txt)|*.txt||",
-					  this);
-	  dlg.m_ofn.lpstrTitle = "Saved selection";
+    CFileDialog dlg(FALSE,            // FALSE for FileSave
+            "txt",            // default extension
+            "selection.txt",
+            OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_PATHMUSTEXIST,
+            "Text files (*.txt)|*.txt||",
+            this);
+    dlg.m_ofn.lpstrTitle = "Saved selection";
 
     ChangeToFileBrowsingDirectory ();
     int nResult = dlg.DoModal();
     ChangeToStartupDirectory ();
 
-	  if (nResult != IDOK)
-		  return;
+    if (nResult != IDOK)
+      return;
 
-	  try
-	    {
-		  CFile	f (dlg.GetPathName(), CFile::modeCreate|CFile::modeWrite|CFile::shareExclusive);
+    try
+      {
+      CFile f (dlg.GetPathName(), CFile::modeCreate|CFile::modeWrite|CFile::shareExclusive);
 
       if (GetSelection (f))
         return;     // error in producing selection
     
       }
-	  catch (CException* e)
-	  {
-		  e->ReportError();
-		  e->Delete();
-	  }
+    catch (CException* e)
+    {
+      e->ReportError();
+      e->Delete();
+    }
 }    // end of CMUSHView::OnFileSaveselection
 
 // gets the current selection and writes it to a file - returns true if failed
@@ -3998,14 +3998,14 @@ char * p = NULL;
 
     }   // end of try block
 
-	catch (CException* e)
-	  {
+  catch (CException* e)
+    {
     if (p)
       free (p);   // remove memory allocated in CMemFile
-		e->ReportError();
-		e->Delete();
+    e->ReportError();
+    e->Delete();
     return true;
-	  }
+    }
 
   return false; // OK
 
@@ -4013,22 +4013,22 @@ char * p = NULL;
 
 BOOL CMUSHView::PreTranslateMessage(MSG* pMsg) 
 {
-	if (::IsWindow(m_ToolTip.m_hWnd) && pMsg->hwnd == m_hWnd)
-	{
-		switch(pMsg->message)
-		{
-		case WM_LBUTTONDOWN:	
-		case WM_MOUSEMOVE:
-		case WM_LBUTTONUP:	
-		case WM_RBUTTONDOWN:
-		case WM_MBUTTONDOWN:	
-		case WM_RBUTTONUP:
-		case WM_MBUTTONUP:
-			m_ToolTip.RelayEvent(pMsg);
-			break;
-		}
-	}
-	
+  if (::IsWindow(m_ToolTip.m_hWnd) && pMsg->hwnd == m_hWnd)
+  {
+    switch(pMsg->message)
+    {
+    case WM_LBUTTONDOWN:  
+    case WM_MOUSEMOVE:
+    case WM_LBUTTONUP:  
+    case WM_RBUTTONDOWN:
+    case WM_MBUTTONDOWN:  
+    case WM_RBUTTONUP:
+    case WM_MBUTTONUP:
+      m_ToolTip.RelayEvent(pMsg);
+      break;
+    }
+  }
+  
   // F1 becomes a macro if wanted
  if ( pMsg->message == WM_KEYDOWN && App.m_bF1macro ) 
    { 
@@ -4076,26 +4076,26 @@ BOOL CMUSHView::PreTranslateMessage(MSG* pMsg)
      } 
    }    // end of WM_KEYDOWN &&  m_bF1macro
 
-	return CView::PreTranslateMessage(pMsg);
+  return CView::PreTranslateMessage(pMsg);
 }
 
 BOOL CMUSHView::OnToolTipNeedText(UINT id, NMHDR * pNMHDR, LRESULT * pResult)
 {
-	BOOL bHandledNotify = FALSE;
+  BOOL bHandledNotify = FALSE;
 
-	CPoint CursorPos;
-	VERIFY(::GetCursorPos(&CursorPos));
-	ScreenToClient(&CursorPos);
+  CPoint CursorPos;
+  VERIFY(::GetCursorPos(&CursorPos));
+  ScreenToClient(&CursorPos);
 
-	CRect ClientRect;
-	GetClientRect(ClientRect);
+  CRect ClientRect;
+  GetClientRect(ClientRect);
 
-	// Make certain that the cursor is in the client rect, because the
-	// mainframe also wants these messages to provide tooltips for the
-	// toolbar.
-	if (ClientRect.PtInRect(CursorPos))
-	{
-		TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;
+  // Make certain that the cursor is in the client rect, because the
+  // mainframe also wants these messages to provide tooltips for the
+  // toolbar.
+  if (ClientRect.PtInRect(CursorPos))
+  {
+    TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;
 
     CMUSHclientDoc* pDoc = GetDocument();
     ASSERT_VALID(pDoc);
@@ -4111,9 +4111,9 @@ BOOL CMUSHView::OnToolTipNeedText(UINT id, NMHDR * pNMHDR, LRESULT * pResult)
       return TRUE;
 
     // work out where the cursor is in the scroll view, and find the line it is on
-	  CClientDC dc(this);
-	  OnPrepareDC(&dc);
-	  dc.DPtoLP(&CursorPos);
+    CClientDC dc(this);
+    OnPrepareDC(&dc);
+    dc.DPtoLP(&CursorPos);
 
 
     // another check for the rectangle, now we are past the miniwindow stuff
@@ -4128,7 +4128,7 @@ BOOL CMUSHView::OnToolTipNeedText(UINT id, NMHDR * pNMHDR, LRESULT * pResult)
     else
       {
       CLine * pLine = pDoc->m_LineList.GetAt (pDoc->GetLinePosition (line));
-	    CString	strText;
+      CString strText;
 
       // see if it is a hyperlink, and if so display the text of what the link will do
       unsigned int iStyle;
@@ -4202,7 +4202,7 @@ BOOL CMUSHView::OnToolTipNeedText(UINT id, NMHDR * pNMHDR, LRESULT * pResult)
 
         char * p = "";
 
-		    // Adjust the text by filling in TOOLTIPTEXT
+        // Adjust the text by filling in TOOLTIPTEXT
         CString strDate;
         strDate = pLine->m_theTime.Format (TranslateTime ("%A, %B %d, %#I:%M:%S %p"));
 
@@ -4218,7 +4218,7 @@ BOOL CMUSHView::OnToolTipNeedText(UINT id, NMHDR * pNMHDR, LRESULT * pResult)
                         p);
         }   // end of not being a hyperlink
 
-//		  ::strcpy(pTTT->szText, strText.Left (sizeof(pTTT->szText) - 1));
+//      ::strcpy(pTTT->szText, strText.Left (sizeof(pTTT->szText) - 1));
 
       // allow more text
       static char buf [1000];
@@ -4230,19 +4230,19 @@ BOOL CMUSHView::OnToolTipNeedText(UINT id, NMHDR * pNMHDR, LRESULT * pResult)
       }   // end of line being in range (ie. cursor over actual line)
 
     bHandledNotify = TRUE;
-	}
-	return bHandledNotify;
+  }
+  return bHandledNotify;
 }
 
 void CMUSHView::RemoveToolTip (void)
   {
   // get rid of tooltip, it is incorrect if we scroll
-	if (::IsWindow(m_ToolTip.m_hWnd))
-	  {
-    m_ToolTip.Activate(FALSE);		
+  if (::IsWindow(m_ToolTip.m_hWnd))
+    {
+    m_ToolTip.Activate(FALSE);    
     m_nLastToolTipLine = 0;
     m_nLastToolTipColumn = 0;
-	  }
+    }
   } // end of CMUSHView::RemoveToolTip
 
 void CMUSHView::OnFindAgainBackwards() 
@@ -4258,7 +4258,7 @@ void CMUSHView::OnUpdateFindAgainBackwards(CCmdUI* pCmdUI)
 {
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
-	
+  
 pCmdUI->Enable (!pDoc->m_DisplayFindInfo.m_strFindStringList.IsEmpty ());
 }
 
@@ -4269,7 +4269,7 @@ ASSERT_VALID(pDoc);
 
 pDoc->m_DisplayFindInfo.m_bForwards = true;
 m_bottomview->DoFind(true);
-	
+  
 }
 
 void CMUSHView::OnUpdateFindAgainForwards(CCmdUI* pCmdUI) 
@@ -4278,7 +4278,7 @@ CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
 pCmdUI->Enable (!pDoc->m_DisplayFindInfo.m_strFindStringList.IsEmpty ());
-	
+  
 }
 
 void CMUSHView::OnDisplayGotourl() 
@@ -4317,7 +4317,7 @@ CString strSelection;
 // put the focus back in the send window
 
   OnKeysActivatecommandview ();
-	
+  
 }
 
 
@@ -4359,7 +4359,7 @@ CString strSelection;
 // put the focus back in the send window
 
   OnKeysActivatecommandview ();
-	
+  
 }
 
 void CMUSHView::OnEditSelectAll() 
@@ -4387,10 +4387,10 @@ ASSERT_VALID(pDoc);
 BOOL CMUSHView::PreCreateWindow(CREATESTRUCT& cs) 
 {
 
-	cs.style &= ~FWS_ADDTOTITLE;
-  cs.style	|= WS_VSCROLL;
+  cs.style &= ~FWS_ADDTOTITLE;
+  cs.style  |= WS_VSCROLL;
 
-	return CView::PreCreateWindow(cs);
+  return CView::PreCreateWindow(cs);
 }
 
 
@@ -4502,12 +4502,12 @@ int line,
   if (!pDoc->m_FontHeight)
     return;
 
-	// CView changes the viewport origin and mapping mode.
-	// It's necessary to convert the point from device coordinates
-	// to logical coordinates, such as are stored in the document.
-	CClientDC dc(this);
-	OnPrepareDC(&dc);
-	dc.DPtoLP(&point);
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
+  CClientDC dc(this);
+  OnPrepareDC(&dc);
+  dc.DPtoLP(&point);
 
   // if click in mini-window, don't continue
   if (Mouse_Down_MiniWindow (pDoc, point, 0x50))  // LH mouse - double click
@@ -4664,19 +4664,19 @@ CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
 
-	// CView changes the viewport origin and mapping mode.
-	// It's necessary to convert the point from device coordinates
-	// to logical coordinates, such as are stored in the document.
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
   CPoint mwpoint = point;
-	CClientDC dc(this);
-	OnPrepareDC(&dc);
-	dc.DPtoLP(&mwpoint);
+  CClientDC dc(this);
+  OnPrepareDC(&dc);
+  dc.DPtoLP(&mwpoint);
 
   // if click in mini-window, don't continue
   if (Mouse_Down_MiniWindow (pDoc, mwpoint, 0x60))  // RH mouse - double click
     return;
-	
-	CView::OnRButtonDblClk(nFlags, point);
+  
+  CView::OnRButtonDblClk(nFlags, point);
 }
 
 
@@ -4739,7 +4739,7 @@ int nNewLine = m_selstart_line,
   // if we found one, select it
   if (pLine)
     SelectLine (nNewLine);
-	
+  
 } // end of MUSHView::OnDisplayGotobookmark
 
 void CMUSHView::OnDisplayBookmarkselection() 
@@ -4873,7 +4873,7 @@ ASSERT_VALID(pDoc);
 
 
 CRect rect;
-	
+  
   m_bottomview->GetClientRect (&rect);
   m_bottomview->ClientToScreen(&rect);
 
@@ -4889,8 +4889,8 @@ unsigned int iScrollLines;
      * Don't handle zoom and datazoom.
      */
     
-  if (nFlags & MK_CONTROL || nFlags & MK_SHIFT)	
-	  return CView::OnMouseWheel(nFlags, zDelta, pt);
+  if (nFlags & MK_CONTROL || nFlags & MK_SHIFT) 
+    return CView::OnMouseWheel(nFlags, zDelta, pt);
 
   SystemParametersInfo (SPI_GETWHEELSCROLLLINES, 0, &iScrollLines, 0);
 
@@ -4943,7 +4943,7 @@ bool bSmooth_saved = App.m_bSmoothScrolling;
 
     // limit to end of screen
     if (ScrollPt.y > ((lastline * pDoc->m_FontHeight) - GetOutputWindowHeight ()))
-	    ScrollPt.y =  (lastline * pDoc->m_FontHeight) - GetOutputWindowHeight ();
+      ScrollPt.y =  (lastline * pDoc->m_FontHeight) - GetOutputWindowHeight ();
 
     ScrollToPosition (ScrollPt, false);
 
@@ -4977,7 +4977,7 @@ bool bSmooth_saved = App.m_bSmoothScrolling;
   ScrollPt.y -= zDelta * pDoc->m_FontHeight;
 
   if (ScrollPt.y < 0)
-	  ScrollPt.y = 0;
+    ScrollPt.y = 0;
 
   ScrollToPosition (ScrollPt, false);
 
@@ -4994,7 +4994,7 @@ void CMUSHView::OnAltUparrow()
 
   OnKeysActivatecommandview ();  
   m_bottomview->SendMessage(WM_COMMAND, ID_ALT_UPARROW, 0);
-	
+  
 }
 
 void CMUSHView::OnAltDownarrow() 
@@ -5003,7 +5003,7 @@ void CMUSHView::OnAltDownarrow()
 
   OnKeysActivatecommandview ();  
   m_bottomview->SendMessage(WM_COMMAND, ID_ALT_DOWNARROW, 0);
-	
+  
 }
 
 void CMUSHView::OnDisplayTextattributes() 
@@ -5129,8 +5129,8 @@ CTextAttributesDlg dlg;
 
 void CMUSHView::OnEditNotesworkarea() 
 {
-	CMUSHclientDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CMUSHclientDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
 
   // see if they want an existing one
   if (pDoc->SwitchToNotepad ())
@@ -5162,14 +5162,14 @@ CString strSelection;
                     false,
                     eNotepadNormal
                     );
-	
-	
+  
+  
 }
 
 void CMUSHView::OnDisplayRecalltext() 
 {
-	CMUSHclientDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CMUSHclientDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
 
 CString strSelection;
 
@@ -5226,34 +5226,34 @@ void CMUSHView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
     OnKeysActivatecommandview ();  
     m_bottomview->SendMessage(WM_KEYDOWN, nChar, nRepCnt | (nFlags << 16));
   } else
-	  CView::OnKeyDown(nChar, nRepCnt, nFlags);
+    CView::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void CMUSHView::OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (App.m_bAllTypingToCommandWindow) {
-		OnKeysActivatecommandview();
-		m_bottomview->SendMessage(WM_SYSKEYDOWN, nChar, nRepCnt | (nFlags << 16));
-	} else
-		CView::OnSysKeyDown(nChar, nRepCnt, nFlags);
+  if (App.m_bAllTypingToCommandWindow) {
+    OnKeysActivatecommandview();
+    m_bottomview->SendMessage(WM_SYSKEYDOWN, nChar, nRepCnt | (nFlags << 16));
+  } else
+    CView::OnSysKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void CMUSHView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (App.m_bAllTypingToCommandWindow) {
-		OnKeysActivatecommandview();
-		m_bottomview->SendMessage(WM_KEYUP, nChar, nRepCnt | (nFlags << 16));
-	} else
-		CView::OnKeyUp(nChar, nRepCnt, nFlags);
+  if (App.m_bAllTypingToCommandWindow) {
+    OnKeysActivatecommandview();
+    m_bottomview->SendMessage(WM_KEYUP, nChar, nRepCnt | (nFlags << 16));
+  } else
+    CView::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 void CMUSHView::OnSysKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (App.m_bAllTypingToCommandWindow) {
-		OnKeysActivatecommandview();
-		m_bottomview->SendMessage(WM_SYSKEYUP, nChar, nRepCnt | (nFlags << 16));
-	} else
-		CView::OnSysKeyUp(nChar, nRepCnt, nFlags);
+  if (App.m_bAllTypingToCommandWindow) {
+    OnKeysActivatecommandview();
+    m_bottomview->SendMessage(WM_SYSKEYUP, nChar, nRepCnt | (nFlags << 16));
+  } else
+    CView::OnSysKeyUp(nChar, nRepCnt, nFlags);
 }
 
 BOOL CMUSHView::OnKeypadCommand(UINT nIDC) 
@@ -5680,8 +5680,8 @@ ASSERT_VALID(pDoc);
   if (pDoc->m_bCtrlNGoesToNextCommand)
     m_bottomview->DoNextCommand ();
   else
-    App.OnFileNew ();	
-	
+    App.OnFileNew (); 
+  
 }
 
 void CMUSHView::OnFileCtrlP() 
@@ -5692,7 +5692,7 @@ ASSERT_VALID(pDoc);
   if (pDoc->m_bCtrlPGoesToPreviousCommand)
     m_bottomview->DoPreviousCommand ();
   else
-    PrintWorld ();	
+    PrintWorld ();  
 }
 
 void CMUSHView::OnEditCtrlZ() 
@@ -5702,7 +5702,7 @@ ASSERT_VALID(pDoc);
 
   if (pDoc->m_bCtrlZGoesToEndOfBuffer)
      OnTestEnd ();
-	
+  
 }
 
 void OutputOneLine (CMUSHclientDoc* pDoc,
@@ -5956,19 +5956,19 @@ char * p = NULL;
 
     }   // end of try block
 
-	catch (CException* e)
-	  {
+  catch (CException* e)
+    {
     if (p)
       free (p);   // remove memory allocated in CMemFile
-		e->ReportError();
-		e->Delete();
-	  }
+    e->ReportError();
+    e->Delete();
+    }
 
 // put the focus back in the send window
 
   OnKeysActivatecommandview ();
 
-	
+  
 }
 
 
@@ -6031,7 +6031,7 @@ long startcol,
   memcpy (dlg.m_customback, pDoc->m_customback, sizeof (dlg.m_customback));
   for (int i = 0; i < MAX_CUSTOM; i++)
      dlg.m_strCustomName [i] = pDoc->m_strCustomColourName [i];
-	
+  
   dlg.m_iColour = OTHER_CUSTOM + 1;    // other custom colour
 
   // assume they want to match whole words
@@ -6096,7 +6096,7 @@ long startcol,
 
   // we need to know to save it
   pDoc->SetModifiedFlag (TRUE);
-	
+  
 } // end of CMUSHView::OnDisplayHighlightphrase
 
 void CMUSHView::OnDisplayMultilinetrigger() 
@@ -6184,27 +6184,28 @@ CString strSelection;
 
 void CMUSHView::OnWindowMaximize() 
 {
-	  GetParentFrame ()->ShowWindow(SW_SHOWMAXIMIZED);
-	
+    GetParentFrame ()->ShowWindow(SW_SHOWMAXIMIZED);
+  
 }
 
 void CMUSHView::OnWindowRestore() 
 {
-	  GetParentFrame ()->ShowWindow(SW_RESTORE);
-	
+    GetParentFrame ()->ShowWindow(SW_RESTORE);
+  
 }
 
 void CMUSHView::OnSysCommand(UINT nID, LPARAM lParam) 
 {
-	if (nID == SC_KEYMENU && App.m_bDisableKeyboardMenuActivation) {
-		/* Discard. */
-	} else
-		CView::OnSysCommand(nID, lParam);
+  if (nID == SC_KEYMENU && App.m_bDisableKeyboardMenuActivation) {
+    /* Discard. */
+  } else
+    CView::OnSysCommand(nID, lParam);
 }
 
 
 // a mouse-over a window hotspot will come here
-void CMUSHView::Send_Mouse_Event_To_Plugin (const string m_sPluginID, 
+void CMUSHView::Send_Mouse_Event_To_Plugin (DISPID iDispatchID,
+                                            const string m_sPluginID, 
                                             const string sRoutineName, 
                                             const string HotspotId,
                                             long Flags)
@@ -6217,18 +6218,55 @@ void CMUSHView::Send_Mouse_Event_To_Plugin (const string m_sPluginID,
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
+// also Flags might be:
+
+// 0x10 - LH mouse
+// 0x20 - RH mouse
+// 0x40 - double-click
+// 0x80 - mouse-over not first time
+
+if (GetKeyState (VK_SHIFT) < 0)     // shift+click
+   Flags |= 1;
+
+if (GetKeyState (VK_CONTROL) < 0)   // ctrl+click
+   Flags |= 2;
+
+if (GetKeyState (VK_MENU) < 0)      // alt+click
+   Flags |= 4;
+
+
+if (m_sPluginID.empty ())
+  {
+  if (iDispatchID == DISPID_UNKNOWN)
+    {
+    pDoc->Trace ("Mouse event (%s): Function %s not found.", HotspotId.c_str (), sRoutineName.c_str ());
+    return;                       
+    }
+
+
+  pDoc->ExecuteHotspotScript (iDispatchID,  // dispatch ID, will be set to DISPID_UNKNOWN on an error
+                              sRoutineName.c_str (),      // what name was in the hotspot callback
+                              Flags,              // flags: ctrl, shift, whatever
+                              HotspotId.c_str ()       // which hotspot
+                              );
+
+  return;
+
+
+  } // end of no plugin
+
 CPlugin * pPlugin = pDoc->GetPlugin (m_sPluginID.c_str ()); 
 
   if (!pPlugin) 
     {
     pDoc->Trace ("Mouse event (%s): No plugin ID: %s", HotspotId.c_str (), m_sPluginID.c_str ());
-	  return;                       
+    return;                       
     }
 
   if (!pPlugin->m_bEnabled)
     {
     pDoc->Trace ("Mouse event (%s): Plugin: %s disabled.", HotspotId.c_str (), m_sPluginID.c_str ());
-	  return;                       
+    return;                       
     }
 
 DISPID iDispid = pPlugin->m_ScriptEngine->GetDispid (sRoutineName.c_str ());
@@ -6236,27 +6274,12 @@ DISPID iDispid = pPlugin->m_ScriptEngine->GetDispid (sRoutineName.c_str ());
   if (iDispid == DISPID_UNKNOWN)
     {
     pDoc->Trace ("Mouse event (%s): Function %s not found.", HotspotId.c_str (), sRoutineName.c_str ());
-	  return;                       
+    return;                       
     }
 
   CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
 
   pDoc->m_CurrentPlugin = pPlugin;   
-
-  // also Flags might be:
-
-  // 0x10 - LH mouse
-  // 0x20 - RH mouse
-  // 0x40 - double-click
-
-  if (GetKeyState (VK_SHIFT) < 0)     // shift+click
-     Flags |= 1;
-
-  if (GetKeyState (VK_CONTROL) < 0)   // ctrl+click
-     Flags |= 2;
-
-  if (GetKeyState (VK_MENU) < 0)      // alt+click
-     Flags |= 4;
    
 
   pPlugin->ExecutePluginScript (sRoutineName.c_str (), 
@@ -6392,7 +6415,8 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
 
         // call MoveCallback for that hotspot, if it exists
         if (it != prev_mw->m_Hotspots.end ())
-          Send_Mouse_Event_To_Plugin (prev_mw->m_sCallbackPlugin,
+          Send_Mouse_Event_To_Plugin (it->second->m_dispid_MoveCallback,
+                                      prev_mw->m_sCallbackPlugin,
                                       it->second->m_sMoveCallback, 
                                       prev_mw->m_sMouseDownHotspot);
         return true;  // that's all
@@ -6433,7 +6457,8 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
         if (it != old_mw->m_Hotspots.end ())
           {
           RemoveToolTip ();
-          Send_Mouse_Event_To_Plugin (old_mw->m_sCallbackPlugin,
+          Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseOver,
+                                      old_mw->m_sCallbackPlugin,
                                       it->second->m_sCancelMouseOver, 
                                       old_mw->m_sMouseOverHotspot);
           }
@@ -6462,7 +6487,8 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
       if (it != mw->m_Hotspots.end ())
         {
         RemoveToolTip ();
-        Send_Mouse_Event_To_Plugin (mw->m_sCallbackPlugin,
+        Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseOver,
+                                    mw->m_sCallbackPlugin,
                                     it->second->m_sCancelMouseOver, 
                                     mw->m_sMouseOverHotspot);
         }
@@ -6485,24 +6511,42 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
         {
         // this is our new one
         mw->m_sMouseOverHotspot = sHotspotId;
-        Send_Mouse_Event_To_Plugin (mw->m_sCallbackPlugin, 
+        Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseOver,
+                                    mw->m_sCallbackPlugin, 
                                     pHotspot->m_sMouseOver, 
                                     sHotspotId);
         // activate tooltip if possible
-	      if (::IsWindow(m_ToolTip.m_hWnd))
-	        {
+        if (::IsWindow(m_ToolTip.m_hWnd))
+          {
           // now activate for *this* hotspot
-		      m_ToolTip.Activate(TRUE);
+          m_ToolTip.Activate(TRUE);
           m_nLastToolTipLine = 0;
           m_nLastToolTipColumn = 0;
-  	      }   // end of having tooltip window
+          }   // end of having tooltip window
+
+
+        // capture mouse movements out of the miniwindow (version 4.46)
+        // see: http://www.gammon.com.au/forum/?id=9980
+
+        if (!m_mousedover && !bWin95 && !pHotspot->m_sCancelMouseOver.empty () )
+          {
+          TRACKMOUSEEVENT tme;
+          ZeroMemory (&tme, sizeof tme);
+          tme.cbSize = sizeof(TRACKMOUSEEVENT);
+          tme.dwFlags = TME_LEAVE;
+          tme.hwndTrack = m_hWnd;
+          _TrackMouseEvent(&tme);
+
+          m_mousedover = true;
+         }
 
         }
       else
         {  // same hotspot (new in version 4.45)
         // see lengthy forum discussion: http://www.gammon.com.au/forum/?id=9942
         if (pHotspot->m_Flags & 1)
-          Send_Mouse_Event_To_Plugin (mw->m_sCallbackPlugin, 
+          Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseOver,
+                                      mw->m_sCallbackPlugin, 
                                       pHotspot->m_sMouseOver, 
                                       sHotspotId, 0x80);
         }
@@ -6545,7 +6589,8 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
 
         // call CancelMouseOver for that hotspot, if it exists
         if (it != old_mw->m_Hotspots.end ())
-          Send_Mouse_Event_To_Plugin (old_mw->m_sCallbackPlugin,
+          Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseOver, 
+                                      old_mw->m_sCallbackPlugin,
                                       it->second->m_sCancelMouseOver, 
                                       old_mw->m_sMouseOverHotspot);    
         old_mw->m_sMouseOverHotspot.erase ();  // no mouse-over right now
@@ -6568,7 +6613,8 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
       {
       mw->m_sMouseDownHotspot = sHotspotId;  // remember this is mousedown hotspot
 
-      Send_Mouse_Event_To_Plugin (mw->m_sCallbackPlugin, 
+      Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseDown, 
+                                  mw->m_sCallbackPlugin, 
                                   pHotspot->m_sMouseDown, 
                                   sHotspotId,
                                   flags);   // LH / RH mouse?
@@ -6576,7 +6622,7 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
 
     m_sPreviousMiniWindow = sMiniWindowId;   // remember in case they move outside window
     // have to capture anyway or we get mouse-up without previous mouse-down
-  	SetCapture();       // Capture the mouse until button up.
+    SetCapture();       // Capture the mouse until button up.
     return true;    // we are over mini-window - don't check for underlying text
     }
 
@@ -6619,9 +6665,10 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
         // lookup that HotspotId
         HotspotMapIterator it = prev_mw->m_Hotspots.find (prev_mw->m_sMouseDownHotspot);
 
-        // call MoveCallback for that hotspot, if it exists
+        // call ReleaseCallback for that hotspot, if it exists
         if (it != prev_mw->m_Hotspots.end ())
-          Send_Mouse_Event_To_Plugin (prev_mw->m_sCallbackPlugin,
+          Send_Mouse_Event_To_Plugin (it->second->m_dispid_ReleaseCallback, 
+                                      prev_mw->m_sCallbackPlugin,
                                       it->second->m_sReleaseCallback, 
                                       prev_mw->m_sMouseDownHotspot);
 
@@ -6643,8 +6690,8 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
   // A mouse-up not in this miniwindow cancels a previous mouse-down
   if (sMiniWindowId != m_sPreviousMiniWindow && !m_sPreviousMiniWindow.empty ())
     {
-	  ReleaseCapture();   // Release the mouse capture established at
-    	    					    // the beginning of the mouse click.
+    ReleaseCapture();   // Release the mouse capture established at
+                        // the beginning of the mouse click.
 
     MiniWindowMapIterator it = pDoc->m_MiniWindows.find (m_sPreviousMiniWindow);
   
@@ -6664,7 +6711,8 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
 
         // call CancelMouseDown for that hotspot, if it exists
         if (it != old_mw->m_Hotspots.end ())
-          Send_Mouse_Event_To_Plugin (old_mw->m_sCallbackPlugin,
+          Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseDown, 
+                                      old_mw->m_sCallbackPlugin,
                                       it->second->m_sCancelMouseDown, 
                                       old_mw->m_sMouseDownHotspot);
         old_mw->m_sMouseDownHotspot.erase ();  // no mouse-down right now
@@ -6684,8 +6732,8 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
 
     mw->m_last_mouseposition = CPoint (point.x - mw->m_rect.left, point.y - mw->m_rect.top);
     mw->m_last_mouse_update++;
-	  ReleaseCapture();   // Release the mouse capture established at
-    	    					    // the beginning of the mouse click.
+    ReleaseCapture();   // Release the mouse capture established at
+                        // the beginning of the mouse click.
 
     // if mouse-up outside the current hotspot just cancel previous one
     // cancel previous mouse-down hotspot (in this miniwindow)
@@ -6696,7 +6744,8 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
       HotspotMapIterator it = mw->m_Hotspots.find (mw->m_sMouseDownHotspot);
 
       if (it != mw->m_Hotspots.end ())
-        Send_Mouse_Event_To_Plugin (mw->m_sCallbackPlugin,
+        Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseDown, 
+                                    mw->m_sCallbackPlugin,
                                     it->second->m_sCancelMouseDown, 
                                     mw->m_sMouseDownHotspot);
 
@@ -6706,7 +6755,8 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
     // now, did we release mouse over the hotspot it went down in?
     if (pHotspot && mw->m_sMouseDownHotspot == sHotspotId)
       {
-      Send_Mouse_Event_To_Plugin (mw->m_sCallbackPlugin, 
+      Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseUp, 
+                                  mw->m_sCallbackPlugin, 
                                   pHotspot->m_sMouseUp, 
                                   sHotspotId, 
                                   flags);  // LH / RH mouse?
@@ -7120,3 +7170,30 @@ void CMUSHView::SelectionChanged (void)
  
   } // end of CMUSHView::::SelectionChanged
 
+
+LRESULT CMUSHView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+  switch (message)
+   {
+    case WM_MOUSELEAVE:
+    {
+      CMUSHclientDoc* pDoc = GetDocument();
+      ASSERT_VALID(pDoc);
+      CPoint point (-1, -1);
+
+      m_mousedover = false;
+
+      Mouse_Move_MiniWindow (pDoc, point);
+
+      return 0;
+    }  // end of WM_MOUSELEAVE
+
+    default: 
+      return CView::WindowProc(message, wParam, lParam);
+
+   }  // end of switch
+  
+ 
+  // cannot get here
+
+}
