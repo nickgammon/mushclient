@@ -273,8 +273,6 @@ protected:
 	void				AddPaneSpace(int nWidth, int nTopPane,int nBottomPane);
 	void				PlaceControl(cControlPos* pCtrl);
 
-// Überschreibungen
-	// Vom Klassen-Assistenten generierte virtuelle Funktionsüberschreibungen
 	//{{AFX_VIRTUAL(CTreePropertySheet)
 	//}}AFX_VIRTUAL
 

@@ -784,13 +784,13 @@ CString FixUpGerman (const CString strMessage)
   {
   CString strResult = strMessage;
 
-  strResult.Replace ("\xFC", "ue");    // ü
-  strResult.Replace ("\xDC", "Ue");    // Ü
-  strResult.Replace ("\xE4", "ae");    // ä
-  strResult.Replace ("\xC4", "Ae");    // Ä
-  strResult.Replace ("\xF6", "oe");    // ö
-  strResult.Replace ("\xD6", "Oe");    // Ö
-  strResult.Replace ("\xDF", "ss");    // ß
+  strResult.Replace ("\xFC", "ue");    // u with 2 dots
+  strResult.Replace ("\xDC", "Ue");    // U with 2 dots
+  strResult.Replace ("\xE4", "ae");    // a with 2 dots
+  strResult.Replace ("\xC4", "Ae");    // A with 2 dots
+  strResult.Replace ("\xF6", "oe");    // o with 2 dots
+  strResult.Replace ("\xD6", "Oe");    // O with 2 dots
+  strResult.Replace ("\xDF", "ss");    // B
 
   return strResult;
 
