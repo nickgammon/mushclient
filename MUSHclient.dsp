@@ -1144,9 +1144,6 @@ SOURCE=.\install\readme.txt
 # End Source File
 # End Target
 # End Project
-# Section MUSHclient : {00000000-0001-0000-0000-000000000000}
-# 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
-# End Section
 # Section MUSHclient : {F3B13065-16CC-11D0-B7D0-00A0247B3BFD}
 # 	0:8:TipDlg.h:D:\SOURCE\MUSHclient\TipDlg.h
 # 	0:10:TipDlg.cpp:D:\SOURCE\MUSHclient\TipDlg.cpp
@@ -1193,4 +1190,7 @@ SOURCE=.\install\readme.txt
 # End Section
 # Section MUSHclient : {00000000-000C-0000-0C00-00004944445F}
 # 	1:26:CG_IDR_POPUP_ACTIVITY_VIEW:127
+# End Section
+# Section MUSHclient : {00000000-0001-0000-0000-000000000000}
+# 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
 # End Section

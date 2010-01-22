@@ -2,8 +2,8 @@
 #include "mainfrm.h"
 #include "MUSHclient.h"
 #include "doc.h"
-#include "FunctionListDlg.h"
-#include "CompleteWordDlg.h"
+#include "dialogs\FunctionListDlg.h"
+#include "dialogs\CompleteWordDlg.h"
 
 #define FUNCTIONS_FIRST_MENU 10000
 #define FUNCTIONS_MENU_COUNT 30   // number of functions menu items we support
