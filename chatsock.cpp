@@ -859,7 +859,7 @@ void CChatSocket::SendChatMessage (const int iMessage,
       strData = (char) (unsigned char) iMessage;
       strData += strMessage;
       // can't have 0xFF imbedded in messages, except file blocks :)
-      // 0xFF is ÿ so y will look reasonable 
+      // 0xFF is y with 2 dots on it so y will look reasonable 
       if (iMessage != CHAT_FILE_BLOCK)
         strData.Replace ((unsigned char) CHAT_END_OF_COMMAND, 'y');
       strData += (unsigned char) CHAT_END_OF_COMMAND;
@@ -1819,4 +1819,4 @@ CString CChatSocket::MakeStamp (const long iStamp)
 
   return strStamp;
 
-  }  // end of CChatSocket::MakeStamp 
+}  // end of CChatSocket::MakeStamp

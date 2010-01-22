@@ -2,7 +2,7 @@
 //
 
 /*
-Copyright © 2000 Nick Gammon.
+Copyright (c) 2000 Nick Gammon.
 
 */
 

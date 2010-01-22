@@ -1845,7 +1845,7 @@ CString strLine (lpszText, size);
     // the following characters will terminate any collection/negotiation phases
     //  newline, carriage-return, escape, IAC
     if (!(flags & NOTE_OR_COMMAND) && strchr ("\n\r\x1B\xFF", c))
-      // IAC IAC is treated as a simple ÿ character and not a special character
+      // IAC IAC is treated as a simple IAC (y with 2 dots) character and not a special character
       if (c == IAC && size > 1 && (unsigned char) p [1] == IAC)
         {
         if (m_phase != NONE)
@@ -2162,9 +2162,9 @@ CString strLine (lpszText, size);
                   break;
 
       case IAC:
-              // IAC IAC is treated as a simple ÿ character and not a special character
+              // IAC IAC is treated as a simple IAC (y with 2 dots) character and not a special character
                 
-                  if (!(flags & NOTE_OR_COMMAND))  // however internally ÿ is simply ÿ
+                  if (!(flags & NOTE_OR_COMMAND))  // however internally IAC is simply IAC
                     {
                     if (size > 1 && (unsigned char) p [1] == IAC)
                       {

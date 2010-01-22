@@ -181,7 +181,7 @@ void MString::DoubleMetaphone(CString &metaph, CString &metaph2)
                                         current +=1;
                                 break;
                         
-                        case 'Ç':
+                        case '\xC7':
                                 MetaphAdd("S");
                                 current += 1;
                                 break;
@@ -574,7 +574,7 @@ void MString::DoubleMetaphone(CString &metaph, CString &metaph2)
                                 MetaphAdd("N");
                                 break;
 
-                        case 'Ñ':
+                        case '\xD1':
                                 current += 1;
                                 MetaphAdd("N");
                                 break;
