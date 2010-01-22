@@ -29,6 +29,7 @@ Localize_template.lua
 #
 *.ncb
 *.plg
+*.opt
 *.bak
 *.dll
 *.fon
