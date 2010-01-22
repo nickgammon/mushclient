@@ -33,6 +33,7 @@ Localize_template.lua
 *.dll
 *.fon
 *.po
+*.GID
 
 #
 #  Notes for me:
