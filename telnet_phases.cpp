@@ -540,7 +540,7 @@ void CMUSHclientDoc::Phase_MUD_SPECIFIC (const unsigned char c)
   {
   if (c == IAC ||   // IAC terminates
       c == 0 ||     // can't handle NUL
-      m_strLast_MUD_specific_stuff_received.GetLength () > 127)  // bail out at 127 characters
+      m_strLast_MUD_specific_stuff_received.GetLength () > 1000)  // bail out at 1000 characters
     {
     m_phase = HAVE_IAC;
 
