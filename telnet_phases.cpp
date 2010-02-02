@@ -468,7 +468,7 @@ void CMUSHclientDoc::Phase_SUBNEGOTIATION (const unsigned char c)
     if (m_subnegotiation_type == TELOPT_MUD_SPECIFIC)
       {
       m_phase = HAVE_MUD_SPECIFIC;
-      m_strLast_MUD_specific_stuff_received.Empty ();
+      m_strLast_MUD_specific_stuff_received.erase ();
       }
     }
 
@@ -540,7 +540,7 @@ void CMUSHclientDoc::Phase_MUD_SPECIFIC (const unsigned char c)
   {
   if (c == IAC ||   // IAC terminates
       c == 0 ||     // can't handle NUL
-      m_strLast_MUD_specific_stuff_received.GetLength () > 1000)  // bail out at 1000 characters
+      m_strLast_MUD_specific_stuff_received.size () > 5000)  // bail out at 5000 characters
     {
     m_phase = HAVE_IAC;
 
@@ -553,7 +553,7 @@ void CMUSHclientDoc::Phase_MUD_SPECIFIC (const unsigned char c)
       if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
         continue;
 
-      CString strReceived (m_strLast_MUD_specific_stuff_received);
+      CString strReceived (m_strLast_MUD_specific_stuff_received.c_str ());
 
       // see what the plugin makes of this,
       pPlugin->ExecutePluginScript (ON_PLUGIN_TELNET_OPTION,
