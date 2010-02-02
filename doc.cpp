@@ -6961,7 +6961,7 @@ void CMUSHclientDoc::ConnectionEstablished (void)
   m_bSent_WILL_TELOPT_MUD_SPECIFIC = false;
   m_bOutgoing_MUD_specific = false;
   m_bIncoming_MUD_specific = false;
-  m_strLast_MUD_specific_stuff_received.Empty ();
+  m_strLast_MUD_specific_stuff_received.erase ();
 
   Note ("");   // ensure connection starts on new line and that pixel offset doesn't chop message
   if (m_bShowConnectDisconnect)

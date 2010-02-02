@@ -4447,7 +4447,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case   72: SetUpVariantString (vaResult, MUSHCLIENT_VERSION); break;
     case   73: SetUpVariantString (vaResult, __DATE__ " " __TIME__); break;
     case   74: SetUpVariantString (vaResult, ExtractDirectory (App.m_strMUSHclientFileName) + "sounds\\"); break;
-    case   75: SetUpVariantString (vaResult, m_strLast_MUD_specific_stuff_received); break;
+    case   75: SetUpVariantString (vaResult, m_strLast_MUD_specific_stuff_received.c_str ()); break;
     case   76: SetUpVariantString (vaResult, m_strSpecialFontName); break;
 
     case 77:

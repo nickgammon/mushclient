@@ -974,7 +974,7 @@ public:
 
   bool m_bOutgoing_MUD_specific;     // server said IAC DO 102
   bool m_bIncoming_MUD_specific;     // server said IAC WILL 102
-  CString m_strLast_MUD_specific_stuff_received;   // last string x from MUD: IAC SB 102 x IAC SE
+  string m_strLast_MUD_specific_stuff_received;   // last string x from MUD: IAC SB 102 x IAC SE
 
   // MSP (MUD Sound Protocol) stuff
   bool m_bMSP;  // true if using MSP
