@@ -314,6 +314,7 @@ SetOverwrite ifnewer
    File "..\lua\mw.lua"
    File "..\lua\movewindow.lua"
    File "..\lua\alphanum.lua"
+   File "..\lua\InfoBox.lua"   
  ; File "..\lua\ppi.lua"
 
   ; Set output path to the scripts subdirectory.
@@ -371,6 +372,7 @@ Section "Plugins"
   File "..\plugins\Installer_sumcheck.xml"
   File "..\plugins\lua_chat.xml"
   File "..\plugins\Current_Output_Window.xml"
+  File "..\plugins\InfoBox_Demo.xml"
 
 
 SectionEnd
@@ -454,6 +456,7 @@ Section Uninstall
   Delete "$INSTDIR\lua\mw.lua" 
   Delete "$INSTDIR\lua\movewindow.lua" 
   Delete "$INSTDIR\lua\alphanum.lua" 
+  Delete "$INSTDIR\lua\InfoBox.lua" 
 ; Delete "$INSTDIR\lua\ppi.lua"
   
   ; spell checker stuff
@@ -522,6 +525,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\Installer_sumcheck.xml"
   Delete "$INSTDIR\worlds\plugins\lua_chat.xml"
   Delete "$INSTDIR\worlds\plugins\Current_Output_Window.xml"
+  Delete "$INSTDIR\worlds\plugins\InfoBox_Demo.xml"
   
   ; locale stuff
   
