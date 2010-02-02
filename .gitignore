@@ -25,6 +25,11 @@ all_files_list.txt
 Localize_template.lua
 
 #
+#  This searches all files for funny problems
+#
+find_non_standard_encoding.lua
+
+#
 #  Compiler work files, editor backups, DLLs used for testing, etc.
 #
 *.ncb
