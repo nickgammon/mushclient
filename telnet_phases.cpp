@@ -15,6 +15,24 @@
   The two "triggering" codes we might get in normal text (ie. phase NONE) are
   ESC or IAC.
 
+  Tested (5 Feb 2010):
+
+  * MCCP v1
+  * MCCP v2
+  * IAC GA
+  * IAC EOR
+  * IAC IAC inside subnegotiation
+  * IAC IAC in normal text
+
+
+  Not tested:
+
+  * Charset
+  * terminal type
+  * NAWS
+  * MXP
+  * Chat system
+
 */
 
 // ESC x
@@ -76,7 +94,7 @@ void CMUSHclientDoc::Phase_ANSI (const unsigned char c)
 void CMUSHclientDoc::Phase_IAC (unsigned char & c)
   {
   char * p;
-  unsigned char new_c = 0;
+  unsigned char new_c = 0;    // returning zero stops further processing of c
 
   switch (c)
     {
@@ -102,7 +120,7 @@ void CMUSHclientDoc::Phase_IAC (unsigned char & c)
           if (m_bConvertGAtoNewline)
             new_c = '\n';
           break;
-    case SB                  : m_phase = HAVE_SUBNEGOTIATION; p = "SB"; break;
+    case SB                  : m_phase = HAVE_SB;             p = "SB"; break;
     case WILL                : m_phase = HAVE_WILL;           p = "WILL"; break;
     case WONT                : m_phase = HAVE_WONT;           p = "WONT"; break;
     case DO                  : m_phase = HAVE_DO;             p = "DO"; break;
@@ -117,8 +135,42 @@ void CMUSHclientDoc::Phase_IAC (unsigned char & c)
 
 // WILL - we have IAC WILL x
 
+bool CMUSHclientDoc::Handle_Telnet_Request (const int iNumber, const string sType)
+
+  {
+  bool bOK = false;
+
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+
+  // tell each plugin what we have received
+  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+    {
+    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+
+
+    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
+      continue;
+
+    // see what the plugin makes of this,
+    if (pPlugin->ExecutePluginScript (ON_PLUGIN_TELNET_REQUEST,
+                                  pPlugin->m_dispid_plugin_telnet_request,
+                                  iNumber,
+                                  sType))  // what we got
+      bOK = true;
+
+    }   // end of doing each plugin
+
+    m_CurrentPlugin = pSavedPlugin;
+    return bOK;
+
+  } // end of CMUSHclientDoc::Handle_Telnet_Request 
+
 void CMUSHclientDoc::Phase_WILL (const unsigned char c)
   {
+
+  unsigned char do_do_it [3]   = { IAC, DO, c };
+  unsigned char dont_do_it [3] = { IAC, DONT, c };
+
 // telnet negotiation : in response to WILL, we say DONT
 // (except for compression, MXP, TERMINAL_TYPE and SGA), we *will* handle that)
 
@@ -126,8 +178,12 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
   m_phase = NONE;  // back to normal text after this character
   switch (c)
     {
-    case TELOPT_COMPRESS:
     case TELOPT_COMPRESS2:
+        TRACE1 ("\nSending IAC DONT <%d>\n", c);
+        SendPacket (dont_do_it, sizeof dont_do_it);
+      break;
+
+    case TELOPT_COMPRESS:
       // initialise compression library if not already decompressing
       if (!m_bCompressInitOK && !m_bCompress)
         m_bCompressInitOK = InitZlib (m_zCompress);
@@ -148,48 +204,36 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
             !(c == TELOPT_COMPRESS && m_bSupports_MCCP_2)) // don't agree to MCCP1 and MCCP2
           {
           TRACE1 ("\nSending IAC DO <%d>\n", c);
-          unsigned char p [3] = { IAC, DO, c };
-          SendPacket (p, sizeof p);
+          SendPacket (do_do_it, sizeof do_do_it);
           if (c == TELOPT_COMPRESS2)
             m_bSupports_MCCP_2 = true;
           }
         else
           {   // not enough memory or already agreed to MCCP 2 - no compression
           TRACE1 ("\nSending IAC DONT <%d>\n", c);
-          unsigned char p [3] = { IAC, DONT, c };
-          SendPacket (p, sizeof p);
+          SendPacket (dont_do_it, sizeof dont_do_it);
           }
         }   // end of compression wanted and zlib engine initialised
       else
         {
         TRACE1 ("\nSending IAC DONT <%d>\n", c);
-        unsigned char p [3] = { IAC, DONT, c };
-        SendPacket (p, sizeof p);
+        SendPacket (dont_do_it, sizeof dont_do_it);
         }
       break;    // end of TELOPT_COMPRESS
 
     // here for SGA (Suppress GoAhead) 
     case SGA:
-          {
-          unsigned char p [3] = { IAC, DO, c };
-          SendPacket (p, sizeof p);
-          }
+          SendPacket (do_do_it, sizeof do_do_it);
           break;  // end of SGA 
 
     // here for TELOPT_MUD_SPECIFIC 
     case TELOPT_MUD_SPECIFIC:
-          {
-          unsigned char p [3] = { IAC, DO, c };
-          SendPacket (p, sizeof p);
-          m_bIncoming_MUD_specific = true;
-          }
+          SendPacket (do_do_it, sizeof do_do_it);
           break;  // end of TELOPT_MUD_SPECIFIC 
 
     case TELOPT_ECHO:
         if (!m_bNoEchoOff)
             {
-//            unsigned char p [3] = { IAC, DO, c };
-//            SendPacket (p, sizeof p);
             m_bNoEcho = true;
             TRACE ("Echo turned off\n");
             }
@@ -197,17 +241,15 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
 
     case TELOPT_MXP:
           {
-          unsigned char agree [3] = { IAC, DO, c };
-          unsigned char disagree [3] = { IAC, DONT, c };
           if (m_iUseMXP == eNoMXP)
             {
             TRACE1 ("\nSending IAC DONT <%d>\n", c);
-            SendPacket (disagree, sizeof disagree);
+            SendPacket (dont_do_it, sizeof dont_do_it);
             }     // end of no MXP wanted
           else
             {
             TRACE1 ("\nSending IAC DO <%d>\n", c);
-            SendPacket (agree, sizeof agree);
+            SendPacket (do_do_it, sizeof do_do_it);
             if (m_iUseMXP == eQueryMXP)     // turn MXP on now
               MXP_On ();
             } // end of MXP wanted
@@ -218,27 +260,28 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
     case WILL_END_OF_RECORD:
           {
           if (m_bConvertGAtoNewline)
-            {
-            unsigned char p [3] = { IAC, DO, c };
-            SendPacket (p, sizeof p);
-            }   // we will handle it
+            SendPacket (do_do_it, sizeof do_do_it);
           else
-            {
-            unsigned char p [3] = { IAC, DONT, c };
-            SendPacket (p, sizeof p);
-            }   // we won't
+            SendPacket (dont_do_it, sizeof dont_do_it);
           }
           break;  // end of WILL_END_OF_RECORD
 
 
     default:
-        {
-        unsigned char p [3] = { IAC, DONT, c };
-        SendPacket (p, sizeof p);
-        }
+        if (Handle_Telnet_Request (c, "WILL"))
+          {
+          TRACE1 ("\nSending IAC DO <%d>\n", c);
+          SendPacket (do_do_it, sizeof do_do_it);
+          }
+        else
+          {
+          TRACE1 ("\nSending IAC DONT <%d>\n", c);
+          SendPacket (dont_do_it, sizeof dont_do_it);
+          }
         break;  // end of others
 
     } // end of switch
+
 
   } // end of Phase_WILL
 
@@ -254,8 +297,6 @@ void CMUSHclientDoc::Phase_WONT (const unsigned char c)
     case TELOPT_ECHO:
         if (!m_bNoEchoOff)
           {
-//          unsigned char p [3] = { IAC, DONT, c };
-//          SendPacket (p, sizeof p);
           m_bNoEcho = false;
           TRACE ("Echo turned on\n");
           }
@@ -277,86 +318,62 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
 
   TRACE1 ("<%d>", c);
   m_phase = NONE;
+
+  // if we are already in a mode do not agree again - see RFC 854 
+  // and forum subject 3061                           
+
+  if (m_bClient_IAC_WILL [c] ||
+      m_bClient_IAC_WONT [c])
+      return;
+
+  unsigned char will_do_it [3] = { IAC, WILL, c };
+  unsigned char wont_do_it [3] = { IAC, WONT, c };
+
   switch (c)
     {
 
-// if we are already in a mode do not agree again - see RFC 854 
-// and forum subject 3061                           
 
     case SGA:
-
-      if (!m_bSent_WILL_SGA)
-        {
-        unsigned char p [3] = { IAC, WILL, c };
-        SendPacket (p, sizeof p);
-        m_bSent_WILL_SGA = true;
-        }
-      break; // end of SGA 
-                
     case TELOPT_MUD_SPECIFIC:
-
-      if (!m_bSent_WILL_TELOPT_MUD_SPECIFIC)
-        {
-        unsigned char p [3] = { IAC, WILL, c };
-        SendPacket (p, sizeof p);
-        m_bSent_WILL_TELOPT_MUD_SPECIFIC = true;
-        m_bOutgoing_MUD_specific = true;
-        }
-      break; // end of TELOPT_MUD_SPECIFIC 
-
     case TELOPT_TERMINAL_TYPE:   
-
-      if (!m_bSent_WILL_TELOPT_TERMINAL_TYPE)
-        {
-        unsigned char p [3] = { IAC, WILL, c };
-        SendPacket (p, sizeof p);
-        m_bSent_WILL_TELOPT_TERMINAL_TYPE = true;
-        }
-      break; // end of TELOPT_TERMINAL_TYPE 
-
     case TELOPT_ECHO:
-      if (!m_bSent_WILL_TELOPT_ECHO)
-        {
-        unsigned char p [3] = { IAC, WILL, c };
-        SendPacket (p, sizeof p);
-        m_bSent_WILL_TELOPT_ECHO = true;
-        }
-      break;  // end of TELOPT_ECHO
+    case TELOPT_CHARSET:
+        TRACE1 ("\nSending IAC WILL <%d>\n", c);
+        SendPacket (will_do_it, sizeof will_do_it);
+        m_bClient_IAC_WILL [c] = true;
+        break; // end of things we will do 
+                
+
+
 
     case TELOPT_NAWS:
       {
       // option off - must be server initiated
       if (!m_bNAWS)
         {
-        unsigned char p [3] = { IAC, WILL, TELOPT_NAWS };
-        SendPacket (p, sizeof p);
+        TRACE1 ("\nSending IAC WILL <%d>\n", c);
+        SendPacket (will_do_it, sizeof will_do_it);
+        m_bClient_IAC_WILL [c] = true;
         }
       m_bNAWS_wanted = true;
       SendWindowSizes (m_nWrapColumn);
       }
       break;
 
-    case TELOPT_CHARSET:
-      {
-      unsigned char p [3] = { IAC, WILL, TELOPT_CHARSET };
-      SendPacket (p, sizeof p);
-      m_bCHARSET_wanted = true;
-      }
-      break;
 
     case TELOPT_MXP:
           {
-          unsigned char agree [3] = { IAC, WILL, c };
-          unsigned char disagree [3] = { IAC, WONT, c };
           if (m_iUseMXP == eNoMXP)
             {
             TRACE1 ("\nSending IAC WONT <%d>\n", c);
-            SendPacket (disagree, sizeof disagree);
+            SendPacket (wont_do_it, sizeof wont_do_it);
+            m_bClient_IAC_WONT [c] = true;
             }     // end of no MXP wanted
           else
             {
             TRACE1 ("\nSending IAC WILL <%d>\n", c);
-            SendPacket (agree, sizeof agree);
+            SendPacket (will_do_it, sizeof will_do_it);
+            m_bClient_IAC_WILL [c] = true;
             if (m_iUseMXP == eQueryMXP)     // turn MXP on now
               MXP_On ();
             } // end of MXP wanted
@@ -364,11 +381,19 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
           break;  // end of MXP
 
     default:
-      {
-      unsigned char p [3] = { IAC, WONT, c };
-      SendPacket (p, sizeof p);
-      }
-      break;    // end of others
+          if (Handle_Telnet_Request (c, "DO"))
+            {
+            TRACE1 ("\nSending IAC WILL <%d>\n", c);
+            SendPacket (will_do_it, sizeof will_do_it);
+            m_bClient_IAC_WILL [c] = true;
+            }
+          else
+            {
+            TRACE1 ("\nSending IAC WONT <%d>\n", c);
+            SendPacket (wont_do_it, sizeof wont_do_it);
+            m_bClient_IAC_WONT [c] = true;
+            }
+          break;    // end of others
     }   // end of switch
 
   } // end of Phase_DO
@@ -394,85 +419,314 @@ void CMUSHclientDoc::Phase_DONT (const unsigned char c)
 
   } // end of Phase_DONT
 
-// SUBNEGOTIATION - we have IAC SB c
+// SUBNEGOTIATION - we have IAC SB c 
+void CMUSHclientDoc::Phase_SB (const unsigned char c)
+  {
+  TRACE1 ("<%d>", c);
 
+  // note IAC SB COMPRESS is a special case because they forgot to specify
+  // the IAC SE, and thus we can't use normal negotiation
+  if (c == TELOPT_COMPRESS)
+    m_phase = HAVE_COMPRESS;
+  else
+    {
+    m_subnegotiation_type = c;
+    m_IAC_subnegotiation_data.erase ();
+    m_phase = HAVE_SUBNEGOTIATION;
+    }
+  } // end of CMUSHclientDoc::Phase_SB 
+
+// SUBNEGOTIATION - we have IAC SB c (data)
 void CMUSHclientDoc::Phase_SUBNEGOTIATION (const unsigned char c)
   {
+
+  if (c == IAC)
+    {
+    // have IAC SB x <data> IAC
+    // we may or may not have another IAC or possibly an SE
+    m_phase = HAVE_SUBNEGOTIATION_IAC;
+    }
+  else
+    // just collect the data until IAC SE
+    m_IAC_subnegotiation_data += c;
+
+
+  } // end of Phase_SUBNEGOTIATION
+
+// SUBNEGOTIATION - we have IAC SB x (data) IAC c
+void CMUSHclientDoc::Phase_SUBNEGOTIATION_IAC (const unsigned char c)
+  {
+
+  if (c == IAC)
+    {
+    // have IAC SB x <data> IAC IAC
+    // store the single IAC
+    m_IAC_subnegotiation_data += c;
+    // press on with subnegotiation
+    m_phase = HAVE_SUBNEGOTIATION;
+    return;
+    }
+
+  // see: http://www.gammon.com.au/forum/?id=10043
+  // we have to assume that anything other than IAC is a SE, because 
+  // the spec is silent on what to do otherwise
   if (c == SE)        // end of subnegotiation
-    {
     TRACE ("<SE>");
-    m_phase = NONE;
-    }
-  else if (c == IAC && m_subnegotiation_type == TELOPT_COMPRESS2)
+  else
+    TRACE1 ("<%d> (invalid)", c);
+
+  m_phase = NONE;      // negotiation is over, next byte is plain text
+
+  // subnegotiation is complete ...
+  // we have IAC SB <m_subnegotiation_type> <m_IAC_subnegotiation_data> IAC SE
+
+  switch (m_subnegotiation_type)
     {
-    TRACE ("<IAC>");
-    m_phase = HAVE_COMPRESSION;
-    m_iMCCP_type = 2;
-    }
-  else if (c == IAC && m_subnegotiation_type == TELOPT_MXP)
+    case TELOPT_COMPRESS2:      Handle_TELOPT_COMPRESS2 ();     break;
+    case TELOPT_MUD_SPECIFIC:   Handle_TELOPT_MUD_SPECIFIC ();  break;
+    case TELOPT_MXP:            Handle_TELOPT_MXP ();           break;
+    case TELOPT_TERMINAL_TYPE:  Handle_TELOPT_TERMINAL_TYPE (); break;
+    case TELOPT_CHARSET:        Handle_TELOPT_CHARSET ();       break;
+
+    default:
+      {
+      CPlugin * pSavedPlugin = m_CurrentPlugin;
+
+      // tell each plugin what we have received
+      for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+        {
+        CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+
+
+        if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
+          continue;
+
+        // see what the plugin makes of this,
+        pPlugin->ExecutePluginScript (ON_PLUGIN_TELNET_SUBNEGOTIATION,
+                                      pPlugin->m_dispid_plugin_telnet_subnegotiation,
+                                      m_subnegotiation_type,
+                                      m_IAC_subnegotiation_data);  // what we got
+
+        }   // end of doing each plugin
+
+      m_CurrentPlugin = pSavedPlugin;
+
+      }
+      break;  // end of default
+
+    } // end of switch
+
+  } // end of  CMUSHclientDoc::Phase_SUBNEGOTIATION_IAC 
+
+
+void CMUSHclientDoc::Handle_TELOPT_COMPRESS2 ()
+  {
+  CString strMessage;
+
+  m_iMCCP_type = 2;
+
+  // initialise compression library if not already done
+  if (!m_bCompressInitOK && !m_bCompress)
+    m_bCompressInitOK = InitZlib (m_zCompress);
+
+  if (!(m_bCompressInitOK && m_CompressOutput && m_CompressInput))
+    strMessage = Translate ("Cannot process compressed output. World closed.");
+  else
     {
-    TRACE ("<IAC>");
-    m_phase = HAVE_MXP;
-    }
-  else if (c == WILL && m_subnegotiation_type == TELOPT_COMPRESS)
+
+    int izError = inflateReset (&m_zCompress);
+
+    if (izError == Z_OK)
+      {
+      m_bCompress  = true;
+      TRACE ("Compression on\n");
+      return;
+      }
+
+    if (m_zCompress.msg)
+      strMessage = TFormat ("Could not reset zlib decompression engine: %s",
+                               m_zCompress.msg);
+    else
+      strMessage = TFormat ("Could not reset zlib decompression engine: %i",
+                               izError);
+    } 
+
+  OnConnectionDisconnect ();    // close the world
+  UMessageBox (strMessage, MB_ICONEXCLAMATION);
+  } // end of CMUSHclientDoc::Handle_TELOPT_COMPRESS2
+
+
+void CMUSHclientDoc::Handle_TELOPT_MXP ()
+  {
+  if (m_iUseMXP == eOnCommandMXP)   // if wanted now
+    MXP_On ();
+  } // end of CMUSHclientDoc::Handle_TELOPT_MXP ()
+
+// IAC SB CHARSET REQUEST DELIMITER <name> DELIMITER
+/*
+Server sends:  IAC DO CHARSET
+Client sends:  IAC WILL CHARSET
+Server sends:  IAC SB CHARSET REQUEST DELIM NAME IAC SE
+Client sends:  IAC SB CHARSET ACCEPTED NAME IAC SE
+or
+Client sends:  IAC SB CHARSET REJECTED IAC SE
+
+where:
+
+  CHARSET: 0x2A
+  REQUEST: 0x01
+  ACCEPTED:0x02
+  REJECTED:0x03
+  DELIM:   some character that does not appear in the charset name, other than IAC, eg. comma, space
+  NAME:    the character string "UTF-8" (or some other name like "S-JIS")
+
+*/
+
+void CMUSHclientDoc::Handle_TELOPT_CHARSET ()
+  {
+  // must have at least REQUEST DELIM NAME [ DELIM NAME2 ...]
+  if (m_IAC_subnegotiation_data.size () < 3)
+    return;  
+
+  int tt = m_IAC_subnegotiation_data [0];
+
+  if (tt != 1) 
+    return;  // not a REQUEST
+
+  string delim = m_IAC_subnegotiation_data.substr (1, 1);
+
+  vector <string> v;
+  StringToVector (m_IAC_subnegotiation_data.substr (2), v, delim, false);
+
+  bool found = false;
+  CString strCharset = "US-ASCII"; // default
+
+  if (m_font)
+    {
+
+    // hack! ugh.
+    if (m_bUTF_8)
+       strCharset = "UTF-8";
+
+    for (vector<string>::const_iterator i = v.begin (); i != v.end (); i++)
+      if (i->c_str () == strCharset)
+        {
+        found = true;
+
+        unsigned char p1 [] = { IAC, SB, TELOPT_CHARSET, 2 };  // 2 = accepted
+        unsigned char p2 [] = { IAC, SE }; 
+        unsigned char sResponse [40];
+        int iLength = 0;
+
+        // build up response, eg. IAC, SB, TELOPT_CHARSET, 2, "UTF-8", IAC, SE 
+
+        // preamble
+        memcpy (sResponse, p1, sizeof p1);
+        iLength += sizeof p1;
+
+        // ensure max of 20 so we don't overflow the field
+        CString strTemp = strCharset.Left (20);
+
+        memcpy (&sResponse [iLength], strTemp, strTemp.GetLength ());
+        iLength += strTemp.GetLength ();
+
+        // postamble
+        memcpy (&sResponse [iLength], p2, sizeof p2);
+        iLength += sizeof p2;
+
+        SendPacket (sResponse, iLength);
+
+        }
+    } // end of having an output font
+
+  if (!found)
+    {
+    unsigned char p [] = { IAC, SB, TELOPT_CHARSET, 3, IAC, SE };    // 3 = rejected
+    SendPacket (p, sizeof p);
+    }  // end of charset not in use
+
+
+  } // end of CMUSHclientDoc::Handle_TELOPT_CHARSET ()
+
+
+void CMUSHclientDoc::Handle_TELOPT_MUD_SPECIFIC ()
+  {
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+
+  // tell each plugin what we have received
+  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+    {
+    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+
+
+    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
+      continue;
+
+    CString strReceived (m_IAC_subnegotiation_data.c_str ());
+
+    // see what the plugin makes of this,
+    pPlugin->ExecutePluginScript (ON_PLUGIN_TELNET_OPTION,
+                                  strReceived,  // what we got
+                                  pPlugin->m_dispid_plugin_telnet_option); 
+
+    }   // end of doing each plugin
+
+  m_CurrentPlugin = pSavedPlugin;
+
+  } // end of CMUSHclientDoc::Handle_TELOPT_MUD_SPECIFIC ()
+
+
+void CMUSHclientDoc::Handle_TELOPT_TERMINAL_TYPE ()
+  {
+
+  int tt = m_IAC_subnegotiation_data [0];
+
+  if (tt != 1) 
+    return;  // not a SEND
+
+  TRACE ("<SEND>");
+  // we reply: IAC SB TERMINAL-TYPE IS ... IAC SE
+  // see: RFC 930 and RFC 1060
+  unsigned char p1 [] = { IAC, SB, TELOPT_TERMINAL_TYPE, 0 }; 
+  unsigned char p2 [] = { IAC, SE }; 
+  unsigned char sResponse [40];
+  int iLength = 0;
+
+  // build up response, eg. IAC, SB, TELOPT_TERMINAL_TYPE, 0, "MUSHCLIENT", IAC, SE 
+
+  // preamble
+  memcpy (sResponse, p1, sizeof p1);
+  iLength += sizeof p1;
+
+  // ensure max of 20 so we don't overflow the field
+  CString strTemp = m_strTerminalIdentification.Left (20);
+
+  memcpy (&sResponse [iLength], strTemp, strTemp.GetLength ());
+  iLength += strTemp.GetLength ();
+
+  // postamble
+  memcpy (&sResponse [iLength], p2, sizeof p2);
+  iLength += sizeof p2;
+
+  SendPacket (sResponse, iLength);
+
+  } // end of CMUSHclientDoc::Handle_TELOPT_TERMINAL_TYPE ()
+
+
+// COMPRESSION - we have IAC SB COMPRESS x
+void CMUSHclientDoc::Phase_COMPRESS (const unsigned char c)
+  {
+  if (c == WILL)      // should get COMPRESS WILL
     {
     TRACE ("<WILL>");
-    m_phase = HAVE_COMPRESSION;
-    m_iMCCP_type = 1;
-    }
-  // server requests: IAC SB TERMINAL-TYPE SEND IAC SE
-  else if (c == 1 && m_subnegotiation_type == TELOPT_TERMINAL_TYPE)
-    {
-    TRACE ("<SEND>");
-    // we reply: IAC SB TERMINAL-TYPE IS ... IAC SE
-    // see: RFC 930 and RFC 1060
-    unsigned char p1 [] = { IAC, SB, TELOPT_TERMINAL_TYPE, 0 }; 
-    unsigned char p2 [] = { IAC, SE }; 
-    unsigned char sResponse [40];
-    int iLength = 0;
-
-    // build up response, eg. IAC, SB, TELOPT_TERMINAL_TYPE, 0, "MUSHCLIENT", IAC, SE 
-
-    // preamble
-    memcpy (sResponse, p1, sizeof p1);
-    iLength += sizeof p1;
-
-    // ensure max of 20 so we don't overflow the field
-    CString strTemp = m_strTerminalIdentification.Left (20);
-
-    memcpy (&sResponse [iLength], strTemp, strTemp.GetLength ());
-    iLength += strTemp.GetLength ();
-
-    // postamble
-    memcpy (&sResponse [iLength], p2, sizeof p2);
-    iLength += sizeof p2;
-
-    SendPacket (sResponse, iLength);
-    }
-  // server requests: IAC SB CHARSET REQUEST DELIMITER <name> DELIMITER
-  else if (c == 1 && m_subnegotiation_type == TELOPT_CHARSET)       // 1 = REQUEST
-    {
-    m_phase = HAVE_CHARSET_REQUEST;  // now we need the delimiter
-    m_charset_delimiter = 0;
-    }
-  else if (c == IAC)
-    {
-    TRACE ("<IAC>");
-    m_phase = HAVE_IAC; // starting another IAC
+    m_phase = HAVE_COMPRESS_WILL;
     }
   else
     {
+    m_phase = NONE;   // error
     TRACE1 ("<%d>", c);
-    m_subnegotiation_type = c;    // remember type of subnegotiation
-
-    if (m_subnegotiation_type == TELOPT_MUD_SPECIFIC)
-      {
-      m_phase = HAVE_MUD_SPECIFIC;
-      m_strLast_MUD_specific_stuff_received.erase ();
-      }
     }
-
-  } // end of Phase_SUBNEGOTIATION
+  }
 
 // COMPRESSION - we have IAC SB COMPRESS IAC/WILL x
 
@@ -481,167 +735,49 @@ void CMUSHclientDoc::Phase_SUBNEGOTIATION (const unsigned char c)
 //  1 - got IAC or unexpected input, do nothing
 //  2 - compression OK - prepare for it
 
-int CMUSHclientDoc::Phase_COMPRESSION (const unsigned char c, CString & strMessage)
+void CMUSHclientDoc::Phase_COMPRESS_WILL (const unsigned char c)
   {
   if (c == SE)        // end of subnegotiation
     {        
     TRACE ("<SE>");
-    // initialise compression library
+
+    CString strMessage;
+
+    m_iMCCP_type = 1;
+
+    // initialise compression library if not already done
     if (!m_bCompressInitOK && !m_bCompress)
       m_bCompressInitOK = InitZlib (m_zCompress);
 
     if (!(m_bCompressInitOK && m_CompressOutput && m_CompressInput))
-      {
       strMessage = Translate ("Cannot process compressed output. World closed.");
-      return 0;
-      }
-
-    m_bCompress = true;
-    TRACE ("Compression on\n");
-
-    int izError;
-    if ((izError = inflateReset (&m_zCompress)) != Z_OK)
+    else
       {
+
+      int izError = inflateReset (&m_zCompress);
+
+      if (izError == Z_OK)
+        {
+        m_bCompress  = true;
+        TRACE ("Compression on\n");
+        return;
+        }
+
       if (m_zCompress.msg)
         strMessage = TFormat ("Could not reset zlib decompression engine: %s",
                                  m_zCompress.msg);
       else
         strMessage = TFormat ("Could not reset zlib decompression engine: %i",
                                  izError);
-      return 0;
-      }   // end of bad engine reset
-    m_phase = NONE;
-    return 2;
+      } 
+
+    OnConnectionDisconnect ();    // close the world
+    UMessageBox (strMessage, MB_ICONEXCLAMATION);
     }   // end of IAC SB COMPRESS WILL/IAC SE
-  m_phase = NONE;
-  return 1;
-  } // end of Phase_COMPRESSION
 
-void CMUSHclientDoc::Phase_MXP (const unsigned char c)
-  {
-  if (c == SE)        // end of subnegotiation
-    {        
-    if (m_iUseMXP == eOnCommandMXP)   // if wanted now
-      MXP_On ();
-    }   // end of IAC SB MXP IAC SE
-  m_phase = NONE;
-  }  // end of Phase_MXP
-
-
-void CMUSHclientDoc::Phase_CHARSET_REQUEST (const unsigned char c)
-  {
-  m_phase = HAVE_CHARSET;  // now we need the name
-  m_charset_delimiter = c;
-  m_charset_name.Empty ();  // no name yet
-  }
-
-
-void CMUSHclientDoc::Phase_MUD_SPECIFIC (const unsigned char c)
-  {
-  if (c == IAC ||   // IAC terminates
-      c == 0 ||     // can't handle NUL
-      m_strLast_MUD_specific_stuff_received.size () > 5000)  // bail out at 5000 characters
-    {
-    m_phase = HAVE_IAC;
-
-    // tell each plugin what we have received
-    for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-      {
-      CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      CString strReceived (m_strLast_MUD_specific_stuff_received.c_str ());
-
-      // see what the plugin makes of this,
-      pPlugin->ExecutePluginScript (ON_PLUGIN_TELNET_OPTION,
-                                    strReceived,  // what we got
-                                    pPlugin->m_dispid_plugin_telnet_option); 
-
-      }   // end of doing each plugin
-    return;
-    }
-
-  m_strLast_MUD_specific_stuff_received += c;
+  
+  // not SE? error
   TRACE1 ("<%d>", c);
-  }
+  m_phase = NONE;
+  } // end of Phase_COMPRESS_WILL
 
-
-void CMUSHclientDoc::Phase_CHARSET (const unsigned char c)
-  {
-
-  if (c == IAC || m_charset_name.GetLength () > 100)  // bail out at 100 characters
-    {
-    vector <string> v;
-    // I changed the delimiter to IAC
-    StringToVector ((const char *) m_charset_name, v, string (1, (char) IAC), false);
-
-    bool found = false;
-    CString strCharset = "US-ASCII"; // default
-
-    if (m_font)
-      {
-//      LOGFONT lf;
-//      m_font [0]->GetLogFont (&lf);
-
-//      switch (lf.lfCharSet)
-//        {
-//        case ANSI_CHARSET: strCharset = "US-ASCII"; break;
-//
-//
-//        } // end of switch
-
-      // hack! ugh.
-      if (m_bUTF_8)
-         strCharset = "UTF-8";
-
-      for (vector<string>::const_iterator i = v.begin (); i != v.end (); i++)
-        if (i->c_str () == strCharset)
-          {
-          found = true;
-
-          unsigned char p1 [] = { IAC, SB, TELOPT_CHARSET, 2 };  // 2 = accepted
-          unsigned char p2 [] = { IAC, SE }; 
-          unsigned char sResponse [40];
-          int iLength = 0;
-
-          // build up response, eg. IAC, SB, TELOPT_CHARSET, 2, "UTF-8", IAC, SE 
-
-          // preamble
-          memcpy (sResponse, p1, sizeof p1);
-          iLength += sizeof p1;
-
-          // ensure max of 20 so we don't overflow the field
-          CString strTemp = strCharset.Left (20);
-
-          memcpy (&sResponse [iLength], strTemp, strTemp.GetLength ());
-          iLength += strTemp.GetLength ();
-
-          // postamble
-          memcpy (&sResponse [iLength], p2, sizeof p2);
-          iLength += sizeof p2;
-
-          SendPacket (sResponse, iLength);
- 
-          }
-      } // end of having an output font
-
-    if (!found)
-      {
-      unsigned char p [] = { IAC, SB, TELOPT_CHARSET, 3, IAC, SE };    // 3 = rejected
-      SendPacket (p, sizeof p);
-      }  // end of charset not in use
-
-    m_phase = HAVE_IAC;
-    return;
-    }   // end of negotiation (eg, got IAC)
-
-  // don't want 0x00 in our string, in case they are silly enough to use that
-  if (c == m_charset_delimiter)
-    m_charset_name += (char) IAC;    // delimiter becomes IAC
-  else 
-    m_charset_name += c;             // append to wanted name
-
-  }

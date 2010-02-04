@@ -91,13 +91,11 @@ enum { NONE,          // normal text
        HAVE_WONT,     // just received a TELNET WONT
        HAVE_DO,       // just received a TELNET DO
        HAVE_DONT,     // just received a TELNET DONT
-       HAVE_SUBNEGOTIATION,  // in middle of subnegotiation
-       HAVE_COMPRESSION,     // in middle of subnegotiation for compression, awaiting SE
-       HAVE_MXP,             // in middle of subnegotiation for MXP, awaiting SE
-       HAVE_TERMINAL_TYPE,   // in middle of subnegotiation for terminal type, awaiting SEND IAC SE
-       HAVE_CHARSET_REQUEST, // in middle of subnegotiation for CHARSET, expecting delimiter character
-       HAVE_CHARSET,         // in middle of subnegotiation for CHARSET, expecting character set name
-       HAVE_MUD_SPECIFIC,    // in middle of subnegotiation for MUD_SPECIFIC (102), expecting codes
+       HAVE_SB,       // just received a TELNET IAC SB
+       HAVE_SUBNEGOTIATION,  // received TELNET IAC SB c  (collecting data, awaiting IAC SE)
+       HAVE_SUBNEGOTIATION_IAC,  // received TELNET IAC SB c  <data> IAC  (awaiting IAC or SE)
+       HAVE_COMPRESS,  // received TELNET IAC COMPRESS
+       HAVE_COMPRESS_WILL, // received TELNET IAC COMPRESS WILL
        HAVE_FOREGROUND_256_START,   // received ESC[38;
        HAVE_FOREGROUND_256_FINISH,  // received ESC[38;5;
        HAVE_BACKGROUND_256_START,   // received ESC[48;
@@ -208,6 +206,9 @@ enum {
 
 #define TELOPT_MSP 90   // telet negotiation code for MUD Sound Protocol (MSP)
 #define TELOPT_MXP 91   // telet negotiation code for MUD Extension Protocol (MXP)
+#define TELOPT_ZMP 93   // http://zmp.sourcemud.org/spec.shtml
+#define TELOPT_ATCP 200   // http://www.ironrealms.com/rapture/manual/files/FeatATCP-txt.html
+
 
               
 // bits for m_iFlags1
@@ -949,10 +950,6 @@ public:
   int m_view_number;  // sequence in activity view
 
   int m_phase;        // telnet negotiation phase
-  int m_subnegotiation_type;    // what type of subnegotiation to turn on/off
-
-  char m_charset_delimiter;  // what character set delimiter for telnet CHARSET negotiation
-  CString m_charset_name;    // requested character set name
 
   // MCCP (MUD Client Compression Protocol) stuff
   z_stream m_zCompress;         // compression structure
@@ -970,11 +967,13 @@ public:
 
   // end MCCP stuff
 
-  // MUD-specific stuff
+  // Telnet subnegotiation
 
-  bool m_bOutgoing_MUD_specific;     // server said IAC DO 102
-  bool m_bIncoming_MUD_specific;     // server said IAC WILL 102
-  string m_strLast_MUD_specific_stuff_received;   // last string x from MUD: IAC SB 102 x IAC SE
+  int m_subnegotiation_type;         // what type of subnegotiation we are currently in (0 to 255)
+  string m_IAC_subnegotiation_data;  // last string x from MUD: IAC SB c x IAC SE
+  bool m_bClient_IAC_WILL [256];     // client sent IAC WILL x
+  bool m_bClient_IAC_WONT [256];     // client sent IAC WONT x
+
 
   // MSP (MUD Sound Protocol) stuff
   bool m_bMSP;  // true if using MSP
@@ -1059,13 +1058,6 @@ public:
 
   __int64 m_nBytesIn;
   __int64 m_nBytesOut;
-
-// telnet negotiation stuff
-
-  bool m_bSent_WILL_SGA;
-  bool m_bSent_WILL_TELOPT_TERMINAL_TYPE;
-  bool m_bSent_WILL_TELOPT_ECHO;
-  bool m_bSent_WILL_TELOPT_MUD_SPECIFIC;
 
 // sockets stuff
 
@@ -1286,12 +1278,18 @@ public:
   void Phase_WONT (const unsigned char c);           
   void Phase_DO (const unsigned char c);             
   void Phase_DONT (const unsigned char c);           
+  void Phase_SB (const unsigned char c); 
   void Phase_SUBNEGOTIATION (const unsigned char c); 
-  int Phase_COMPRESSION (const unsigned char c, CString & strMessage);    
-  void Phase_MXP (const unsigned char c);    
-  void Phase_CHARSET_REQUEST (const unsigned char c);    
-  void Phase_CHARSET (const unsigned char c);    
-  void Phase_MUD_SPECIFIC (const unsigned char c);    
+  void Phase_SUBNEGOTIATION_IAC (const unsigned char c); 
+  void Phase_COMPRESS (const unsigned char c);    
+  void Phase_COMPRESS_WILL (const unsigned char c);    
+  bool Handle_Telnet_Request (const int iNumber, const string sType);
+
+  void Handle_TELOPT_COMPRESS2 ();
+  void Handle_TELOPT_MUD_SPECIFIC ();
+  void Handle_TELOPT_MXP ();
+  void Handle_TELOPT_TERMINAL_TYPE ();
+  void Handle_TELOPT_CHARSET ();
 
   // mxp collection phases
   void Phase_MXP_ELEMENT (const unsigned char c);            

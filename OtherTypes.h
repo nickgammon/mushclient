@@ -970,8 +970,10 @@ class CPlugin :public CObject
   DISPID m_dispid_plugin_line_received;  //  "OnPluginLineReceived"    
   DISPID m_dispid_plugin_packet_received;  //  "OnPluginPacketReceived" 
   DISPID m_dispid_plugin_partial_line;     //  "OnPluginPartialLine" 
-  DISPID m_dispid_plugin_telnet_option;     //  "OnPluginTelnetOption" 
-  DISPID m_dispid_plugin_on_world_output_resized;  // "OnPluginWorldOutputResized"
+  DISPID m_dispid_plugin_telnet_option;    //  "OnPluginTelnetOption" 
+  DISPID m_dispid_plugin_telnet_request;   //  "OnPluginTelnetRequest" 
+  DISPID m_dispid_plugin_telnet_subnegotiation;   //  "OnPluginTelnetSubnegotiation" 
+  DISPID m_dispid_plugin_on_world_output_resized; // "OnPluginWorldOutputResized"
   DISPID m_dispid_plugin_on_command_changed;  // "OnPluginCommandChanged"
   
 	DISPID m_dispid_plugin_OnMXP_Start;       // "OnPluginMXPstart"
@@ -1002,12 +1004,12 @@ class CPlugin :public CObject
   bool ExecutePluginScript (const char * sName, 
                             DISPID & iRoutine, 
                             const long arg1,      // 2 arguments
-                            const char * sText);
+                            const string sText);
   bool ExecutePluginScript (const char * sName, 
                             DISPID & iRoutine, 
                             const long arg1,      // 3 arguments
                             const long arg2,
-                            const char * sText);
+                            const string sText);
   bool ExecutePluginScript (const char * sName, 
                             DISPID & iRoutine, 
                             const long arg1,      // 1 number, 3 strings

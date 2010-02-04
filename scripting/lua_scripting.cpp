@@ -459,7 +459,7 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
   for (list<string>::const_iterator siter = sparams.begin ();
        siter != sparams.end ();
        siter++)
-     lua_pushstring (L, siter->c_str ());
+     lua_pushlstring (L, siter->c_str (), siter->size ());
 
   paramCount += sparams.size ();
 

@@ -62,9 +62,6 @@ int i;
   m_bTabCompleteFunctions = true;
   m_hSpecialFontHandle = 0;
 
-  m_bOutgoing_MUD_specific = false;     // server said IAC DO 102
-  m_bIncoming_MUD_specific = false;     // server said IAC WILL 102
-
   m_iTriggersEvaluatedCount = 0; 
   m_iTriggersMatchedCount = 0;   
   m_iAliasesEvaluatedCount = 0;  
@@ -396,6 +393,9 @@ int i;
   m_bPluginProcessesSetVariable = false;
   m_bPluginProcessesSetEntity = false;
   m_bPluginProcessesError = false;      
+
+  ZeroMemory (&m_bClient_IAC_WILL, sizeof m_bClient_IAC_WILL);
+  ZeroMemory (&m_bClient_IAC_WONT, sizeof m_bClient_IAC_WONT);
 
   // set up some default triggers for MUSHes
 

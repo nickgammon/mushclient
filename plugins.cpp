@@ -51,9 +51,11 @@ CPlugin::CPlugin (CMUSHclientDoc * pDoc)
   m_dispid_plugin_send          = DISPID_UNKNOWN;
   m_dispid_plugin_sent          = DISPID_UNKNOWN;
   m_dispid_plugin_line_received = DISPID_UNKNOWN;
-  m_dispid_plugin_packet_received = DISPID_UNKNOWN;
-  m_dispid_plugin_telnet_option = DISPID_UNKNOWN;
-  m_dispid_plugin_partial_line  = DISPID_UNKNOWN;
+  m_dispid_plugin_packet_received= DISPID_UNKNOWN;
+  m_dispid_plugin_telnet_option  = DISPID_UNKNOWN;
+  m_dispid_plugin_telnet_request = DISPID_UNKNOWN;
+  m_dispid_plugin_telnet_subnegotiation = DISPID_UNKNOWN;
+  m_dispid_plugin_partial_line          = DISPID_UNKNOWN;
   m_dispid_plugin_on_world_output_resized = DISPID_UNKNOWN;
   m_dispid_plugin_on_command_changed = DISPID_UNKNOWN;
 
@@ -245,7 +247,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
 bool CPlugin::ExecutePluginScript (const char * sName, 
                                   DISPID & iRoutine, 
                                   const long arg1,
-                                  const char * sText)
+                                  const string sText)
   {
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
@@ -267,7 +269,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
       list<double> nparams;
       list<string> sparams;
       nparams.push_back (arg1);
-      sparams.push_back ((LPCTSTR) sText);
+      sparams.push_back (sText);
       m_ScriptEngine->ExecuteLua (iRoutine, 
                                   sName, 
                                   eDontChangeAction,
@@ -296,7 +298,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
     DISPPARAMS params = { args, NULL, eArgCount, 0 };
     
     args [eArg1] = arg1;
-    args [eText] = sText;
+    args [eText] = CString (sText.c_str (), sText.size ());
     
     COleVariant result;
 
@@ -332,7 +334,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
                                   DISPID & iRoutine, 
                                   const long arg1,
                                   const long arg2,
-                                  const char * sText)
+                                  const string sText)
   {
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
@@ -355,7 +357,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
       list<string> sparams;
       nparams.push_back (arg1);
       nparams.push_back (arg2);
-      sparams.push_back ((LPCTSTR) sText);
+      sparams.push_back (sText);
       m_ScriptEngine->ExecuteLua (iRoutine, 
                                   sName, 
                                   eDontChangeAction,
@@ -387,7 +389,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
     
     args [eArg1] = arg1;
     args [eArg2] = arg2;
-    args [eText] = sText;
+    args [eText] = CString (sText.c_str (), sText.size ());  // yadda yadda, doesn't work with internal 0x00
     
     COleVariant result;
 

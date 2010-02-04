@@ -133,7 +133,7 @@ CChatSocket::~CChatSocket()
       pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_USERDISCONNECT, 
                             pPlugin->m_dispid_plugin_On_Chat_UserDisconnect, 
                             m_iChatID,     // user ID
-                            m_strRemoteUserName    // user name
+                            string (m_strRemoteUserName)    // user name
                             );
       }   // end of doing each plugin
     m_pDoc->m_CurrentPlugin = pSavedPlugin;
@@ -273,7 +273,7 @@ POSITION pluginpos;
         pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_NEWUSER, 
                               pPlugin->m_dispid_plugin_On_Chat_NewUser, 
                               m_iChatID,     // user ID
-                              m_strRemoteUserName    // user name
+                              string (m_strRemoteUserName)    // user name
                               );
         }   // end of doing each plugin
       m_pDoc->m_CurrentPlugin = pSavedPlugin;
@@ -436,7 +436,7 @@ POSITION pluginpos;
         pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_NEWUSER, 
                               pPlugin->m_dispid_plugin_On_Chat_NewUser, 
                               m_iChatID,     // user ID
-                              m_strRemoteUserName    // user name
+                              string (m_strRemoteUserName)    // user name
                               );
         }   // end of doing each plugin
       m_pDoc->m_CurrentPlugin = pSavedPlugin;
@@ -749,7 +749,7 @@ void CChatSocket::ProcessChatMessage (const int iMessage, const CString strMessa
                           pPlugin->m_dispid_plugin_On_Chat_Message,
                           m_iChatID,    // who we are
                           iMessage,     // message number
-                          strMessage    // message text
+                          string (strMessage)    // message text
                           ))                                           
       {                                                                
       m_pDoc->m_CurrentPlugin = pSavedPlugin;                                  
@@ -836,7 +836,7 @@ void CChatSocket::SendChatMessage (const int iMessage,
                           pPlugin->m_dispid_plugin_On_Chat_MessageOut,
                           m_iChatID,    // which chat ID
                           iMessage,     // message number
-                          strMessage    // message text
+                          string (strMessage)    // message text
                           ))
       {
       m_pDoc->m_CurrentPlugin = pSavedPlugin;

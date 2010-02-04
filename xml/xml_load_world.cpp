@@ -471,6 +471,10 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
           = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_PARTIAL_LINE);
         m_CurrentPlugin->m_dispid_plugin_telnet_option 
           = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_TELNET_OPTION);
+        m_CurrentPlugin->m_dispid_plugin_telnet_request 
+          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_TELNET_REQUEST);
+        m_CurrentPlugin->m_dispid_plugin_telnet_subnegotiation 
+          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_TELNET_SUBNEGOTIATION);
         m_CurrentPlugin->m_dispid_plugin_on_world_output_resized 
           = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_WORLD_OUTPUT_RESIZED);
         m_CurrentPlugin->m_dispid_plugin_on_command_changed 

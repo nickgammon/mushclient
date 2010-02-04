@@ -4136,7 +4136,7 @@ tInfoTypeMapping InfoTypes [] =
  { 72, "MUSHclient version" },
  { 73, "MUSHclient compilation date/time" },
  { 74, "Sounds directory" },
- { 75, "Last MUD-specific string received" },
+ { 75, "Last telnet subnegotiation string received" },
  { 76, "Special font pathname" },
  { 77, "OS Version - service pack" },
  { 78, "Foreground image filename" },
@@ -4166,8 +4166,6 @@ tInfoTypeMapping InfoTypes [] =
 { 113, "World is active" },
 { 114, "Output window paused" },
 { 115, "Localization active" },
-{ 116, "Outgoing MUD-specific codes requested" },
-{ 117, "Incoming MUD-specific codes expected" },
 { 118, "Variables have changed" },
 
 
@@ -4447,7 +4445,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case   72: SetUpVariantString (vaResult, MUSHCLIENT_VERSION); break;
     case   73: SetUpVariantString (vaResult, __DATE__ " " __TIME__); break;
     case   74: SetUpVariantString (vaResult, ExtractDirectory (App.m_strMUSHclientFileName) + "sounds\\"); break;
-    case   75: SetUpVariantString (vaResult, m_strLast_MUD_specific_stuff_received.c_str ()); break;
+    case   75: SetUpVariantString (vaResult, m_IAC_subnegotiation_data.c_str ()); break;
     case   76: SetUpVariantString (vaResult, m_strSpecialFontName); break;
 
     case 77:
@@ -4491,8 +4489,6 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
                break;
 
     case  115: SetUpVariantBool (vaResult, App.m_Translator_Lua != NULL); break;
-    case  116: SetUpVariantBool (vaResult, m_bOutgoing_MUD_specific); break;
-    case  117: SetUpVariantBool (vaResult, m_bIncoming_MUD_specific); break;
     case  118: SetUpVariantBool (vaResult, m_bVariablesChanged); break;
 
 
@@ -7854,7 +7850,7 @@ void CMUSHclientDoc::ChatNote(short NoteType, LPCTSTR Message)
     if (!pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_DISPLAY, 
                           pPlugin->m_dispid_plugin_On_Chat_Display, 
                           NoteType,     // message number
-                          strMessage    // message text
+                          string (strMessage)    // message text
                           ))
       {
       m_CurrentPlugin = pSavedPlugin;

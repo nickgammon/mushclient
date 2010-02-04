@@ -1842,19 +1842,15 @@ CString strLine (lpszText, size);
 
     c = *p;
 
-    // the following characters will terminate any collection/negotiation phases
-    //  newline, carriage-return, escape, IAC
-    if (!(flags & NOTE_OR_COMMAND) && strchr ("\n\r\x1B\xFF", c))
-      // IAC IAC is treated as a simple IAC (y with 2 dots) character and not a special character
-      if (c == IAC && size > 1 && (unsigned char) p [1] == IAC)
-        {
-        if (m_phase != NONE)
-          {
-          size--;     // skip second IAC
-          p++;    
-          }  // end of some sort of negotiation or collection
-        }
-      else
+    // note that CR, LF, ESC and IAC can appear inside telnet negotiation now (version 4.48)
+    if (m_phase != HAVE_SB &&
+        m_phase != HAVE_SUBNEGOTIATION && 
+        m_phase != HAVE_SUBNEGOTIATION_IAC &&
+        ! (m_phase == HAVE_IAC && c == IAC) )
+      {
+      // the following characters will terminate any collection/negotiation phases
+      //  newline, carriage-return, escape, IAC
+      if (!(flags & NOTE_OR_COMMAND) && strchr ("\n\r\x1B\xFF", c))
         {
         char * pReason = "unknown";
 
@@ -1883,15 +1879,11 @@ CString strLine (lpszText, size);
               break;
           } // end of switch
 
-        // an IAC as part of subnegotiation is OK
-        if (!(m_phase == HAVE_SUBNEGOTIATION && c == IAC) && 
-            !(m_phase == HAVE_CHARSET && (c == IAC || c == m_charset_delimiter)) &&
-            !(m_phase == HAVE_MUD_SPECIFIC && c == IAC) &&
-            !(m_phase == HAVE_CHARSET_REQUEST)
-            )
-          m_phase = NONE;   // cannot be in middle of escape sequence
+        m_phase = NONE;   // cannot be in middle of escape sequence
         }
 
+      } // end of not collecting telnet subnegotiation
+    
 // my own input won't interfere with incoming escape sequences
 
     if (!(flags & NOTE_OR_COMMAND))
@@ -1910,8 +1902,10 @@ CString strLine (lpszText, size);
 
         case HAVE_IAC: 
           
-          Phase_IAC (c); 
-          if (c)                // eg. IAC GA becomes \n
+          if (c != IAC)
+            Phase_IAC (c);      // not IAC IAC? Process single IAC
+
+          if (c)                // eg. IAC GA becomes \n, and IAC IAC becomes IAC
             break;
           else
             continue;
@@ -1920,41 +1914,55 @@ CString strLine (lpszText, size);
         case HAVE_WONT:           Phase_WONT (c); continue;
         case HAVE_DO:             Phase_DO (c); continue;
         case HAVE_DONT:           Phase_DONT (c); continue;
+        case HAVE_SB:             Phase_SB (c); continue;
         case HAVE_SUBNEGOTIATION: Phase_SUBNEGOTIATION (c); continue;
-        case HAVE_MXP:            Phase_MXP (c); continue;
-        case HAVE_CHARSET_REQUEST: Phase_CHARSET_REQUEST (c); continue;
-        case HAVE_CHARSET:        Phase_CHARSET (c); continue;
-        case HAVE_MUD_SPECIFIC:   Phase_MUD_SPECIFIC (c); continue;
-
-        case HAVE_COMPRESSION:    
-          {
-          CString strError;
-          switch (Phase_COMPRESSION (c, strError))
+        case HAVE_COMPRESS:       Phase_COMPRESS (c); continue;
+        
+        case HAVE_COMPRESS_WILL:  
             {
-            case 0:     // error starting it up
-              OnConnectionDisconnect ();    // close the world
-              UMessageBox (strError, MB_ICONEXCLAMATION);
-              break;
-            case 1:     // unexpected - do nothing
-              break; 
-            case 2:     // initialised - get on with compressing
+            bool bWasCompressing = m_bCompress;
+            Phase_COMPRESS_WILL (c); 
+            // just turned on compression?  special case, can't keep treating the
+            // data as it it was not compressed
+            if (!bWasCompressing && m_bCompress)
               {
-              p++;    // skip SE
-              size--;
-              int iLength = p - lpszText;   // amount of text already processed
-
-              if (size)
+              p++;    // skip SE  (normally done at end of loop)
+              size--; // one less of these
+              if (size)  // copy compressed data to compression buffer
                 memmove (m_CompressInput, p, size);
               m_zCompress.next_in = m_CompressInput;
               m_zCompress.avail_in = size;
               m_zCompress.next_out = m_CompressOutput;
               m_zCompress.avail_out = COMPRESS_BUFFER_LENGTH;
               m_nTotalCompressed += size;
+              return;  // done with this loop, now it needs to be decompressed
               }
-              break;
-            } // end of switch
-          }  // end of HAVE_COMPRESSION
-          return;     // after compression we don't do much more here
+            }
+            continue;
+            
+        case HAVE_SUBNEGOTIATION_IAC: 
+          {
+            bool bWasCompressing = m_bCompress;
+            Phase_SUBNEGOTIATION_IAC (c); 
+            // just turned on compression?  special case, can't keep treating the
+            // data as it it was not compressed
+            if (!bWasCompressing && m_bCompress)
+              {
+              p++;    // skip SE  (normally done at end of loop)
+              size--; // one less of these
+              if (size)  // copy compressed data to compression buffer
+                memmove (m_CompressInput, p, size);
+              m_zCompress.next_in = m_CompressInput;
+              m_zCompress.avail_in = size;
+              m_zCompress.next_out = m_CompressOutput;
+              m_zCompress.avail_out = COMPRESS_BUFFER_LENGTH;
+              m_nTotalCompressed += size;
+              return;  // done with this loop, now it needs to be decompressed
+              }
+
+            continue;
+
+          }   // end of HAVE_SUBNEGOTIATION_IAC
 
         // MXP phases             
         case HAVE_MXP_ELEMENT:     Phase_MXP_ELEMENT (c); continue;
@@ -2161,25 +2169,18 @@ CString strLine (lpszText, size);
                     m_phase = HAVE_ESC;   // start of ANSI escape sequence
                   break;
 
-      case IAC:
-              // IAC IAC is treated as a simple IAC (y with 2 dots) character and not a special character
+      case IAC:   // Interpret As Command (however IAC IAC is just IAC)
                 
-                  if (!(flags & NOTE_OR_COMMAND))  // however internally IAC is simply IAC
+                  if (!(flags & NOTE_OR_COMMAND)) 
                     {
-                    if (size > 1 && (unsigned char) p [1] == IAC)
+                    if (m_phase == HAVE_IAC)
                       {
                       AddToLine (cOneCharacterLine, flags);
-                      if (!(flags & NOTE_OR_COMMAND))
-                        m_cLastChar = c;  // remember it
-                      size--;     // skip second IAC
-                      p++;    
+                      m_cLastChar = c;  // remember it
+                      m_phase = NONE;
                       }
                     else
-                      {
-                      if (!(flags & NOTE_OR_COMMAND))
-                        m_phase = HAVE_IAC;   // start of telnet protocol
-                      TRACE ("<IAC>");
-                      }
+                      m_phase = HAVE_IAC;   // start of telnet protocol
                     break;    
                     }
                   // note NO break here, if not input from MUD we FALL THROUGH
@@ -6948,20 +6949,18 @@ void CMUSHclientDoc::ConnectionEstablished (void)
   m_tLastPlayerInput = CTime::GetCurrentTime();           
 	m_bEnableAutoSay = FALSE;		// auto-say off at start of session
   App.m_bUpdateActivity = TRUE;   // new activity!
-  m_phase = NONE;   // not in middle of telnet/mxp sequence yet
   m_bCompress = FALSE;        // not compressing yet
   m_nTotalLinesSent = 0;    // no lines sent yet
   m_bSuppressNewline = false; 
   m_iLastCommandCount = 0;
   m_strLastCommandSent.Empty ();  // no command sent yet
   m_iNoteStyle = NORMAL;    // back to default style
-  m_bSent_WILL_SGA = false;                  
-  m_bSent_WILL_TELOPT_TERMINAL_TYPE = false; 
-  m_bSent_WILL_TELOPT_ECHO = false;   
-  m_bSent_WILL_TELOPT_MUD_SPECIFIC = false;
-  m_bOutgoing_MUD_specific = false;
-  m_bIncoming_MUD_specific = false;
-  m_strLast_MUD_specific_stuff_received.erase ();
+
+  ZeroMemory (&m_bClient_IAC_WILL, sizeof m_bClient_IAC_WILL);
+  ZeroMemory (&m_bClient_IAC_WONT, sizeof m_bClient_IAC_WONT);
+  m_phase = NONE;   // not in middle of telnet/mxp sequence yet
+  m_IAC_subnegotiation_data.erase ();
+  m_subnegotiation_type = 0;
 
   Note ("");   // ensure connection starts on new line and that pixel offset doesn't chop message
   if (m_bShowConnectDisconnect)
