@@ -247,6 +247,7 @@ Section "Documentation"
   File "..\docs\lsqlite3.html"
   File "..\docs\lpeg.html"
   File "..\docs\re.html"
+  File "..\docs\Lua Colors LICENSE.txt"
   
 SectionEnd
 
@@ -314,7 +315,8 @@ SetOverwrite ifnewer
    File "..\lua\mw.lua"
    File "..\lua\movewindow.lua"
    File "..\lua\alphanum.lua"
-   File "..\lua\InfoBox.lua"   
+   File "..\lua\InfoBox.lua" 
+   File "..\lua\colors.lua"  
  ; File "..\lua\ppi.lua"
 
   ; Set output path to the scripts subdirectory.
@@ -457,6 +459,7 @@ Section Uninstall
   Delete "$INSTDIR\lua\movewindow.lua" 
   Delete "$INSTDIR\lua\alphanum.lua" 
   Delete "$INSTDIR\lua\InfoBox.lua" 
+  Delete "$INSTDIR\lua\colors.lua" 
 ; Delete "$INSTDIR\lua\ppi.lua"
   
   ; spell checker stuff
@@ -484,7 +487,8 @@ Section Uninstall
   Delete "$INSTDIR\docs\lsqlite3.html"
   Delete "$INSTDIR\docs\lpeg.html"
   Delete "$INSTDIR\docs\re.html"
-
+  Delete "$INSTDIR\docs\Lua Colors LICENSE.txt"
+  
   RMDir  "$INSTDIR\docs"
 
   ; fonts
