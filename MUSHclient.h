@@ -50,14 +50,6 @@ class CMUSHclientApp : public CWinApp
 {
 public:
 
-  /*
-  enum 
-  {
-    dispidTest = 1L
-  };
-
-  */
-
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	CMUSHclientApp();
 	~CMUSHclientApp();

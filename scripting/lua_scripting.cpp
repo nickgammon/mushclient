@@ -173,17 +173,7 @@ void CScriptEngine::OpenLuaDelayed ()
   if (!L)
     return;         // can't open Lua
 
-  #ifdef LUA51
-    luaL_openlibs (L);           // new way of opening all libraries
-  #else
-    luaopen_base(L);             /* opens the basic library */
-    luaopen_table(L);            /* opens the table library */
-    luaopen_io(L);               /* opens the I/O library */
-    luaopen_string(L);           /* opens the string lib. */
-    luaopen_math(L);             /* opens the math lib. */
-    luaopen_loadlib(L);          // loadlib function
-    luaopen_debug(L);            // debug library
-  #endif  // // not LUA 5.1
+  luaL_openlibs (L);           // open all standard Lua libraries
 
   // call as Lua function because we need the environment
   lua_pushcfunction(L, RegisterLuaRoutines);

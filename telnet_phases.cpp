@@ -497,11 +497,26 @@ void CMUSHclientDoc::Phase_SUBNEGOTIATION_IAC (const unsigned char c)
 
   switch (m_subnegotiation_type)
     {
-    case TELOPT_COMPRESS2:      Handle_TELOPT_COMPRESS2 ();     break;
-    case TELOPT_MUD_SPECIFIC:   Handle_TELOPT_MUD_SPECIFIC ();  break;
-    case TELOPT_MXP:            Handle_TELOPT_MXP ();           break;
-    case TELOPT_TERMINAL_TYPE:  Handle_TELOPT_TERMINAL_TYPE (); break;
-    case TELOPT_CHARSET:        Handle_TELOPT_CHARSET ();       break;
+    case TELOPT_COMPRESS2:      
+      Handle_TELOPT_COMPRESS2 ();     
+      break;
+
+    case TELOPT_MXP:            
+      Handle_TELOPT_MXP ();           
+      break;
+
+    case TELOPT_TERMINAL_TYPE:  
+      Handle_TELOPT_TERMINAL_TYPE (); 
+      break;
+
+    case TELOPT_CHARSET:        
+      Handle_TELOPT_CHARSET ();       
+      break;
+
+
+    case TELOPT_MUD_SPECIFIC:   
+        Handle_TELOPT_MUD_SPECIFIC ();  
+    // NOTE: no break, fall through and also do the default
 
     default:
       {

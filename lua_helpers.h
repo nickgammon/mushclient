@@ -1,10 +1,5 @@
-#ifdef LUA51
-  #include "lua.h"
-  #include "lauxlib.h"
-#else
-  #include "../lua/lua.h"
-  #include "../lua/lauxlib.h"
-#endif // not LUA 5.1
+#include "lua.h"
+#include "lauxlib.h"
 
 void MakeTableItem (lua_State *L, const char * name, const CString & str);
 void MakeTableItem (lua_State *L, const char * name, const string & str);

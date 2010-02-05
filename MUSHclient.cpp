@@ -33,18 +33,9 @@
 
 COLORREF xterm_256_colours [256];
 
-#ifdef LUA51
-  // Lua 5.1
-  #pragma comment( lib, "lua5.1.lib" )
-  // however we will allowed delayed load
-//  #pragma comment(linker, "/DelayLoad:lua5.1.dll")
-  #pragma comment(linker, "lua5.1.dll")
-#else
-  // Lua 5.0
-  #pragma comment( lib, "..\\lua50\\lib\\dll\\lua50.lib" )
-  // however we will allowed delayed load
-  #pragma comment(linker, "/DelayLoad:lua50.dll")
-#endif // not Lua 5.1 
+// Lua 5.1
+#pragma comment( lib, "lua5.1.lib" )
+#pragma comment(linker, "lua5.1.dll")
 
 // library needed for timers
 #pragma comment( lib, "winmm.lib")
@@ -52,17 +43,6 @@ COLORREF xterm_256_colours [256];
 // Winsock library
 //#pragma comment( lib, "wsock32.lib ")
 #pragma comment( lib, "ws2_32.lib ")
-
-// zlib (compression) library
-#ifdef _AFXDLL
-//  #pragma comment( lib, "C:\\Source\\zlib\\dlls\\dll32\\zlib.lib")
-
-  // Tell the linker that the zlib DLL should be delay loaded
-//  #pragma comment(linker, "/DelayLoad:zlib.dll")
-
-#else
-//  #pragma comment( lib, "C:\\Source\\zlib\\dlls\\static32\\zlibstat.lib")
-#endif
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
