@@ -298,7 +298,15 @@ bool CPlugin::ExecutePluginScript (const char * sName,
     DISPPARAMS params = { args, NULL, eArgCount, 0 };
     
     args [eArg1] = arg1;
-    args [eText] = CString (sText.c_str (), sText.size ());
+
+    // this crazy code is to get 0x00 bytes into telnet subnegotiations ;)
+
+    VARIANT v;
+    VariantClear (&v);
+    v.vt = VT_BSTR;
+    v.bstrVal = CString (sText.c_str (), sText.size ()).AllocSysString (); 
+    args [eText].Attach (v);
+
     
     COleVariant result;
 

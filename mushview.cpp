@@ -3069,9 +3069,9 @@ if (wp.showCmd != SW_MINIMIZE &&
 
     pDoc->m_nWrapColumn = iWidth;
 
-    pDoc->SendWindowSizes (iWidth);
 
     }   // end of auto-wrap wanted
+  pDoc->SendWindowSizes (pDoc->m_nWrapColumn);
 }
 
 void CMUSHView::OnDisplayFreezeoutput() 

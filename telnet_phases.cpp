@@ -19,19 +19,16 @@
 
   * MCCP v1
   * MCCP v2
-  * IAC GA
-  * IAC EOR
-  * IAC IAC inside subnegotiation
-  * IAC IAC in normal text
-
-
-  Not tested:
-
-  * Charset
-  * terminal type
-  * NAWS
+  * IAC GA              \ff\f9
+  * IAC EOR             \ff\ef
+  * IAC IAC inside subnegotiation   \FF\FD\66 \ff\fa\66hello\ff\ffboys\ff\f0
+  * IAC IAC in normal text      what\ff\ffever
   * MXP
+  * Charset: \FF\FD\2A \ff\fa\2A\01,UTF-8,US-ASCII\ff\f0
+  * terminal type: \FF\FD\18 \ff\fa\18\01\ff\f0
+  * NAWS: \FF\FD\1f \ff\fa\1f\ff\f0
   * Chat system
+
 
 */
 
@@ -133,8 +130,10 @@ void CMUSHclientDoc::Phase_IAC (unsigned char & c)
 
   } // end of Phase_IAC
 
-// WILL - we have IAC WILL x
-
+// send to all plugins: function OnPluginTelnetRequest (num, type)
+//    eg. num = 200, type = DO
+// They reply true or false to handle or not handle that telnet type
+ 
 bool CMUSHclientDoc::Handle_Telnet_Request (const int iNumber, const string sType)
 
   {
@@ -164,6 +163,11 @@ bool CMUSHclientDoc::Handle_Telnet_Request (const int iNumber, const string sTyp
     return bOK;
 
   } // end of CMUSHclientDoc::Handle_Telnet_Request 
+
+// WILL - we have IAC WILL x   - reply DO or DONT (generally based on client option settings)
+// for unknown types we query plugins: function OnPluginTelnetRequest (num, type) 
+//    eg. num = 200, type = WILL
+// They reply true or false to handle or not handle that telnet type
 
 void CMUSHclientDoc::Phase_WILL (const unsigned char c)
   {
@@ -285,6 +289,8 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
 
   } // end of Phase_WILL
 
+// Received: IAC WONT x
+
 void CMUSHclientDoc::Phase_WONT (const unsigned char c)
   {
 // telnet negotiation : in response to WONT, we say DONT
@@ -311,10 +317,17 @@ void CMUSHclientDoc::Phase_WONT (const unsigned char c)
     } // end of switch
   } // end of Phase_WONT
 
+// Received: IAC DO x
+
+// for unknown types we query plugins: function OnPluginTelnetRequest (num, type) 
+//    eg. num = 200, type = DO
+// They reply true or false to handle or not handle that telnet type
+
 void CMUSHclientDoc::Phase_DO (const unsigned char c)
   {
-// telnet negotiation : in response to DO, we say WONT  
-//  (except for SGA, echo, NAWS and Terminal type)
+// telnet negotiation : in response to DO, we say WILL for:  
+//  <102> (Aardwolf), SGA, echo, NAWS, CHARSET, MXP and Terminal type
+// for others we query plugins to see if they want to handle it or not
 
   TRACE1 ("<%d>", c);
   m_phase = NONE;
@@ -331,8 +344,6 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
 
   switch (c)
     {
-
-
     case SGA:
     case TELOPT_MUD_SPECIFIC:
     case TELOPT_TERMINAL_TYPE:   
@@ -343,9 +354,6 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
         m_bClient_IAC_WILL [c] = true;
         break; // end of things we will do 
                 
-
-
-
     case TELOPT_NAWS:
       {
       // option off - must be server initiated
@@ -359,7 +367,6 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
       SendWindowSizes (m_nWrapColumn);
       }
       break;
-
 
     case TELOPT_MXP:
           {
@@ -398,6 +405,8 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
 
   } // end of Phase_DO
 
+// Received: IAC DONT x
+
 void CMUSHclientDoc::Phase_DONT (const unsigned char c)
   {
 // telnet negotiation : in response to DONT, we say WONT
@@ -420,6 +429,9 @@ void CMUSHclientDoc::Phase_DONT (const unsigned char c)
   } // end of Phase_DONT
 
 // SUBNEGOTIATION - we have IAC SB c 
+// remember c (the type) and start collecting the data, as in:
+// IAC SB c <data> IAC SE
+
 void CMUSHclientDoc::Phase_SB (const unsigned char c)
   {
   TRACE1 ("<%d>", c);
@@ -437,6 +449,7 @@ void CMUSHclientDoc::Phase_SB (const unsigned char c)
   } // end of CMUSHclientDoc::Phase_SB 
 
 // SUBNEGOTIATION - we have IAC SB c (data)
+// if we get an IAC remember it, because it may or may not be followed by IAC or SE
 void CMUSHclientDoc::Phase_SUBNEGOTIATION (const unsigned char c)
   {
 
@@ -454,6 +467,8 @@ void CMUSHclientDoc::Phase_SUBNEGOTIATION (const unsigned char c)
   } // end of Phase_SUBNEGOTIATION
 
 // SUBNEGOTIATION - we have IAC SB x (data) IAC c
+// if the c after IAC is IAC then that becomes a single IAC (which we store now)
+// otherwise it should be SE, and we assume it is, otherwise we have an invalid sequence
 void CMUSHclientDoc::Phase_SUBNEGOTIATION_IAC (const unsigned char c)
   {
 
@@ -519,6 +534,7 @@ void CMUSHclientDoc::Phase_SUBNEGOTIATION_IAC (const unsigned char c)
   } // end of  CMUSHclientDoc::Phase_SUBNEGOTIATION_IAC 
 
 
+// turn MCCP v2 on
 void CMUSHclientDoc::Handle_TELOPT_COMPRESS2 ()
   {
   CString strMessage;
@@ -556,6 +572,7 @@ void CMUSHclientDoc::Handle_TELOPT_COMPRESS2 ()
   } // end of CMUSHclientDoc::Handle_TELOPT_COMPRESS2
 
 
+// turn MXP on, if required on subnegotiation
 void CMUSHclientDoc::Handle_TELOPT_MXP ()
   {
   if (m_iUseMXP == eOnCommandMXP)   // if wanted now
@@ -649,6 +666,7 @@ void CMUSHclientDoc::Handle_TELOPT_CHARSET ()
   } // end of CMUSHclientDoc::Handle_TELOPT_CHARSET ()
 
 
+// stuff for Aardwolf (telopt 102) - call specific plugin handler: OnPluginTelnetOption
 void CMUSHclientDoc::Handle_TELOPT_MUD_SPECIFIC ()
   {
   CPlugin * pSavedPlugin = m_CurrentPlugin;
@@ -676,6 +694,7 @@ void CMUSHclientDoc::Handle_TELOPT_MUD_SPECIFIC ()
   } // end of CMUSHclientDoc::Handle_TELOPT_MUD_SPECIFIC ()
 
 
+// terminal type request
 void CMUSHclientDoc::Handle_TELOPT_TERMINAL_TYPE ()
   {
 
@@ -728,7 +747,7 @@ void CMUSHclientDoc::Phase_COMPRESS (const unsigned char c)
     }
   }
 
-// COMPRESSION - we have IAC SB COMPRESS IAC/WILL x
+// COMPRESSION - we have IAC SB COMPRESS IAC/WILL x   (MCCP v1)
 
 // we will return one of:
 //  0 - error in starting compression - close world and display strMessage
