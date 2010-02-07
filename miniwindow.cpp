@@ -2438,11 +2438,20 @@ long CMiniWindow::ImageFromWindow(LPCTSTR ImageId, CMiniWindow * pSrcWindow)
   } // end of CMiniWindow::ImageFromWindow
 
 
-static void HorizontalLinearGradient (const COLORREF StartColour, const double rdiff, const double gdiff, const double bdiff, 
+static void HorizontalLinearGradient (const COLORREF StartColour, 
+                                      const COLORREF EndColour, 
                                       unsigned char * pBuffer,
                                       const long iWidth,
                                       const long iHeight)
   {
+
+  if (iWidth < 1)
+    return;  // avoid divide by zero
+
+  double rdiff = GetRValue (EndColour) - GetRValue (StartColour),
+         gdiff = GetGValue (EndColour) - GetGValue (StartColour),
+         bdiff = GetBValue (EndColour) - GetBValue (StartColour);
+
   double rval = GetRValue (StartColour),
         gval = GetGValue (StartColour),
         bval = GetBValue (StartColour);
@@ -2478,12 +2487,76 @@ static void HorizontalLinearGradient (const COLORREF StartColour, const double r
 
   }  // end of HorizontalLinearGradient
 
-
-static void VerticalLinearGradient (const COLORREF EndColour, const double rdiff, const double gdiff, const double bdiff, 
+static void HorizontalLinearGradientHSL (const CColor StartColour, 
+                                      const CColor EndColour, 
                                       unsigned char * pBuffer,
                                       const long iWidth,
                                       const long iHeight)
   {
+
+  if (iWidth < 1)
+    return;  // avoid divide by zero
+
+  double starthue = StartColour.GetHue ();
+  double endhue = EndColour.GetHue ();
+  double startlum = StartColour.GetLuminance ();
+  double endlum = EndColour.GetLuminance ();
+  double startsat = StartColour.GetSaturation ();
+  double endsat = EndColour.GetSaturation ();
+
+
+  double hinc = (endhue - starthue) / (double) (iWidth - 1), 
+         linc = (endlum - startlum) / (double) (iWidth - 1),
+         sinc = (endsat - startsat) / (double) (iWidth - 1);  
+
+  long row, col;
+  uint8 r = 0, g = 0, b = 0;
+
+  int increment =  BytesPerLine (iWidth, 24);
+
+   // main loop is columns
+   for (col = 0; col < iWidth; col++)
+     {
+     double h = starthue;
+     double l = startlum;
+     double s = startsat;
+
+     CColor c;
+     c.SetHLS (h, l, s);
+     r = c.GetRed ();
+     g = c.GetGreen ();
+     b = c.GetBlue ();
+
+     unsigned char * p = pBuffer + col * 3;
+     for (row = 0; row < iHeight; row++)
+       {
+       p [0] = b;
+       p [1] = g;
+       p [2] = r;
+       p += increment;
+       }  // end of each row
+     starthue += hinc;
+     startlum += linc;                      
+     startsat += sinc;
+     }  // end of each column
+
+
+  }  // end of HorizontalLinearGradient
+
+static void VerticalLinearGradient (const COLORREF StartColour, 
+                                    const COLORREF EndColour, 
+                                      unsigned char * pBuffer,
+                                      const long iWidth,
+                                      const long iHeight)
+  {
+
+  if (iHeight < 1)
+    return;  // avoid divide by zero
+
+  double rdiff = GetRValue (EndColour) - GetRValue (StartColour),
+         gdiff = GetGValue (EndColour) - GetGValue (StartColour),
+         bdiff = GetBValue (EndColour) - GetBValue (StartColour);
+
   double rval = GetRValue (EndColour),
          gval = GetGValue (EndColour),
          bval = GetBValue (EndColour);
@@ -2654,21 +2727,15 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
 
   HBITMAP hOldAbmp = (HBITMAP) SelectObject(gDC.m_hDC, hbmG);
 
-
-  double rdiff = GetRValue (EndColour) - GetRValue (StartColour),
-         gdiff = GetGValue (EndColour) - GetGValue (StartColour),
-         bdiff = GetBValue (EndColour) - GetBValue (StartColour);
-
-
   switch (Mode)
     {
     case 1 : // horizontal (left to right)
-       HorizontalLinearGradient (StartColour, rdiff, gdiff, bdiff, pA, iWidth, iHeight);
+       HorizontalLinearGradient (StartColour, EndColour, pA, iWidth, iHeight);
        break;  // end of horizontal
 
 
     case 2 : // vertical  (top to bottom)
-       VerticalLinearGradient (EndColour, rdiff, gdiff, bdiff, pA, iWidth, iHeight);
+       VerticalLinearGradient (StartColour, EndColour, pA, iWidth, iHeight);
        break;  // end of vertical
 
     case 3 : // texture 
@@ -2678,11 +2745,15 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
     // forget it!
 
 #if 0
-    case 3 : // horizontal (left to right)
+    case 4 : // horizontal (left to right)
+       HorizontalLinearGradientHSL (CColor (StartColour), CColor (EndColour), pA, iWidth, iHeight);
+       break;  // end of horizontal
+
+    case 5 : // horizontal (left to right)
        HorizontalLogGradient (StartColour, rdiff, gdiff, bdiff, pA, iWidth, iHeight, false);
        break;  // end of horizontal
 
-    case 4 : // horizontal (right to left)
+    case 6 : // horizontal (right to left)
        HorizontalLogGradient (EndColour, rdiff, gdiff, bdiff, pA, iWidth, iHeight, true);
        break;  // end of horizontal
 
