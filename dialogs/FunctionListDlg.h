@@ -35,7 +35,7 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
 
-  void ReloadList ();
+  BOOL ReloadList ();
 
 // Implementation
 protected:

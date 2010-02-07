@@ -53,7 +53,7 @@ END_MESSAGE_MAP()
 
 extern const char * sFunctions [1];
 
-void CFunctionListDlg::ReloadList ()
+BOOL CFunctionListDlg::ReloadList ()
   {
 
   m_ctlFunctions.DeleteAllItems ();
@@ -120,9 +120,20 @@ void CFunctionListDlg::ReloadList ()
 
   // if the filtering results in a single item, select it
   if (nItem == 1)
+    {
     m_ctlFunctions.SetItemState (0, 
                                   LVIS_FOCUSED | LVIS_SELECTED,
                                   LVIS_FOCUSED | LVIS_SELECTED);
+    return FALSE;
+    }
+
+  if (m_strFilter.IsEmpty ())
+    {
+    m_ctlFilter.SetFocus ();
+    return FALSE;
+    }
+
+  return TRUE;
 
   } // end of CFunctionListDlg::ReloadList
 
@@ -132,10 +143,8 @@ void CFunctionListDlg::ReloadList ()
 BOOL CFunctionListDlg::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
-	
-  ReloadList ();
-	
-	return TRUE;  // return TRUE unless you set the focus to a control
+
+	return ReloadList ();  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
@@ -155,9 +164,9 @@ void CFunctionListDlg::OnOK()
     else
       m_strResult = CFormat ("FNC_%s", sFunctionName.c_str ());
 
+  	CDialog::OnOK();
     }
 	
-	CDialog::OnOK();
 }
 
 void CFunctionListDlg::OnDblclkFunctionsList(NMHDR* pNMHDR, LRESULT* pResult) 
