@@ -96,33 +96,33 @@ void CMUSHclientDoc::Phase_IAC (unsigned char & c)
   switch (c)
     {
     case EOR                 : 
-      
           m_phase = NONE; 
           p = "EOR"; 
           if (m_bConvertGAtoNewline)
             new_c = '\n';
           break;
-    case SE                  : m_phase = NONE; p = "SE"; break;
-    case NOP                 : m_phase = NONE; p = "NOP"; break;
-    case DATA_MARK           : m_phase = NONE; p = "DM"; break;
-    case BREAK               : m_phase = NONE; p = "BRK"; break;
-    case INTERRUPT_PROCESS   : m_phase = NONE; p = "IP"; break;
-    case ABORT_OUTPUT        : m_phase = NONE; p = "AO"; break;
-    case ARE_YOU_THERE       : m_phase = NONE; p = "AYT"; break;
-    case ERASE_CHARACTER     : m_phase = NONE; p = "EC"; break;
-    case ERASE_LINE          : m_phase = NONE; p = "EL"; break;
     case GO_AHEAD            : 
           m_phase = NONE; 
           p = "GA"; 
           if (m_bConvertGAtoNewline)
             new_c = '\n';
           break;
-    case SB                  : m_phase = HAVE_SB;             p = "SB"; break;
-    case WILL                : m_phase = HAVE_WILL;           p = "WILL"; break;
-    case WONT                : m_phase = HAVE_WONT;           p = "WONT"; break;
-    case DO                  : m_phase = HAVE_DO;             p = "DO"; break;
-    case DONT                : m_phase = HAVE_DONT;           p = "DONT"; break;
-    default                  : m_phase = NONE;                p = "none"; break;
+
+    case SE                  : m_phase = NONE;      p = "SE"; break;
+    case NOP                 : m_phase = NONE;      p = "NOP"; break;
+    case DATA_MARK           : m_phase = NONE;      p = "DM"; break;
+    case BREAK               : m_phase = NONE;      p = "BRK"; break;
+    case INTERRUPT_PROCESS   : m_phase = NONE;      p = "IP"; break;
+    case ABORT_OUTPUT        : m_phase = NONE;      p = "AO"; break;
+    case ARE_YOU_THERE       : m_phase = NONE;      p = "AYT"; break;
+    case ERASE_CHARACTER     : m_phase = NONE;      p = "EC"; break;
+    case ERASE_LINE          : m_phase = NONE;      p = "EL"; break;
+    case SB                  : m_phase = HAVE_SB;   p = "SB"; break;
+    case WILL                : m_phase = HAVE_WILL; p = "WILL"; break;
+    case WONT                : m_phase = HAVE_WONT; p = "WONT"; break;
+    case DO                  : m_phase = HAVE_DO;   p = "DO"; break;
+    case DONT                : m_phase = HAVE_DONT; p = "DONT"; break;
+    default                  : m_phase = NONE;      p = "none"; break;
     } // end of switch
   TRACE1 ("<%s>", p);
   m_subnegotiation_type = 0;    // no subnegotiation type yet
@@ -155,7 +155,10 @@ bool CMUSHclientDoc::Handle_Telnet_Request (const int iNumber, const string sTyp
                                   pPlugin->m_dispid_plugin_telnet_request,
                                   iNumber,
                                   sType))  // what we got
+      {
       bOK = true;
+      break;   // only get the first positive reply
+      }
 
     }   // end of doing each plugin
 
@@ -163,6 +166,72 @@ bool CMUSHclientDoc::Handle_Telnet_Request (const int iNumber, const string sTyp
     return bOK;
 
   } // end of CMUSHclientDoc::Handle_Telnet_Request 
+
+void CMUSHclientDoc::Send_IAC_DO (const unsigned char c)
+  {
+  // if we are already in a mode do not agree again - see RFC 854 
+  // and forum subject 3061                           
+
+  if (m_bClient_IAC_DO [c])
+      return;
+
+  unsigned char do_do_it [3]   = { IAC, DO, c };
+
+  TRACE1 ("\nSending IAC DO <%d>\n", c);
+  SendPacket (do_do_it, sizeof do_do_it);
+  m_bClient_IAC_DO [c]   = true;
+  m_bClient_IAC_DONT [c] = false;
+
+  } // end of CMUSHclientDoc::Send_IAC_DO
+
+void CMUSHclientDoc::Send_IAC_DONT (const unsigned char c)
+  {
+  // if we are already in a mode do not agree again - see RFC 854 
+  // and forum subject 3061                           
+  if (m_bClient_IAC_DONT [c])
+      return;
+
+  unsigned char dont_do_it [3] = { IAC, DONT, c };
+
+  TRACE1 ("\nSending IAC DONT <%d>\n", c);
+  SendPacket (dont_do_it, sizeof dont_do_it);
+  m_bClient_IAC_DONT [c] = true;
+  m_bClient_IAC_DO [c]   = false;
+
+  } // end of CMUSHclientDoc::Send_IAC_DONT
+
+void CMUSHclientDoc::Send_IAC_WILL (const unsigned char c)
+  {
+  // if we are already in a mode do not agree again - see RFC 854 
+  // and forum subject 3061                           
+  if (m_bClient_IAC_WILL [c])
+      return;
+
+  unsigned char will_do_it [3]   = { IAC, WILL, c };
+
+  TRACE1 ("\nSending IAC WILL <%d>\n", c);
+  SendPacket (will_do_it, sizeof will_do_it);
+  m_bClient_IAC_WILL [c] = true;
+  m_bClient_IAC_WONT [c] = false;
+
+  } // end of CMUSHclientDoc::Send_IAC_WILL
+
+void CMUSHclientDoc::Send_IAC_WONT (const unsigned char c)
+  {
+  // if we are already in a mode do not agree again - see RFC 854 
+  // and forum subject 3061                           
+  if (m_bClient_IAC_WONT [c])
+      return;
+
+  unsigned char wont_do_it [3] = { IAC, WONT, c };
+
+  TRACE1 ("\nSending IAC WONT <%d>\n", c);
+  SendPacket (wont_do_it, sizeof wont_do_it);
+  m_bClient_IAC_WONT [c] = true;
+  m_bClient_IAC_WILL [c] = false;
+
+  } // end of CMUSHclientDoc::Send_IAC_WONT
+
 
 // WILL - we have IAC WILL x   - reply DO or DONT (generally based on client option settings)
 // for unknown types we query plugins: function OnPluginTelnetRequest (num, type) 
@@ -172,9 +241,6 @@ bool CMUSHclientDoc::Handle_Telnet_Request (const int iNumber, const string sTyp
 void CMUSHclientDoc::Phase_WILL (const unsigned char c)
   {
 
-  unsigned char do_do_it [3]   = { IAC, DO, c };
-  unsigned char dont_do_it [3] = { IAC, DONT, c };
-
 // telnet negotiation : in response to WILL, we say DONT
 // (except for compression, MXP, TERMINAL_TYPE and SGA), we *will* handle that)
 
@@ -183,10 +249,6 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
   switch (c)
     {
     case TELOPT_COMPRESS2:
-        TRACE1 ("\nSending IAC DONT <%d>\n", c);
-        SendPacket (dont_do_it, sizeof dont_do_it);
-      break;
-
     case TELOPT_COMPRESS:
       // initialise compression library if not already decompressing
       if (!m_bCompressInitOK && !m_bCompress)
@@ -207,81 +269,69 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
         if (m_CompressOutput && m_CompressInput &&     // we got memory - we can do it
             !(c == TELOPT_COMPRESS && m_bSupports_MCCP_2)) // don't agree to MCCP1 and MCCP2
           {
-          TRACE1 ("\nSending IAC DO <%d>\n", c);
-          SendPacket (do_do_it, sizeof do_do_it);
+          Send_IAC_DO (c);
           if (c == TELOPT_COMPRESS2)
             m_bSupports_MCCP_2 = true;
           }
         else
           {   // not enough memory or already agreed to MCCP 2 - no compression
-          TRACE1 ("\nSending IAC DONT <%d>\n", c);
-          SendPacket (dont_do_it, sizeof dont_do_it);
+          Send_IAC_DONT (c);
           }
         }   // end of compression wanted and zlib engine initialised
       else
         {
-        TRACE1 ("\nSending IAC DONT <%d>\n", c);
-        SendPacket (dont_do_it, sizeof dont_do_it);
+        Send_IAC_DONT (c);
         }
       break;    // end of TELOPT_COMPRESS
 
     // here for SGA (Suppress GoAhead) 
     case SGA:
-          SendPacket (do_do_it, sizeof do_do_it);
+          Send_IAC_DO (c);
           break;  // end of SGA 
 
     // here for TELOPT_MUD_SPECIFIC 
     case TELOPT_MUD_SPECIFIC:
-          SendPacket (do_do_it, sizeof do_do_it);
+          Send_IAC_DO (c);
           break;  // end of TELOPT_MUD_SPECIFIC 
 
     case TELOPT_ECHO:
-        if (!m_bNoEchoOff)
-            {
-            m_bNoEcho = true;
-            TRACE ("Echo turned off\n");
-            }
+          if (!m_bNoEchoOff)
+              {
+              m_bNoEcho = true;
+              TRACE ("Echo turned off\n");
+              }
           break; // end of TELOPT_ECHO
 
     case TELOPT_MXP:
-          {
           if (m_iUseMXP == eNoMXP)
             {
-            TRACE1 ("\nSending IAC DONT <%d>\n", c);
-            SendPacket (dont_do_it, sizeof dont_do_it);
+            Send_IAC_DONT (c);
             }     // end of no MXP wanted
           else
             {
-            TRACE1 ("\nSending IAC DO <%d>\n", c);
-            SendPacket (do_do_it, sizeof do_do_it);
+            Send_IAC_DO (c);
             if (m_iUseMXP == eQueryMXP)     // turn MXP on now
               MXP_On ();
             } // end of MXP wanted
-          }
           break;  // end of MXP
           
     // here for EOR (End of record)
     case WILL_END_OF_RECORD:
-          {
           if (m_bConvertGAtoNewline)
-            SendPacket (do_do_it, sizeof do_do_it);
+            Send_IAC_DO (c);
           else
-            SendPacket (dont_do_it, sizeof dont_do_it);
-          }
+            Send_IAC_DONT (c);
           break;  // end of WILL_END_OF_RECORD
 
 
     default:
         if (Handle_Telnet_Request (c, "WILL"))
           {
-          TRACE1 ("\nSending IAC DO <%d>\n", c);
-          SendPacket (do_do_it, sizeof do_do_it);
+          Send_IAC_DO (c);
+          Handle_Telnet_Request (c, "SENT_DO");
           }
         else
-          {
-          TRACE1 ("\nSending IAC DONT <%d>\n", c);
-          SendPacket (dont_do_it, sizeof dont_do_it);
-          }
+          Send_IAC_DONT (c);
         break;  // end of others
 
     } // end of switch
@@ -293,6 +343,7 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
 
 void CMUSHclientDoc::Phase_WONT (const unsigned char c)
   {
+
 // telnet negotiation : in response to WONT, we say DONT
 
   TRACE1 ("<%d>", c);
@@ -309,10 +360,7 @@ void CMUSHclientDoc::Phase_WONT (const unsigned char c)
           break; // end of TELOPT_ECHO
 
     default:
-      {
-      unsigned char p [3] = { IAC, DONT, c };
-      SendPacket (p, sizeof p);
-      }
+      Send_IAC_DONT (c);
       break;
     } // end of switch
   } // end of Phase_WONT
@@ -332,16 +380,6 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
   TRACE1 ("<%d>", c);
   m_phase = NONE;
 
-  // if we are already in a mode do not agree again - see RFC 854 
-  // and forum subject 3061                           
-
-  if (m_bClient_IAC_WILL [c] ||
-      m_bClient_IAC_WONT [c])
-      return;
-
-  unsigned char will_do_it [3] = { IAC, WILL, c };
-  unsigned char wont_do_it [3] = { IAC, WONT, c };
-
   switch (c)
     {
     case SGA:
@@ -349,57 +387,36 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
     case TELOPT_TERMINAL_TYPE:   
     case TELOPT_ECHO:
     case TELOPT_CHARSET:
-        TRACE1 ("\nSending IAC WILL <%d>\n", c);
-        SendPacket (will_do_it, sizeof will_do_it);
-        m_bClient_IAC_WILL [c] = true;
+        Send_IAC_WILL (c);
         break; // end of things we will do 
                 
     case TELOPT_NAWS:
-      {
       // option off - must be server initiated
       if (!m_bNAWS)
-        {
-        TRACE1 ("\nSending IAC WILL <%d>\n", c);
-        SendPacket (will_do_it, sizeof will_do_it);
-        m_bClient_IAC_WILL [c] = true;
-        }
+        Send_IAC_WILL (c);
       m_bNAWS_wanted = true;
       SendWindowSizes (m_nWrapColumn);
-      }
       break;
 
     case TELOPT_MXP:
-          {
           if (m_iUseMXP == eNoMXP)
-            {
-            TRACE1 ("\nSending IAC WONT <%d>\n", c);
-            SendPacket (wont_do_it, sizeof wont_do_it);
-            m_bClient_IAC_WONT [c] = true;
-            }     // end of no MXP wanted
+            Send_IAC_WONT (c);
           else
             {
-            TRACE1 ("\nSending IAC WILL <%d>\n", c);
-            SendPacket (will_do_it, sizeof will_do_it);
-            m_bClient_IAC_WILL [c] = true;
+            Send_IAC_WILL (c);
             if (m_iUseMXP == eQueryMXP)     // turn MXP on now
               MXP_On ();
             } // end of MXP wanted
-          }
           break;  // end of MXP
 
     default:
           if (Handle_Telnet_Request (c, "DO"))
             {
-            TRACE1 ("\nSending IAC WILL <%d>\n", c);
-            SendPacket (will_do_it, sizeof will_do_it);
-            m_bClient_IAC_WILL [c] = true;
+            Send_IAC_WILL (c);
+            Handle_Telnet_Request (c, "SENT_WILL");
             }
           else
-            {
-            TRACE1 ("\nSending IAC WONT <%d>\n", c);
-            SendPacket (wont_do_it, sizeof wont_do_it);
-            m_bClient_IAC_WONT [c] = true;
-            }
+            Send_IAC_WONT (c);
           break;    // end of others
     }   // end of switch
 

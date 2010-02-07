@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CSendView
+LastClass=CFunctionListDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "mushclient.h"
@@ -1316,12 +1316,10 @@ VirtualFilter=dWC
 
 [CLS:CFunctionListDlg]
 Type=0
-HeaderFile=FunctionListDlg.h
-ImplementationFile=FunctionListDlg.cpp
+HeaderFile=dialogs\functionlistdlg.h
+ImplementationFile=dialogs\functionlistdlg.cpp
 BaseClass=CDialog
-Filter=D
-VirtualFilter=dWC
-LastObject=ID_GAME_FUNCTIONSLIST
+LastObject=CFunctionListDlg
 
 [CLS:CLuaGsubDlg]
 Type=0

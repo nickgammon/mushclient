@@ -969,9 +969,10 @@ public:
 
   int m_subnegotiation_type;         // what type of subnegotiation we are currently in (0 to 255)
   string m_IAC_subnegotiation_data;  // last string x from MUD: IAC SB c x IAC SE
+  bool m_bClient_IAC_DO [256];     // client sent IAC DO x
+  bool m_bClient_IAC_DONT [256];     // client sent IAC DONT x
   bool m_bClient_IAC_WILL [256];     // client sent IAC WILL x
   bool m_bClient_IAC_WONT [256];     // client sent IAC WONT x
-
 
   // MSP (MUD Sound Protocol) stuff
   bool m_bMSP;  // true if using MSP
@@ -1288,6 +1289,12 @@ public:
   void Handle_TELOPT_MXP ();
   void Handle_TELOPT_TERMINAL_TYPE ();
   void Handle_TELOPT_CHARSET ();
+
+  void Send_IAC_DO (const unsigned char c);
+  void Send_IAC_DONT (const unsigned char c);
+  void Send_IAC_WILL (const unsigned char c);
+  void Send_IAC_WONT (const unsigned char c);
+
 
   // mxp collection phases
   void Phase_MXP_ELEMENT (const unsigned char c);            
