@@ -1,18 +1,18 @@
 PCRE built as follows:
 
-1. Download: http://sourceforge.net/projects/pcre/files/pcre/8.00/pcre-8.00.tar.bz2/download
+1. Download: http://sourceforge.net/projects/pcre/files/pcre/8.01/pcre-8.01.tar.bz2/download
 
 2. Unzip and untar the file (eg.):
 
-bunzip2 pcre-8.00.tar.bz2
-tar xvf pcre-8.00.tar
+tar xjf pcre-8.01.tar.bz2
 
 
 3. Copy the following files to the mushclient source "pcre" directory:
 
-chartables.c
-pcre.h
-pcre_chartables.c
+
+pcre.h.generic
+pcre_chartables.c.dist
+
 pcre_compile.c
 pcre_config.c
 pcre_dfa_exec.c
@@ -35,8 +35,14 @@ pcre_version.c
 pcre_xclass.c
 ucp.h
 
-4. Edit: pcre_compile.c, pcre_dfa_exec.c, pcre_exec.c (individually) and  add:
+
+(Note that config.h is part of the git repository)
+
+4. Rename pcre_chartables.c.dist as pcre_chartables.c
+   Rename pcre.h.generic as pcre.h
+
+5. Edit: pcre_compile.c and add:
 
 #pragma warning(disable: 4018)
 
-to the start of each file.
+to the start of the file.
