@@ -1043,6 +1043,7 @@ POSITION pos;
 
 
       trigger_item->nMatched++;   // count trigger matches
+      m_iTriggersMatchedCount++;
 
       CString strScriptSource = TFormat ("Trigger: %s", (LPCTSTR) trigger_item->strLabel);
 

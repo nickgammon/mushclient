@@ -419,7 +419,6 @@ int iCount = GetTriggerArray ().GetSize ();    // how many there are
       continue;   // no regexp, ignore trigger
 
     matched = true;
-    m_iTriggersMatchedCount++;
 
     trigger_item->tWhenMatched = CTime::GetCurrentTime(); // when it matched        
 
