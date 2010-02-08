@@ -435,7 +435,7 @@ CString GetSelectedFunction (CString & strSelection, int & nStartChar, int & nEn
 
       // scan backwards from cursor
       while (nStartChar >= 0 && 
-             strWord.GetLength () < 20 &&
+             strWord.GetLength () < 30 &&
              (isalnum (strSelection [nStartChar]) || 
               strSelection [nStartChar] == '.' || 
               strSelection [nStartChar] == '-' || 
@@ -450,7 +450,7 @@ CString GetSelectedFunction (CString & strSelection, int & nStartChar, int & nEn
 
       // scan forwards from cursor
       while (nEndChar < strSelection.GetLength () && 
-             strWord.GetLength () < 20 &&
+             strWord.GetLength () < 30 &&
              (isalnum (strSelection [nEndChar]) || 
               strSelection [nEndChar] == '.' || 
               strSelection [nEndChar] == '-' || 
@@ -468,7 +468,7 @@ CString GetSelectedFunction (CString & strSelection, int & nStartChar, int & nEn
     else
       {
       if (nEndChar > nStartChar &&
-          (nEndChar - nStartChar) < 20)
+          (nEndChar - nStartChar) < 30)
         {
 
         // skip spaces, changing the selection while we do it (for replacement purposes)
