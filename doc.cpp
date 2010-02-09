@@ -39,6 +39,8 @@
 #include "scripting\errors.h"
 #include "flags.h"
 
+#include "png/png.h"  // for version
+
 #include <malloc.h>
 
 UINT AFXAPI AfxGetFileTitle(LPCTSTR lpszPathName, LPTSTR lpszTitle, UINT nMax);
@@ -48,6 +50,13 @@ UINT AFXAPI AfxGetFileTitle(LPCTSTR lpszPathName, LPTSTR lpszTitle, UINT nMax);
 //#include <strstrea.h>
 #endif
 #endif
+
+/* These macros are the standard way of turning unquoted text into C strings.
+They allow macros like PCRE_MAJOR to be defined without quotes, which is
+convenient for user programs that want to test its value. */
+
+#define STRING(a)  # a
+#define XSTRING(s) STRING(s)
 
 
 #ifdef _DEBUG
@@ -730,9 +739,16 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
              "deepskyblue", "black", TRUE);
   Note ("");
   Note ("");
-//  Note ("\xC9\xB3\xC9\xA8\xC9\x95\xC9\xAE");   // Nick in funny characters
-
-
+  // show compilation date
+  Note (TFormat ("Compiled: %s.", __DATE__)); 
+  // show included library versions
+  Note (TFormat ("Using: %s, PCRE %s, PNG %s, SQLite3 %s, Zlib %s", 
+        LUA_RELEASE, 
+        XSTRING(PCRE_MAJOR.PCRE_MINOR), 
+        PNG_LIBPNG_VER_STRING, 
+        SQLITE_VERSION, 
+        ZLIB_VERSION));
+  Note ("");
 
   // set output window(s) to "pause" if wanted
 
