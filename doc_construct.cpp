@@ -67,6 +67,9 @@ int i;
   m_iAliasesEvaluatedCount = 0;  
   m_iAliasesMatchedCount = 0;    
   m_iTimersFiredCount = 0;       
+  m_iTriggersMatchedThisSessionCount = 0;   
+  m_iAliasesMatchedThisSessionCount = 0;    
+  m_iTimersFiredThisSessionCount = 0;       
 
   m_bLoaded = false;
   m_bMapping = false;
@@ -190,6 +193,7 @@ int i;
   m_InputFontWidth = 0;
   m_total_lines = 0;
   m_nTotalLinesSent = 0;
+  m_nTotalLinesReceived = 0;
   m_phase = NONE;
   m_version = VERSION;
 

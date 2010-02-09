@@ -1044,7 +1044,8 @@ POSITION pos;
 
       trigger_item->nMatched++;   // count trigger matches
       m_iTriggersMatchedCount++;
-
+      m_iTriggersMatchedThisSessionCount++;
+      
       CString strScriptSource = TFormat ("Trigger: %s", (LPCTSTR) trigger_item->strLabel);
 
       if (trigger_item->iSendTo == eSendToScriptAfterOmit)

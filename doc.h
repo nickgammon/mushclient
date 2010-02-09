@@ -912,6 +912,10 @@ public:
   long m_iAliasesMatchedCount;       // how many aliases matched      
   long m_iTimersFiredCount;          // how many timers fired
 
+  long m_iTriggersMatchedThisSessionCount;      // how many triggers matched this connection
+  long m_iAliasesMatchedThisSessionCount;       // how many aliases matched this connection      
+  long m_iTimersFiredThisSessionCount;          // how many timers fired this connection
+
   int m_last_prefs_page;
   unsigned short m_bConfigEnableTimers;   // used when doing world config
 
@@ -937,7 +941,8 @@ public:
   long m_total_lines;
   long m_new_lines;   // lines they haven't read yet (if not active view)
   long m_nTotalLinesSent;   // lines sent this connection
-  
+  long m_nTotalLinesReceived;  // lines they received this connection
+
   CTime m_tConnectTime;       // time we connected to the world
   CTime m_tLastPlayerInput;   // time the player last typed something (for <afk> )
   CTimeSpan m_tsConnectDuration;  // timespan we have been connected

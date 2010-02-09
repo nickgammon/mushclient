@@ -799,6 +799,7 @@ bool CMUSHclientDoc::ProcessOneAliasSequence (const CString strCurrentLine,
 
 
     m_iAliasesMatchedCount++;
+    m_iAliasesMatchedThisSessionCount++;
 
     if (alias_item->bOneShot)
       mapOneShotItems.push_back (

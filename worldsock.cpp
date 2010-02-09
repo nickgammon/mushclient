@@ -168,6 +168,29 @@ CString str;
     Frame.SetStatusMessage (str);
   m_pDoc->m_iConnectPhase = eConnectNotConnected;
 
+  CString strInfo = TFormat ("Received %i line%s, sent %i line%s.",
+                PLURAL (m_pDoc->m_nTotalLinesReceived),
+                PLURAL (m_pDoc->m_nTotalLinesSent)
+                );
+  
+  m_pDoc->Note (strInfo);  
+
+  strInfo = TFormat ("Output buffer has %i line%s in it (you have allocated room for %i line%s).",
+                PLURAL (m_pDoc->m_LineList.GetCount ()),
+                PLURAL (m_pDoc->m_maxlines)
+                );
+
+  m_pDoc->Note (strInfo);  
+
+  strInfo = TFormat ("Matched %i trigger%s, %i alias%s, and %i timer%s fired.",
+                PLURAL (m_pDoc->m_iTriggersMatchedThisSessionCount),   
+                PLURALES (m_pDoc->m_iAliasesMatchedThisSessionCount),    
+                PLURAL (m_pDoc->m_iTimersFiredThisSessionCount)       
+                );
+
+  m_pDoc->Note (strInfo);  
+
+
   } // end of OnClose
 
 void CWorldSocket::OnConnect(int nErrorCode)

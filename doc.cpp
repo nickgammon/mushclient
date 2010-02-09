@@ -2058,6 +2058,7 @@ CString strLine (lpszText, size);
       {
       case '\n':      // start a new line
             m_iNoteStyle = NORMAL;  // new line cancels style flags
+            m_nTotalLinesReceived++;
 
             if (m_bMXP && !(flags & NOTE_OR_COMMAND) && !m_bPuebloActive)
               {
@@ -4465,6 +4466,7 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
     timer_item->tWhenFired = tNow;  // when it fired
 
     m_iTimersFiredCount++;
+    m_iTimersFiredThisSessionCount++;
 
 //    TRACE1 ("Fired at = %10.8f\n", timer_item->tWhenFired.m_dt);
 
@@ -6966,6 +6968,10 @@ void CMUSHclientDoc::ConnectionEstablished (void)
   App.m_bUpdateActivity = TRUE;   // new activity!
   m_bCompress = FALSE;        // not compressing yet
   m_nTotalLinesSent = 0;    // no lines sent yet
+  m_nTotalLinesReceived = 0;  // no lines received yet
+  m_iTriggersMatchedThisSessionCount = 0;   
+  m_iAliasesMatchedThisSessionCount = 0;    
+  m_iTimersFiredThisSessionCount = 0;       
   m_bSuppressNewline = false; 
   m_iLastCommandCount = 0;
   m_strLastCommandSent.Empty ();  // no command sent yet
