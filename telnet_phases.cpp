@@ -150,6 +150,11 @@ bool CMUSHclientDoc::Handle_Telnet_Request (const int iNumber, const string sTyp
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
 
+    // don't default to true if routine does not exist
+    if (!(pPlugin->m_ScriptEngine) || 
+        pPlugin->m_dispid_plugin_telnet_request == DISPID_UNKNOWN)
+      continue;
+
     // see what the plugin makes of this,
     if (pPlugin->ExecutePluginScript (ON_PLUGIN_TELNET_REQUEST,
                                   pPlugin->m_dispid_plugin_telnet_request,
