@@ -733,12 +733,6 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
   Note (TFormat ("Welcome to MUSHclient version %s!", MUSHCLIENT_VERSION));
   Note (Translate ("Written by Nick Gammon."));
   Note ("");
-  Note (Translate ("For information and assistance about MUSHclient visit our forum at:"));
-  Tell ("   ");
-  Hyperlink (MUSHCLIENT_FORUM_URL, FORUM_URL, Translate ("Go to forum"), 
-             "deepskyblue", "black", TRUE);
-  Note ("");
-  Note ("");
   // show compilation date
   Note (TFormat ("Compiled: %s.", __DATE__)); 
   // show included library versions
@@ -748,6 +742,11 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
         PNG_LIBPNG_VER_STRING, 
         SQLITE_VERSION, 
         ZLIB_VERSION));
+  Note ("");
+  Note (Translate ("For information and assistance about MUSHclient visit our forum at:"));
+  Tell ("   ");
+  Hyperlink (MUSHCLIENT_FORUM_URL, FORUM_URL, Translate ("Go to forum"), 
+             "deepskyblue", "black", TRUE);
   Note ("");
 
   // set output window(s) to "pause" if wanted
