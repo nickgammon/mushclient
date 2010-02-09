@@ -4256,7 +4256,9 @@ tInfoTypeMapping InfoTypes [] =
 { 283, "Mouse position - X" },
 { 284, "Mouse position - Y" },
 { 285, "Output window available" },
-
+{ 286, "Triggers matched this session" },
+{ 287, "Aliases matched this session" },
+{ 288, "Timers fired this session" },    
 
 // (dates - calculated at runtime)
 
@@ -4869,6 +4871,9 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case 284: SetUpVariantLong (vaResult, m_lastMousePosition.y);  break; //  last mouse y position
     case 285: SetUpVariantBool (vaResult, m_pCurrentLine != NULL); break; //  is output window available?
 
+    case 286: SetUpVariantLong (vaResult, m_iTriggersMatchedThisSessionCount);  break; // Triggers matched this session
+    case 287: SetUpVariantLong (vaResult, m_iAliasesMatchedThisSessionCount);   break; // Aliases matched this session   
+    case 288: SetUpVariantLong (vaResult, m_iTimersFiredThisSessionCount);      break; // Timers fired this session      
       
 
 
