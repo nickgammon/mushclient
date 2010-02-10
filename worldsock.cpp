@@ -152,22 +152,6 @@ bool bWasClosed = m_pDoc->m_iConnectPhase == eConnectNotConnected;
     m_pDoc->StartNewLine (true, 0); 
     }  // end of message in world window wanted
 
-CString str;
-
-  str = TFormat ("The \"%s\" server has closed the connection", 
-              (const char *) m_pDoc->m_mush_name);
-
-  if (App.m_bNotifyOnDisconnect && !m_pDoc->m_bDisconnectOK)
-    {
-    if (App.m_bErrorNotificationToOutputWindow)
-      m_pDoc->Note (str);
-    else
-      ::UMessageBox (str, MB_ICONEXCLAMATION);
-    }
-  else
-    Frame.SetStatusMessage (str);
-  m_pDoc->m_iConnectPhase = eConnectNotConnected;
-
   CString strInfo = TFormat ("Received %i line%s, sent %i line%s.",
                 PLURAL (m_pDoc->m_nTotalLinesReceived),
                 PLURAL (m_pDoc->m_nTotalLinesSent)
@@ -190,6 +174,21 @@ CString str;
 
   m_pDoc->Note (strInfo);  
 
+CString str;
+
+  str = TFormat ("The \"%s\" server has closed the connection", 
+              (const char *) m_pDoc->m_mush_name);
+
+  if (App.m_bNotifyOnDisconnect && !m_pDoc->m_bDisconnectOK)
+    {
+    if (App.m_bErrorNotificationToOutputWindow)
+      m_pDoc->Note (str);
+    else
+      ::UMessageBox (str, MB_ICONEXCLAMATION);
+    }
+  else
+    Frame.SetStatusMessage (str);
+  m_pDoc->m_iConnectPhase = eConnectNotConnected;
 
   } // end of OnClose
 
