@@ -933,11 +933,16 @@ bool CMUSHclientDoc::ExecuteAliasScript (CAlias * alias_item,
     CString strReason =  TFormat ("processing alias \"%s\"", 
                                   (LPCTSTR) alias_item->strLabel);
 
+    // get unlabelled alias's internal name
+    const char * pLabel = alias_item->strLabel;
+    if (pLabel [0] == 0)
+       pLabel = GetAliasRevMap () [alias_item].c_str ();
+
     if (GetScriptEngine () && GetScriptEngine ()->IsLua ())
       {
       list<double> nparams;
       list<string> sparams;
-      sparams.push_back ((LPCTSTR) alias_item->strLabel);
+      sparams.push_back (pLabel);
       sparams.push_back ((LPCTSTR) strCurrentLine);
       alias_item->bExecutingScript = true;     // cannot be deleted now
       GetScriptEngine ()->ExecuteLua (alias_item->dispid, 
@@ -972,7 +977,7 @@ bool CMUSHclientDoc::ExecuteAliasScript (CAlias * alias_item,
     COleVariant args [eArgCount];
     DISPPARAMS params = { args, NULL, eArgCount, 0 };
 
-    args [eAliasName] = alias_item->strLabel;
+    args [eAliasName] = pLabel;
     args [eInputLine] = strCurrentLine;
 
     // --------------- set up wildcards array ---------------------------

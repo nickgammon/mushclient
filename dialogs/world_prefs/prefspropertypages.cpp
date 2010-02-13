@@ -6079,6 +6079,8 @@ void CPrefsP16::OnAddTimer()
   dlg.m_pDoc = m_doc;
 
   OnAddItem (dlg);
+  m_doc->SortTimers ();
+
 }   // end of CPrefsP16::OnAddTimer
 
 void CPrefsP16::OnChangeTimer() 
@@ -6093,11 +6095,15 @@ void CPrefsP16::OnChangeTimer()
   dlg.m_pDoc = m_doc;
 
   OnChangeItem (dlg);
+  m_doc->SortTimers ();
+
 }    // end of CPrefsP16::OnChangeTimer
 
 void CPrefsP16::OnDeleteTimer() 
 {
-  OnDeleteItem ();
+  OnDeleteItem (); 
+  m_doc->SortTimers ();
+
 }    // end of CPrefsP16::OnDeleteTimer
 
 void CPrefsP16::OnDblclkTimersList(NMHDR* pNMHDR, LRESULT* pResult) 

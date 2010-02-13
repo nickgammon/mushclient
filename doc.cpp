@@ -2538,11 +2538,16 @@ void CMUSHclientDoc::ExecuteTriggerScript (CTrigger * trigger_item,
   CString strReason =  TFormat ("processing trigger \"%s\"", 
                             (LPCTSTR) trigger_item->strLabel);
 
+  // get unlabelled trigger's internal name
+  const char * pLabel = trigger_item->strLabel;
+  if (pLabel [0] == 0)
+     pLabel = GetTriggerRevMap () [trigger_item].c_str ();
+
   if (GetScriptEngine () && GetScriptEngine ()->IsLua ())
     {
     list<double> nparams;
     list<string> sparams;
-    sparams.push_back ((LPCTSTR) trigger_item->strLabel);
+    sparams.push_back (pLabel);
     sparams.push_back ((LPCTSTR) strCurrentLine);
     trigger_item->bExecutingScript = true;     // cannot be deleted now
     GetScriptEngine ()->ExecuteLua (trigger_item->dispid, 
@@ -2583,7 +2588,7 @@ long i = 1;
 
 //    ::AfxMessageBox (trigger_item->trigger);
 
-  args [eTriggerName] = trigger_item->strLabel;
+  args [eTriggerName] = pLabel;
   args [eCurrentLine] = strCurrentLine;
 
   // --------------- set up wildcards array ---------------------------
@@ -4537,11 +4542,16 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
       CString strReason =  TFormat ("processing timer \"%s\"", 
                                     (LPCTSTR) timer_item->strLabel);
 
+      // get unlabelled timer's internal name
+      const char * pLabel = timer_item->strLabel;
+      if (pLabel [0] == 0)
+        pLabel = GetTimerRevMap () [timer_item].c_str ();
+
       if (GetScriptEngine () && GetScriptEngine ()->IsLua ())
         {
         list<double> nparams;
         list<string> sparams;
-        sparams.push_back ((LPCTSTR) timer_item->strLabel);
+        sparams.push_back (pLabel);
         timer_item->bExecutingScript = true;     // cannot be deleted now
         bool bResult = GetScriptEngine ()->ExecuteLua (timer_item->dispid, 
                                        timer_item->strProcedure, 
@@ -4573,7 +4583,7 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
         DISPPARAMS params = { args, NULL, eArgCount, 0 };
 
   //      args [eTimerName] = strTimerName;
-        args [eTimerName] = timer_item->strLabel;
+        args [eTimerName] = pLabel;
         timer_item->bExecutingScript = true;     // cannot be deleted now
         bool bResult = ExecuteScript (timer_item->dispid,  
                        timer_item->strProcedure,
@@ -4606,6 +4616,7 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
       {
       TimerMap.RemoveKey (strTimerName);
       delete timer_item;
+      SortTimers ();
       }
     }   // end of processing each timer
 
@@ -6354,12 +6365,14 @@ CTrigger * pTrigger;
 POSITION pos;
 
   GetTriggerArray ().SetSize (iCount);
+  CTriggerRevMap ().empty ();
 
   // extract pointers into a simple array
   for (i = 0, pos = GetTriggerMap ().GetStartPosition(); pos; i++)
     {
      GetTriggerMap ().GetNextAssoc (pos, strTriggerName, pTrigger);
-     GetTriggerArray ().SetAt (i, pTrigger); 
+     GetTriggerArray ().SetAt (i, pTrigger);
+     GetTriggerRevMap () [pTrigger] = strTriggerName;
     }
 
 
@@ -6404,12 +6417,14 @@ CAlias * pAlias;
 POSITION pos;
 
   GetAliasArray ().SetSize (iCount);
+  CAliasRevMap ().empty ();
 
   // extract pointers into a simple array
   for (i = 0, pos = GetAliasMap ().GetStartPosition(); pos; i++)
     {
      GetAliasMap ().GetNextAssoc (pos, strAliasName, pAlias);
      GetAliasArray ().SetAt (i, pAlias); 
+     GetAliasRevMap () [pAlias] = strAliasName;
     }
 
 
@@ -6420,6 +6435,28 @@ POSITION pos;
          CompareAlias);
 
   } // end of CMUSHclientDoc::SortAliases
+
+
+void  CMUSHclientDoc::SortTimers (void)
+  {
+
+int iCount = GetTimerMap ().GetCount ();
+int i;
+CString strTimerName;
+CTimer * pTimer;
+POSITION pos;
+
+  CTimerRevMap ().empty ();
+
+  // extract pointers into a simple array
+  for (i = 0, pos = GetTimerMap ().GetStartPosition(); pos; i++)
+    {
+     GetTimerMap ().GetNextAssoc (pos, strTimerName, pTimer);
+     GetTimerRevMap () [pTimer] = strTimerName;
+    }
+
+  } // end of CMUSHclientDoc::SortTimers
+
 
 
 

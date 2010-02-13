@@ -1171,7 +1171,11 @@ void CMUSHclientDoc::OnFilePluginwizard()
     
         // show document modified
         if (iCount)
+          {
+          m_CurrentPlugin = NULL;
+          SortTimers ();
           SetModifiedFlag (TRUE);   // document has changed
+          }
 
         }  // end of doing all Timers
 

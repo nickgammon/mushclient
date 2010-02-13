@@ -1545,6 +1545,8 @@ UINT count = 0;
 
   END_LOAD_LOOP;
 
+  SortTimers ();
+
   return count;
   }   // end of CMUSHclientDoc::Load_Timers_XML
 

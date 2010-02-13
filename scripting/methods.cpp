@@ -2821,6 +2821,8 @@ bool bReplace = false;
 
   ResetOneTimer (timer_item);
 
+  SortTimers ();
+
 	return eOK;
 }
 
@@ -2847,6 +2849,8 @@ long nStatus;
   // now delete its entry
   if (!GetTimerMap ().RemoveKey (strTimerName))
     return eTimerNotFound;
+
+  SortTimers ();
 
   if (!m_CurrentPlugin) // plugin mods don't really count
     SetModifiedFlag (TRUE);   // document has changed
@@ -4049,6 +4053,9 @@ CTimer * timer_item;
       iCount++;
       }
     }   // end of deleting timers
+
+  if (iCount)
+    SortTimers ();
 
 	return iCount;
 }
@@ -6048,8 +6055,11 @@ long CMUSHclientDoc::DeleteTimerGroup(LPCTSTR GroupName)
       GetTimerMap ().RemoveKey (it->c_str ());
 
   if (!vToDelete.empty ())
+    {
+    SortTimers ();
     if (!m_CurrentPlugin) // plugin mods don't really count
       SetModifiedFlag (TRUE);   // document has changed
+    }
 
   return vToDelete.size ();
 }   // end of DeleteTimerGroup
@@ -7191,7 +7201,7 @@ CTimer * timer_item;
   if (Seconds < 0 || Seconds > 59.9999)
     return eTimeInvalid;
 
-  // create new timer item and inser  t in timer map
+  // create new timer item and insert in timer map
   GetTimerMap ().SetAt (strTimerName, timer_item = new CTimer);
 
   timer_item->nUpdateNumber    = App.GetUniqueNumber ();   // for concurrency checks
@@ -7210,6 +7220,8 @@ CTimer * timer_item;
   timer_item->iSendTo = SendTo;
 
   ResetOneTimer (timer_item);
+
+  SortTimers ();
 
 	return eOK;
 }
