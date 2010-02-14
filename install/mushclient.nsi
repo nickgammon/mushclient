@@ -317,6 +317,7 @@ SetOverwrite ifnewer
    File "..\lua\alphanum.lua"
    File "..\lua\InfoBox.lua" 
    File "..\lua\colors.lua"  
+   File "..\lua\gauge.lua"  
  ; File "..\lua\ppi.lua"
 
   ; Set output path to the scripts subdirectory.
@@ -460,6 +461,7 @@ Section Uninstall
   Delete "$INSTDIR\lua\alphanum.lua" 
   Delete "$INSTDIR\lua\InfoBox.lua" 
   Delete "$INSTDIR\lua\colors.lua" 
+  Delete "$INSTDIR\lua\gauge.lua" 
 ; Delete "$INSTDIR\lua\ppi.lua"
   
   ; spell checker stuff
