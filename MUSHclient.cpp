@@ -35,7 +35,6 @@ COLORREF xterm_256_colours [256];
 
 // Lua 5.1
 #pragma comment( lib, "lua5.1.lib" )
-#pragma comment(linker, "lua5.1.dll")
 
 // library needed for timers
 #pragma comment( lib, "winmm.lib")
