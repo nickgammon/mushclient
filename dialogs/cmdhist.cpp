@@ -2,9 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "MUSHclient.h"
-#include "doc.h"
-#include "sendvw.h"
+#include "..\MUSHclient.h"
+#include "..\doc.h"
+#include "..\sendvw.h"
 #include "cmdhist.h"
 
 #ifdef _DEBUG

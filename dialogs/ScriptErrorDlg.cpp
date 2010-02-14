@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
+#include "..\mushclient.h"
 #include "ScriptErrorDlg.h"
 
 #ifdef _DEBUG

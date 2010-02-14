@@ -1,11 +1,11 @@
 // mxpCloseAtomic.cpp - close one atomic tag
 
 #include "stdafx.h"
-#include "MUSHclient.h"
+#include "..\MUSHclient.h"
 
-#include "doc.h"
-#include "MUSHview.h"
-#include "mainfrm.h"
+#include "..\doc.h"
+#include "..\MUSHview.h"
+#include "..\mainfrm.h"
 #include "mxp.h"
 #include "errors.h"
 

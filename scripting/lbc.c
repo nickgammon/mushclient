@@ -13,8 +13,8 @@
 
 #include "bcconfig.h"
 
-#include "lua.h"
-#include "lauxlib.h"
+#include "..\lua.h"
+#include "..\lauxlib.h"
 
 #include "number.h"
 

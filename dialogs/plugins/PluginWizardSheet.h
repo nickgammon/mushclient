@@ -6,9 +6,9 @@
 #ifndef __PLUGINWIZARDSHEET_H__
 #define __PLUGINWIZARDSHEET_H__
 
-#include "MUSHclient.h"
-#include "mainfrm.h"
-#include "doc.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\mainfrm.h"
+#include "..\..\doc.h"
 #include "PluginWizard.h"
 
 /////////////////////////////////////////////////////////////////////////////

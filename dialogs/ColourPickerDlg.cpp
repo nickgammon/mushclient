@@ -2,10 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
-#include "dialogs\world_prefs\ButtonColour.h"
-#include "dialogs\ColourPickerDlg.h"
-#include "Color.h"
+#include "..\mushclient.h"
+#include "world_prefs\ButtonColour.h"
+#include "ColourPickerDlg.h"
+#include "..\Color.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

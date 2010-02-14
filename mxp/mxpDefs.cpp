@@ -5,13 +5,13 @@
 // <!ENTITY ...>
 
 #include "stdafx.h"
-#include "MUSHclient.h"
+#include "..\MUSHclient.h"
 
-#include "doc.h"
-#include "MUSHview.h"
-#include "mainfrm.h"
+#include "..\doc.h"
+#include "..\MUSHview.h"
+#include "..\mainfrm.h"
 #include "mxp.h"
-#include "scripting\errors.h"
+#include "..\scripting\errors.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

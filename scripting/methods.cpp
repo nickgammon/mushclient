@@ -1,31 +1,31 @@
 #include "stdafx.h"
-#include "MUSHclient.h"
+#include "..\MUSHclient.h"
 
 //=============================================================
 // IMPORTANT - when adding methods here remember to add the 'glue'
 //             routine in lua_methods.cpp and add it to the library table
 //=============================================================
-#include "doc.h"
-#include "MUSHview.h"
-#include "mainfrm.h"
-#include "childfrm.h"
-#include "sendvw.h"
-#include "TextView.h"
-#include "TextDocument.h"
-#include "dialogs\ChooseNotepadDlg.h"
-#include "dialogs\ColourPickerDlg.h"
-#include "MakeWindowTransparent.h"
+#include "..\doc.h"
+#include "..\MUSHview.h"
+#include "..\mainfrm.h"
+#include "..\childfrm.h"
+#include "..\sendvw.h"
+#include "..\TextView.h"
+#include "..\TextDocument.h"
+#include "..\dialogs\ChooseNotepadDlg.h"
+#include "..\dialogs\ColourPickerDlg.h"
+#include "..\MakeWindowTransparent.h"
 
-#include "scripting\errors.h"
-#include "flags.h"
-#include "mxp\mxp.h"
-#include "color.h"
-#include "winplace.h"
-#include "UDPsocket.h"
+#include "errors.h"
+#include "..\flags.h"
+#include "..\mxp\mxp.h"
+#include "..\color.h"
+#include "..\winplace.h"
+#include "..\UDPsocket.h"
 #include <direct.h>
-#include "dmetaph.h"
+#include "..\dmetaph.h"
 
-#include "png\png.h"
+#include "..\png\png.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "MUSHclient.h"
-#include "dialogs\world_prefs\TreePropertySheet.h"
-#include "dialogs\world_prefs\MissingEntryPoints.h"
-#include "mainfrm.h"
+#include "..\..\MUSHclient.h"
+#include "TreePropertySheet.h"
+#include "MissingEntryPoints.h"
+#include "..\..\mainfrm.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
@@ -42,11 +42,11 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
   */
 
 
-#include "doc.h"
+#include "..\..\doc.h"
 
-#include "dialogs\world_prefs\PrefsPropertySheet.h"
+#include "PrefsPropertySheet.h"
 
-#include "genprint.h"
+#include "..\..\genprint.h"
 
 // for debug messages
 static const char * sConfigPhase [] = {

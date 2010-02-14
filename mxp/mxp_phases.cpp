@@ -1,9 +1,8 @@
 // mxp_phases.cpp - handle MXP phases in incoming text stream
 
 #include "stdafx.h"
-#include "MUSHclient.h"
-
-#include "doc.h"
+#include "..\MUSHclient.h"
+#include "..\doc.h"
 
 // mxp phases
 

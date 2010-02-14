@@ -2,12 +2,12 @@
 //
 
 #include "stdafx.h"
-#include "mainfrm.h"
-#include "mushclient.h"
-#include "doc.h"
-#include "TextDocument.h"
+#include "..\..\mainfrm.h"
+#include "..\..\mushclient.h"
+#include "..\..\doc.h"
+#include "..\..\TextDocument.h"
 #include "PluginsDlg.h"
-#include "winplace.h"
+#include "..\..\winplace.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

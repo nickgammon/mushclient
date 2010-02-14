@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "MUSHclient.h"
-#include "mainfrm.h"
+#include "..\MUSHclient.h"
+#include "..\mainfrm.h"
 
-#include "dialogs\ProgDlg.h"
+#include "..\dialogs\ProgDlg.h"
 
 
 //----------------------- begin Lua stuff ----------------------------

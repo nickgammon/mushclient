@@ -2,11 +2,11 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
-#include "doc.h"
-#include "dialogs\world_prefs\TimerDlg.h"
-#include "dialogs\EditDlg.h"
-#include "dialogs\EditMultiLine.h"
+#include "..\..\mushclient.h"
+#include "..\..\doc.h"
+#include "..\world_prefs\TimerDlg.h"
+#include "..\EditDlg.h"
+#include "..\EditMultiLine.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

@@ -15,7 +15,7 @@ by Nick Gammon.
 
 */
 
-#include "forcelib.h"   // see ID: Q148652 
+#include "..\forcelib.h"   // see ID: Q148652 
 
 #include <string.h>
 

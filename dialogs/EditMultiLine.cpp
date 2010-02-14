@@ -2,10 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
-#include "mainfrm.h"
+#include "..\mushclient.h"
+#include "..\mainfrm.h"
 #include "EditMultiLine.h"
-#include "winplace.h"
+#include "..\winplace.h"
 #include "GoToLineDlg.h"
 
 #ifdef _DEBUG

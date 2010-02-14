@@ -1,12 +1,12 @@
 #include "stdafx.h"
-#include "mainfrm.h"
-#include "MUSHclient.h"
-#include "doc.h"
-#include "dialogs\ScriptErrorDlg.h"
+#include "..\mainfrm.h"
+#include "..\MUSHclient.h"
+#include "..\doc.h"
+#include "..\dialogs\ScriptErrorDlg.h"
 #include <io.h>  // for popen
 #include <fcntl.h>  // for popen
-#include "pcre\config.h"
-#include "pcre\pcre_internal.h"
+#include "..\pcre\config.h"
+#include "..\pcre\pcre_internal.h"
 
 #ifdef USE_LUA
 

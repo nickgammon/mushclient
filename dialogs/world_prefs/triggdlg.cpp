@@ -2,16 +2,16 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
-#include "doc.h"
+#include "..\..\mushclient.h"
+#include "..\..\doc.h"
 #include "prefspropertypages.h"
-#include "mainfrm.h"
-#include "dialogs\EditDlg.h"
-#include "dialogs\EditMultiLine.h"
-#include "dialogs\CreditsDlg.h"
+#include "..\..\mainfrm.h"
+#include "..\EditDlg.h"
+#include "..\EditMultiLine.h"
+#include "..\CreditsDlg.h"
 
-#include "dialogs\world_prefs\triggdlg.h"
-#include "dialogs\ColourPickerDlg.h"
+#include "triggdlg.h"
+#include "..\ColourPickerDlg.h"
 
 #include "mmsystem.h"   // for sound playing
 

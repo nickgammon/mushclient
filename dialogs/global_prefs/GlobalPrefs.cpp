@@ -2,15 +2,14 @@
 //
 
 #include "stdafx.h"
-#include "MUSHclient.h"
-#include "resource.h"
+#include "..\..\MUSHclient.h"
 #include "GlobalPrefsSheet.h"
 #include "GlobalPrefs.h"
-#include "mainfrm.h"
-#include "childfrm.h"
-#include "doc.h"
-#include "dialogs\ColourPickerDlg.h"
-#include "dialogs\EditMultiLine.h"
+#include "..\..\mainfrm.h"
+#include "..\..\childfrm.h"
+#include "..\..\doc.h"
+#include "..\ColourPickerDlg.h"
+#include "..\EditMultiLine.h"
 
 #include <shlobj.h>
 #include <cderr.h>

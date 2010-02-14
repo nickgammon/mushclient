@@ -35,10 +35,10 @@
 #include <string.h>
 #include <assert.h>
 
-#include "lua.h"
-#include "lauxlib.h"
+#include "..\lua.h"
+#include "..\lauxlib.h"
 
-#include "sqlite3\sqlite3.h"
+#include "..\sqlite3\sqlite3.h"
 
 /* compile time features */
 #if !defined(SQLITE_OMIT_PROGRESS_CALLBACK)

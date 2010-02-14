@@ -2,10 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
-#include "dialogs\plugins\PluginsDlg.h"
-#include "dialogs\ImportXMLdlg.h"
-#include "doc.h"
+#include "..\mushclient.h"
+#include "plugins\PluginsDlg.h"
+#include "ImportXMLdlg.h"
+#include "..\doc.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

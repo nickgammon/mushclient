@@ -2,10 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
+#include "..\mushclient.h"
 #include "DebugWorldInputDlg.h"
 #include "InsertUnicodeDlg.h"
-#include "doc.h"
+#include "..\doc.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

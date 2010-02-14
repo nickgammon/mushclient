@@ -2,8 +2,8 @@
 //
 
 #include "stdafx.h"
-#include "MUSHclient.h"
-#include "doc.h"
+#include "..\MUSHclient.h"
+#include "..\doc.h"
 #include "logdlg.h"
 
 #ifdef _DEBUG

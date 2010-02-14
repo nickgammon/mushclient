@@ -4,7 +4,7 @@
 #ifndef __CGlobalPREFS_H__
 #define __CGlobalPREFS_H__
 
-#include "dialogs\world_prefs\ButtonColour.h"
+#include "..\world_prefs\ButtonColour.h"
 
 class CMUSHclientDoc;
 

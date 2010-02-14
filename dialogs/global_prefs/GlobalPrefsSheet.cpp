@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "resource.h"
+#include "..\..\resource.h"
 #include "GlobalPrefsSheet.h"
 
 #ifdef _DEBUG

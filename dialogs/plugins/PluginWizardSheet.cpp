@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "resource.h"
 #include "PluginWizardSheet.h"
 
 #ifdef _DEBUG

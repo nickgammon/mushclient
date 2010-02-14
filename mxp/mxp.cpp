@@ -1,13 +1,10 @@
 // mxp.cpp - MXP management
 
 #include "stdafx.h"
-#include "MUSHclient.h"
+#include "..\MUSHclient.h"
 
-#include "doc.h"
-#include "MUSHview.h"
-#include "mainfrm.h"
+#include "..\doc.h"
 #include "mxp.h"
-#include "errors.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

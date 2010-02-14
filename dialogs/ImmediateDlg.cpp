@@ -2,10 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
-#include "doc.h"
+#include "..\mushclient.h"
+#include "..\doc.h"
 #include "ImmediateDlg.h"
-#include "mainfrm.h"
+#include "..\mainfrm.h"
 #include "EditMultiLine.h"
 
 #define CLEAR_SELECTION 10200

@@ -1,6 +1,5 @@
 #include "stdafx.h"
-#include "MUSHclient.h"
-#include "resource.h"
+#include "..\MUSHclient.h"
 // CG: This file added by 'Tip of the Day' component.
 
 #include <winreg.h>

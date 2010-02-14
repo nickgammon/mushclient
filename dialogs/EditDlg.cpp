@@ -2,9 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
+#include "..\mushclient.h"
 #include "EditDlg.h"
-#include "winplace.h"
+#include "..\winplace.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

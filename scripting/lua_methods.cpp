@@ -1,13 +1,13 @@
 #include "stdafx.h"
-#include "mainfrm.h"
-#include "MUSHclient.h"
-#include "doc.h"
-#include "errors.h"
-#include "winplace.h"
-#include "TextDocument.h"
-#include "TextView.h"
-#include "sendvw.h"
-#include "dialogs\DebugLuaDlg.h"
+#include "..\mainfrm.h"
+#include "..\MUSHclient.h"
+#include "..\doc.h"
+#include "..\scripting\errors.h"
+#include "..\winplace.h"
+#include "..\TextDocument.h"
+#include "..\TextView.h"
+#include "..\sendvw.h"
+#include "..\dialogs\DebugLuaDlg.h"
 
 #ifdef USE_LUA
 

@@ -7,10 +7,10 @@
 #define __CGlobalPREFSSHEET_H__
 
 #include "GlobalPrefs.h"
-#include "MUSHclient.h"
-#include "mainfrm.h"
-#include "doc.h"
-#include "dialogs\world_prefs\genpropertypage.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\mainfrm.h"
+#include "..\..\doc.h"
+#include "..\world_prefs\genpropertypage.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CGlobalPrefsSheet

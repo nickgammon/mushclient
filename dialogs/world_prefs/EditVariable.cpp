@@ -2,10 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
-#include "doc.h"
-#include "dialogs\world_prefs\EditVariable.h"
-#include "dialogs\EditMultiLine.h"
+#include "..\..\mushclient.h"
+#include "..\..\doc.h"
+#include "EditVariable.h"
+#include "..\EditMultiLine.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

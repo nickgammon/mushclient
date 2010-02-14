@@ -7,8 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lua.h"
-#include "lauxlib.h"
+#include "..\lua.h"
+#include "..\lauxlib.h"
 
 #define LREXLIB_PCRE      // NJG
 
@@ -350,7 +350,7 @@ static const luaL_reg posixmeta[] = {
 
 #define PCRE_EXP_DECL extern
 
-#include "pcre\pcre.h"
+#include "..\pcre\pcre.h"
 
 const char pcre_handle[] = "pcre_regex_handle";
 const char pcre_typename[] = "pcre_regex";

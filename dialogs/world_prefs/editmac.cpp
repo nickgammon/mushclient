@@ -2,9 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "MUSHclient.h"
+#include "..\..\MUSHclient.h"
 #include "editmac.h"
-#include "dialogs\EditMultiLine.h"
+#include "..\EditMultiLine.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

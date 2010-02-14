@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "MUSHclient.h"
+#include "..\MUSHclient.h"
 #include "password.h"
 
 #ifdef _DEBUG

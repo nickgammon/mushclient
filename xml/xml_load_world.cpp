@@ -2,12 +2,12 @@
 //
 
 #include "stdafx.h"
-#include "MUSHclient.h"
-#include "doc.h"
-#include "MUSHview.h"
-#include "errors.h"
-#include "genprint.h"
-#include "mainfrm.h"
+#include "..\MUSHclient.h"
+#include "..\doc.h"
+#include "..\MUSHview.h"
+//#include "errors.h"
+#include "..\genprint.h"
+#include "..\mainfrm.h"
 
 /*
 

@@ -7,7 +7,7 @@ Copyright (C) 2000 Nick Gammon.
 */
 
 #include "stdafx.h"
-#include "MUSHclient.h"
+#include "..\MUSHclient.h"
 #include "GoToLineDlg.h"
 
 #ifdef _DEBUG

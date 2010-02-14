@@ -1,7 +1,7 @@
-#include "lua.h"
-#include "lauxlib.h"
+#include "..\lua.h"
+#include "..\lauxlib.h"
 
-#include "../zlib/zlib.h"
+#include "..\zlib/zlib.h"
 #include "shs.h"
 #include "sha256.h"
 #include "md5.h"

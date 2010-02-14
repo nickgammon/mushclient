@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "MUSHclient.h"
-#include "mainfrm.h"
-#include "doc.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\mainfrm.h"
+#include "..\..\doc.h"
 #include "genpropertypage.h"
-#include "dialogs\EditMultiLine.h"
+#include "..\EditMultiLine.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

@@ -2,10 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "MUSHclient.h"
-#include "doc.h"
-#include "MUSHview.h"
-#include "genprint.h"
+#include "..\MUSHclient.h"
+#include "..\doc.h"
+#include "..\MUSHview.h"
+#include "..\genprint.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

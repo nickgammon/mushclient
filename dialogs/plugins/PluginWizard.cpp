@@ -2,12 +2,12 @@
 //
 
 #include "stdafx.h"
-#include "resource.h"
-#include "MUSHclient.h"
-#include "mainfrm.h"
-#include "doc.h"
+#include "..\..\resource.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\mainfrm.h"
+#include "..\..\doc.h"
 #include "PluginWizard.h"
-#include "dialogs\EditMultiLine.h"
+#include "..\EditMultiLine.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE

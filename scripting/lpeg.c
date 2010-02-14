@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "lua.h"
-#include "lauxlib.h"
+#include "..\lua.h"
+#include "..\lauxlib.h"
 
 
 #define VERSION		"0.9"

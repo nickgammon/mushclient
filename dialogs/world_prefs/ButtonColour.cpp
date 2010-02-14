@@ -4,7 +4,7 @@
 // nb. buttons are painted as "owner draw" and "disabled"
 
 #include "stdafx.h"
-#include "MUSHclient.h"
+#include "..\..\MUSHclient.h"
 #include "ButtonColour.h"
 
 #ifdef _DEBUG

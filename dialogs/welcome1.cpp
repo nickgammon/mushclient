@@ -2,9 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
-#include "doc.h"
-#include "StatLink.h"
+#include "..\mushclient.h"
+#include "..\doc.h"
+#include "..\StatLink.h"
 
 #include "welcome1.h"
 

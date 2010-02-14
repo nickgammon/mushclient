@@ -5,8 +5,8 @@
 //  <![CDATA[ ... ]]> 
 
 #include "stdafx.h"
-#include "MUSHclient.h"
-#include "doc.h"
+#include "..\MUSHclient.h"
+#include "..\doc.h"
 #include "xmlparse.h"
 
 #ifdef _DEBUG

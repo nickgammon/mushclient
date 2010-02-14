@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "mainfrm.h"
-#include "MUSHclient.h"
-#include "doc.h"
-#include "dialogs\ScriptErrorDlg.h"
+#include "..\mainfrm.h"
+#include "..\MUSHclient.h"
+#include "..\doc.h"
+#include "..\dialogs\ScriptErrorDlg.h"
 
 static CString strProcedure;
 static CString strType;

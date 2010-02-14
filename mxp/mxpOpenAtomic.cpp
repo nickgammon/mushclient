@@ -1,14 +1,14 @@
 // mxpOpenAtomic.cpp - open one atomic tag
 
 #include "stdafx.h"
-#include "MUSHclient.h"
+#include "..\MUSHclient.h"
 
-#include "doc.h"
-#include "MUSHview.h"
-#include "mainfrm.h"
+#include "..\doc.h"
+#include "..\MUSHview.h"
+#include "..\mainfrm.h"
 #include "mxp.h"
-#include "scripting\errors.h"
-#include "color.h"
+#include "..\scripting\errors.h"
+#include "..\color.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

@@ -2,8 +2,8 @@
 //
 
 #include "stdafx.h"
-#include "mushclient.h"
-#include "doc.h"
+#include "..\mushclient.h"
+#include "..\doc.h"
 #include "MultiLineTriggerDlg.h"
 
 #ifdef _DEBUG

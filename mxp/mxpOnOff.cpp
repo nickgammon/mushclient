@@ -1,13 +1,13 @@
 // mxpOnOff.cpp - turning MXP on and off
 
 #include "stdafx.h"
-#include "MUSHclient.h"
+#include "..\MUSHclient.h"
 
-#include "doc.h"
-#include "MUSHview.h"
-#include "mainfrm.h"
+#include "..\doc.h"
+#include "..\MUSHview.h"
+#include "..\mainfrm.h"
 #include "mxp.h"
-#include "errors.h"
+//#include "errors.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
