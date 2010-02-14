@@ -13,7 +13,6 @@
 #include "sendvw.h"
 
 #include "ActivityDoc.h"
-#include "resource.h"
 #include "genprint.h"
 #include "dialogs\TextAttributesDlg.h"
 #include "dialogs\GoToLineDlg.h"

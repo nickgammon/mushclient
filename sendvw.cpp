@@ -28,8 +28,6 @@
 
 #include "winplace.h"
 
-#include <stdlib.h>
-#include "resource.h"
 #include "scripting\errors.h"
 
 #ifdef _DEBUG

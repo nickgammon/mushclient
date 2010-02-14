@@ -19,17 +19,11 @@
 
 
 #include "dialogs\TipDlg.h"
-#include "resource.h"
 #include "dialogs\SendToAllDlg.h"
 #include "dialogs\UniqueIDDlg.h"
 #include "dialogs\WinsockInfoDlg.h"
 
 #include "MakeWindowTransparent.h"
-
-#include <mmsystem.h>
-// #include <Winuser.h>  // for FlashWindowEx
-
-//#include <winsock.h>
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW 

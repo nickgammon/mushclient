@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "format.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

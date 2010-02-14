@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "MUSHclient.h"
-#include <process.h>
 #include "doc.h"
 #include "MUSHview.h"
 #include "mainfrm.h"

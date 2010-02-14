@@ -9,7 +9,6 @@
 #include "..\..\MUSHview.h"
 #include "..\..\sendvw.h"
 #include "..\..\scripting\errors.h"
-#include "..\..\color.h"
 #include "..\..\childfrm.h"
 
 #include "editmac.h"
@@ -17,8 +16,6 @@
 #include "triggdlg.h"
 #include "TimerDlg.h"
 #include "EditVariable.h"
-#include "MissingEntryPoints.h"
-#include "mmsystem.h"   // for sound playing
 #include "..\FindDlg.h"
 #include "TabDefaultsDlg.h"
 #include "TreePropertySheet.h"

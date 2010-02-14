@@ -1,9 +1,5 @@
 #include "stdafx.h"
 #include "MUSHclient.h"
-
-#include "mmsystem.h"   // for sound playing
-#include "mainfrm.h"
-
 #include "doc.h"
 
 #ifdef _DEBUG

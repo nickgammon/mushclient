@@ -7,7 +7,6 @@
 #include "stdafx.h"
 #include "..\MUSHclient.h"
 #include "..\doc.h"
-#include "xmlparse.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

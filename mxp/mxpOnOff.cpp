@@ -7,7 +7,6 @@
 #include "..\MUSHview.h"
 #include "..\mainfrm.h"
 #include "mxp.h"
-//#include "errors.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

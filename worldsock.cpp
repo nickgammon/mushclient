@@ -10,7 +10,6 @@
 
 #include "mainfrm.h"
 
-#include "worldsock.h"
 #include "doc.h"
 
 #include <stddef.h>

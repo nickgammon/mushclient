@@ -2,8 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "exceptions.h"
-#include "format.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW

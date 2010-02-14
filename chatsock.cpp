@@ -10,7 +10,6 @@
 
 #include "mainfrm.h"
 
-#include "chatsock.h"
 #include "doc.h"
 
 #include <stddef.h>

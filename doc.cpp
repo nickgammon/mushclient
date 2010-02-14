@@ -25,11 +25,8 @@
 #include "dialogs\chat\ChatListDlg.h"
 
 #include "dialogs\world_prefs\PrefsPropertySheet.h"
-#include "dialogs\world_prefs\prefspropertypages.h"
 
 #include "dialogs\password.h"
-
-#include "mmsystem.h"   // for sound playing
 
 #include "ActivityDoc.h"
 #include "dialogs\ConfirmPreamble.h"

@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "..\..\mushclient.h"
 #include "..\..\doc.h"
-#include "prefspropertypages.h"
 #include "..\..\mainfrm.h"
 #include "..\EditDlg.h"
 #include "..\EditMultiLine.h"

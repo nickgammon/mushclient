@@ -41,7 +41,6 @@ COLORREF xterm_256_colours [256];
 #pragma comment( lib, "winmm.lib")
 
 // Winsock library
-//#pragma comment( lib, "wsock32.lib ")
 #pragma comment( lib, "ws2_32.lib ")
 
 #ifdef _DEBUG

@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "mushclient.h"
-#include "TimerWnd.h"
 #include "doc.h"
 
 #ifdef _DEBUG
