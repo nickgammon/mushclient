@@ -41,9 +41,16 @@ find_non_standard_encoding.lua
 *.fon
 *.po
 *.GID
+*.suo
 
 #
 #  Notes for me:
 #
 
 using_git.txt
+
+
+#
+#  VS2005 user-specific project data
+#  
+MUSHclient.vcproj.*

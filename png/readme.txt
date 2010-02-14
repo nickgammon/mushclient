@@ -17,6 +17,7 @@ pngerror.c
 pngget.c
 pngmem.c
 pngpread.c
+pngpriv.h
 pngread.c
 pngrio.c
 pngrtran.c
