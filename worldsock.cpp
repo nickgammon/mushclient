@@ -151,21 +151,23 @@ bool bWasClosed = m_pDoc->m_iConnectPhase == eConnectNotConnected;
     m_pDoc->StartNewLine (true, 0); 
     }  // end of message in world window wanted
 
-  CString strInfo = TFormat ("Received %i line%s, sent %i line%s.",
+  CString strInfo = TFormat ("--- Received %i line%s, sent %i line%s.",
                 PLURAL (m_pDoc->m_nTotalLinesReceived),
                 PLURAL (m_pDoc->m_nTotalLinesSent)
                 );
   
   m_pDoc->Note (strInfo);  
 
-  strInfo = TFormat ("Output buffer has %i line%s in it (you have allocated room for %i line%s).",
-                PLURAL (m_pDoc->m_LineList.GetCount ()),
-                PLURAL (m_pDoc->m_maxlines)
+  strInfo = TFormat ("--- Output buffer has %i/%i line%s in it (%.1f%% full).",
+                m_pDoc->m_LineList.GetCount (),
+                m_pDoc->m_maxlines,
+                (m_pDoc->m_LineList.GetCount ()) == 1 ? "" : "s",
+                (double) m_pDoc->m_LineList.GetCount () / (double) m_pDoc->m_maxlines * 100.0
                 );
 
   m_pDoc->Note (strInfo);  
 
-  strInfo = TFormat ("Matched %i trigger%s, %i alias%s, and %i timer%s fired.",
+  strInfo = TFormat ("--- Matched %i trigger%s, %i alias%s, and %i timer%s fired.",
                 PLURAL (m_pDoc->m_iTriggersMatchedThisSessionCount),   
                 PLURALES (m_pDoc->m_iAliasesMatchedThisSessionCount),    
                 PLURAL (m_pDoc->m_iTimersFiredThisSessionCount)       
