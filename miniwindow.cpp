@@ -2107,11 +2107,11 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
           gB = pB [base + i + 1];
           rB = pB [base + i + 2];
 
-          pB [base + i] = (rnd < Opacity) ? rA : rB;;
+          pB [base + i] = (rnd < Opacity) ? bA : bB;;
           i++;
           pB [base + i] = (rnd < Opacity) ? gA : gB;
           i++;
-          pB [base + i] = (rnd < Opacity) ? bA : bB;
+          pB [base + i] = (rnd < Opacity) ? rA : rB;
           i++;
 
           }
