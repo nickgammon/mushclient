@@ -62,12 +62,18 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
 #define TTI_WARNING  2 // warning icon
 #define TTI_ERROR    3 // error icon 
 
-
-#define TTM_SETTITLEA           (WM_USER+32)
-#define TTM_SETTITLEW           (WM_USER+33)
+/*
+  JMC - "redefinition of macro" warnings fixed
+    These four are already defined with the same values
+	in commctrl.h (Platform SDK header)
+    TTM_SETTITLEA, TTM_SETTITLEW,
+	TTM_POPUP, TTM_GETTITLE
+*/
+//#define TTM_SETTITLEA           (WM_USER+32)
+//#define TTM_SETTITLEW           (WM_USER+33)
 #define TTM_SETTITLE            TTM_SETTITLEA
-#define TTM_POPUP               (WM_USER+34)
-#define TTM_GETTITLE            (WM_USER+35)
+//#define TTM_POPUP               (WM_USER+34)
+//#define TTM_GETTITLE            (WM_USER+35)
 #define TTM_SETWINDOWTHEME      CCM_SETWINDOWTHEME
 
 

@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="MUSHclient"
 	ProjectGUID="{A72BFD9B-2A5C-4509-BB92-593FF2C8CE95}"
+	RootNamespace="MUSHclient"
 	Keyword="MFCProj"
 	>
 	<Platforms>
@@ -57,9 +58,9 @@
 				AssemblerListingLocation=".\WinDebug/"
 				ObjectFile=".\WinDebug/"
 				ProgramDataBaseFileName=".\WinDebug/"
-				BrowseInformation="2"
+				BrowseInformation="1"
 				BrowseInformationFile=".\WinDebug/"
-				WarningLevel="3"
+				WarningLevel="1"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 			/>
