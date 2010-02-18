@@ -515,6 +515,7 @@ void DeleteStyle (CStyle * pStyle, const char * filename, const long linenumber)
 #define ON_PLUGIN_TELNET_OPTION "OnPluginTelnetOption"    
 #define ON_PLUGIN_TELNET_REQUEST "OnPluginTelnetRequest"    
 #define ON_PLUGIN_TELNET_SUBNEGOTIATION "OnPluginTelnetSubnegotiation"    
+#define ON_PLUGIN_IAC_GA "OnPlugin_IAC_GA"    
 #define ON_PLUGIN_WORLD_OUTPUT_RESIZED "OnPluginWorldOutputResized"    
 #define ON_PLUGIN_TICK "OnPluginTick"    
 #define ON_PLUGIN_MOUSE_MOVED "OnPluginMouseMoved"    

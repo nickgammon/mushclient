@@ -69,11 +69,11 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
     TTM_SETTITLEA, TTM_SETTITLEW,
 	TTM_POPUP, TTM_GETTITLE
 */
-//#define TTM_SETTITLEA           (WM_USER+32)
-//#define TTM_SETTITLEW           (WM_USER+33)
+#ifndef TTM_SETTITLEA
+  #define TTM_SETTITLEA           (WM_USER+32)
+#endif
+
 #define TTM_SETTITLE            TTM_SETTITLEA
-//#define TTM_POPUP               (WM_USER+34)
-//#define TTM_GETTITLE            (WM_USER+35)
 #define TTM_SETWINDOWTHEME      CCM_SETWINDOWTHEME
 
 

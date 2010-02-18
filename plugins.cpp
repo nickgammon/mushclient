@@ -55,6 +55,7 @@ CPlugin::CPlugin (CMUSHclientDoc * pDoc)
   m_dispid_plugin_telnet_option  = DISPID_UNKNOWN;
   m_dispid_plugin_telnet_request = DISPID_UNKNOWN;
   m_dispid_plugin_telnet_subnegotiation = DISPID_UNKNOWN;
+  m_dispid_plugin_IAC_GA         = DISPID_UNKNOWN;
   m_dispid_plugin_partial_line          = DISPID_UNKNOWN;
   m_dispid_plugin_on_world_output_resized = DISPID_UNKNOWN;
   m_dispid_plugin_on_command_changed = DISPID_UNKNOWN;

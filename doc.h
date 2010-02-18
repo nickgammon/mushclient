@@ -1292,6 +1292,7 @@ public:
   void Phase_COMPRESS (const unsigned char c);    
   void Phase_COMPRESS_WILL (const unsigned char c);    
   bool Handle_Telnet_Request (const int iNumber, const string sType);
+  void Handle_IAC_GA ();
 
   void Handle_TELOPT_COMPRESS2 ();
   void Handle_TELOPT_MUD_SPECIFIC ();

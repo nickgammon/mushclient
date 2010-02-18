@@ -982,6 +982,7 @@ class CPlugin :public CObject
   DISPID m_dispid_plugin_telnet_option;    //  "OnPluginTelnetOption" 
   DISPID m_dispid_plugin_telnet_request;   //  "OnPluginTelnetRequest" 
   DISPID m_dispid_plugin_telnet_subnegotiation;   //  "OnPluginTelnetSubnegotiation" 
+  DISPID m_dispid_plugin_IAC_GA;           //  "OnPlugin_IAC_GA" 
   DISPID m_dispid_plugin_on_world_output_resized; // "OnPluginWorldOutputResized"
   DISPID m_dispid_plugin_on_command_changed;  // "OnPluginCommandChanged"
   

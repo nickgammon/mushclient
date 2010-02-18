@@ -88,6 +88,29 @@ void CMUSHclientDoc::Phase_ANSI (const unsigned char c)
 
 // IAC - we have IAC x
 
+void CMUSHclientDoc::Handle_IAC_GA ()
+  {
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+
+  // tell each plugin what we have received
+  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+    {
+    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+
+
+    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
+      continue;
+
+    // see what the plugin makes of this,
+    pPlugin->ExecutePluginScript (ON_PLUGIN_IAC_GA,
+                                  pPlugin->m_dispid_plugin_IAC_GA);
+
+    }   // end of doing each plugin
+
+  m_CurrentPlugin = pSavedPlugin;
+
+  }   // end of  CMUSHclientDoc::Handle_IAC_GA
+
 void CMUSHclientDoc::Phase_IAC (unsigned char & c)
   {
   char * p;
@@ -100,12 +123,14 @@ void CMUSHclientDoc::Phase_IAC (unsigned char & c)
           p = "EOR"; 
           if (m_bConvertGAtoNewline)
             new_c = '\n';
+          Handle_IAC_GA ();
           break;
     case GO_AHEAD            : 
           m_phase = NONE; 
           p = "GA"; 
           if (m_bConvertGAtoNewline)
             new_c = '\n';
+          Handle_IAC_GA ();
           break;
 
     case SE                  : m_phase = NONE;      p = "SE"; break;
