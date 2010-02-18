@@ -13775,9 +13775,13 @@ long r, g, b;
     case  3: Blend_It (Blend_Interpolate);  break;
 
     case  4:  // dissolve - randomly choose pixels based on opacity
-        r = (genrand () < Opacity) ? rA : rB;
-        g = (genrand () < Opacity) ? gA : gB;
-        b = (genrand () < Opacity) ? bA : bB;
+      {
+       double rnd = genrand ();
+
+        r = (rnd < Opacity) ? rA : rB;
+        g = (rnd < Opacity) ? gA : gB;
+        b = (rnd < Opacity) ? bA : bB;
+      }
       break;
 
 

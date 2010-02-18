@@ -2089,9 +2089,35 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
     case  2: Blend_It (Blend_Average);      break;
     case  3: Blend_It (Blend_Interpolate);  break;
 
-    case  4:  // dissolve - randomly choose pixels based on opacity
-      for (i = 0; i < count; i++) 
-        pB [i] = (genrand () < Opacity) ? pA [i] : pB [i];
+     case  4:  // dissolve - randomly choose pixels based on opacity
+       {
+
+       for (row = 0; row < iHeight; row++)
+        {
+        long base = row * perline;
+        unsigned char rA, gA, bA, rB, gB, bB; 
+        for (i = 0; i < perline - 2; ) 
+          {
+          double rnd = genrand ();
+          bA = pA [base + i];     
+          gA = pA [base + i + 1]; 
+          rA = pA [base + i + 2]; 
+
+          bB = pB [base + i];  
+          gB = pB [base + i + 1];
+          rB = pB [base + i + 2];
+
+          pB [base + i] = (rnd < Opacity) ? bA : bB;;
+          i++;
+          pB [base + i] = (rnd < Opacity) ? gA : gB;
+          i++;
+          pB [base + i] = (rnd < Opacity) ? rA : rB;
+          i++;
+
+          }
+         }  // end for each row
+
+       }
       break;
 
     // darkening modes
