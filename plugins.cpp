@@ -20,6 +20,7 @@ CPlugin::CPlugin (CMUSHclientDoc * pDoc)
   m_AliasMap.InitHashTable (293);    // ditto for aliases
   m_TriggerMap.InitHashTable (293);  // ditto for triggers
   m_TimerMap.InitHashTable (293);    // ditto for timers
+  m_tDateInstalled = CTime::GetCurrentTime();  // when plugin loaded
 
   m_dRequiredVersion = 0.0;
   m_dVersion = 0.0;
