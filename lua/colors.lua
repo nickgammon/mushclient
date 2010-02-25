@@ -103,9 +103,9 @@ function rgb_to_hsl(r, g, b)
 end
 
 function rgb_string_to_hsl(rgb)
-   return rgb_to_hsl(tonumber(rgb:sub(2,3), 16)/256, 
-                     tonumber(rgb:sub(4,5), 16)/256,
-                     tonumber(rgb:sub(6,7), 16)/256)
+   return rgb_to_hsl(tonumber(rgb:sub(2,3), 16)/255, 
+                     tonumber(rgb:sub(4,5), 16)/255,
+                     tonumber(rgb:sub(6,7), 16)/255)
 end
 
 -----------------------------------------------------------------------------
@@ -116,11 +116,10 @@ end
 -----------------------------------------------------------------------------
 
 function Color:to_rgb()
-   local r, g, b = hsl_to_rgb(self.H, self.S, self.L)
    local rgb = {hsl_to_rgb(self.H, self.S, self.L)}
    local buffer = "#"
    for i,v in ipairs(rgb) do
-	  buffer = buffer..string.format("%02x",math.floor(v*256+0.5))
+	  buffer = buffer..string.format("%02x",math.floor(v*255+0.5))
    end
    return buffer
 end
