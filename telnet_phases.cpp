@@ -123,6 +123,7 @@ void CMUSHclientDoc::Phase_IAC (unsigned char & c)
           p = "EOR"; 
           if (m_bConvertGAtoNewline)
             new_c = '\n';
+          m_last_line_with_IAC_GA = m_total_lines;
           Handle_IAC_GA ();
           break;
     case GO_AHEAD            : 
@@ -130,6 +131,7 @@ void CMUSHclientDoc::Phase_IAC (unsigned char & c)
           p = "GA"; 
           if (m_bConvertGAtoNewline)
             new_c = '\n';
+          m_last_line_with_IAC_GA = m_total_lines;
           Handle_IAC_GA ();
           break;
 

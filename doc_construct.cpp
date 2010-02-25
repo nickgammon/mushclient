@@ -192,6 +192,7 @@ int i;
   m_InputFontHeight = 0;
   m_InputFontWidth = 0;
   m_total_lines = 0;
+  m_last_line_with_IAC_GA = 0;
   m_nTotalLinesSent = 0;
   m_nTotalLinesReceived = 0;
   m_phase = NONE;

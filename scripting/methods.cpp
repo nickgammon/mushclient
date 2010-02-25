@@ -4265,7 +4265,9 @@ tInfoTypeMapping InfoTypes [] =
 { 285, "Output window available" },
 { 286, "Triggers matched this session" },
 { 287, "Aliases matched this session" },
-{ 288, "Timers fired this session" },    
+{ 288, "Timers fired this session" }, 
+{ 289, "Last line with IAC/GA or IAC/EOR in it" },
+   
 
 // (dates - calculated at runtime)
 
@@ -4881,7 +4883,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case 286: SetUpVariantLong (vaResult, m_iTriggersMatchedThisSessionCount);  break; // Triggers matched this session
     case 287: SetUpVariantLong (vaResult, m_iAliasesMatchedThisSessionCount);   break; // Aliases matched this session   
     case 288: SetUpVariantLong (vaResult, m_iTimersFiredThisSessionCount);      break; // Timers fired this session      
-      
+    case 289: SetUpVariantLong (vaResult, m_last_line_with_IAC_GA);             break; // Last line number that had an IAC/GA in it     
 
 
     case  301: 

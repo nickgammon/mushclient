@@ -946,6 +946,7 @@ public:
   long m_new_lines;   // lines they haven't read yet (if not active view)
   long m_nTotalLinesSent;   // lines sent this connection
   long m_nTotalLinesReceived;  // lines they received this connection
+  long m_last_line_with_IAC_GA;
 
   CTime m_tConnectTime;       // time we connected to the world
   CTime m_tLastPlayerInput;   // time the player last typed something (for <afk> )
