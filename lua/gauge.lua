@@ -17,7 +17,8 @@ function gauge (win,                        -- miniwindow ID to draw in
                 left, top, width, height,   -- where to put it inside the window
                 fg_colour, bg_colour,       -- colour for bar, colour for unfilled part
                 ticks, tick_colour,         -- number of ticks to draw, and in what colour
-                frame_colour)               -- colour for frame around bar
+                frame_colour,               -- colour for frame around bar
+                shadow_colour)              -- colour for shadow, nil for no shadow
 
   local Fraction
   
@@ -47,9 +48,14 @@ function gauge (win,                        -- miniwindow ID to draw in
   tick_colour   = tick_colour   or ColourNameToRGB "silver"
   frame_colour  = frame_colour  or ColourNameToRGB "lightgrey"
 
+  -- shadow
+  if shadow_colour then
+    WindowRectOp (win, 2, left + 2, top + 2, left + width + 2, top + height + 2, shadow_colour)  
+  end -- if 
+
   -- background colour - for un-filled part
   WindowRectOp (win, 2, left, top, left + width, top + height, bg_colour)  -- fill entire box
-  
+    
   -- how big filled part is
   local gauge_width = width * Fraction
     
