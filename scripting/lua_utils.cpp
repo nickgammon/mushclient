@@ -803,6 +803,8 @@ CDC dc;
                    NULL,
                    &Frame);      
 
+  dlg.m_cf.rgbColors = fontcolour;
+
   if (dlg.DoModal () != IDOK)
     {
     lua_pushnil (L);
