@@ -116,10 +116,10 @@ function gauge (win,                        -- miniwindow ID to draw in
 end -- function gauge
 
 -- find which element in an array has the largest text size
-function max_text_width (win, font_id, t)
+function max_text_width (win, font_id, t, utf8)
   local max = 0
   for _, s in ipairs (t) do
-    max = math.max (max, WindowTextWidth (win, font_id, s))
+    max = math.max (max, WindowTextWidth (win, font_id, s, utf8))
   end -- for each item
   return max
 end -- max_text_width
@@ -146,3 +146,25 @@ end -- get_preferred_font
 function capitalize (x)
   return string.upper (string.sub(x, 1, 1)) .. string.lower (string.sub(x, 2))
 end -- capitalize
+
+function draw_3d_box (win, left, top, width, height)
+  local right = left + width
+  local bottom = top + height
+  
+  WindowCircleOp (win, 3, left,     top,     right,     bottom,     0x505050, 0, 3, 0, 1)   -- dark grey border (3 pixels)
+  WindowCircleOp (win, 3, left + 1, top + 1, right - 1, bottom - 1, 0x7C7C7C, 0, 1, 0, 1)  -- lighter inner border
+  WindowCircleOp (win, 3, left + 2, top + 2, right - 2, bottom - 2, 0x000000, 0, 1, 0, 1)  -- black inside that
+  WindowLine     (win,    left + 1, top + 1, right - 1, top + 1,    0xC2C2C2, 0, 1)  -- light top edge
+  WindowLine     (win,    left + 1, top + 1, left + 1,  bottom - 1, 0xC2C2C2, 0, 1)  -- light left edge (for 3D look)
+end -- draw_3d_box
+
+function draw_text_box (win, font, left, top, text, utf8, text_colour, fill_colour, border_colour)
+local width       = WindowTextWidth (win, font, text, utf8)
+local font_height = WindowFontInfo (win, font, 1) 
+
+  WindowRectOp (win, 2, left - 3, top, left + width + 3, top + font_height, fill_colour)  -- fill
+  WindowText   (win, font, text, left, top, 0, 0, text_colour, utf8)   -- draw text
+  WindowRectOp (win, 1, left - 3, top, left + width + 3, top + font_height, border_colour)  -- border
+  
+  return width
+end -- draw_text_box
