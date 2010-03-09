@@ -8,9 +8,19 @@ function do_plugin_check_now (id, name)
     return  -- all is well
   end -- plugin is installed
 
-  ColourNote ("black", "yellow", "Warning! Plugin " .. name .. " has not been installed.")
-  ColourNote ("black", "yellow", "It is required for the correct operation of the " ..
+  ColourNote ("white", "green", "Plugin '" .. name .. "' not installed. Attempting to install it...") 
+  LoadPlugin (GetPluginInfo(GetPluginID (), 20) .. name .. ".xml") 
+
+  if IsPluginInstalled (id) then
+    ColourNote ("white", "green", "Success!") 
+    return  -- all is well ... now
+  end -- plugin is installed
+    
+  ColourNote ("white", "red", string.rep ("-", 80))
+  ColourNote ("white", "red", "Plugin '" .. name .. "' not installed. Please download and install it.") 
+  ColourNote ("white", "red", "It is required for the correct operation of the " ..
               GetPluginName () .. " plugin.")
+  ColourNote ("white", "red", string.rep ("-", 80))
 
 end -- do_plugin_check_now
 
@@ -36,6 +46,7 @@ local PPI = require "ppi"
   
   ppi = PPI.Load(id)  -- try again
   if ppi then
+    ColourNote ("white", "green", "Success!") 
     return ppi
   end
 
