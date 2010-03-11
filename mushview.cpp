@@ -1894,7 +1894,7 @@ const char * p = sName;
   int i;
 // check for A-Z, 0-9 or underscore
   for (i = 0; *p && *p != '('; p++, i++)
-    if (!isalnum (*p) && *p != '_')
+    if (!isalnum (*p) && *p != '_' && *p != '.')
       return false;
 
 // can't be zero length
