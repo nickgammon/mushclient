@@ -596,21 +596,24 @@ BOOL CMUSHclientApp::InitInstance()
   // check direct sound available
   FARPROC pDirectSoundCreate = NULL;
 
-	HMODULE hDLL = LoadLibrary ("dsound");
-  if (hDLL)
-		pDirectSoundCreate = GetProcAddress(hDLL, "DirectSoundCreate");
-
-  if (pDirectSoundCreate)
+  if (strstr (m_lpCmdLine, "/nodirectsound") == NULL)
     {
-    // try to set up for DirectSound
-    if (FAILED (DirectSoundCreate (NULL, &m_pDirectSoundObject, NULL))) 
-      m_pDirectSoundObject = NULL;
+	  HMODULE hDLL = LoadLibrary ("dsound");
+    if (hDLL)
+		  pDirectSoundCreate = GetProcAddress(hDLL, "DirectSoundCreate");
 
-    // set sound cooperation level
-    if (m_pDirectSoundObject)
-      if (FAILED (m_pDirectSoundObject->SetCooperativeLevel (pMainFrame->m_hWnd, DSSCL_NORMAL)))
-        m_pDirectSoundObject = NULL;    // no DirectSound
-    }
+    if (pDirectSoundCreate)
+      {
+      // try to set up for DirectSound
+      if (FAILED (DirectSoundCreate (NULL, &m_pDirectSoundObject, NULL))) 
+        m_pDirectSoundObject = NULL;
+
+      // set sound cooperation level
+      if (m_pDirectSoundObject)
+        if (FAILED (m_pDirectSoundObject->SetCooperativeLevel (pMainFrame->m_hWnd, DSSCL_NORMAL)))
+          m_pDirectSoundObject = NULL;    // no DirectSound
+      }
+    }   // if DirectSound wanted
 
   if (m_pDirectSoundObject)
     {
@@ -686,6 +689,8 @@ BOOL CMUSHclientApp::InitInstance()
     else if (strTemp == "/wine")
       { }  // do nothing else, checked further up
     else if (strTemp == "/noregister")
+      { }  // do nothing else, checked further up
+    else if (strTemp == "/nodirectsound")
       { }  // do nothing else, checked further up
     else if (strstr (strTemp, ".mcl"))
 		// open an existing document
