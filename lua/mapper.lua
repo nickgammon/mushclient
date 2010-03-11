@@ -12,6 +12,7 @@ Exposed functions:
 init (t)            -- call once, supply: 
                           t.config    -- ie. colours, sizes
                           t.get_room  -- info about room (uid)
+                          t.show_help -- function that displays some help
                           
 zoom_in ()          -- zoom in map view
 zoom_out ()         -- zoom out map view
@@ -42,6 +43,8 @@ room info should include:
 
 module (..., package.seeall)
 
+VERSION = 1.0   -- for querying by plugins
+
 require "movewindow"
 require "copytable"
 require "gauge"
@@ -67,12 +70,16 @@ local current_room
 local rooms = {}
 local last_visited = {}
 
+-- other locals
+local HALF_ROOM, connectors, half_connectors, arrows
+local win, plan_to_draw, speedwalks, drawn, drawn_coords
+local last_drawn, depth, windowinfo, font_height 
+
 local function build_room_info ()
   
   HALF_ROOM   = ROOM_SIZE / 2
-  HALF_WAY    = DISTANCE_TO_NEXT_ROOM / 2
-  THIRD_WAY   = DISTANCE_TO_NEXT_ROOM / 3
-  DISTANCE_LESS1 = DISTANCE_TO_NEXT_ROOM - 1
+  local THIRD_WAY   = DISTANCE_TO_NEXT_ROOM / 3
+  local DISTANCE_LESS1 = DISTANCE_TO_NEXT_ROOM - 1
   
   -- how to draw a line from this room to the next one (relative to the center of the room)
   connectors = {
@@ -118,6 +125,42 @@ local function build_room_info ()
 
 end -- build_room_info
 
+local default_config = {
+  -- assorted colours
+  BACKGROUND_COLOUR       = { name = "Background",        colour =  ColourNameToRGB "lightseagreen", },
+  ROOM_COLOUR             = { name = "Room",              colour =  ColourNameToRGB "cyan", },
+  EXIT_COLOUR             = { name = "Exit",              colour =  ColourNameToRGB "darkgreen", },
+  EXIT_COLOUR_UP_DOWN     = { name = "Exit up/down",      colour =  ColourNameToRGB "darkmagenta", },
+  EXIT_COLOUR_IN_OUT      = { name = "Exit in/out",       colour =  ColourNameToRGB "#3775E8", },
+  UNKNOWN_ROOM_COLOUR     = { name = "Unknown room",      colour =  ColourNameToRGB "#00CACA", },
+  MAPPER_NOTE_COLOUR      = { name = "Messages",          colour =  ColourNameToRGB "lightgreen" },
+  
+  ROOM_NAME_TEXT          = { name = "Room name text",    colour = ColourNameToRGB "#BEF3F1", },
+  ROOM_NAME_FILL          = { name = "Room name fill",    colour = ColourNameToRGB "#105653", },
+  ROOM_NAME_BORDER        = { name = "Room name box",     colour = ColourNameToRGB "black", },
+  
+  AREA_NAME_TEXT          = { name = "Area name text",    colour = ColourNameToRGB "#BEF3F1",},
+  AREA_NAME_FILL          = { name = "Area name fill",    colour = ColourNameToRGB "#105653", },   
+  AREA_NAME_BORDER        = { name = "Area name box",     colour = ColourNameToRGB "black", },
+               
+  FONT = { name =  get_preferred_font {"Dina",  "Lucida Console",  "Fixedsys", "Courier", "Sylfaen",} ,
+           size = 8
+         } ,
+         
+  -- size of map window
+  WINDOW = { width = 400, height = 400 },
+  
+  -- how far from where we are standing to draw (rooms)
+  SCAN = { depth = 50 },
+  
+  -- speedwalk delay
+  DELAY = { time = 0.3 },
+  
+  -- how many seconds to show "recent visit" lines (default 5 minutes)
+  LAST_VISIT_TIME = { time = 60 * 5 },  
+  
+  }
+  
 local function get_room (uid)
   local room = supplied_get_room (uid)
   room = room or { unknown = true }
@@ -235,12 +278,7 @@ function mouseup_change_font (flags, hotspot_id)
     config.FONT.size = newfont.size
   end -- if
   
-  local version = tonumber (Version ())
-
-  -- colour ignored in MC version 4.50 and before
-  if version and version >= 4.51 then  
-    config.ROOM_NAME_TEXT.colour = newfont.colour
-  end -- version test
+  config.ROOM_NAME_TEXT.colour = newfont.colour
 
   -- reload new font  
   WindowFont (win, FONT_ID, config.FONT.name, config.FONT.size)
@@ -252,7 +290,7 @@ function mouseup_change_font (flags, hotspot_id)
   draw (current_room)
 end -- mouseup_change_font
 
-function get_number_from_user (msg, title, current, min, max)
+local function get_number_from_user (msg, title, current, min, max)
   local n =  utils.inputbox (msg, title, current)
       
   if not n then
@@ -606,8 +644,8 @@ local function draw_room (uid, path, x, y)
             local exit_time = last_visited [exit_uid] or 0
             local this_time = last_visited [uid] or 0
             local now = os.time ()
-            if exit_time > (now - LAST_VISIT_TIME) and
-               this_time > (now - LAST_VISIT_TIME) then
+            if exit_time > (now - config.LAST_VISIT_TIME.time) and
+               this_time > (now - config.LAST_VISIT_TIME.time) then
                linewidth = 2
             end -- if
           end -- if
@@ -690,7 +728,8 @@ end -- draw_room
 local function changed_room (uid)
 
   hyperlink_paths = nil  -- those hyperlinks are meaningless now
-    
+  speedwalks = {}  -- old speedwalks are irrelevant
+  
   if current_speedwalk then
   
     if uid ~= expected_room then
@@ -711,7 +750,11 @@ local function changed_room (uid)
         SetStatus ("Speedwalks to go: " .. #current_speedwalk)
         local dir = table.remove (current_speedwalk, 1)
         expected_room = dir.uid
-        DoAfter (0.3, dir.dir)
+        if config.DELAY.time > 0 then
+          DoAfter (config.DELAY.time, dir.dir)
+        else
+          Send (dir.dir)
+        end -- if
       else
         cancel_speedwalk ()
       end -- if any left    
@@ -738,7 +781,7 @@ end -- check_we_can_find
 -- Thanks to Ked.
 
 -- uid is starting room
--- f returns true if we want to store this one, and true,true if
+-- f returns true (or a "reason" string) if we want to store this one, and true,true if
 --   we have done searching (ie. all wanted rooms found)
 
 local function find_paths (uid, f)
@@ -848,7 +891,8 @@ function draw (uid)
   WindowCreate (win, 
                  windowinfo.window_left, 
                  windowinfo.window_top, 
-                 config.WINDOW.width, config.WINDOW.height,  
+                 config.WINDOW.width, 
+                 config.WINDOW.height,  
                  windowinfo.window_mode,   -- top right
                  windowinfo.window_flags,
                  config.BACKGROUND_COLOUR.colour) 
@@ -923,7 +967,7 @@ function draw (uid)
     local x = 5
     local y = config.WINDOW.height - 2 - font_height
     local width = draw_text_box (win, FONT_ID, 
-                   5,   -- left
+                   x,   -- left
                    config.WINDOW.height - 2 - font_height,    -- top (ie. at bottom)
                    "*", true,                   -- what to draw, utf8
                    config.AREA_NAME_TEXT.colour,   -- text colour
@@ -940,13 +984,35 @@ function draw (uid)
                    "Click to configure map",
                    1, 0)  -- hand cursor
   end -- if
-                                                          
+               
+  if type (show_help) == "function" then
+    local x = config.WINDOW.width - WindowTextWidth (win, FONT_ID, "?", true) - 5
+    local y = config.WINDOW.height - 2 - font_height
+    local width = draw_text_box (win, FONT_ID, 
+                   x,   -- left
+                   config.WINDOW.height - 2 - font_height,    -- top (ie. at bottom)
+                   "?", true,                   -- what to draw, utf8
+                   config.AREA_NAME_TEXT.colour,   -- text colour
+                   config.AREA_NAME_FILL.colour,   -- fill colour   
+                   config.AREA_NAME_BORDER.colour)     -- border colour
+    
+    WindowAddHotspot(win, "<help>",  
+                   x, y, x + width, y + font_height,   -- rectangle
+                   "",  -- mouseover
+                   "",  -- cancelmouseover
+                   "",  -- mousedown
+                   "",  -- cancelmousedown
+                   "mapper.show_help",  -- mouseup
+                   "Click for help",
+                   1, 0)  -- hand cursor
+  end -- if
+                                                              
   -- 3D box around whole thing
   
   draw_3d_box (win, 0, 0, config.WINDOW.width, config.WINDOW.height)
       
   -- make sure window visible
-  WindowShow (win, true)
+  WindowShow (win, not hidden)
 
   last_drawn = uid  -- last room number we drew (for zooming)
   
@@ -955,6 +1021,14 @@ function draw (uid)
   --print (string.format ("Time to draw= %0.6f", end_time - start_time))
 
 end -- draw
+  
+local credits = {
+  "MUSHclient mapper",
+  string.format ("Version %0.1f", VERSION),
+  "Written by Nick Gammon",
+  WorldName (),
+  GetInfo (3),
+  }
   
 -- call once to initialize the mapper
 function init (t)
@@ -966,6 +1040,13 @@ function init (t)
   supplied_get_room = t.get_room
   assert (type (get_room) == "function", "No 'get_room' function supplied to mapper.")
      
+  show_help = t.show_help
+  
+  -- force some config defaults if not supplied
+  for k, v in pairs (default_config) do
+    config [k] = config [k] or v
+  end -- for
+  
   win = GetPluginID () .. "_mapper"
 
   WindowCreate (win, 0, 0, 0, 0, 0, 0, 0)
@@ -982,6 +1063,31 @@ function init (t)
 
   -- calculate box sizes, arrows, connecting lines etc.
   build_room_info ()
+  
+  WindowCreate (win, 
+                 windowinfo.window_left, 
+                 windowinfo.window_top, 
+                 config.WINDOW.width, 
+                 config.WINDOW.height,  
+                 windowinfo.window_mode,   -- top right
+                 windowinfo.window_flags,
+                 config.BACKGROUND_COLOUR.colour) 
+
+  -- let them move it around                 
+  movewindow.add_drag_handler (win, 0, 0, 0, font_height)
+    
+  local top = (config.WINDOW.height - #credits * font_height) /2
+  
+  for _, v in ipairs (credits) do
+    local width = WindowTextWidth (win, FONT_ID, v, true)
+    local left = (config.WINDOW.width - width) / 2
+    WindowText   (win, FONT_ID, v, left, top, 0, 0, config.ROOM_COLOUR.colour, true)  
+    top = top + font_height 
+  end -- for
+
+  draw_3d_box (win, 0, 0, config.WINDOW.width, config.WINDOW.height)
+  
+  WindowShow (win, true)
   
 end -- init
 
@@ -1020,10 +1126,12 @@ end -- maperror
 
 function show ()
   WindowShow (win, true)
+  hidden = false
 end -- show
 
 function hide ()
   WindowShow (win, false)
+  hidden = true
 end -- hide
 
 function save_state ()
@@ -1033,9 +1141,8 @@ end -- save_state
 
 -- generic room finder
 
--- f (uid) is a function which returns: found, reason, done
---    found is true if uid is a wanted room
---    reason is the reason it is wanted (can be nil), eg. "shop"
+-- f (uid) is a function which returns: found, done
+--    found is not nil if uid is a wanted room - if it is a string it is the reason it matched (eg. shop)
 --    done is true if we know there is nothing else to search for (eg. all rooms found)
 
 -- show_uid is true if you want the room uid to be displayed
@@ -1081,14 +1188,17 @@ function find (f, show_uid, expected_count)
         room_name = room_name .. " (" .. uid .. ")"
       end -- if
       
-      Hyperlink ("!!" .. GetPluginID () .. ":mapper.do_hyperlink(" .. uid .. ")", 
+      -- in case the same UID shows up later, it is only valid from the same room
+      local hash = utils.tohex (utils.md5 (tostring (current_room) .. "<-->" .. tostring (uid)))
+      
+      Hyperlink ("!!" .. GetPluginID () .. ":mapper.do_hyperlink(" .. hash .. ")", 
                 room_name, "Click to speedwalk there (" .. distance .. ")", "", "", false)
       local info = ""
       if type (paths [uid].reason) == "string" and paths [uid].reason ~= "" then
         info = " [" .. paths [uid].reason .. "]"
       end -- if
       mapprint (" - " .. distance .. info) -- new line
-      hyperlink_paths [uid] = paths [uid].path
+      hyperlink_paths [hash] = paths [uid].path
     end -- if
   end -- for each room
 
@@ -1100,7 +1210,7 @@ function find (f, show_uid, expected_count)
     end -- if
     mapprint ("There", were, diff, matches, 
               "which I could not find a path to within", 
-              config.SCAN.depth, "rooms from here.")
+              config.SCAN.depth, "rooms.")
   end -- if
   
 end -- map_find_things
