@@ -13,7 +13,9 @@ init (t)            -- call once, supply:
                           t.config      -- ie. colours, sizes
                           t.get_room    -- info about room (uid)
                           t.show_help   -- function that displays some help
-                          t.room_click  -- function that handles LH click on room
+                          t.room_click  -- function that handles RH click on room
+                          t.timing      -- true to show timing
+                          t.show_completed  -- true to show "Speedwalk completed."
                           
 zoom_in ()          -- zoom in map view
 zoom_out ()         -- zoom out map view
@@ -44,7 +46,7 @@ room info should include:
 
 module (..., package.seeall)
 
-VERSION = 1.0   -- for querying by plugins
+VERSION = 1.1   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -64,6 +66,8 @@ local DISTANCE_TO_NEXT_ROOM = 15
 local config  -- configuration table 
 local supplied_get_room
 local room_click
+local timing   -- true to show timing and other info
+local show_completed  -- true to show "Speedwalk completed."
 
 -- current room number
 local current_room
@@ -153,13 +157,13 @@ local default_config = {
   WINDOW = { width = 400, height = 400 },
   
   -- how far from where we are standing to draw (rooms)
-  SCAN = { depth = 50 },
+  SCAN = { depth = 30 },
   
   -- speedwalk delay
   DELAY = { time = 0.3 },
   
-  -- how many seconds to show "recent visit" lines (default 5 minutes)
-  LAST_VISIT_TIME = { time = 60 * 5 },  
+  -- how many seconds to show "recent visit" lines (default 3 minutes)
+  LAST_VISIT_TIME = { time = 60 * 3 },  
   
   }
   
@@ -185,7 +189,7 @@ end -- get_room
 function start_speedwalk (path)
 
   if current_speedwalk and #current_speedwalk > 0 then
-    mapprint ("You are already speedwalking! (Ctrl + RH-click on a room to cancel)")
+    mapprint ("You are already speedwalking! (Ctrl + LH-click on any room to cancel)")
     return
   end -- if
 
@@ -193,6 +197,7 @@ function start_speedwalk (path)
 
   if current_speedwalk then
     if #current_speedwalk > 0 then
+      last_speedwalk_uid = current_speedwalk [#current_speedwalk].uid
       SetStatus ("Speedwalks to go: " .. #current_speedwalk)
       local dir = table.remove (current_speedwalk, 1)
       Send (dir.dir)
@@ -217,24 +222,24 @@ end -- cancel_speedwalk
 function mouseup_room (flags, hotspot_id)
   local uid = hotspot_id
 
-  if bit.band (flags, 0x20) == 0 then
+  if bit.band (flags, 0x20) ~= 0 then
     
-    -- LH click
+    -- RH click
     
     if type (room_click) == "function" then
       room_click (uid)
     end -- if 
 
     return
-  end -- if LH click
+  end -- if RH click
 
-  -- here for RH click
+  -- here for LH click
     
    -- Control key down?
   if bit.band (flags, 0x02) ~= 0 then
     cancel_speedwalk ()
     return
-  end -- if ctrl-RH click
+  end -- if ctrl-LH click
   
   start_speedwalk (speedwalks [uid])
    
@@ -353,10 +358,22 @@ function mouseup_change_depth (flags, hotspot_id)
   draw (current_room)
 end -- mouseup_change_depth
 
+function mouseup_change_delay (flags, hotspot_id)
+  
+  local delay = get_number_from_user ("Choose speedwalk delay time (0 to 10 seconds)", "Delay in seconds", config.DELAY.time, 0, 10)
+      
+  if not delay then
+    return
+  end -- if dismissed
+    
+  config.DELAY.time = delay
+  draw (current_room)
+end -- mouseup_change_delay
+
 
 local function draw_configuration ()
   local width =  max_text_width (win, FONT_ID, {"Configuration", "Font", "Width", "Height", "Depth"}, true)
-  local lines = 5  -- "Configuration", font, width, height, depth
+  local lines = 6  -- "Configuration", font, width, height, depth, delay
   local GAP = 5
   local suppress_colours = false
   
@@ -369,7 +386,7 @@ local function draw_configuration ()
  
   if (config.WINDOW.height - 13 - font_height * lines) < 10 then
     suppress_colours = true
-    lines = 5  -- forget all the colours
+    lines = 6  -- forget all the colours
   end -- if
   
   local x = 3
@@ -405,11 +422,7 @@ local function draw_configuration ()
   -- close configuration hotspot               
   WindowAddHotspot(win, "$<close_configure>",  
                    x + frame_width - box_size - GAP * 2, y + 1, x + frame_width - GAP * 2, y + 1 + box_size,   -- rectangle
-                   "",  -- mouseover
-                   "",  -- cancelmouseover
-                   "",  -- mousedown
-                   "",  -- cancelmousedown
-                   "mapper.mouseup_close_configure",  -- mouseup
+                   "", "", "", "", "mapper.mouseup_close_configure",  -- mouseup
                    "Click to close",
                    1, 0)  -- hand cursor
     
@@ -426,11 +439,7 @@ local function draw_configuration ()
         -- colour change hotspot               
         WindowAddHotspot(win, "$colour:" .. k,  
                          x + GAP, y + 1, x + width + rh_size / 2 + box_size, y + 1 + box_size,   -- rectangle
-                         "",  -- mouseover
-                         "",  -- cancelmouseover
-                         "",  -- mousedown
-                         "",  -- cancelmousedown
-                         "mapper.mouseup_change_colour",  -- mouseup
+                         "", "", "", "", "mapper.mouseup_change_colour",  -- mouseup
                          "Click to change colour",
                          1, 0)  -- hand cursor
                            
@@ -446,11 +455,7 @@ local function draw_configuration ()
   -- depth hotspot               
   WindowAddHotspot(win, "$<depth>",  
                    x + GAP, y, x + frame_width, y + font_height,   -- rectangle
-                   "",  -- mouseover
-                   "",  -- cancelmouseover
-                   "",  -- mousedown
-                   "",  -- cancelmousedown
-                   "mapper.mouseup_change_depth",  -- mouseup
+                   "", "", "", "", "mapper.mouseup_change_depth",  -- mouseup
                    "Click to change scan depth",
                    1, 0)  -- hand cursor
   y = y + font_height
@@ -462,11 +467,7 @@ local function draw_configuration ()
   -- colour font hotspot               
   WindowAddHotspot(win, "$<font>",  
                    x + GAP, y, x + frame_width, y + font_height,   -- rectangle
-                   "",  -- mouseover
-                   "",  -- cancelmouseover
-                   "",  -- mousedown
-                   "",  -- cancelmousedown
-                   "mapper.mouseup_change_font",  -- mouseup
+                   "", "", "", "", "mapper.mouseup_change_font",  -- mouseup
                    "Click to change font",
                    1, 0)  -- hand cursor
   y = y + font_height
@@ -479,11 +480,7 @@ local function draw_configuration ()
   -- width hotspot               
   WindowAddHotspot(win, "$<width>",  
                    x + GAP, y, x + frame_width, y + font_height,   -- rectangle
-                   "",  -- mouseover
-                   "",  -- cancelmouseover
-                   "",  -- mousedown
-                   "",  -- cancelmousedown
-                   "mapper.mouseup_change_width",  -- mouseup
+                   "", "", "", "", "mapper.mouseup_change_width",  -- mouseup
                    "Click to change window width",
                    1, 0)  -- hand cursor
   y = y + font_height
@@ -495,15 +492,22 @@ local function draw_configuration ()
   -- height hotspot               
   WindowAddHotspot(win, "$<height>",  
                    x + GAP, y, x + frame_width, y + font_height,   -- rectangle
-                   "",  -- mouseover
-                   "",  -- cancelmouseover
-                   "",  -- mousedown
-                   "",  -- cancelmousedown
-                   "mapper.mouseup_change_height",  -- mouseup
+                   "", "", "", "", "mapper.mouseup_change_height",  -- mouseup
                    "Click to change window height",
                    1, 0)  -- hand cursor
   y = y + font_height
                                       
+  -- delay
+  WindowText   (win, FONT_ID, "Walk delay", x, y, 0, 0, 0x000000, true)
+  WindowText   (win, FONT_ID_UL,   tostring (config.DELAY.time), x + width + GAP, y, 0, 0, 0x808080, true)
+                                 
+  -- height hotspot               
+  WindowAddHotspot(win, "$<delay>",  
+                   x + GAP, y, x + frame_width, y + font_height,   -- rectangle
+                   "", "", "", "", "mapper.mouseup_change_delay",  -- mouseup
+                   "Click to change speedwalk delay",
+                   1, 0)  -- hand cursor
+  y = y + font_height
                                       
 end -- draw_configuration
 
@@ -762,6 +766,11 @@ local function changed_room (uid)
           Send (dir.dir)
         end -- if
       else
+        last_hyperlink_uid = nil
+        last_speedwalk_uid = nil
+        if show_completed then
+          mapprint ("Speedwalk completed.")
+        end -- if wanted
         cancel_speedwalk ()
       end -- if any left    
     end -- if expected room or not
@@ -798,6 +807,7 @@ local function find_paths (uid, f)
   end
 
 	local depth = 0
+	local count = 0
 	local done = false
   local found, reason 
 	local explored_rooms, particles = {}, {}
@@ -809,15 +819,19 @@ local function find_paths (uid, f)
 	-- create particle for the initial room
 	table.insert (particles, make_particle (uid))
 	
-	while #particles > 0 and depth < config.SCAN.depth do
+	while (not done) and #particles > 0 and depth < config.SCAN.depth do
 	
 		-- create a new generation of particles
 		new_generation = {}
 		depth = depth + 1
 		
+		SetStatus (string.format ("Scanning: %i/%i depth (%i rooms)", depth, config.SCAN.depth, count))
+		
 		-- process each active particle
 		for i, part in ipairs (particles) do
 		
+		  count = count + 1
+		  
 		  if not rooms [part.current_room] then
         rooms [part.current_room] = get_room (part.current_room)
 		  end -- if not in memory yet
@@ -849,22 +863,24 @@ local function find_paths (uid, f)
   	        	table.insert(new_generation, make_particle(dest, new_path))
 	        	end -- if room exists
 					end -- not explored this room
+    			if done then
+    			  break
+    			end
 					
 				end  -- for each exit
 			
 			end -- if room exists
 			
+			if done then
+			  break
+			end
 		end  -- for each particle
-		
-		-- check if all destinations have been reached
-		if done then
-			return paths
-		end -- if
 			
 		particles = new_generation
 	end	  -- while more particles
 	
-	return paths			
+  SetStatus "Ready"
+	return paths, count, depth			
 end -- function find_paths
 
 ----------------------------------------------------------------------------------
@@ -1027,10 +1043,14 @@ function draw (uid)
   local end_time = GetInfo (232)
 
   -- timing stuff
-  --local count= 0
-  --for k in pairs (drawn) do count = count + 1 end
-  --print (string.format ("Time to draw %i rooms = %0.6f", count, end_time - start_time))
-
+  if timing then
+    local count= 0
+    for k in pairs (drawn) do 
+      count = count + 1 
+    end
+    print (string.format ("Time to draw %i rooms = %0.3f seconds, search depth = %i", count, end_time - start_time, depth))
+  end -- if
+  
 end -- draw
   
 local credits = {
@@ -1052,7 +1072,9 @@ function init (t)
   assert (type (supplied_get_room) == "function", "No 'get_room' function supplied to mapper.")
      
   show_help = t.show_help     -- "help" function
-  room_click = t.room_click   -- LH mouse-click function
+  room_click = t.room_click   -- RH mouse-click function
+  timing = t.timing           -- true for timing info
+  show_completed = t.show_completed  -- true to show "Speedwalk completed." message
   
   -- force some config defaults if not supplied
   for k, v in pairs (default_config) do
@@ -1159,18 +1181,19 @@ end -- save_state
 
 -- show_uid is true if you want the room uid to be displayed
 
-function find (f, show_uid, expected_count)
+-- expected_count is the number we expect to find (eg. the number found on a database)
+
+-- if 'walk' is true, we walk to the first match rather than displaying hyperlinks
+
+function find (f, show_uid, expected_count, walk)
  
   if not check_we_can_find () then
     return
   end -- if
-  
-  local paths = find_paths (current_room, f)
-  
-  if next (paths) == nil then
-    mapprint ("No matches.")
-    return
-  end -- if
+
+  local start_time = GetInfo (232)
+  local paths, count, depth = find_paths (current_room, f)
+  local end_time = GetInfo (232)
   
   local t = {}
   local found_count = 0
@@ -1178,6 +1201,24 @@ function find (f, show_uid, expected_count)
     table.insert (t, k)
     found_count = found_count + 1
   end -- for
+
+  -- timing stuff
+  if timing then
+    print (string.format ("Time to search %i rooms = %0.3f seconds, search depth = %i", 
+                          count, end_time - start_time, depth))
+  end -- if
+  
+  if found_count == 0 then
+    mapprint ("No matches.")
+    return
+  end -- if
+    
+  if found_count == 1 and walk then
+    uid, item = next (paths, nil)
+    mapprint ("Walking to:", rooms [uid].name)
+    start_speedwalk (item.path)
+    return
+  end -- if walking wanted
   
   -- sort so closest ones are first  
   table.sort (t, function (a, b) return #paths [a].path < #paths [b].path end )
@@ -1230,13 +1271,18 @@ function find (f, show_uid, expected_count)
   
 end -- map_find_things
 
-function do_hyperlink (uid)
+function do_hyperlink (hash)
   
-  if not hyperlink_paths or not hyperlink_paths [uid] then
+  if not hyperlink_paths or not hyperlink_paths [hash] then
     mapprint ("Hyperlink is no longer valid, as you have moved.")
     return
   end -- if
   
-  start_speedwalk (hyperlink_paths [uid])
+  local path = hyperlink_paths [hash]
+  if #path > 0 then
+    last_hyperlink_uid = path [#path].uid
+  end -- if
+  start_speedwalk (path)
+  
     
 end -- do_hyperlink
