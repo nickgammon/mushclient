@@ -834,7 +834,7 @@ local function find_paths (uid, f)
 					-- if we've been in this room before, drop it
 					if not explored_rooms[dest] then
 						explored_rooms[dest] = true						
-						rooms [dest] = get_room (dest)  -- make sure this room in table
+						rooms [dest] = supplied_get_room (dest)  -- make sure this room in table
 						if rooms [dest] then
   						new_path = copytable.deep (part.path)
   						table.insert(new_path, { dir = dir, uid = dest } )
@@ -1026,7 +1026,10 @@ function draw (uid)
   
   local end_time = GetInfo (232)
 
-  --print (string.format ("Time to draw= %0.6f", end_time - start_time))
+  -- timing stuff
+  --local count= 0
+  --for k in pairs (drawn) do count = count + 1 end
+  --print (string.format ("Time to draw %i rooms = %0.6f", count, end_time - start_time))
 
 end -- draw
   
@@ -1177,7 +1180,7 @@ function find (f, show_uid, expected_count)
   end -- for
   
   -- sort so closest ones are first  
-  table.sort (paths, function (a, b) return #paths [a].path < #paths [b].path end )
+  table.sort (t, function (a, b) return #paths [a].path < #paths [b].path end )
   
   hyperlink_paths = {}
 
