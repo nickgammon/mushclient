@@ -10,9 +10,10 @@ Generic MUD mapper.
 Exposed functions:
 
 init (t)            -- call once, supply: 
-                          t.config    -- ie. colours, sizes
-                          t.get_room  -- info about room (uid)
-                          t.show_help -- function that displays some help
+                          t.config      -- ie. colours, sizes
+                          t.get_room    -- info about room (uid)
+                          t.show_help   -- function that displays some help
+                          t.room_click  -- function that handles LH click on room
                           
 zoom_in ()          -- zoom in map view
 zoom_out ()         -- zoom out map view
@@ -62,6 +63,7 @@ local DISTANCE_TO_NEXT_ROOM = 15
 -- supplied in init
 local config  -- configuration table 
 local supplied_get_room
+local room_click
 
 -- current room number
 local current_room
@@ -219,6 +221,10 @@ function mouseup_room (flags, hotspot_id)
     
     -- LH click
     
+    if type (room_click) == "function" then
+      room_click (uid)
+    end -- if 
+
     return
   end -- if LH click
 
@@ -1042,7 +1048,8 @@ function init (t)
   supplied_get_room = t.get_room
   assert (type (supplied_get_room) == "function", "No 'get_room' function supplied to mapper.")
      
-  show_help = t.show_help
+  show_help = t.show_help     -- "help" function
+  room_click = t.room_click   -- LH mouse-click function
   
   -- force some config defaults if not supplied
   for k, v in pairs (default_config) do
