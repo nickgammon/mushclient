@@ -166,7 +166,7 @@ local function get_room (uid)
   room = room or { unknown = true }
   
   -- defaults in case they didn't supply them ...
-  room.name = room.name or string.format ("Room %i", uid)
+  room.name = room.name or string.format ("Room %s", uid)
   room.exits = room.exits or {}
   room.area = room.area or "<No area>"
   room.hovermessage = room.hovermessage or "<Unexplored room>"
@@ -827,19 +827,21 @@ local function find_paths (uid, f)
 				
 					-- if we've been in this room before, drop it
 					if not explored_rooms[dest] then
-						explored_rooms[dest] = true
-						new_path = copytable.deep (part.path)
-						table.insert(new_path, { dir = dir, uid = dest } )
-						
-						-- if this room is in the list of destinations then save its path
-						found, done = f (dest)
-						if found then
-							paths[dest] = { path = new_path, reason = found }
-						end -- found one!
-						
-						-- make a new particle in the new room
-	        	table.insert(new_generation, make_particle(dest, new_path))
-	        	
+						explored_rooms[dest] = true						
+						rooms [dest] = get_room (dest)  -- make sure this room in table
+						if rooms [dest] then
+  						new_path = copytable.deep (part.path)
+  						table.insert(new_path, { dir = dir, uid = dest } )
+  						
+  						-- if this room is in the list of destinations then save its path
+  						found, done = f (dest)
+  						if found then
+  							paths[dest] = { path = new_path, reason = found }
+  						end -- found one!
+  						
+  						-- make a new particle in the new room
+  	        	table.insert(new_generation, make_particle(dest, new_path))
+	        	end -- if room exists
 					end -- not explored this room
 					
 				end  -- for each exit
@@ -1038,7 +1040,7 @@ function init (t)
   assert (type (config) == "table", "No 'config' table supplied to mapper.")
 
   supplied_get_room = t.get_room
-  assert (type (get_room) == "function", "No 'get_room' function supplied to mapper.")
+  assert (type (supplied_get_room) == "function", "No 'get_room' function supplied to mapper.")
      
   show_help = t.show_help
   
@@ -1174,6 +1176,9 @@ function find (f, show_uid, expected_count)
 
   for _, uid in ipairs (t) do
     local room = rooms [uid] -- ought to exist or wouldn't be in table
+    
+    assert (room, "Room " .. uid .. " is not in rooms table.")
+    
     if current_room == uid then
       mapprint (room.name, "is the room you are in")
     else
