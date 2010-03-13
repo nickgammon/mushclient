@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="ATCP_NJG"
+   author="Nick Gammon"
+   id="85f72d0e263d75df7bde6f00"
+   language="Lua"
+   purpose="Nick Gammon's ATCP plugin"
+   date_written="2010-03-09 10:04:32"
+   requires="4.50"
+   version="1.0"
+   >
+<description trim="y">
+<![CDATA[
+Install into IRE games to catch ATCP messages.
+
+Other plugins can detect ATCP messages like this:
+
+function OnPluginBroadcast (msg, id, name, text)
+  if id == "85f72d0e263d75df7bde6f00" then
+  
+    if msg == 1 then
+      do_ATCP_vitals (text)      -- eg. "H:496/496 M:412/412 E:1380/1380 W:960/960 NL:89/100 "
+                                 --      health    mana      endurance   willpower experience
+    elseif msg == 2 then
+      do_ATCP_room_brief (text)  -- eg. "Continuing on the Parade of Zarathustra"
+    elseif msg == 3 then
+      do_ATCP_room_exit (text)   -- eg. "n,s"
+    elseif msg == 4 then
+      do_ATCP_room_number (text) -- eg. "401"
+    elseif msg == 5 then
+      do_ATCP_room_full_exits (text) -- eg. "ne(8564),w(8428)"
+    elseif msg == 6 then
+      do_ATCP_room_environment (text) -- eg. "Urban"
+    elseif msg == 7 then
+      do_ATCP_room_coordinates (text) -- eg. "38,3,1,0"
+    elseif msg == 8 then
+      do_ATCP_room_info (text)        -- eg. "shop,postoffice"
+    end -- if   
+ 
+  end -- if ATCP message
+end
+
+]]>
+</description>
+
+</plugin>
+
+
+<!--  Script  -->
+
+
+<script>
+<![CDATA[
+
+local CLIENT_ID = "MUSHclient " .. Version ()
+local IAC, SB, SE, DO = 0xFF, 0xFA, 0xF0, 0xFD
+local ATCP = 200
+
+
+-- agree to use ATCP
+function OnPluginTelnetRequest (type, data)
+  
+  if type == ATCP and data == "WILL" then
+    return true
+  end -- if
+  
+  if type == ATCP and data == "SENT_DO" then
+    Note ("Enabling ATCP.")
+    SendPkt (string.char (IAC, SB, ATCP) .. 
+           "hello " .. CLIENT_ID .. "\n" ..
+           "auth 1\n" ..
+           "char_name 1\n" ..
+           "char_vitals 1\n" ..
+           "room_brief 1\n" ..
+           "room_exits 1" ..
+           string.char (IAC, SE)) 
+     return true
+  end -- if ATCP login needed (just sent DO)
+  
+  return false
+  
+end -- function OnPluginTelnetRequest
+
+-- we got authorization request, eg. 
+-- Auth.Request CH\n<identstr>
+-- Auth.Request ON
+
+function got_auth_request (s)
+   
+  -- calculate challenge response
+  local function atcp_auth (seed)
+    local a = 17
+    local i = 0
+    local n
+    
+    for letter in string.gmatch (seed, ".") do
+      n = string.byte (letter) - 96
+      if bit.band (i, 1) == 0 then  -- even/odd?
+        a = a + n * bit.bor (i, 13)
+      else
+        a = a - n * bit.bor (i, 11)
+      end -- if
+      i = i + 1
+    end -- for
+    return a
+  end
+
+  if s:upper () == "ON" then
+    Note ("ATCP authorization accepted.")
+    return
+  end -- if
+    
+  local identstr = string.match (s, "^CH\n(.+)$")
+  
+  if identstr then
+    SendPkt (string.char (IAC, SB, ATCP) .. 
+             "auth " .. 
+             tostring (atcp_auth (identstr)) .. 
+             " " .. CLIENT_ID .. 
+             string.char (IAC, SE)) 
+    return
+  end -- if
+  
+end -- got_auth_request
+
+
+function got_vitals (s)      -- eg. "H:496/496 M:412/412 E:1380/1380 W:960/960 NL:89/100"
+  BroadcastPlugin (1, s)
+end -- got_vitals
+
+function got_room_brief (s)  -- eg. "Continuing on the Parade of Zarathustra"
+  BroadcastPlugin (2, s)
+end -- got_room_brief
+
+function got_room_exits (s)  -- eg. "n,s"
+  BroadcastPlugin (3, s)
+end -- got_room_exits
+
+function got_room_number (s)  -- eg. "441"
+  BroadcastPlugin (4, s)
+end -- got_room_number
+
+function got_full_exits (s)  -- eg. "ne(8564),w(8428)"
+  BroadcastPlugin (5, s)
+end -- got_full_exits
+
+function got_environment (s)  -- eg. "Urban"
+  BroadcastPlugin (6, s)
+end -- got_environment
+
+function got_coordinates (s)  -- eg. "38,3,1,0"  (area,x,y,z)
+  BroadcastPlugin (7, s)
+end -- got_coordinates
+
+function got_info (s)  -- eg. "shop,postoffice"
+  BroadcastPlugin (8, s)
+end -- got_info
+
+handlers = {
+  ['Auth.Request']  = got_auth_request,  -- handled here
+
+  ['Room.Num']          = got_room_number,
+  ['Room.Brief']        = got_room_brief,
+  ['Room.Exits']        = got_room_exits,
+  ['Char.Vitals']       = got_vitals,
+  ['Room.FullExits']    = got_full_exits,
+  ['Room.Environment']  = got_environment,
+  ['Room.Coordinates']  = got_coordinates,
+  ['Room.Info']         = got_info,
+  
+  
+  } -- end handlers
+  
+function OnPluginTelnetSubnegotiation (type, option)
+
+  if type ~= ATCP then
+    return
+  end -- not Achaea subnegotiation
+
+  local command, args = string.match (option, "^([%a.]+)%s+(.*)$")
+  
+  if not command then
+    return
+  end -- don't seem to have a command
+  
+  local f = handlers [command]
+  
+  if f then
+    f (args)  -- call handler
+  else
+    BroadcastPlugin (0, option) -- other, just send whole message
+  end -- handler
+          
+end -- function OnPluginTelnetSubnegotiation
+
+]]>
+</script>
+
+
+</muclient>
