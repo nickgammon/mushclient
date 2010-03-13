@@ -46,12 +46,13 @@ room info should include:
 
 module (..., package.seeall)
 
-VERSION = 1.2   -- for querying by plugins
+VERSION = 1.3   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
 require "gauge"
 require "pairsbykeys"
+require "mw"
 
 local FONT_ID     = "fn"  -- internal font identifier
 local FONT_ID_UL  = "fnu" -- internal font identifier - underlined
@@ -189,6 +190,7 @@ local function get_room (uid)
   
   -- defaults in case they didn't supply them ...
   room.name = room.name or string.format ("Room %s", uid)
+  room.name = mw.strip_colours (room.name)  -- no colour codes for now
   room.exits = room.exits or {}
   room.area = room.area or "<No area>"
   room.hovermessage = room.hovermessage or "<Unexplored room>"
@@ -668,7 +670,7 @@ local function draw_room (uid, path, x, y)
       
       else
         -- if we are scheduled to draw the room already, only draw a stub this time
-        if plan_to_draw [exit_uid] then
+        if plan_to_draw [exit_uid] and plan_to_draw [exit_uid] ~= next_coords then
           -- here if room already going to be drawn
           exit_info = stub_exit_info
           linetype = 1 -- dash
@@ -678,7 +680,7 @@ local function draw_room (uid, path, x, y)
           table.insert (new_path, { dir = dir, uid = exit_uid })
           table.insert (rooms_to_be_drawn, add_another_room (exit_uid, new_path, next_x, next_y))
           drawn_coords [next_coords] = true
-          plan_to_draw [exit_uid] = true
+          plan_to_draw [exit_uid] = next_coords
           
           -- if exit room known
           if not rooms [exit_uid].unknown then
