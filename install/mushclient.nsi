@@ -319,6 +319,7 @@ SetOverwrite ifnewer
    File "..\lua\colors.lua"  
    File "..\lua\gauge.lua"  
  ; File "..\lua\ppi.lua"
+   File "..\lua\mapper.lua"  
 
   ; Set output path to the scripts subdirectory.
   SetOutPath $INSTDIR\scripts
@@ -376,6 +377,7 @@ Section "Plugins"
   File "..\plugins\lua_chat.xml"
   File "..\plugins\Current_Output_Window.xml"
   File "..\plugins\InfoBox_Demo.xml"
+  File "..\plugins\ATCP_NJG.xml"
 
 
 SectionEnd
@@ -463,6 +465,7 @@ Section Uninstall
   Delete "$INSTDIR\lua\colors.lua" 
   Delete "$INSTDIR\lua\gauge.lua" 
 ; Delete "$INSTDIR\lua\ppi.lua"
+  Delete "$INSTDIR\lua\mapper.lua"  
   
   ; spell checker stuff
   Delete "$INSTDIR\spellchecker.lua"
@@ -532,6 +535,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\lua_chat.xml"
   Delete "$INSTDIR\worlds\plugins\Current_Output_Window.xml"
   Delete "$INSTDIR\worlds\plugins\InfoBox_Demo.xml"
+  Delete "$INSTDIR\worlds\plugins\ATCP_NJG.xml"
   
   ; locale stuff
   
