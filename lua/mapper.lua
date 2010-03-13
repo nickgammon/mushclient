@@ -46,7 +46,7 @@ room info should include:
 
 module (..., package.seeall)
 
-VERSION = 1.1   -- for querying by plugins
+VERSION = 1.2   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -201,9 +201,20 @@ local function get_room (uid)
   return room
 end -- get_room
 
+local function check_connected ()
+  if not IsConnected() then
+    mapprint ("You are not connected to", WorldName())
+    return false
+  end -- if not connected
+  return true
+end -- check_connected
 
 function start_speedwalk (path)
 
+  if not check_connected () then
+    return
+  end -- if 
+  
   if current_speedwalk and #current_speedwalk > 0 then
     mapprint ("You are already speedwalking! (Ctrl + LH-click on any room to cancel)")
     return
@@ -801,6 +812,11 @@ local function changed_room (uid)
 end -- changed_room
 
 function check_we_can_find ()
+
+  if not check_connected () then
+    return
+  end -- if 
+
  if not current_room then
     mapprint ("I don't know where you are right now - try: LOOK")
     return false
@@ -1294,7 +1310,11 @@ function find (f, show_uid, expected_count, walk)
 end -- map_find_things
 
 function do_hyperlink (hash)
-  
+
+  if not check_connected () then
+    return
+  end -- if 
+
   if not hyperlink_paths or not hyperlink_paths [hash] then
     mapprint ("Hyperlink is no longer valid, as you have moved.")
     return
@@ -1305,6 +1325,5 @@ function do_hyperlink (hash)
     last_hyperlink_uid = path [#path].uid
   end -- if
   start_speedwalk (path)
-  
     
 end -- do_hyperlink
