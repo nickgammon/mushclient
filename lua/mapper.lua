@@ -80,6 +80,7 @@ local last_visited = {}
 local HALF_ROOM, connectors, half_connectors, arrows
 local win, plan_to_draw, speedwalks, drawn, drawn_coords
 local last_drawn, depth, windowinfo, font_height 
+local walk_to_room_name
 
 local function build_room_info ()
   
@@ -167,6 +168,21 @@ local default_config = {
   
   }
   
+local expand_direction = {
+  n = "north",
+  s = "south",
+  e = "east",
+  w = "west",
+  u = "up",
+  d = "down",
+  ne = "northeast",
+  sw = "southwest",
+  nw = "northwest",
+  se = "southeast",
+  ['in'] = "in",
+  out = "out",
+  }  -- end of expand_direction
+  
 local function get_room (uid)
   local room = supplied_get_room (uid)
   room = room or { unknown = true }
@@ -198,8 +214,12 @@ function start_speedwalk (path)
   if current_speedwalk then
     if #current_speedwalk > 0 then
       last_speedwalk_uid = current_speedwalk [#current_speedwalk].uid
-      SetStatus ("Speedwalks to go: " .. #current_speedwalk)
       local dir = table.remove (current_speedwalk, 1)
+      local room = get_room (dir.uid)
+      walk_to_room_name = room.name
+      SetStatus ("Walking " .. (expand_direction [dir.dir] or dir.dir) .. 
+                 " to " .. walk_to_room_name ..
+                 ". Speedwalks to go: " .. #current_speedwalk + 1)
       Send (dir.dir)
       expected_room = dir.uid
     else
@@ -757,8 +777,10 @@ local function changed_room (uid)
       cancel_speedwalk ()
     else
       if #current_speedwalk > 0 then
-        SetStatus ("Speedwalks to go: " .. #current_speedwalk)
         local dir = table.remove (current_speedwalk, 1)
+        SetStatus ("Walking " .. (expand_direction [dir.dir] or dir.dir) .. 
+                   " to " .. walk_to_room_name ..
+                   ". Speedwalks to go: " .. #current_speedwalk + 1)
         expected_room = dir.uid
         if config.DELAY.time > 0 then
           DoAfter (config.DELAY.time, dir.dir)
