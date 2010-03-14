@@ -147,7 +147,7 @@ colour_conversion = {
 -- Left, Top, Right, Bottom : where to display it
 -- Capitalize : if true, turn the first letter into upper-case
 
-function colourtext (win, font_id, Text, Left, Top, Right, Bottom, Capitalize)
+function colourtext (win, font_id, Text, Left, Top, Right, Bottom, Capitalize, utf8)
 
   if Text:match ("@") then
     local x = Left  -- current x position
@@ -172,7 +172,7 @@ function colourtext (win, font_id, Text, Left, Top, Right, Bottom, Capitalize)
       
       if #text > 0 then
         x = x + WindowText (win, font_id, text, x, Top, Right, Bottom, 
-                            colour_conversion [colour] or GetNormalColour (WHITE))
+                            colour_conversion [colour] or GetNormalColour (WHITE), utf8)
       end -- some text to display
           
     end -- for each colour run

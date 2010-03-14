@@ -13,9 +13,10 @@ init (t)            -- call once, supply:
                           t.config      -- ie. colours, sizes
                           t.get_room    -- info about room (uid)
                           t.show_help   -- function that displays some help
-                          t.room_click  -- function that handles RH click on room
+                          t.room_click  -- function that handles RH click on room (uid, flags)
                           t.timing      -- true to show timing
                           t.show_completed  -- true to show "Speedwalk completed."
+                          t.show_other_areas -- true to show non-current areas
                           
 zoom_in ()          -- zoom in map view
 zoom_out ()         -- zoom out map view
@@ -28,9 +29,17 @@ draw (uid)          -- draw map - starting at room 'uid'
 start_speedwalk (path)  -- starts speedwalking. path is a table of directions/uids
 cancel_speedwalk ()     -- cancel current speedwalk, if any
 check_we_can_find ()    -- returns true if doing a find is OK right now
-find (f, show_uid, count)      -- generic room finder
+find (f, show_uid, count, walk)      -- generic room finder
 
-room info should include:
+Exposed variables:
+
+win                 -- the window (in case you want to put up menus)
+VERSION             -- mapper version
+last_hyperlink_uid  -- room uid of last hyperlink click (destination)
+last_speedwalk_uid  -- room uid of last speedwalk attempted (destination)
+<various functions> -- functions required to be global by the client (eg. for mouseup)
+
+Room info should include:
 
   name          (what to show as room name)
   exits         (table keyed by direction, value is exit uid)
@@ -46,7 +55,7 @@ room info should include:
 
 module (..., package.seeall)
 
-VERSION = 1.3   -- for querying by plugins
+VERSION = 1.4   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -79,7 +88,7 @@ local last_visited = {}
 
 -- other locals
 local HALF_ROOM, connectors, half_connectors, arrows
-local win, plan_to_draw, speedwalks, drawn, drawn_coords
+local plan_to_draw, speedwalks, drawn, drawn_coords
 local last_drawn, depth, windowinfo, font_height 
 local walk_to_room_name
 
@@ -260,7 +269,7 @@ function mouseup_room (flags, hotspot_id)
     -- RH click
     
     if type (room_click) == "function" then
-      room_click (uid)
+      room_click (uid, flags)
     end -- if 
 
     return
@@ -669,30 +678,34 @@ local function draw_room (uid, path, x, y)
         linetype = 1 -- dash
       
       else
-        -- if we are scheduled to draw the room already, only draw a stub this time
-        if plan_to_draw [exit_uid] and plan_to_draw [exit_uid] ~= next_coords then
-          -- here if room already going to be drawn
-          exit_info = stub_exit_info
-          linetype = 1 -- dash
-        else            
-          -- remember to draw room next iteration
-          local new_path = copytable.deep (path)
-          table.insert (new_path, { dir = dir, uid = exit_uid })
-          table.insert (rooms_to_be_drawn, add_another_room (exit_uid, new_path, next_x, next_y))
-          drawn_coords [next_coords] = true
-          plan_to_draw [exit_uid] = next_coords
-          
-          -- if exit room known
-          if not rooms [exit_uid].unknown then
-            local exit_time = last_visited [exit_uid] or 0
-            local this_time = last_visited [uid] or 0
-            local now = os.time ()
-            if exit_time > (now - config.LAST_VISIT_TIME.time) and
-               this_time > (now - config.LAST_VISIT_TIME.time) then
-               linewidth = 2
+        if not show_other_areas and rooms [exit_uid].area ~= current_area then
+            exit_info = stub_exit_info    -- don't show other areas
+        else
+          -- if we are scheduled to draw the room already, only draw a stub this time
+          if plan_to_draw [exit_uid] and plan_to_draw [exit_uid] ~= next_coords then
+            -- here if room already going to be drawn
+            exit_info = stub_exit_info
+            linetype = 1 -- dash
+          else            
+            -- remember to draw room next iteration
+            local new_path = copytable.deep (path)
+            table.insert (new_path, { dir = dir, uid = exit_uid })
+            table.insert (rooms_to_be_drawn, add_another_room (exit_uid, new_path, next_x, next_y))
+            drawn_coords [next_coords] = true
+            plan_to_draw [exit_uid] = next_coords
+            
+            -- if exit room known
+            if not rooms [exit_uid].unknown then
+              local exit_time = last_visited [exit_uid] or 0
+              local this_time = last_visited [uid] or 0
+              local now = os.time ()
+              if exit_time > (now - config.LAST_VISIT_TIME.time) and
+                 this_time > (now - config.LAST_VISIT_TIME.time) then
+                 linewidth = 2
+              end -- if
             end -- if
           end -- if
-        end -- if
+        end -- f
       end -- if drawn on this spot
 
       WindowLine (win, x + exit_info.x1, y + exit_info.y1, x + exit_info.x2, y + exit_info.y2, exit_line_colour, linetype, linewidth)
@@ -951,7 +964,9 @@ function draw (uid)
   
   room = room or { name = "<Unknown room>", area = "<Unknown area>" }
   last_visited [uid] = os.time ()
-  
+
+  current_area = room.area
+    
   WindowCreate (win, 
                  windowinfo.window_left, 
                  windowinfo.window_top, 
