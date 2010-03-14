@@ -1130,6 +1130,7 @@ function init (t)
   room_click = t.room_click   -- RH mouse-click function
   timing = t.timing           -- true for timing info
   show_completed = t.show_completed  -- true to show "Speedwalk completed." message
+  show_other_areas = t.show_other_areas  -- true to show other areas
   
   -- force some config defaults if not supplied
   for k, v in pairs (default_config) do
