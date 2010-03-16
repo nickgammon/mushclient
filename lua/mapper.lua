@@ -17,6 +17,7 @@ init (t)            -- call once, supply:
                           t.timing      -- true to show timing
                           t.show_completed  -- true to show "Speedwalk completed."
                           t.show_other_areas -- true to show non-current areas
+                          t.speedwalk_prefix   -- if not nil, speedwalk by prefixing with this
                           
 zoom_in ()          -- zoom in map view
 zoom_out ()         -- zoom out map view
@@ -27,6 +28,7 @@ show ()             -- show map window  (eg. if plugin enabled)
 save_state ()       -- call to save plugin state (ie. in OnPluginSaveState)
 draw (uid)          -- draw map - starting at room 'uid'
 start_speedwalk (path)  -- starts speedwalking. path is a table of directions/uids
+build_speedwalk (path)  -- builds a client speedwalk string from path
 cancel_speedwalk ()     -- cancel current speedwalk, if any
 check_we_can_find ()    -- returns true if doing a find is OK right now
 find (f, show_uid, count, walk)      -- generic room finder
@@ -55,7 +57,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 1.4   -- for querying by plugins
+VERSION = 1.5   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -236,6 +238,15 @@ function start_speedwalk (path)
   if current_speedwalk then
     if #current_speedwalk > 0 then
       last_speedwalk_uid = current_speedwalk [#current_speedwalk].uid
+      
+      -- fast speedwalk: just send # 4s 3e  etc.
+      if type (speedwalk_prefix) == "string" and speedwalk_prefix ~= "" then
+        local s = speedwalk_prefix .. " " .. build_speedwalk (path)
+        Send (s)
+        current_speedwalk = nil
+        return  
+      end -- if
+      
       local dir = table.remove (current_speedwalk, 1)
       local room = get_room (dir.uid)
       walk_to_room_name = room.name
@@ -1131,6 +1142,7 @@ function init (t)
   timing = t.timing           -- true for timing info
   show_completed = t.show_completed  -- true to show "Speedwalk completed." message
   show_other_areas = t.show_other_areas  -- true to show other areas
+  speedwalk_prefix = t.speedwalk_prefix  -- how to speedwalk (prefix)
   
   -- force some config defaults if not supplied
   for k, v in pairs (default_config) do
@@ -1345,3 +1357,43 @@ function do_hyperlink (hash)
   start_speedwalk (path)
     
 end -- do_hyperlink
+
+function build_speedwalk (path)
+
+ -- build speedwalk string (collect identical directions)
+  local tspeed = {}
+  for _, dir in ipairs (path) do
+    local n = #tspeed
+    if n == 0 then
+      table.insert (tspeed, { dir = dir.dir, count = 1 })
+    else
+      if tspeed [n].dir == dir.dir then
+        tspeed [n].count = tspeed [n].count + 1
+      else
+        table.insert (tspeed, { dir = dir.dir, count = 1 })
+      end -- if different direction
+    end -- if
+  end -- for
+ 
+  if #tspeed == 0 then
+    return
+  end -- nowhere to go (current room?)
+  
+  -- now build string like: 2n3e4(sw)
+  local s = ""
+  
+  for _, dir in ipairs (tspeed) do
+    if dir.count > 1 then
+      s = s .. dir.count
+    end -- if
+    if #dir.dir == 1 then
+      s = s .. dir.dir
+    else
+      s = s .. "(" .. dir.dir .. ")"
+    end -- if
+    s = s .. " "
+  end -- if
+  
+  return s
+  
+end -- build_speedwalk
