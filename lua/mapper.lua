@@ -17,6 +17,7 @@ init (t)            -- call once, supply:
                           t.timing      -- true to show timing
                           t.show_completed  -- true to show "Speedwalk completed."
                           t.show_other_areas -- true to show non-current areas
+                          t.show_area_exits  -- true to draw a circle around rooms leading to other areas
                           t.speedwalk_prefix   -- if not nil, speedwalk by prefixing with this
                           
 zoom_in ()          -- zoom in map view
@@ -57,7 +58,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 1.5   -- for querying by plugins
+VERSION = 1.6   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -78,8 +79,11 @@ local DISTANCE_TO_NEXT_ROOM = 15
 local config  -- configuration table 
 local supplied_get_room
 local room_click
-local timing   -- true to show timing and other info
-local show_completed  -- true to show "Speedwalk completed."
+local timing            -- true to show timing and other info
+local show_completed    -- true to show "Speedwalk completed."
+local show_other_areas  -- true to draw other areas
+local show_area_exits   -- true to show area exits
+
 
 -- current room number
 local current_room
@@ -678,6 +682,11 @@ local function draw_room (uid, path, x, y)
       
       local next_coords = string.format ("%i,%i", math.floor (next_x), math.floor (next_y))
      
+      -- remember if a zone exit (first one only)
+      if show_area_exits and room.area ~= rooms [exit_uid].area then
+        area_exits [ rooms [exit_uid].area ] = area_exits [ rooms [exit_uid].area ] or {x = x, y = y}
+      end -- if
+      
       -- if another room (not where this one leads to) is already there, only draw "stub" lines
       if drawn_coords [next_coords] and 
         (not drawn [exit_uid] or drawn [exit_uid].coords ~= next_coords) then
@@ -947,6 +956,32 @@ local function find_paths (uid, f)
 	return paths, count, depth			
 end -- function find_paths
 
+local function draw_zone_exit (exit)
+
+  local x, y = exit.x, exit.y
+  local offset = ROOM_SIZE
+  
+  -- draw circle around us
+  WindowCircleOp (win, 1, 
+                  x - offset, y - offset,
+                  x + offset, y + offset,
+                  ColourNameToRGB "cornflowerblue",  -- pen colour
+                  0, -- solid pen
+                  3, -- pen width
+                  0, -- brush colour
+                  1 ) -- null brush
+                  
+  WindowCircleOp (win, 1, 
+                  x - offset, y - offset,
+                  x + offset, y + offset,
+                  ColourNameToRGB "cyan",  -- pen colour
+                  0, -- solid pen
+                  1, -- pen width
+                  0, -- brush colour
+                  1 ) -- null brush
+
+end --  draw_zone_exit 
+               
 ----------------------------------------------------------------------------------
 --  EXPOSED FUNCTIONS
 ----------------------------------------------------------------------------------
@@ -991,7 +1026,7 @@ function draw (uid)
   movewindow.add_drag_handler (win, 0, 0, 0, font_height)
    
   -- set up for initial room, in middle
-  drawn, drawn_coords, rooms_to_be_drawn, speedwalks, plan_to_draw = {}, {}, {}, {}, {}
+  drawn, drawn_coords, rooms_to_be_drawn, speedwalks, plan_to_draw, area_exits = {}, {}, {}, {}, {}, {}
   depth = 0
   
   -- insert initial room
@@ -1005,6 +1040,10 @@ function draw (uid)
     end -- for each existing room
     depth = depth + 1
   end -- while all rooms_to_be_drawn
+  
+  for area, zone_exit in pairs (area_exits) do
+    draw_zone_exit (zone_exit)
+  end -- for
   
   local room_name = room.name
   local name_width = WindowTextWidth (win, FONT_ID, room_name, true)
@@ -1142,6 +1181,7 @@ function init (t)
   timing = t.timing           -- true for timing info
   show_completed = t.show_completed  -- true to show "Speedwalk completed." message
   show_other_areas = t.show_other_areas  -- true to show other areas
+  show_area_exits = t.show_area_exits  -- true to show area exits
   speedwalk_prefix = t.speedwalk_prefix  -- how to speedwalk (prefix)
   
   -- force some config defaults if not supplied
