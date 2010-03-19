@@ -246,7 +246,7 @@ function start_speedwalk (path)
       -- fast speedwalk: just send # 4s 3e  etc.
       if type (speedwalk_prefix) == "string" and speedwalk_prefix ~= "" then
         local s = speedwalk_prefix .. " " .. build_speedwalk (path)
-        Send (s)
+        Execute (s)
         current_speedwalk = nil
         return  
       end -- if
@@ -689,7 +689,7 @@ local function draw_room (uid, path, x, y)
       
       -- if another room (not where this one leads to) is already there, only draw "stub" lines
       if drawn_coords [next_coords] and 
-        (not drawn [exit_uid] or drawn [exit_uid].coords ~= next_coords) then
+        (drawn [exit_uid] and drawn [exit_uid].coords ~= next_coords) then
         exit_info = stub_exit_info
       elseif exit_uid == uid then 
       
