@@ -17,6 +17,7 @@ init (t)            -- call once, supply:
                           t.timing      -- true to show timing
                           t.show_completed  -- true to show "Speedwalk completed."
                           t.show_other_areas -- true to show non-current areas
+                          t.show_up_down    -- follow up/down exits
                           t.show_area_exits  -- true to draw a circle around rooms leading to other areas
                           t.speedwalk_prefix   -- if not nil, speedwalk by prefixing with this
                           
@@ -58,7 +59,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 1.6   -- for querying by plugins
+VERSION = 1.7   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -83,6 +84,7 @@ local timing            -- true to show timing and other info
 local show_completed    -- true to show "Speedwalk completed."
 local show_other_areas  -- true to draw other areas
 local show_area_exits   -- true to show area exits
+local show_up_down      -- true to show up/down exits
 
 
 -- current room number
@@ -698,7 +700,8 @@ local function draw_room (uid, path, x, y)
         linetype = 1 -- dash
       
       else
-        if not show_other_areas and rooms [exit_uid].area ~= current_area then
+        if (not show_other_areas and rooms [exit_uid].area ~= current_area) or
+           (not show_up_down and (dir == "u" or dir == "d")) then
             exit_info = stub_exit_info    -- don't show other areas
         else
           -- if we are scheduled to draw the room already, only draw a stub this time
@@ -1181,6 +1184,7 @@ function init (t)
   timing = t.timing           -- true for timing info
   show_completed = t.show_completed  -- true to show "Speedwalk completed." message
   show_other_areas = t.show_other_areas  -- true to show other areas
+  show_up_down = t.show_up_down        -- true to show up or down
   show_area_exits = t.show_area_exits  -- true to show area exits
   speedwalk_prefix = t.speedwalk_prefix  -- how to speedwalk (prefix)
   
