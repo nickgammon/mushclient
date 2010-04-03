@@ -469,14 +469,14 @@ local function draw_configuration ()
   
   -- title
   WindowText   (win, FONT_ID, "Configuration", x, y, 0, 0, 0x808080, true)
+  
   -- close box
-  WindowRectOp (win, 1, x + frame_width - box_size - GAP * 2, y + 1, x + frame_width - GAP * 2, y + 1 + box_size, 0x808080)
-  WindowRectOp (win, 2, 
-                math.floor (x + frame_width - box_size - GAP * 2 + box_size / 3), 
-                math.floor (y + 1 + box_size / 3), 
-                math.ceil  (x + frame_width - GAP * 2 - box_size / 3), 
-                math.ceil  (y + 1 + box_size - box_size / 3), 
-                0x808080)
+  WindowRectOp (win, 1, x + frame_width - box_size - GAP * 2, y + 1, 
+                        x + frame_width - GAP * 2, y + 1 + box_size, 0x808080)
+  WindowLine (win, x + frame_width - box_size - GAP * 2 + 3, y + 4, 
+                   x + frame_width - GAP * 2 - 3, y - 2 + box_size, 0x808080, 0, 1)
+  WindowLine (win, x - 4 + frame_width - GAP * 2, y + 4, 
+                   x - 1 + frame_width - box_size - GAP * 2 + 3, y - 2 + box_size, 0x808080, 0, 1)
   
   -- close configuration hotspot               
   WindowAddHotspot(win, "$<close_configure>",  
