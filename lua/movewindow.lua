@@ -106,6 +106,13 @@ local function make_mousedown_handler (mwi)
     mwi.origx = WindowInfo (win, 10) 
     mwi.origy = WindowInfo (win, 11)
     
+    -- find where the friends are relative to the window
+    for i,v in ipairs(mwi.window_friends) do
+        if (v ~= nil) then
+            mwi.window_friend_deltas[i] = {WindowInfo(v, 10) - mwi.origx, WindowInfo(v, 11) - mwi.origy}
+        end -- if
+    end -- for
+        
   end -- mousedown
 
 end -- make_mousedown_handler
@@ -125,6 +132,13 @@ local function make_dragmove_handler (mwi)
     -- move the window to the new location - offset by how far mouse was into window
     WindowPosition(win, posx, posy, 0, 2);
     
+    -- move the friends if they still exist
+    for i,v in ipairs(mwi.window_friends) do
+        if (v ~= nil) then
+            WindowPosition(v, posx+mwi.window_friend_deltas[i][1], posy+mwi.window_friend_deltas[i][2], 0, WindowInfo(v, 8))
+        end -- if
+    end -- for
+
     -- change the mouse cursor shape appropriately
     if posx < mwi.margin - WindowInfo (win, 3) or 
        posx > GetInfo (281) - mwi.margin or
@@ -214,7 +228,7 @@ end -- make_check_map_position_handler
 -- call movewindow.install in OnPluginInstall to find the position of the window, before creating it
 --  - it also creates the handler functions ready for use later
 
-function movewindow.install (win, default_position, default_flags, nocheck)
+function movewindow.install (win, default_position, default_flags, nocheck, default_friends)
 
   win = win or GetPluginID ()  -- default to current plugin ID
   
@@ -222,6 +236,9 @@ function movewindow.install (win, default_position, default_flags, nocheck)
   
   default_position = default_position or 7 -- on right, center top/bottom
   default_flags = default_flags or 0
+  if (default_friends == nil) then
+    default_friends = {}
+  end
   
   -- set up handlers and where window should be shown (from saved state, if any)
   local movewindow_info = {
@@ -232,7 +249,8 @@ function movewindow.install (win, default_position, default_flags, nocheck)
      window_top   = tonumber (GetVariable ("mw_" .. win .. "_windowy")) or 0,
      window_mode  = tonumber (GetVariable ("mw_" .. win .. "_windowmode")) or default_position,
      window_flags = tonumber (GetVariable ("mw_" .. win .. "_windowflags")) or default_flags,
-     
+     window_friends = default_friends,
+     window_friend_deltas = {},
      margin = 20  -- how close we can put to the edge of the window
     }
 
