@@ -214,9 +214,12 @@ end -- make_check_map_position_handler
 -- call movewindow.install in OnPluginInstall to find the position of the window, before creating it
 --  - it also creates the handler functions ready for use later
 
-function movewindow.install (win, default_position, default_flags)
+function movewindow.install (win, default_position, default_flags, nocheck)
 
   win = win or GetPluginID ()  -- default to current plugin ID
+  
+  assert (not string.match (win, "[^A-Za-z0-9_]"), "Invalid window name in movewindow.install: " .. win)
+  
   default_position = default_position or 7 -- on right, center top/bottom
   default_flags = default_flags or 0
   
@@ -248,8 +251,10 @@ function movewindow.install (win, default_position, default_flags)
   -- give main world window time to stabilize its size and position                
   -- eg. this might be:  mw_23c3c91af0a26790c625f5d1_movewindow_info.check_map_position ()
 
-  DoAfterSpecial (5, "mw_" .. win .. "_movewindow_info.check_map_position ()" , sendto.script)
-   
+  if not nocheck then  -- if wanted
+    DoAfterSpecial (5, "mw_" .. win .. "_movewindow_info.check_map_position ()" , sendto.script)
+  end -- if
+  
   return movewindow_info  -- the caller might appreciate access to this table
 end -- movewindow.install
 
