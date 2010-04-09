@@ -93,6 +93,7 @@ function time (seconds)
                   bit.bor (timer_flag.Enabled,
                            timer_flag.OneShot,
                            timer_flag.Temporary,
+                           timer_flag.ActiveWhenClosed,
                            timer_flag.Replace), 
                    "wait.timer_resume"))
 
@@ -129,6 +130,7 @@ function regexp (regexp, timeout, flags)
                    bit.bor (timer_flag.Enabled,
                             timer_flag.OneShot,
                             timer_flag.Temporary,
+                            timer_flag.ActiveWhenClosed,
                             timer_flag.Replace), 
                    "wait.timer_resume"))
 
@@ -158,4 +160,3 @@ function make (f)
   assert (GetOption ("enable_triggers") == 1, "Triggers not enabled")
   coroutine.wrap (f) () -- make coroutine, resume it
 end -- make
-
