@@ -13,7 +13,11 @@ require "tprint"
 
    tprint (GetStyleInfo (20))
 
+New version: April 2010 - shows keys in alphabetic order
+
 --]]
+
+require "pairsbykeys"
 
 function tprint (t, indent, done)
   -- in case we run it standalone
@@ -31,7 +35,7 @@ function tprint (t, indent, done)
   -- entry point here
   done = done or {}
   indent = indent or 0
-  for key, value in pairs (t) do
+  for key, value in pairsByKeys (t) do
     Tell (string.rep (" ", indent)) -- indent it
     if type (value) == "table" and not done [value] then
       done [value] = true
