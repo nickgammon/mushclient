@@ -4,6 +4,7 @@
 
 Author: Nick Gammon
 Date:   11th March 2010
+Amended: 3rd May 2010
 
 Generic MUD mapper.
 
@@ -59,7 +60,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 1.7   -- for querying by plugins
+VERSION = 1.8   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -596,7 +597,7 @@ local function draw_room (uid, path, x, y)
   local coords = string.format ("%i,%i", math.floor (x), math.floor (y))
 
   -- need this for the *current* room !!!
-  drawn_coords [coords] = true
+  drawn_coords [coords] = uid
   
   -- print ("drawing", uid, "at", coords)
   
@@ -690,8 +691,7 @@ local function draw_room (uid, path, x, y)
       end -- if
       
       -- if another room (not where this one leads to) is already there, only draw "stub" lines
-      if drawn_coords [next_coords] and 
-        (drawn [exit_uid] and drawn [exit_uid].coords ~= next_coords) then
+      if drawn_coords [next_coords] and drawn_coords [next_coords] ~= exit_uid then
         exit_info = stub_exit_info
       elseif exit_uid == uid then 
       
@@ -714,7 +714,7 @@ local function draw_room (uid, path, x, y)
             local new_path = copytable.deep (path)
             table.insert (new_path, { dir = dir, uid = exit_uid })
             table.insert (rooms_to_be_drawn, add_another_room (exit_uid, new_path, next_x, next_y))
-            drawn_coords [next_coords] = true
+            drawn_coords [next_coords] = exit_uid
             plan_to_draw [exit_uid] = next_coords
             
             -- if exit room known
