@@ -4267,6 +4267,10 @@ tInfoTypeMapping InfoTypes [] =
 { 287, "Aliases matched this session" },
 { 288, "Timers fired this session" }, 
 { 289, "Last line with IAC/GA or IAC/EOR in it" },
+{ 290, "Actual text rectangle - left" },
+{ 291, "Actual text rectangle - top" },
+{ 292, "Actual text rectangle - right" },
+{ 293, "Actual text rectangle - bottom" },
    
 
 // (dates - calculated at runtime)
@@ -4330,6 +4334,20 @@ static void GetOSVersion (void)
   ver.dwOSVersionInfoSize = sizeof(ver);
   ::GetVersionEx (&ver);
   } // GetOSVersion
+
+// helper function
+CMUSHView * CMUSHclientDoc::GetFirstOutputWindow ()
+  {
+  for(POSITION pos = GetFirstViewPosition(); pos != NULL; )
+	  {
+	  CView* pView = GetNextView(pos);
+	  
+	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+      return  (CMUSHView*)pView;
+    }   // end of loop through views
+
+  return NULL;      // not found
+  }
 
 VARIANT CMUSHclientDoc::GetInfo(long InfoType) 
 {
@@ -4838,39 +4856,27 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
 
     case 280:
       {
-      RECT rect;
-      for(POSITION pos = GetFirstViewPosition(); pos != NULL; )
-	      {
-	      CView* pView = GetNextView(pos);
-	      
-	      if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
-  	      {
-		      CMUSHView* pmyView = (CMUSHView*)pView;
-          pmyView->GetClientRect(&rect);
-          SetUpVariantLong (vaResult, rect.bottom);
-          break;
-	        }	  // end of being a CMUSHView
-        }   // end of loop through views
-
+      CMUSHView* pmyView = GetFirstOutputWindow ();
+      if (pmyView) 
+        {
+        RECT rect;
+        pmyView->GetClientRect(&rect);
+        SetUpVariantLong (vaResult, rect.bottom);
+        break;
+        }
       }
       break;
 
     case 281:
       {
-      RECT rect;
-      for(POSITION pos = GetFirstViewPosition(); pos != NULL; )
-	      {
-	      CView* pView = GetNextView(pos);
-	      
-	      if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
-  	      {
-		      CMUSHView* pmyView = (CMUSHView*)pView;
-          pmyView->GetClientRect(&rect);
-          SetUpVariantLong (vaResult, rect.right); 
-          break;
-	        }	  // end of being a CMUSHView
-        }   // end of loop through views
-
+      CMUSHView* pmyView = GetFirstOutputWindow ();
+      if (pmyView) 
+        {
+        RECT rect;
+        pmyView->GetClientRect(&rect);
+        SetUpVariantLong (vaResult, rect.right);
+        break;
+        }
       }
       break;
 
@@ -4885,6 +4891,53 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case 288: SetUpVariantLong (vaResult, m_iTimersFiredThisSessionCount);      break; // Timers fired this session      
     case 289: SetUpVariantLong (vaResult, m_last_line_with_IAC_GA);             break; // Last line number that had an IAC/GA in it     
 
+    case 290:
+      {
+      CMUSHView* pmyView = GetFirstOutputWindow ();
+      if (pmyView) 
+        {
+        RECT rect = pmyView->GetTextRectangle ();
+        SetUpVariantLong (vaResult, rect.left);
+        break;
+        }
+      }
+      break;
+
+    case 291:
+      {
+      CMUSHView* pmyView = GetFirstOutputWindow ();
+      if (pmyView) 
+        {
+        RECT rect = pmyView->GetTextRectangle ();
+        SetUpVariantLong (vaResult, rect.top);
+        break;
+        }
+      }
+      break;
+
+    case 292:
+      {
+      CMUSHView* pmyView = GetFirstOutputWindow ();
+      if (pmyView) 
+        {
+        RECT rect = pmyView->GetTextRectangle ();
+        SetUpVariantLong (vaResult, rect.right);
+        break;
+        }
+      }
+      break;
+
+    case 293:
+      {
+      CMUSHView* pmyView = GetFirstOutputWindow ();
+      if (pmyView) 
+        {
+        RECT rect = pmyView->GetTextRectangle ();
+        SetUpVariantLong (vaResult, rect.bottom);
+        break;
+        }
+      }
+      break;
 
     case  301: 
       if (m_tConnectTime.GetTime ())     // only if non-zero, otherwise return empty

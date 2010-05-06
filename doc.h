@@ -1819,6 +1819,7 @@ public:
   void ShowAlphaOptions (void);
 
   CPlugin * GetPlugin (LPCTSTR PluginID);
+  CMUSHView * GetFirstOutputWindow ();
 
   // load from document into property page
 
