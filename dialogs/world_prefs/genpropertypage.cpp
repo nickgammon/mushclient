@@ -122,12 +122,13 @@ void CGenPropertyPage::OnAddItem(CDialog & dlg)
   // add new object to map
   m_ObjectMap->SetAt (strObjectName, pItem = MakeNewObject ());
 
-  // They can no longer cancel the property sheet, the document has changed
-  CancelToClose ();
-  m_doc->SetModifiedFlag (TRUE);
-
   // unload from dialog into object's properties
   UnloadDialog (&dlg, pItem);
+
+  // They can no longer cancel the property sheet, the document has changed
+  CancelToClose ();
+  if (!CheckIfTemporary (pItem))
+    m_doc->SetModifiedFlag (TRUE);
 
   // create a CString for lookup purposes
   CString * pstrObjectName = new CString (strObjectName);
@@ -299,12 +300,13 @@ for (int nItem = -1;
   if (CheckIfChanged (&dlg, pItem))
     {
 
-    // They can no longer cancel the property sheet, the document has changed
-    CancelToClose ();
-    m_doc->SetModifiedFlag (TRUE);
-
     // unload from dialog into object's properties
     UnloadDialog (&dlg, pItem);
+
+    // They can no longer cancel the property sheet, the document has changed
+    CancelToClose ();
+    if (!CheckIfTemporary (pItem))
+      m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
     int nNewItem = add_item (pItem, pstrObjectName, nItem, FALSE);
@@ -410,6 +412,11 @@ for (i = iCount - 1; i >= 0; i--)
     continue;
     }
 
+  // They can no longer cancel the property sheet, the document has changed
+  CancelToClose ();
+  if (!CheckIfTemporary (pItem))
+    m_doc->SetModifiedFlag (TRUE);
+
   // delete from the map
   m_ObjectMap->RemoveKey (*pstrObjectName);
 
@@ -421,10 +428,6 @@ for (i = iCount - 1; i >= 0; i--)
 
   // delete its item string
   delete pstrObjectName;
-
-  // They can no longer cancel the property sheet, the document has changed
-  CancelToClose ();
-  m_doc->SetModifiedFlag (TRUE);
 
   }   // end of dealing with each selected item
 

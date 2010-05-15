@@ -3218,6 +3218,17 @@ bool CPrefsP7::CheckIfIncluded (CObject * pItem)
   return alias_item->bIncluded;
   }    // end of CPrefsP7::CheckIfIncluded
 
+bool CPrefsP7::CheckIfTemporary (CObject * pItem)
+  {
+  CAlias * alias_item = (CAlias *) pItem;
+
+  ASSERT_VALID (alias_item);
+  ASSERT( alias_item->IsKindOf( RUNTIME_CLASS( CAlias ) ) );
+  
+  return alias_item->bTemporary;
+  }    // end of CPrefsP7::CheckIfTemporary
+
+
 bool CPrefsP7::CheckIfExecuting (CObject * pItem)
   {
   CAlias * alias_item = (CAlias *) pItem;
@@ -4178,6 +4189,16 @@ ASSERT( trigger_item->IsKindOf( RUNTIME_CLASS( CTrigger ) ) );
   
   return trigger_item->bIncluded;
   }    // end of CPrefsP8::CheckIfIncluded
+
+bool CPrefsP8::CheckIfTemporary (CObject * pItem)
+  {
+CTrigger * trigger_item = (CTrigger * ) pItem;
+
+ASSERT_VALID (trigger_item);
+ASSERT( trigger_item->IsKindOf( RUNTIME_CLASS( CTrigger ) ) );
+  
+  return trigger_item->bTemporary;
+  }    // end of CPrefsP8::CheckIfTemporary
 
 bool CPrefsP8::CheckIfExecuting (CObject * pItem)
   {
@@ -6392,6 +6413,16 @@ bool CPrefsP16::CheckIfIncluded (CObject * pItem)
   
   return timer_item->bIncluded;
   }    // end of CPrefsP16::CheckIfIncluded
+
+bool CPrefsP16::CheckIfTemporary (CObject * pItem)
+  {
+  CTimer * timer_item = (CTimer *) pItem;
+
+  ASSERT_VALID (timer_item);
+  ASSERT( timer_item->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
+  
+  return timer_item->bTemporary;
+  }    // end of CPrefsP16::CheckIfTemporary
 
 bool CPrefsP16::CheckIfExecuting (CObject * pItem)
   {

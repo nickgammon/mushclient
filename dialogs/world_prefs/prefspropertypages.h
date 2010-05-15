@@ -602,6 +602,7 @@ public:
 
   virtual bool CheckIfIncluded (CObject * pItem);
   virtual bool CheckIfExecuting (CObject * pItem);
+  virtual bool CheckIfTemporary (CObject * pItem);
 
   virtual bool GetFilterFlag ();            // is filtering enabled?
   virtual CString GetFilterScript ();       // get the filter script
@@ -723,6 +724,7 @@ public:
 
   virtual bool CheckIfIncluded (CObject * pItem);
   virtual bool CheckIfExecuting (CObject * pItem);
+  virtual bool CheckIfTemporary (CObject * pItem);
 
   virtual bool GetFilterFlag ();            // is filtering enabled?
   virtual CString GetFilterScript ();       // get the filter script
@@ -1308,6 +1310,7 @@ public:
 
   virtual bool CheckIfIncluded (CObject * pItem);
   virtual bool CheckIfExecuting (CObject * pItem);
+  virtual bool CheckIfTemporary (CObject * pItem);
 
   virtual bool GetFilterFlag ();            // is filtering enabled?
   virtual CString GetFilterScript ();       // get the filter script
@@ -1513,8 +1516,10 @@ public:
                        const int nItemNumber,
                        const BOOL nItem);
 
-  virtual bool CheckIfIncluded (CObject * pItem) { return false; }
+  virtual bool CheckIfIncluded (CObject * pItem)  { return false; }
   virtual bool CheckIfExecuting (CObject * pItem) { return false; }
+  virtual bool CheckIfTemporary (CObject * pItem) { return false; }
+
 
   virtual bool GetFilterFlag ();            // is filtering enabled?
   virtual CString GetFilterScript ();       // get the filter script
