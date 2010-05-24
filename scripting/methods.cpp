@@ -478,12 +478,10 @@ long CMUSHclientDoc::DeleteTrigger(LPCTSTR TriggerName)
 {
 CString strTriggerName = TriggerName;
 CTrigger * trigger_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strTriggerName, false))
-    return nStatus;
-
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTriggerName, false);
+ 
   if (!GetTriggerMap ().Lookup (strTriggerName, trigger_item))
     return eTriggerNotFound;
 
@@ -673,11 +671,9 @@ long CMUSHclientDoc::EnableTrigger(LPCTSTR TriggerName, BOOL Enabled)
 {
 CString strTriggerName = TriggerName;
 CTrigger * trigger_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strTriggerName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTriggerName, false);
 
   if (!GetTriggerMap ().Lookup (strTriggerName, trigger_item))
     return eTriggerNotFound;
@@ -710,11 +706,9 @@ long CMUSHclientDoc::GetTrigger(LPCTSTR TriggerName,
 {
 CString strTriggerName = TriggerName;
 CTrigger * trigger_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strTriggerName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTriggerName, false);
 
   if (!GetTriggerMap ().Lookup (strTriggerName, trigger_item))
     return eTriggerNotFound;
@@ -758,11 +752,9 @@ long CMUSHclientDoc::IsTrigger(LPCTSTR TriggerName)
 {
 CString strTriggerName = TriggerName;
 CTrigger * trigger_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strTriggerName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTriggerName, false);
 
   if (!GetTriggerMap ().Lookup (strTriggerName, trigger_item))
     return eTriggerNotFound;
@@ -935,11 +927,9 @@ long CMUSHclientDoc::DeleteAlias(LPCTSTR AliasName)
 {
 CString strAliasName = AliasName;
 CAlias * alias_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strAliasName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strAliasName, false);
 
   if (!GetAliasMap ().Lookup (strAliasName, alias_item))
     return eAliasNotFound;
@@ -1086,11 +1076,9 @@ long CMUSHclientDoc::EnableAlias(LPCTSTR AliasName, BOOL Enabled)
 {
 CString strAliasName = AliasName;
 CAlias * alias_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strAliasName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strAliasName, false);
 
   if (!GetAliasMap ().Lookup (strAliasName, alias_item))
     return eAliasNotFound;
@@ -1121,11 +1109,9 @@ long CMUSHclientDoc::GetAlias(LPCTSTR AliasName,
 {
 CString strAliasName = AliasName;
 CAlias * alias_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strAliasName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strAliasName, false);
 
   if (!GetAliasMap ().Lookup (strAliasName, alias_item))
     return eAliasNotFound;
@@ -1203,11 +1189,9 @@ long CMUSHclientDoc::IsAlias(LPCTSTR AliasName)
 {
 CString strAliasName = AliasName;
 CAlias * alias_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strAliasName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strAliasName, false);
 
   if (!GetAliasMap ().Lookup (strAliasName, alias_item))
     return eAliasNotFound;
@@ -1223,11 +1207,9 @@ long CMUSHclientDoc::EnableTimer(LPCTSTR TimerName, BOOL Enabled)
 {
 CString strTimerName = TimerName;
 CTimer * Timer_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strTimerName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTimerName, false);
 
   if (!GetTimerMap ().Lookup (strTimerName, Timer_item))
     return eTimerNotFound;
@@ -1667,11 +1649,9 @@ long CMUSHclientDoc::ResetTimer(LPCTSTR TimerName)
 {
 CString strTimerName = TimerName;
 CTimer * Timer_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strTimerName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTimerName, false);
 
   if (!GetTimerMap ().Lookup (strTimerName, Timer_item))
     return eTimerNotFound;
@@ -2222,9 +2202,8 @@ CAlias * alias_item;
 
   vaResult.vt = VT_NULL;
 
-  // return if bad name, if so return NULL
-  if (CheckObjectName (strAliasName, false))
-    return vaResult;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strAliasName, false);
 
   vaResult.vt = VT_EMPTY;
 
@@ -2321,9 +2300,8 @@ CTrigger * trigger_item;
 
   vaResult.vt = VT_NULL;
 
-  // return if bad name, if so return NULL
-  if (CheckObjectName (strTriggerName, false))
-    return vaResult;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTriggerName, false);
 
   vaResult.vt = VT_EMPTY;
 
@@ -2830,11 +2808,9 @@ long CMUSHclientDoc::DeleteTimer(LPCTSTR TimerName)
 {
 CString strTimerName = TimerName;
 CTimer * timer_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strTimerName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTimerName, false);
 
   if (!GetTimerMap ().Lookup (strTimerName, timer_item))
     return eTimerNotFound;
@@ -2861,11 +2837,9 @@ long CMUSHclientDoc::IsTimer(LPCTSTR TimerName)
 {
 CString strTimerName = TimerName;
 CTimer * timer_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strTimerName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTimerName, false);
 
   if (!GetTimerMap ().Lookup (strTimerName, timer_item))
     return eTimerNotFound;
@@ -2911,11 +2885,9 @@ long CMUSHclientDoc::GetTimer(LPCTSTR TimerName,
 {
 CString strTimerName = TimerName;
 CTimer * timer_item;
-long nStatus;
 
-  // return if bad name
-  if (nStatus = CheckObjectName (strTimerName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTimerName, false);
 
   if (!GetTimerMap ().Lookup (strTimerName, timer_item))
     return eTimerNotFound;
@@ -2964,9 +2936,8 @@ CTimer * timer_item;
 
   vaResult.vt = VT_NULL;
 
-  // return if bad name, if so return NULL
-  if (CheckObjectName (strTimerName, false))
-    return vaResult;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTimerName, false);
 
   vaResult.vt = VT_EMPTY;
 
@@ -5335,18 +5306,13 @@ VARIANT CMUSHclientDoc::GetPluginInfo(LPCTSTR PluginID, short InfoType)
 long CMUSHclientDoc::LoadPlugin(LPCTSTR FileName) 
 {
 
-  bool bChanged = false;
-
   CPlugin * pCurrentPlugin = m_CurrentPlugin;
   m_CurrentPlugin = NULL;   // otherwise plugin won't load if done from another one
 
   try
     {
-    bChanged = true;
-
     // load it
     InternalLoadPlugin (FileName);
-
     } // end of try block
 
   catch (CFileException * e)
@@ -5365,16 +5331,14 @@ long CMUSHclientDoc::LoadPlugin(LPCTSTR FileName)
 
   m_CurrentPlugin = pCurrentPlugin;
 
-  if (bChanged)
-    PluginListChanged ();
+  PluginListChanged ();
 
 	return eOK;
-}
+}    // end of LoadPlugin
 
 
 long CMUSHclientDoc::ReloadPlugin(LPCTSTR PluginID) 
 {
-bool bChanged = false;
 
 // first, find plugin by ID
 CPlugin * pPlugin = GetPlugin (PluginID);
@@ -5413,10 +5377,8 @@ CPlugin * pPlugin = GetPlugin (PluginID);
 
   try
     {
-    bChanged = true;
     // now reload it
     InternalLoadPlugin (strName);
-
     } // end of try block
 
   catch (CFileException * e)
@@ -5435,11 +5397,10 @@ CPlugin * pPlugin = GetPlugin (PluginID);
 
   m_CurrentPlugin = pCurrentPlugin;
 
-  if (bChanged)
-    PluginListChanged ();
+  PluginListChanged ();
 
 	return eOK;
-}
+}  // end of ReloadPlugin
 
 // helper routine to find a particular plugin
 
@@ -6192,9 +6153,8 @@ CTrigger * trigger_item;
 
   vaResult.vt = VT_NULL;
 
-  // return if bad name, if so return NULL
-  if (CheckObjectName (strTriggerName, false))
-    return vaResult;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTriggerName, false);
 
   vaResult.vt = VT_EMPTY;
 
@@ -6257,11 +6217,8 @@ CString strTriggerName = TriggerName;
 CString strValue = Value;
 CTrigger * trigger_item;
 
-long nStatus;
-
-  // return if bad name
-  if (nStatus = CheckObjectName (strTriggerName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTriggerName, false);
 
   if (!GetTriggerMap ().Lookup (strTriggerName, trigger_item))
     return eTriggerNotFound;
@@ -6466,9 +6423,8 @@ CAlias * Alias_item;
 
   vaResult.vt = VT_NULL;
 
-  // return if bad name, if so return NULL
-  if (CheckObjectName (strAliasName, false))
-    return vaResult;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strAliasName, false);
 
   vaResult.vt = VT_EMPTY;
 
@@ -6531,11 +6487,8 @@ CString strAliasName = AliasName;
 CString strValue = Value;
 CAlias * Alias_item;
 
-long nStatus;
-
-  // return if bad name
-  if (nStatus = CheckObjectName (strAliasName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strAliasName, false);
 
   if (!GetAliasMap ().Lookup (strAliasName, Alias_item))
     return eAliasNotFound;
@@ -6737,9 +6690,8 @@ CTimer * Timer_item;
 
   vaResult.vt = VT_NULL;
 
-  // return if bad name, if so return NULL
-  if (CheckObjectName (strTimerName, false))
-    return vaResult;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTimerName, false);
 
   vaResult.vt = VT_EMPTY;
 
@@ -6835,11 +6787,8 @@ CString strTimerName = TimerName;
 CString strValue = Value;
 CTimer * Timer_item;
 
-long nStatus;
-
-  // return if bad name
-  if (nStatus = CheckObjectName (strTimerName, false))
-    return nStatus;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTimerName, false);
 
   if (!GetTimerMap ().Lookup (strTimerName, Timer_item))
     return eTimerNotFound;
@@ -10004,9 +9953,8 @@ CTrigger * trigger_item;
 
   vaResult.vt = VT_NULL;
 
-  // return if bad name, if so return NULL
-  if (CheckObjectName (strTriggerName, false))
-    return vaResult;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strTriggerName, false);
 
   vaResult.vt = VT_EMPTY;
 
@@ -10034,9 +9982,8 @@ CAlias * alias_item;
 
   vaResult.vt = VT_NULL;
 
-  // return if bad name, if so return NULL
-  if (CheckObjectName (strAliasName, false))
-    return vaResult;
+  // trim spaces from name, make lower-case
+  CheckObjectName (strAliasName, false);
 
   vaResult.vt = VT_EMPTY;
 
