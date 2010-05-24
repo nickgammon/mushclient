@@ -2,10 +2,6 @@
 #include "MUSHclient.h"
 #include "doc.h"
 
-
-static CMUSHclientApp * pApp = NULL;  // purely for #define below
-
-
 #define GLB_OPT(arg) offsetof (CMUSHclientApp, arg)
 
 // ints - WARNING - we assume these are ints, the type-casting will defeat

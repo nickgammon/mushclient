@@ -6081,9 +6081,7 @@ long CMUSHclientDoc::DeleteTimerGroup(LPCTSTR GroupName)
 }   // end of DeleteTimerGroup
 
 
-static CTrigger * pTrigger = NULL;  // purely for #define below
-
-#define TO(arg) offsetof (CTrigger, arg), sizeof (pTrigger->arg)
+#define TO(arg) offsetof (CTrigger, arg), sizeof (((CTrigger *)NULL)->arg)
 
 //-----config name ----------------  default ---variable name ---- min, max, flags ---
 tConfigurationNumericOption TriggerOptionsTable [] = {
@@ -6363,9 +6361,7 @@ bool bChanged;
 }   // end of SetTriggerOption
 
 
-static CAlias * pAlias = NULL;  // purely for #define below
-
-#define AO(arg) offsetof (CAlias, arg), sizeof (pAlias->arg)
+#define AO(arg) offsetof (CAlias, arg), sizeof (((CAlias *)NULL)->arg)
 
 //-----config name ----------------  default ---variable name ---- min, max, flags ---
 tConfigurationNumericOption AliasOptionsTable [] = {
@@ -6631,9 +6627,7 @@ bool bChanged;
  return eUnknownOption;
 }   // end of SetAliasOption
 
-static CTimer * pTimer = NULL;  // purely for #define below
-
-#define TMRO(arg) offsetof (CTimer, arg), sizeof (pTimer->arg)
+#define TMRO(arg) offsetof (CTimer, arg), sizeof (((CTimer *)NULL)->arg)
 
 //-----config name ----------------  default ---variable name ---- min, max, flags ---
 tConfigurationNumericOption TimerOptionsTable [] = {
@@ -8244,9 +8238,7 @@ CString strResult = ::StripAnsi (Message);
 	return strResult.AllocSysString();
 }
 
-static CChatSocket * pChat = NULL;  // purely for #define below
-
-#define CHATO(arg) offsetof (CChatSocket, arg), sizeof (pChat->arg)
+#define CHATO(arg) offsetof (CChatSocket, arg), sizeof (((CChatSocket *)NULL)->arg)
 
 //-----config name ----------------  default ---variable name ---- min, max, flags ---
 tConfigurationNumericOption ChatOptionsTable [] = {

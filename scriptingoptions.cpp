@@ -33,9 +33,7 @@
 
   */
 
-static CMUSHclientDoc * pDoc = NULL;  // purely for #define below
-
-#define O(arg) offsetof (CMUSHclientDoc, arg), sizeof (pDoc->arg)
+#define O(arg) offsetof (CMUSHclientDoc, arg), sizeof (((CMUSHclientDoc *)NULL)->arg)
 
 //-----config name ----------------  default ---variable name ---- min, max, flags ---
 tConfigurationNumericOption OptionsTable [] = {
