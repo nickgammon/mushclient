@@ -8988,14 +8988,15 @@ BSTR CMUSHclientDoc::ExportXML(short Type, LPCTSTR Name)
 	CString strResult;
   CString strName = Name;
 
-  if (!CheckObjectName (strName, false))
-    {
-    char * p = NULL;
+  // trim spaces, force name to lower-case
+  CheckObjectName (strName, false);
 
-    try
-      {
-      CMemFile f;      // open memory file for writing
-      CArchive ar(&f, CArchive::store);
+  char * p = NULL;
+
+  try
+    {
+    CMemFile f;      // open memory file for writing
+    CArchive ar(&f, CArchive::store);
 
 
     // see if trigger exists, if not return EMPTY
@@ -9081,27 +9082,26 @@ BSTR CMUSHclientDoc::ExportXML(short Type, LPCTSTR Name)
 
       } // end of switch
 
-      ar.Close();
+    ar.Close();
 
-      int nLength = f.GetLength ();
-      p = (char *) f.Detach ();
+    int nLength = f.GetLength ();
+    p = (char *) f.Detach ();
 
-      strResult = CString (p, nLength);
+    strResult = CString (p, nLength);
 
+    free (p);   // remove memory allocated in CMemFile
+    p = NULL;
+
+    }   // end of try block
+
+  catch (CException* e)
+	  {
+    if (p)
       free (p);   // remove memory allocated in CMemFile
-      p = NULL;
+	  e->Delete();
+    strResult.Empty ();
+	  }   // end of catch
 
-      }   // end of try block
-
-    catch (CException* e)
-	    {
-      if (p)
-        free (p);   // remove memory allocated in CMemFile
-	    e->Delete();
-      strResult.Empty ();
-	    }   // end of catch
-
-    } // end of name OK
 
 	return strResult.AllocSysString();
 }
