@@ -194,7 +194,7 @@ string concatArgs (lua_State *L, const char * delimiter = "", const int first = 
   int i;
   string sOutput;
   lua_getglobal(L, "tostring");
-  for (i= first; i<=n; i++) 
+  for (i = first; i <= n; i++) 
     {
     const char *s;
     lua_pushvalue(L, -1);  /* function to be called */
@@ -204,12 +204,14 @@ string concatArgs (lua_State *L, const char * delimiter = "", const int first = 
     if (s == NULL)
       luaL_error(L, "'tostring' must return a string to be concatenated");
         
-    if (i>1)
+    // add delimiter every time except first time through the loop
+    if (i > first)
       sOutput += delimiter;
     sOutput += s;
     lua_pop(L, 1);  /* pop result */
     }
 
+  lua_pop(L, 1);  /* pop tostring function */
   return sOutput;
 
   } // end of concatArgs
