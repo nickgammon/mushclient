@@ -1450,10 +1450,7 @@ bool bCompressInitOK = false;
 CString CMUSHclientApp::GetUniqueString (void)
   {
   CString strNumber;
-  char * p = strNumber.GetBuffer (32);
-  // Format does not work with I64 as at this compiler release (VC++ 5.0)
-  sprintf (p, "%I64d", GetUniqueNumber ());
-  strNumber.ReleaseBuffer (-1);
+  strNumber.Format ("%I64d", GetUniqueNumber ());
   return strNumber;
   }   // end of CMUSHclientApp::GetUniqueString
 
