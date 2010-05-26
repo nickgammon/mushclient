@@ -265,7 +265,6 @@ LUALIB_API const char *my_checklstring (lua_State *L, int narg, size_t *len) {
   return s;
 }
 
-
 LUALIB_API const char *my_optlstring (lua_State *L, int narg,
                                         const char *def, size_t *len) {
   if (lua_isnoneornil(L, narg)) {
@@ -276,7 +275,6 @@ LUALIB_API const char *my_optlstring (lua_State *L, int narg,
   else return my_checklstring(L, narg, len);
 }
 
-
 LUALIB_API lua_Number my_checknumber (lua_State *L, int narg) {
   lua_Number d = lua_tonumber(L, narg);
   if (d == 0 && !lua_isnumber(L, narg))  /* avoid extra test when d is not 0 */
@@ -284,34 +282,14 @@ LUALIB_API lua_Number my_checknumber (lua_State *L, int narg) {
   return d;
 }
 
-
 LUALIB_API lua_Number my_optnumber (lua_State *L, int narg, lua_Number def) {
   return luaL_opt(L, my_checknumber, narg, def);
 }
 
-
-LUALIB_API lua_Integer my_checkinteger (lua_State *L, int narg) {
-  lua_Integer d = lua_tointeger(L, narg);
-  if (d == 0 && !lua_isnumber(L, narg))  /* avoid extra test when d is not 0 */
-    my_tag_error(L, narg, LUA_TNUMBER);
-  return d;
-}
-
-
-LUALIB_API lua_Integer my_optinteger (lua_State *L, int narg,
-                                                      lua_Integer def) {
-  return luaL_opt(L, my_checkinteger, narg, def);
-}
-
 #define my_checkstring(L,n)	(my_checklstring(L, (n), NULL))
 #define my_optstring(L,n,d)	(my_optlstring(L, (n), (d), NULL))
-#define my_checkint(L,n)	((int)my_checkinteger(L, (n)))
-#define my_optint(L,n,d)	((int)my_optinteger(L, (n), (d)))
-#define my_checklong(L,n)	((long)my_checkinteger(L, (n)))
-#define my_optlong(L,n,d)	((long)my_optinteger(L, (n), (d)))
 
 //-------------- end of special checks --------------------
-
 
 
 const bool optboolean (lua_State *L, const int narg, const int def) 
