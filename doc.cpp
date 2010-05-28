@@ -7648,7 +7648,7 @@ UINT dFormat = 0;
 
 // Open clipboard
 
-  if (!::OpenClipboard(NULL) )
+  if (!::OpenClipboard(Frame.GetSafeHwnd ()) )
        {
        ::AfxMessageBox( "Cannot open the Clipboard" );
        return;
