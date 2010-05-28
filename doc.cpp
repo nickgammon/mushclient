@@ -3646,7 +3646,7 @@ bool bHaveUnicode = false;
 
 // Open clipboard
 
-  if (!::OpenClipboard(NULL) )
+  if (!::OpenClipboard(Frame.GetSafeHwnd ()) )
        {
        if (bWarning)
           TMessageBox( "Cannot open the Clipboard" );
@@ -3734,7 +3734,7 @@ BOOL putontoclipboard (const CString & data, const bool bUnicode)
 
 // Open clipboard
 
-  if (!::OpenClipboard(NULL) )
+  if (!::OpenClipboard(Frame.GetSafeHwnd ()) )
        {
        TMessageBox( "Cannot open the Clipboard" );
        return TRUE;
