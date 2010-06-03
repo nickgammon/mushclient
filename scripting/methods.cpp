@@ -14669,6 +14669,18 @@ long CMUSHclientDoc::WindowDrawImageAlpha(LPCTSTR Name, LPCTSTR ImageId, long Le
 
 }  // end of CMUSHclientDoc::WindowDrawImageAlpha
 
+long CMUSHclientDoc::WindowGetImageAlpha(LPCTSTR Name, LPCTSTR ImageId, long Left, long Top, long Right, long Bottom, long SrcLeft, long SrcTop) 
+{
+  MiniWindowMapIterator it = m_MiniWindows.find (Name);
+    
+  if (it == m_MiniWindows.end ())
+    return eNoSuchWindow;
+
+  return it->second->GetImageAlpha (ImageId, Left, Top, Right, Bottom, 
+                                    SrcLeft,   SrcTop);
+
+}   // end of CMUSHclientDoc::WindowGetImageAlpha
+
 
 /*
 

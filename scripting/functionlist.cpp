@@ -386,6 +386,7 @@ const char * sFunctions [] = {
     "WindowFont",
     "WindowFontInfo",
     "WindowFontList",
+    "WindowGetImageAlpha",
     "WindowGetPixel",
     "WindowGradient",
     "WindowHotspotInfo",

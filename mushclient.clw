@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CFunctionListDlg
+LastClass=CMUSHclientDoc
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "mushclient.h"
@@ -1338,15 +1338,6 @@ BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
 LastObject=CCompleteWordDlg
-
-[CLS:CLuaInputEditDlg]
-Type=0
-HeaderFile=LuaInputEditDlg.h
-ImplementationFile=LuaInputEditDlg.cpp
-BaseClass=CDialog
-Filter=D
-LastObject=CLuaInputEditDlg
-VirtualFilter=dWC
 
 [CLS:CKeyNameDlg]
 Type=0

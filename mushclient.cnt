@@ -532,6 +532,7 @@
 3 WindowFont=FNC_WindowFont
 3 WindowFontInfo=FNC_WindowFontInfo
 3 WindowFontList=FNC_WindowFontList
+3 WindowGetImageAlpha=FNC_WindowGetImageAlpha
 3 WindowGetPixel=FNC_WindowGetPixel
 3 WindowImageFromWindow=FNC_WindowImageFromWindow
 3 WindowImageInfo=FNC_WindowImageInfo

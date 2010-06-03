@@ -608,6 +608,7 @@ BEGIN_DISPATCH_MAP(CMUSHclientDoc, CDocument)
 	DISP_FUNCTION(CMUSHclientDoc, "FlashIcon", FlashIcon, VT_EMPTY, VTS_NONE)
 	DISP_FUNCTION(CMUSHclientDoc, "WindowHotspotTooltip", WindowHotspotTooltip, VT_I4, VTS_BSTR VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION(CMUSHclientDoc, "WindowDrawImageAlpha", WindowDrawImageAlpha, VT_I4, VTS_BSTR VTS_BSTR VTS_I4 VTS_I4 VTS_I4 VTS_I4 VTS_R8 VTS_I4 VTS_I4)
+	DISP_FUNCTION(CMUSHclientDoc, "WindowGetImageAlpha", WindowGetImageAlpha, VT_I4, VTS_BSTR VTS_BSTR VTS_I4 VTS_I4 VTS_I4 VTS_I4 VTS_I4 VTS_I4)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "NormalColour", GetNormalColour, SetNormalColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "BoldColour", GetBoldColour, SetBoldColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "CustomColourText", GetCustomColourText, SetCustomColourText, VT_I4, VTS_I2)
@@ -8151,3 +8152,4 @@ static bool bInPluginListChanged = false;
 
 
   }    // end CMUSHclientDoc::PluginListChanged 
+

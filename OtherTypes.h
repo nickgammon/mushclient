@@ -1389,6 +1389,10 @@ class CMiniWindow
                       double Opacity, 
                       long SrcLeft, long SrcTop); 
 
+  long GetImageAlpha(LPCTSTR ImageId, 
+                      long Left, long Top, long Right, long Bottom, 
+                      long SrcLeft, long SrcTop); 
+
   };
 
 typedef map<string, CMiniWindow *> MiniWindowMap;

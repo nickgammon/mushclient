@@ -3952,3 +3952,121 @@ long CMiniWindow::DrawImageAlpha(LPCTSTR ImageId,
 
 
   } // end of  CMiniWindow::DrawImageAlpha
+
+long CMiniWindow::GetImageAlpha(LPCTSTR ImageId, 
+                    long Left, long Top, long Right, long Bottom, 
+                    long SrcLeft, long SrcTop)
+  {
+
+  // constrain to what we actually have
+  if (Left < 0)
+    Left = 0;
+  if (Top < 0)
+    Top = 0;
+  if (Right > m_iWidth)
+    Right = m_iWidth;
+  if (Bottom > m_iHeight)
+    Bottom = m_iHeight;
+
+  // image to be merged
+  ImageMapIterator it = m_Images.find (ImageId);
+
+  if (it == m_Images.end ())
+    return eImageNotInstalled;
+
+  CBitmap * bitmap = it->second;
+
+
+  BITMAP  bi;
+  bitmap->GetBitmap(&bi);
+
+  // can't do it unless we have alpha channel
+  if (bi.bmBitsPixel != 32)
+    return eImageNotInstalled;
+
+  // calculate size of desired rectangle
+  long iWidth = FixRight (Right) - Left;
+  long iHeight = FixBottom (Bottom) - Top;
+
+  // constrain to what we actually have
+  if (SrcLeft < 0)
+    SrcLeft = 0;
+  if (SrcTop < 0)
+    SrcTop = 0;
+
+  if (iWidth <= 0 || iHeight <= 0)   // sanity check
+    return eOK;
+
+  // merge layer (from image id)
+  CDC A_DC;
+  A_DC.CreateCompatibleDC(&dc);
+
+  BITMAPINFO bmi;
+  ZeroMemory (&bmi, sizeof bmi);
+
+  bmi.bmiHeader.biSize = sizeof bmi;
+  bmi.bmiHeader.biWidth =          iWidth;       
+  bmi.bmiHeader.biHeight =         iHeight;
+  bmi.bmiHeader.biPlanes =         1;
+  bmi.bmiHeader.biBitCount =       32;
+  bmi.bmiHeader.biCompression =    BI_RGB;
+  bmi.bmiHeader.biSizeImage =      iHeight * BytesPerLine (iWidth, 32);
+
+  unsigned char * pA = NULL;
+
+  HBITMAP hbmA = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**) &pA, NULL, 0);
+
+  HBITMAP hOldAbmp = (HBITMAP) SelectObject(A_DC.m_hDC, hbmA);
+
+  CDC bmDC;   // for loading bitmaps into
+  bmDC.CreateCompatibleDC(&dc);
+
+  //copy part from image to upper layer
+  CBitmap *pOldbmp = bmDC.SelectObject(bitmap);
+  A_DC.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);  
+  bmDC.SelectObject(pOldbmp);
+
+
+  // base image (from miniwindow)
+
+  CDC B_DC;
+  B_DC.CreateCompatibleDC(&dc);
+  CBitmap B_bmp;
+
+  unsigned char * pB = NULL;
+
+  HBITMAP hbmB = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**) &pB, NULL, 0);
+
+  HBITMAP hOldBbmp = (HBITMAP) SelectObject(B_DC.m_hDC, hbmB);
+
+
+  long count = bmi.bmiHeader.biSizeImage;
+  long perline = BytesPerLine (iWidth, 24);
+
+  long i;
+
+  // copy alpha channel into window
+
+  for (i = 0; i < count; i += 4)
+    {
+    pB [i]      = pA [i + 3];
+    pB [i + 1]  = pA [i + 3];
+    pB [i + 2]  = pA [i + 3];
+    }
+
+
+  // copy result back
+
+  dc.BitBlt (Left, Top, iWidth, iHeight, &B_DC, 0, 0, SRCCOPY);  
+
+
+  SelectObject(A_DC.m_hDC, hOldAbmp);
+  SelectObject(B_DC.m_hDC, hOldBbmp);
+
+  DeleteObject (hbmA);
+  DeleteObject (hbmB);
+
+  return eOK;
+
+
+  } // end of  CMiniWindow::GetImageAlpha

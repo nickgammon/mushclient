@@ -5584,6 +5584,25 @@ static int L_WindowFontList (lua_State *L)
   } // end of L_WindowFontList
 
 //----------------------------------------
+//  world.WindowGetImageAlpha
+//----------------------------------------
+static int L_WindowGetImageAlpha (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  lua_pushnumber (L, pDoc->WindowGetImageAlpha (
+            my_checkstring (L, 1),    // Name
+            my_checkstring (L, 2),    // ImageId
+            my_checknumber (L, 3),    // Left
+            my_checknumber (L, 4),    // Top
+            my_checknumber (L, 5),    // Right
+            my_checknumber (L, 6),    // Bottom
+            my_optnumber (L, 7, 0),   // SrcLeft
+            my_optnumber (L, 8, 0)    // SrcTop
+            ));
+  return 1;  // number of result fields
+  } // end of L_WindowGetImageAlpha
+
+//----------------------------------------
 //  world.WindowGetPixel
 //----------------------------------------
 static int L_WindowGetPixel (lua_State *L)
@@ -6411,6 +6430,7 @@ static const struct luaL_reg worldlib [] =
   {"WindowFont", L_WindowFont},
   {"WindowFontInfo", L_WindowFontInfo},
   {"WindowFontList", L_WindowFontList},
+  {"WindowGetImageAlpha", L_WindowGetImageAlpha},
   {"WindowGetPixel", L_WindowGetPixel},
   {"WindowGradient", L_WindowGradient},
   {"WindowHotspotInfo", L_WindowHotspotInfo},
