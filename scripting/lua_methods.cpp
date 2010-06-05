@@ -6782,6 +6782,297 @@ static flags_pair send_to_destinations [] =
 };
 
 
+// Constants: miniwin.xxxx
+
+static flags_pair miniwindow_flags [] =
+{
+               
+  // positions for WindowCreate, SetForegroundImage, SetBackgroundImage, WindowPosition
+  {  "pos_stretch_to_view",               0 },
+  {  "pos_stretch_to_view_with_aspect",   1 },
+  {  "pos_stretch_to_owner",              2 },
+  {  "pos_stretch_to_owner_with_aspect",  3 },
+  {  "pos_top_left",                      4  },
+  {  "pos_top_center",                    5  },
+  {  "pos_top_right",                     6  },
+  {  "pos_center_right",                  7  },
+  {  "pos_bottom_right",                  8  },
+  {  "pos_bottom_center",                 9  },
+  {  "pos_bottom_left",                  10  },
+  {  "pos_center_left",                  11  },
+  {  "pos_center_all",                   12  },
+  {  "pos_tile",                         13  },
+
+  // flags for WindowCreate
+
+  {  "create_underneath",         MINIWINDOW_DRAW_UNDERNEATH  },
+  {  "create_absolute_location",  MINIWINDOW_ABSOLUTE_LOCATION  },
+  {  "create_transparent",        MINIWINDOW_TRANSPARENT  },
+  {  "create_ignore_mouse",       MINIWINDOW_IGNORE_MOUSE  },
+
+
+  // pen styles for drawing shapes
+
+  {  "pen_solid",        PS_SOLID  },           // solid pen
+  {  "pen_dash",         PS_DASH  },            // -------    
+  {  "pen_dot",          PS_DOT  },             // .......    
+  {  "pen_dash_dot",     PS_DASHDOT  },         // _._._._    
+  {  "pen_dash_dot_dot", PS_DASHDOTDOT  },      // _.._.._    
+  {  "pen_null",         PS_NULL  },            // no pen
+  {  "pen_inside_frame", PS_INSIDEFRAME  },     // solid, inside the shape
+
+  // brush styles for drawing shapes
+
+  {  "brush_solid",                   0  },            
+  {  "brush_null",                    1  },            
+  {  "brush_hatch_horizontal",        2  },            
+  {  "brush_hatch_vertical",          3  },            
+  {  "brush_hatch_forwards_diagonal", 4  },            
+  {  "brush_hatch_backwards_diagonal",5  },            
+  {  "brush_hatch_cross",             6  },            
+  {  "brush_hatch_cross_diagonal",    7  },            
+  {  "brush_fine_pattern",            8  },            
+  {  "brush_medium_pattern",          9  },            
+  {  "brush_coarse_pattern",         10  },            
+  {  "brush_waves_horizontal",       11  },            
+  {  "brush_waves_vertical",         12  },            
+
+
+  // WindowRectOp action parameter (argument 2)
+
+  {  "rect_frame",               1  },          
+  {  "rect_fill",                2  },          
+  {  "rect_invert",              3  },          
+  {  "rect_3d_rect",             4  },          
+  {  "rect_draw_edge",           5  },          
+  {  "rect_flood_fill_border",   6  },          
+  {  "rect_flood_fill_surface",  7  },          
+
+  // WindowRectOp colour1 parameter (argument 7) for action 5   (rect_draw_edge)
+
+  {  "rect_edge_raised",  EDGE_RAISED  },          
+  {  "rect_edge_etched",  EDGE_ETCHED  },          
+  {  "rect_edge_bump",    EDGE_BUMP  },          
+  {  "rect_edge_sunken",  EDGE_SUNKEN  },          
+
+  // WindowRectOp colour2 parameter (argument 8) for action 5   (rect_draw_edge)
+
+  {  "rect_edge_at_top_left",     BF_TOPLEFT  },          
+  {  "rect_edge_at_top_right",    BF_TOPRIGHT  },          
+  {  "rect_edge_at_bottom_left",  BF_BOTTOMLEFT  },          
+  {  "rect_edge_at_bottom_right", BF_BOTTOMRIGHT  },          
+  {  "rect_edge_at_all",          BF_RECT  },          
+
+  {  "rect_diagonal_end_top_left",      BF_DIAGONAL_ENDTOPLEFT  },          
+  {  "rect_diagonal_end_top_right",     BF_DIAGONAL_ENDTOPRIGHT  },          
+  {  "rect_diagonal_end_bottom_left",   BF_DIAGONAL_ENDBOTTOMLEFT  },          
+  {  "rect_diagonal_end_bottom_right",  BF_DIAGONAL_ENDBOTTOMRIGHT  },          
+
+  // WindowRectOp other colour2 flags (or in) (argument 8) for action 5   (rect_draw_edge)
+
+  {  "rect_option_fill_middle",       BF_MIDDLE  },          
+  {  "rect_option_softer_buttons",    BF_SOFT  },          
+  {  "rect_option_flat_borders",      BF_FLAT  },          
+  {  "rect_option_monochrom_borders", BF_MONO  },          
+  
+
+
+  // WindowCircleOp action parameter (argument 2)
+
+  {  "circle_ellipse",         1  },          
+  {  "circle_rectangle",       2  },          
+  {  "circle_round_rectangle", 3  },          
+  {  "circle_chord",           4  },          
+  {  "circle_pie",             5  },          
+
+
+  //  WindowGradient mode parameter (argument 8)
+
+  {  "gradient_horizontal", 1  },          
+  {  "gradient_vertical",   2  },          
+  {  "gradient_texture",    3  },          
+
+  // WindowFont charset
+
+  {  "font_charset_ansi",    ANSI_CHARSET  },          
+  {  "font_charset_default", DEFAULT_CHARSET  },          
+  {  "font_charset_symbol",  SYMBOL_CHARSET  },          
+
+  // WindowFont PitchAndFamily 
+
+  {  "font_family_any",         FF_DONTCARE },          
+  {  "font_family_roman",       FF_ROMAN  },          
+  {  "font_family_swiss",       FF_SWISS  },          
+  {  "font_family_modern",      FF_MODERN  },          
+  {  "font_family_script",      FF_SCRIPT  },          
+  {  "font_family_decorative",  FF_DECORATIVE  },          
+
+
+  {  "font_pitch_default",      DEFAULT_PITCH  },          
+  {  "font_pitch_fixed",        FIXED_PITCH  },          
+  {  "font_pitch_variable",     VARIABLE_PITCH  },          
+  {  "font_pitch_monospaced",   MONO_FONT  },          
+
+  {  "font_truetype",           TRUETYPE_FONTTYPE  },          
+
+  // WindowDrawImage mode (argument 7)
+
+  {  "image_copy",              1  },          
+  {  "image_stretch",           2  },          
+  {  "image_transparent_copy",  3  },          
+
+
+  // WindowImageOp  actions (argument 2)
+
+  {  "image_fill_ellipse",         1  },          
+  {  "image_fill_rectangle",       2  },          
+  {  "image_fill_round_fill_rectangle", 3  },          
+
+  // WindowFilter operations (argument 6)
+
+  {  "filter_noise",                     1  },          
+  {  "filter_monochrome_noise",          2  },          
+  {  "filter_blur",                      3  },          
+  {  "filter_sharpen",                   4  },          
+  {  "filter_find_edges",                5  },          
+  {  "filter_emboss",                    6  },          
+  {  "filter_brightness",                7  },          
+  {  "filter_contrast",                  8  },          
+  {  "filter_gamma",                     9  },          
+  {  "filter_red_brightness",           10  },          
+  {  "filter_red_contrast",             11  },          
+  {  "filter_red_gamma",                12  },          
+  {  "filter_green_brightness",         13  },          
+  {  "filter_green_contrast",           14  },          
+  {  "filter_green_gamma",              15  },          
+  {  "filter_blue_brightness",          16  },          
+  {  "filter_blue_contrast",            17  },          
+  {  "filter_blue_gamma",               18  },          
+  {  "filter_grayscale",                19  },          
+  {  "filter_normal_grayscale",         20  },          
+  {  "filter_brightness_multiply",      21  },          
+  {  "filter_red_brightness_multiply",  22  },          
+  {  "filter_green_brightness_multiply",23  },          
+  {  "filter_blue_brightness_multiply", 24  },          
+  {  "filter_lesser_blur",              25 },          
+  {  "filter_minor_blur",               26 },          
+  {  "filter_average",                  27 },          
+
+  // WindowBlendImage modes (argument 7)
+
+  {  "blend_normal",                                   1 },  
+  {  "blend_average",                                  2 },  
+  {  "blend_interpolate",                             3 },  
+  {  "blend_dissolve",                                 4 },  
+  {  "blend_darken",                                   5 },  
+  {  "blend_multiply",                                 6 },  
+  {  "blend_colour_burn",                              7 },  
+  {  "blend_linear_burn",                              8 },  
+  {  "blend_inverse_colour_burn",                      9 },  
+  {  "blend_subtract",                                10 },  
+  {  "blend_lighten",                                 11 },  
+  {  "blend_screen",                                  12 },  
+  {  "blend_colour_dodge",                            13 },  
+  {  "blend_linear_dodge",                            14 },  
+  {  "blend_inverse_colour_dodge",                    15 },  
+  {  "blend_add",                                     16 },  
+  {  "blend_overlay",                                 17 },  
+  {  "blend_soft_light",                              18 },  
+  {  "blend_hard_light",                              19 },  
+  {  "blend_vivid_light",                             20 },  
+  {  "blend_linear_light",                            21 },  
+  {  "blend_pin_light",                               22 },  
+  {  "blend_hard_mix",                                23 },  
+  {  "blend_difference",                              24 },  
+  {  "blend_exclusion",                               25 },  
+  {  "blend_reflect",                                 26 },  
+  {  "blend_glow",                                    27 },  
+  {  "blend_freeze",                                  28 },  
+  {  "blend_heat",                                    29 },  
+  {  "blend_negation",                                30 },  
+  {  "blend_phoenix",                                 31 },  
+  {  "blend_stamp",                                   32 },  
+  {  "blend_xor",                                     33 },  
+  {  "blend_and",                                     34 },  
+  {  "blend_or",                                      35 },  
+  {  "blend_red",                                     36 },  
+  {  "blend_green",                                   37 },  
+  {  "blend_blue",                                    38 },  
+  {  "blend_yellow",                                  39 },  
+  {  "blend_cyan",                                    40 },  
+  {  "blend_magenta",                                 41 },  
+  {  "blend_green_limited_by_red",                    42 },  
+  {  "blend_green_limited_by_blue",                   43 },  
+  {  "blend_green_limited_by_average_of_red_and_blue",44 },  
+  {  "blend_blue_limited_by_red",                     45 },  
+  {  "blend_blue_limited_by_green",                   46 },  
+  {  "blend_blue_limited_by_average_of_red_and_green",47 },  
+  {  "blend_red_limited_by_green",                    48 },  
+  {  "blend_red_limited_by_blue",                     49 },  
+  {  "blend_red_limited_by_average_of_green_and_blue",50 },  
+  {  "blend_red_only",                                51 },  
+  {  "blend_green_only",                              52 },  
+  {  "blend_blue_only",                               53 },  
+  {  "blend_discard_red",                             54 },  
+  {  "blend_discard_green",                           55 },  
+  {  "blend_discard_blue",                            56 },  
+  {  "blend_all_red",                                 57 },  
+  {  "blend_all_green",                               58 },  
+  {  "blend_all_blue",                                59 },  
+  {  "blend_hue_mode",                                60 },  
+  {  "blend_saturation_mode",                         61 },  
+  {  "blend_colour_mode",                             62 },  
+  {  "blend_luminance_mode",                          63 },  
+  {  "blend_hsl",                                     64 },
+
+
+  // WindowAddHotspot cursor modes
+  
+  {  "cursor_none",         -1  },          
+  {  "cursor_arrow",        0  },          
+  {  "cursor_hand",         1  },          
+  {  "cursor_ibeam",        2  },          
+  {  "cursor_plus",         3  },          
+  {  "cursor_wait",         4  },          
+  {  "cursor_up",           5  },          
+  {  "cursor_nw_se_arrow",  6  },          
+  {  "cursor_ne_sw_arrow",  7  },          
+  {  "cursor_ew_arrow",     8  },          
+  {  "cursor_ns_arrow",     9  },          
+  {  "cursor_both_arrow",   10  },          
+  {  "cursor_x",            11  },          
+  {  "cursor_help",         12  },          
+
+
+  // AddHotspot flags (argument 14)
+
+  {  "hotspot_report_all_mouseovers",   0x01  },          
+
+  // hotspot callback flags
+
+  {  "hotspot_got_shift",      0x01  },          
+  {  "hotspot_got_control",    0x02  },          
+  {  "hotspot_got_alt",        0x04  },          
+  {  "hotspot_got_lh_mouse",   0x10  },          
+  {  "hotspot_got_rh_mouse",   0x20  },          
+  {  "hotspot_got_dbl_click",  0x40  },          
+  {  "hotspot_got_not_first",  0x80  },          
+
+  // WindowMergeImageAlpha Mode (argument 8)
+
+  {  "merge_straight",    0  },          
+  {  "merge_transparent", 1  },          
+
+  // drag handler callback flags
+
+  {  "drag_got_shift",      0x01  },          
+  {  "drag_got_control",    0x02  },          
+  {  "drag_got_alt",        0x04  },          
+
+//  {  "y_x", 1  },          
+  { NULL, 0 }
+};
+
 extern const struct luaL_reg *ptr_xmllib;
 
 /*
@@ -6867,6 +7158,8 @@ int RegisterLuaRoutines (lua_State *L)
   MakeIntFlagsTable (L, "error_desc", error_descriptions);
   // send-to table
   MakeFlagsTable (L, "sendto", send_to_destinations);
+  // miniwindow constants table
+  MakeFlagsTable (L, "miniwin", miniwindow_flags);
 
   // colour names
 
