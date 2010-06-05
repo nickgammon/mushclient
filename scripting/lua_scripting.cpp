@@ -150,6 +150,7 @@ static void BuildLuaTables (lua_State * L)
       "custom_colour",
       "error_code",
       "sendto",
+      "miniwin",
 
       // add more tables here
 

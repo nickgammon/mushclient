@@ -7069,7 +7069,6 @@ static flags_pair miniwindow_flags [] =
   {  "drag_got_control",    0x02  },          
   {  "drag_got_alt",        0x04  },          
 
-//  {  "y_x", 1  },          
   { NULL, 0 }
 };
 
