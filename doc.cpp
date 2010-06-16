@@ -4443,7 +4443,9 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
       }
     }
 
-// iterate through all timers for this document
+  CStringList firedTimersList;
+
+// iterate through all timers for this document - first build list of them
 
   for (POSITION pos = TimerMap.GetStartPosition(); pos; )
     {
@@ -4454,15 +4456,32 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
     if (!timer_item->bEnabled)    // ignore un-enabled timers
       continue;
 
-  // no timer activity whilst closed or in the middle of connecting, or if not enabled
+    // no timer activity whilst closed or in the middle of connecting, or if not enabled
 
-  if (!timer_item->bActiveWhenClosed)
-    if (m_iConnectPhase != eConnectConnectedToMud)
-      continue;
+    if (!timer_item->bActiveWhenClosed)
+      if (m_iConnectPhase != eConnectConnectedToMud)
+        continue;
 
-// if not ready to fire yet, ignore it
+    // if not ready to fire yet, ignore it
 
     if (timer_item->tFireTime > tNow)
+      continue;
+
+    firedTimersList.AddTail (strTimerName);       // add to list of fired timers
+
+    }
+
+
+  // now process list, checking timer still exists in case a script deleted one
+  // see: http://www.gammon.com.au/forum/?id=10358
+
+  for (pos = firedTimersList.GetHeadPosition (); pos; )
+    {
+    // get next fired timer from list
+    strTimerName = m_strMapList.GetNext (pos);
+
+    // check still exists, get pointer if so
+    if (!TimerMap.Lookup (strTimerName, timer_item))
       continue;
 
     timer_item->nMatched++;   // count timer matches
