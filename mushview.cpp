@@ -4902,6 +4902,20 @@ unsigned int iScrollLines;
   if (iScrollLines == 0)
     return 0;   // scrolling not enabled
 
+  CPoint point (pt);
+  CClientDC dc(this);
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
+  OnPrepareDC(&dc);
+
+  dc.DPtoLP(&point);
+
+  // if over miniwindow, don't keep going
+
+  if (Mouse_Wheel_MiniWindow (pDoc, point, zDelta < 0 ? -1 : 1))
+    return 1;
+
   if (iScrollLines == WHEEL_PAGESCROLL)
     {
     if (zDelta < 0)   // page down
@@ -6213,7 +6227,8 @@ void CMUSHView::Send_Mouse_Event_To_Plugin (DISPID iDispatchID,
                                             const string m_sPluginID, 
                                             const string sRoutineName, 
                                             const string HotspotId,
-                                            long Flags)
+                                            long Flags,
+                                            bool dont_modify_flags)
   {
 
   // only if they have a routine
@@ -6230,14 +6245,17 @@ ASSERT_VALID(pDoc);
 // 0x40 - double-click
 // 0x80 - mouse-over not first time
 
-if (GetKeyState (VK_SHIFT) < 0)     // shift+click
-   Flags |= 1;
+if (!dont_modify_flags)
+  {
+  if (GetKeyState (VK_SHIFT) < 0)     // shift+click
+     Flags |= 1;
 
-if (GetKeyState (VK_CONTROL) < 0)   // ctrl+click
-   Flags |= 2;
+  if (GetKeyState (VK_CONTROL) < 0)   // ctrl+click
+     Flags |= 2;
 
-if (GetKeyState (VK_MENU) < 0)      // alt+click
-   Flags |= 4;
+  if (GetKeyState (VK_MENU) < 0)      // alt+click
+     Flags |= 4;
+  }  // can modify flags
 
 
 if (m_sPluginID.empty ())
@@ -7202,3 +7220,33 @@ LRESULT CMUSHView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
   // cannot get here
 
 }
+
+
+bool CMUSHView::Mouse_Wheel_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long delta)
+  {
+  // see if we moused over one of our miniwindows
+
+  CMiniWindow * mw = NULL;
+  CHotspot * pHotspot = NULL;
+  string sHotspotId;
+  string sMiniWindowId;
+
+  ScreenToClient(&point);
+
+  mw = Mouse_Over_Miniwindow (pDoc, point, sHotspotId, pHotspot, sMiniWindowId);
+
+  if (!mw)
+    return false;
+
+  // now, are we now over a hotspot?
+  if (pHotspot)
+    Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_ScrollwheelCallback,
+                                mw->m_sCallbackPlugin, 
+                                pHotspot->m_sScrollwheelCallback, 
+                                sHotspotId,
+                                delta, true);
+
+  return true;    // we are over mini-window - don't scroll underlying text
+
+  } // end of CMUSHView::Mouse_Wheel_MiniWindow 
+

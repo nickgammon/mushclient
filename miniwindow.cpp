@@ -4070,3 +4070,38 @@ long CMiniWindow::GetImageAlpha(LPCTSTR ImageId,
 
 
   } // end of  CMiniWindow::GetImageAlpha
+
+
+long CMiniWindow::ScrollwheelHandler(CMUSHclientDoc * pDoc, LPCTSTR HotspotId, string sPluginID, LPCTSTR MoveCallback)
+  {
+
+  if (strlen (MoveCallback) > 0 && CheckLabel (MoveCallback, true))
+    return eInvalidObjectLabel;
+
+  // can't switch plugins here :)
+  if (!m_sCallbackPlugin.empty () && m_sCallbackPlugin != sPluginID)
+    return eHotspotPluginChanged;
+
+  HotspotMapIterator it = m_Hotspots.find (HotspotId);
+
+  if (it == m_Hotspots.end ())
+    return eHotspotNotInstalled;   // no such hotspot
+
+  CHotspot * pHotspot = it->second;
+
+  pHotspot->m_sScrollwheelCallback = MoveCallback;
+
+
+  // if not in a plugin, look in main world for hotspot callbacks, and remember the dispatch ID
+  if (sPluginID.empty ())
+    {
+
+    CString strErrorMessage;
+
+    pHotspot->m_dispid_ScrollwheelCallback     = pDoc->GetProcedureDispid (MoveCallback, "scroll wheel", "", strErrorMessage);
+    }
+
+  return eOK;
+
+
+  } // end of CMiniWindow::ScrollwheelHandler

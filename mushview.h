@@ -96,7 +96,8 @@ void Send_Mouse_Event_To_Plugin (DISPID iDispatchID,
                                  const string m_sPluginID, 
                                  const string sRoutineName, 
                                  const string HotspotId,
-                                 long Flags = 0);
+                                 long Flags = 0,
+                                 bool dont_modify_flags = false);
 
 CMiniWindow * Mouse_Over_Miniwindow (CMUSHclientDoc* pDoc, 
                                      CPoint point, 
@@ -108,6 +109,7 @@ bool Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point);
 bool Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long flags);
 bool Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long flags);
 bool Mouse_Tooltip_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, NMHDR * pNMHDR);
+bool Mouse_Wheel_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long delta);
 
 void Calculate_MiniWindow_Rectangles (CMUSHclientDoc* pDoc, const bool bUnderneath);
 

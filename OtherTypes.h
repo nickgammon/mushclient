@@ -1141,7 +1141,8 @@ class CHotspot
                 m_dispid_CancelMouseDown  (DISPID_UNKNOWN),
                 m_dispid_MouseUp          (DISPID_UNKNOWN),
                 m_dispid_MoveCallback     (DISPID_UNKNOWN),
-                m_dispid_ReleaseCallback  (DISPID_UNKNOWN)
+                m_dispid_ReleaseCallback  (DISPID_UNKNOWN),
+                m_dispid_ScrollwheelCallback (DISPID_UNKNOWN)
                 {}  // constructor
 
   CRect  m_rect;           // where it is
@@ -1162,6 +1163,8 @@ class CHotspot
   string m_sReleaseCallback; // callback when mouse released
   long   m_DragFlags;        // drag-and-drop flags
 
+  string m_sScrollwheelCallback; // mouse-wheel (scroll wheel) moved over hotspot
+
   // dispids for calling functions from NOT in a plugin (ignored in a plugin)
   DISPID m_dispid_MouseOver;       // function to call on mouseover
   DISPID m_dispid_CancelMouseOver; // function to call when mouse moves away or is clicked
@@ -1170,6 +1173,7 @@ class CHotspot
   DISPID m_dispid_MouseUp;         // mouse up following a mouse-down in this hotspot
   DISPID m_dispid_MoveCallback;    // callback when mouse moves
   DISPID m_dispid_ReleaseCallback; // callback when mouse released
+  DISPID m_dispid_ScrollwheelCallback; // callback when scroll wheel moved
 
   };   // end of class  CStringValuePair
 
@@ -1374,6 +1378,11 @@ class CMiniWindow
                    LPCTSTR MoveCallback, 
                    LPCTSTR ReleaseCallback, 
                    long Flags);
+
+  long ScrollwheelHandler(CMUSHclientDoc * pDoc, 
+                         LPCTSTR HotspotId, 
+                         string sPluginID,
+                         LPCTSTR MoveCallback);
 
   long HotspotTooltip(LPCTSTR HotspotId, 
                   LPCTSTR TooltipText);

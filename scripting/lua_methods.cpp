@@ -5917,6 +5917,20 @@ static int L_WindowRectOp (lua_State *L)
   } // end of L_WindowRectOp
 
 //----------------------------------------
+//  world.WindowScrollwheelHandler
+//----------------------------------------
+static int L_WindowScrollwheelHandler (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  lua_pushnumber (L, pDoc->WindowScrollwheelHandler (
+            my_checkstring (L, 1),    // Name
+            my_checkstring (L, 2),    // HotspotId
+            my_optstring (L, 3, "")   // MoveCallback
+            ));
+  return 1;  // number of result fields
+  } // end of L_WindowScrollwheelHandler
+
+//----------------------------------------
 //  world.WindowSetPixel
 //----------------------------------------
 static int L_WindowSetPixel (lua_State *L)
@@ -6450,6 +6464,7 @@ static const struct luaL_reg worldlib [] =
   {"WindowPolygon", L_WindowPolygon},
   {"WindowPosition", L_WindowPosition},
   {"WindowRectOp", L_WindowRectOp},
+  {"WindowScrollwheelHandler", L_WindowScrollwheelHandler},
   {"WindowSetPixel", L_WindowSetPixel},
   {"WindowShow", L_WindowShow},
   {"WindowText", L_WindowText},

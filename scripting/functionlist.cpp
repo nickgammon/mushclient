@@ -405,6 +405,7 @@ const char * sFunctions [] = {
     "WindowPolygon",
     "WindowPosition",
     "WindowRectOp",
+    "ScrollwheelHandler",
     "WindowSetPixel",
     "WindowShow",
     "WindowText",

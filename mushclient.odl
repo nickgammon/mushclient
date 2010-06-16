@@ -70,14 +70,14 @@ library MUSHclient
 			[id(44)] long SetCommand(BSTR Message);
 			[id(45)] BSTR GetNotes();
 			[id(46)] void SetNotes(BSTR Message);
-			[id(399), propget] long NormalColour(short WhichColour);
-			[id(399), propput] void NormalColour(short WhichColour, long nNewValue);
-			[id(400), propget] long BoldColour(short WhichColour);
-			[id(400), propput] void BoldColour(short WhichColour, long nNewValue);
-			[id(401), propget] long CustomColourText(short WhichColour);
-			[id(401), propput] void CustomColourText(short WhichColour, long nNewValue);
-			[id(402), propget] long CustomColourBackground(short WhichColour);
-			[id(402), propput] void CustomColourBackground(short WhichColour, long nNewValue);
+			[id(400), propget] long NormalColour(short WhichColour);
+			[id(400), propput] void NormalColour(short WhichColour, long nNewValue);
+			[id(401), propget] long BoldColour(short WhichColour);
+			[id(401), propput] void BoldColour(short WhichColour, long nNewValue);
+			[id(402), propget] long CustomColourText(short WhichColour);
+			[id(402), propput] void CustomColourText(short WhichColour, long nNewValue);
+			[id(403), propget] long CustomColourBackground(short WhichColour);
+			[id(403), propput] void CustomColourBackground(short WhichColour, long nNewValue);
 			[id(47)] void Redraw();
 			[id(48)] long ResetTimer(BSTR TimerName);
 			[id(49)] void SetOutputFont(BSTR FontName, short PointSize);
@@ -430,6 +430,7 @@ library MUSHclient
 			[id(396)] long WindowHotspotTooltip(BSTR Name, BSTR HotspotId, BSTR TooltipText);
 			[id(397)] long WindowDrawImageAlpha(BSTR Name, BSTR ImageId, long Left, long Top, long Right, long Bottom, double Opacity, long SrcLeft, long SrcTop);
 			[id(398)] long WindowGetImageAlpha(BSTR Name, BSTR ImageId, long Left, long Top, long Right, long Bottom, long SrcLeft, long SrcTop);
+			[id(399)] long WindowScrollwheelHandler(BSTR Name, BSTR HotspotId, BSTR MoveCallback);
 			//}}AFX_ODL_METHOD
 
 	};

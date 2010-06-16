@@ -14037,6 +14037,22 @@ long CMUSHclientDoc::WindowDragHandler(LPCTSTR Name, LPCTSTR HotspotId, LPCTSTR 
 }   // end of CMUSHclientDoc::WindowDragHandler
 
 
+long CMUSHclientDoc::WindowScrollwheelHandler(LPCTSTR Name, LPCTSTR HotspotId, LPCTSTR MoveCallback) 
+{
+  MiniWindowMapIterator it = m_MiniWindows.find (Name);
+    
+  if (it == m_MiniWindows.end ())
+    return eNoSuchWindow;
+
+  string sPluginID;
+
+  if (m_CurrentPlugin)                            
+    sPluginID = m_CurrentPlugin->m_strID;
+
+  return it->second->ScrollwheelHandler (this, HotspotId, sPluginID, MoveCallback);
+}   // end of CMUSHclientDoc::WindowScrollwheelHandler
+
+
 long CMUSHclientDoc::SetCursor(long Cursor) 
 {
   switch (Cursor)

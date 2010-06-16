@@ -550,6 +550,7 @@
 3 WindowPolygon=FNC_WindowPolygon
 3 WindowPosition=FNC_WindowPosition
 3 WindowRectOp=FNC_WindowRectOp
+3 WindowScrollwheelHandler=FNC_WindowScrollwheelHandler
 3 WindowSetPixel=FNC_WindowSetPixel
 3 WindowShow=FNC_WindowShow
 3 WindowText=FNC_WindowText
