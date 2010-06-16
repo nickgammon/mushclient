@@ -4479,7 +4479,7 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
   for (pos = firedTimersList.GetHeadPosition (); pos; )
     {
     // get next fired timer from list
-    strTimerName = m_strMapList.GetNext (pos);
+    strTimerName = firedTimersList.GetNext (pos);
 
     // check still exists, get pointer if so
     if (!TimerMap.Lookup (strTimerName, timer_item))
