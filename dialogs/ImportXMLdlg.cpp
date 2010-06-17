@@ -237,10 +237,11 @@ void CImportXMLdlg::ImportArchive (CArchive & ar)
       ::TMessageBox ("Not in XML format");
 
      } // end of try block
-  catch (CArchiveException* ) 
+  catch (CArchiveException* e) 
     {
     ::TMessageBox ("There was a problem parsing the XML. "
                      "See the error window for more details");
+    e->Delete ();
 
     }
   } // end of CImportXMLdlg::ImportArchive 
