@@ -224,9 +224,6 @@ void CImportXMLdlg::ImportArchive (CArchive & ar)
              PLURAL (iKeypad),
              PLURAL (iPrinting));
 
-      if (strCounts.IsEmpty ())
-        strCounts = Translate ("No items loaded.");
-
       ::UMessageBox (strCounts, MB_ICONINFORMATION);
 
       
