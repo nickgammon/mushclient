@@ -59,12 +59,12 @@ void CMultiLineTriggerDlg::DoDataExchange(CDataExchange* pDX)
       if (*p == '\n')
         iCount++;
 
-    if (iCount < 1)
+    if (iCount <= 1)
       {
       ::TMessageBox("Multi-line triggers must match at least 2 lines.", MB_ICONSTOP);
       DDX_Text(pDX, IDC_TRIGGER_TEXT, m_strTriggerText);
       pDX->Fail();
-      }     // end of text being blank
+      }     // end of not having at least 2 lines
 
     if (iCount > MAX_RECENT_LINES)
       {
