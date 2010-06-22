@@ -315,8 +315,6 @@ protected:
 };
 
 
-
-#endif // __PLUGINWIZARD_H__
 /////////////////////////////////////////////////////////////////////////////
 // CPluginWizardPage8 dialog
 
@@ -354,3 +352,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 };
+
+
+#endif // __PLUGINWIZARD_H__
