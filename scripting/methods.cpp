@@ -4242,6 +4242,7 @@ tInfoTypeMapping InfoTypes [] =
 { 291, "Actual text rectangle - top" },
 { 292, "Actual text rectangle - right" },
 { 293, "Actual text rectangle - bottom" },
+{ 294, "State of keyboard modifiers" },
    
 
 // (dates - calculated at runtime)
@@ -4909,6 +4910,52 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
         }
       }
       break;
+
+    case 294: 
+      {
+      long result = 0;
+      if (GetKeyState (VK_SHIFT)    & 0x8000)
+        result |= 0x01;
+      if (GetKeyState (VK_CONTROL)  & 0x8000)
+        result |= 0x02;
+      if (GetKeyState (VK_MENU)     & 0x8000)
+        result |= 0x04;
+      if (GetKeyState (VK_LSHIFT)   & 0x8000)
+        result |= 0x08;
+      if (GetKeyState (VK_RSHIFT)   & 0x8000)
+        result |= 0x10;
+      if (GetKeyState (VK_LCONTROL) & 0x8000)
+        result |= 0x20;
+      if (GetKeyState (VK_RCONTROL) & 0x8000)
+        result |= 0x40;
+      if (GetKeyState (VK_LMENU)    & 0x8000)
+        result |= 0x80;
+      if (GetKeyState (VK_RMENU)    & 0x8000)
+        result |= 0x100;
+      if (GetKeyState (VK_CAPITAL)  & 0x8000)
+        result |= 0x200;
+       if (GetKeyState (VK_NUMLOCK) & 0x8000)
+        result |= 0x400;
+      if (GetKeyState (VK_SCROLL)   & 0x8000)
+        result |= 0x800;
+      // 0x1000 unused for symmetry
+      if (GetKeyState (VK_CAPITAL)  & 0x0001)
+        result |= 0x2000;
+       if (GetKeyState (VK_NUMLOCK) & 0x0001)
+        result |= 0x4000;
+      if (GetKeyState (VK_SCROLL)   & 0x0001)
+        result |= 0x8000;
+
+      if (GetKeyState (VK_LBUTTON)  & 0x8000)
+        result |= 0x10000;
+       if (GetKeyState (VK_RBUTTON) & 0x8000)
+        result |= 0x20000;
+      if (GetKeyState (VK_MBUTTON)   & 0x8000)
+        result |= 0x40000;
+
+      SetUpVariantLong (vaResult, result); 
+      }
+      break; // state of virtual keys    
 
     case  301: 
       if (m_tConnectTime.GetTime ())     // only if non-zero, otherwise return empty

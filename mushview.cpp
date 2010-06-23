@@ -4890,13 +4890,6 @@ CRect rect;
 unsigned int iScrollLines;
 
 
-    /*
-     * Don't handle zoom and datazoom.
-     */
-    
-  if (nFlags & MK_CONTROL || nFlags & MK_SHIFT) 
-    return CView::OnMouseWheel(nFlags, zDelta, pt);
-
   SystemParametersInfo (SPI_GETWHEELSCROLLLINES, 0, &iScrollLines, 0);
 
   if (iScrollLines == 0)
@@ -4913,8 +4906,15 @@ unsigned int iScrollLines;
 
   // if over miniwindow, don't keep going
 
-  if (Mouse_Wheel_MiniWindow (pDoc, point, zDelta < 0 ? -1 : 1))
+  if (Mouse_Wheel_MiniWindow (pDoc, point, zDelta < 0 ? 0x100 : 0))
     return 1;
+
+    /*
+     * Don't handle zoom and datazoom.
+     */
+    
+  if (nFlags & MK_CONTROL || nFlags & MK_SHIFT) 
+    return CView::OnMouseWheel(nFlags, zDelta, pt);
 
   if (iScrollLines == WHEEL_PAGESCROLL)
     {
@@ -6238,12 +6238,13 @@ void CMUSHView::Send_Mouse_Event_To_Plugin (DISPID iDispatchID,
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
-// also Flags might be:
+// also Flags might be (from caller):
 
-// 0x10 - LH mouse
-// 0x20 - RH mouse
-// 0x40 - double-click
-// 0x80 - mouse-over not first time
+// 0x10  - LH mouse
+// 0x20  - RH mouse
+// 0x40  - double-click
+// 0x80  - mouse-over not first time 
+// 0x100 - scroll wheel backwards
 
 if (!dont_modify_flags)
   {
@@ -7244,7 +7245,7 @@ bool CMUSHView::Mouse_Wheel_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long
                                 mw->m_sCallbackPlugin, 
                                 pHotspot->m_sScrollwheelCallback, 
                                 sHotspotId,
-                                delta, true);
+                                delta);
 
   return true;    // we are over mini-window - don't scroll underlying text
 
