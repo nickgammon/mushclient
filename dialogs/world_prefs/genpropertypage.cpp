@@ -954,10 +954,11 @@ CString strContents;
     {
     iCount = m_doc->Load_World_XML (ar, m_iMask | XML_NO_PLUGINS); 
     }
-  catch (CArchiveException* ) 
+  catch (CArchiveException* e) 
     {
     ::TMessageBox ("There was a problem parsing the XML on the clipboard. "
                      "See the error window for more details");
+    e->Delete ();
     }
 
   if (iCount == 0)
