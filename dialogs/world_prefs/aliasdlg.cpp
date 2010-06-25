@@ -299,7 +299,6 @@ void CAliasDlg::DoDataExchange(CDataExchange* pDX)
         ::TMessageBox("The alias contents cannot be blank unless you specify a script subroutine.");
         DDX_Text(pDX, IDC_ALIAS_CONTENTS, m_contents);
         pDX->Fail();
-        return;
         }     // end of contents being blank
 
     
@@ -314,7 +313,6 @@ void CAliasDlg::DoDataExchange(CDataExchange* pDX)
                         ", numbers or the underscore character.");
         DDX_Text(pDX, IDC_SCRIPT_NAME, m_strProcedure);
         pDX->Fail();
-        return;
         }
 
       }   // end of having non-blank procedure

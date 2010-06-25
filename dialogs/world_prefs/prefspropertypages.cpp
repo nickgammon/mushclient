@@ -5428,61 +5428,6 @@ void CPrefsP14::DoDataExchange(CDataExchange* pDX)
 
       }   // end of changing the amount of memory
 
-
-    CDC dc;
-
-    dc.CreateCompatibleDC (NULL);
-
-    int lfHeight = -MulDiv(m_font_height, dc.GetDeviceCaps(LOGPIXELSY), 72);
-    CFont font;
-
-     font.CreateFont(lfHeight, // int nHeight, 
-				    0, // int nWidth, 
-				    0, // int nEscapement, 
-				    0, // int nOrientation, 
-				    m_font_weight, // int nWeight, 
-				    0, // BYTE bItalic, 
-				    0, // BYTE bUnderline, 
-            0, // BYTE cStrikeOut, 
-            m_font_charset, // BYTE nCharSet, 
-            0, // BYTE nOutPrecision, 
-            0, // BYTE nClipPrecision, 
-            0, // BYTE nQuality, 
-            MUSHCLIENT_FONT_FAMILY, // BYTE nPitchAndFamily,   // was FF_DONTCARE
-            m_font_name);// LPCTSTR lpszFacename );
-
-      // Get the metrics of the font.
-
-      dc.SelectObject(font);
-  
-      TEXTMETRIC tm;
-      dc.GetTextMetrics(&tm);
-
-    // don't let them use more than 32767 pixels in the output window if Windows 95
-
-      /*
-    if (App.platform == VER_PLATFORM_WIN32_WINDOWS && tm.tmHeight)
-      {
-      long nMaxlines = (32767 - m_doc->m_iPixelOffset) / tm.tmHeight;
-
-      if (m_nLines > nMaxlines)
-        {
-
-        CString strMsg;
-
-        strMsg = TFormat ("You are allocating %ld lines for your output buffer, but may "
-          "only allocate %ld lines due to a limitation under Windows 95", m_nLines, nMaxlines); 
-
-        ::UMessageBox (strMsg, MB_ICONSTOP);
-          pDX->Fail ();
-
-        } // end of them allocating too many lines
-
-
-      } // end of it being Windows 95
-
-  */
-
      }  // end of saving and validating
 }
 
@@ -7511,7 +7456,6 @@ void CPrefsP19::DoDataExchange(CDataExchange* pDX)
             ::TMessageBox("Your \"auto say\" string cannot be blank");
             DDX_Text(pDX, IDC_AUTO_SAY_STRING, m_strAutoSayString);
             pDX->Fail();
-            return;
             }     // end of auto say string being blank
        }    // end of auto say enabled
 

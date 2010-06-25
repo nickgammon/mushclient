@@ -53,7 +53,6 @@ void CEditVariable::DoDataExchange(CDataExchange* pDX)
                       ", numbers or the underscore character.");
       DDX_Text(pDX, IDC_VARIABLE_NAME, m_strName);
       pDX->Fail();
-      return;
       }
 
 
@@ -65,7 +64,6 @@ void CEditVariable::DoDataExchange(CDataExchange* pDX)
         ::TMessageBox("This variable name is already in the list of variables.");
         DDX_Text(pDX, IDC_VARIABLE_NAME, m_strName);
         pDX->Fail();
-        return;
         }
 
    } // end of saving and validating
