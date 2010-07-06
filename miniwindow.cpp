@@ -3630,6 +3630,20 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
 
 static CString strMXP_menu_item [MXP_MENU_COUNT];
 
+CMenu* GrabAMenu (void)
+  {
+  CMenu menu;
+	VERIFY(menu.LoadMenu(IDR_MXP_MENU));
+
+	CMenu* pPopup = menu.GetSubMenu(0);
+  if (pPopup == NULL)
+    return NULL;
+  menu.Detach ();    // CMenu is temporary on stack
+  pPopup->DeleteMenu (0, MF_BYPOSITION);  // get rid of dummy item
+
+  return pPopup;
+  }   // end of GrabAMenu
+
 CString CMiniWindow::Menu(long Left, long Top, LPCTSTR Items, CMUSHView* pView)
   {
 CString strResult;
@@ -3704,15 +3718,15 @@ CString strResult;
 
 CPoint menupoint (Left, Top);
 
-  CMenu menu;
-	VERIFY(menu.LoadMenu(IDR_MXP_MENU));
 
-	CMenu* pPopup = menu.GetSubMenu(0);
-	ASSERT(pPopup != NULL);
+  list<CMenu*> vPopup;    // nested menus
+
+	CMenu* pPopup = GrabAMenu ();   // top level
+  if (pPopup == NULL)
+    return strResult;     // doesn't exist, strange
+  vPopup.push_back (pPopup);
+
 	CWnd* pWndPopupOwner = (CWnd *) pView;
-
-  pPopup->DeleteMenu (0, MF_BYPOSITION);  // get rid of dummy item
-
 	while (pWndPopupOwner->GetStyle() & WS_CHILD)
 		pWndPopupOwner = pWndPopupOwner->GetParent();
 
@@ -3725,13 +3739,27 @@ CPoint menupoint (Left, Top);
     CString strItem = i->c_str ();
 
     if (*i == "-" || *i == "")
-      pPopup->AppendMenu (MF_SEPARATOR, 0, "");
+      vPopup.back ()->AppendMenu (MF_SEPARATOR, 0, "");
+    else if (strItem.Left (1) == ">")    // nested menu
+      {
+    	CMenu* pNestedMenu = GrabAMenu ();   // nested menu
+      if (pNestedMenu)
+        {
+        vPopup.back ()->AppendMenu (MF_POPUP | MF_ENABLED, (UINT ) pNestedMenu->m_hMenu, strItem.Mid (1));
+        vPopup.push_back (pNestedMenu);  // add to menu stack
+        }
+      }
+    else if (strItem.Left (1) == "<")    // un-nest menu
+      {
+      if (vPopup.size () > 1)
+        vPopup.pop_back ();  // drop last item
+      }
     else if (strItem.Left (1) == "^")
-      pPopup->AppendMenu (MF_STRING | MF_GRAYED, 0, strItem.Mid (1));
+      vPopup.back ()->AppendMenu (MF_STRING | MF_GRAYED, 0, strItem.Mid (1));
     else
       {
       strMXP_menu_item [j] = strItem;
-      pPopup->AppendMenu (MF_STRING | MF_ENABLED, MXP_FIRST_MENU + j, strItem);
+      vPopup.back ()->AppendMenu (MF_STRING | MF_ENABLED, MXP_FIRST_MENU + j, strItem);
       j++;
       if (j >= MXP_MENU_COUNT)
         break;
@@ -3741,7 +3769,7 @@ CPoint menupoint (Left, Top);
   // without this line the auto-enable always set "no items" to active
   Frame.m_bAutoMenuEnable  = FALSE;
 
-	int iResult = pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, 
+	int iResult = vPopup.front ()->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, 
                           menupoint.x, 
                           menupoint.y,
 			                    pWndPopupOwner);
@@ -3751,6 +3779,8 @@ CPoint menupoint (Left, Top);
 
   if (iResult > 0)
     strResult = strMXP_menu_item [iResult - MXP_FIRST_MENU];
+
+  vPopup.front ()->DestroyMenu ();   // clean up
 
   return  strResult;  // will be empty for errors or cancelled
 
