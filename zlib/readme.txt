@@ -12,7 +12,11 @@ crc32.c
 crc32.h
 deflate.c
 deflate.h
-gzio.c
+gzclose.c
+gzguts.h
+gzlib.c
+gzread.c
+gzwrite.c
 inffast.c
 inffast.h
 inffixed.h
