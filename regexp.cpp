@@ -29,13 +29,13 @@ pcre_extra * extra;
   extra =  pcre_study(program, 0, &error);        
 
   if (error)
+    {
+    pcre_free (program);
     ThrowErrorException("Regexp study failed: %s", error);
+    }
 
   // we need to allocate memory for the substring offsets
   re = new t_regexp;
-
-  if (!re)
-    ThrowErrorException("Could not allocate memory for regular expression");
 
   // remember program and extra stuff
   re->m_program = program;
@@ -81,7 +81,7 @@ LARGE_INTEGER start,
   // free program as an indicator that we can't keep trying to do this one
   if (count <= 0)
     {
-    free (prog->m_program);
+    pcre_free (prog->m_program);
     prog->m_program = NULL;
     prog->m_iExecutionError = count; // remember reason
     }
@@ -118,7 +118,7 @@ pcre * program;
 
   if (program)
     {
-    free (program);
+    pcre_free (program);
     return true;     // good
     }
 

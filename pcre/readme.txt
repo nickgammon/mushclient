@@ -1,10 +1,8 @@
 PCRE built as follows:
 
-1. Download: http://sourceforge.net/projects/pcre/files/pcre/8.01/pcre-8.01.tar.bz2/download
+1. Download: http://sourceforge.net/projects/pcre/files/pcre/8.10/pcre-8.10.zip/download
 
-2. Unzip and untar the file (eg.):
-
-tar xjf pcre-8.01.tar.bz2
+2. Unzip the file pcre-8.10.zip
 
 
 3. Copy the following files to the mushclient source "pcre" directory:

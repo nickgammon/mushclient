@@ -39,13 +39,10 @@ class t_regexp
                 };   // constructor
   ~t_regexp () { 
     if (m_program) 
-      free (m_program); 
+      pcre_free (m_program); 
     if (m_extra) 
-      free (m_extra); 
+      pcre_free (m_extra); 
     };  // destructor
-
-//  const char *startp [MAX_WILDCARDS];
-//  const char *endp [MAX_WILDCARDS];
 
   // pairs of offsets from match
   vector<int> m_vOffsets;
@@ -86,7 +83,6 @@ class t_regexp
         iNumber = PCRE_ERROR_NOSUBSTRING;
       else
         iNumber = njg_get_first_set (m_program, sName.c_str (), &m_vOffsets [0]);
- //       iNumber = pcre_get_stringnumber (m_program, sName.c_str ());
       }
     return GetWildcard (iNumber);
     }
