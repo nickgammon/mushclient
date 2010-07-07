@@ -4907,8 +4907,12 @@ BOOL CMUSHclientDoc::DoSave(LPCTSTR lpszPathName, BOOL bReplace)
       }
     } // end of executing save script
 
-  return CDocument::DoSave (newName, bReplace);
+  BOOL bSuccess = CDocument::DoSave (newName, bReplace);
 
+  if (bSuccess)
+    m_bVariablesChanged = false;
+
+  return bSuccess;
   }
 
 
