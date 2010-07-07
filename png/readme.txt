@@ -2,11 +2,12 @@ PNG built as follows:
 
 1. Download recent version from http://sourceforge.net/projects/libpng/files/
 
-    In this case: libpng-1.4.0.tar.gz
+    In this case: lpng143.7z
 
-2. Unzip and untar the file, eg.
+2. Uncompress the archive with 7-Zip, obtainable from:
 
-   tar xzf libpng-1.4.0.tar.gz
+	http://www.7-zip.org/
+
 
 3. Copy the following files to the mushclient source "png" directory:
 

@@ -1,6 +1,6 @@
 Sqlite3 built as follows:
 
-1. Download recent version from http://www.sqlite.org/sqlite-amalgamation-3_6_22.zip
+1. Download recent version from http://www.sqlite.org/sqlite-amalgamation-3_6_23_1.zip
 
 2. Unzip and untar the file
 
@@ -21,6 +21,8 @@ sqlite3ext.h
 #  pragma warning(disable: 4761)
 #  pragma warning(disable: 4047)
 #  pragma warning(disable: 4022)
+#  pragma warning(disable: 4305)
+
 #define SQLITE_SOUNDEX 1
 #define SQLITE_ENABLE_FTS3 1
 #define SQLITE_ENABLE_FTS3_PARENTHESIS 1
