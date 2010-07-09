@@ -42,10 +42,15 @@ pcre_extra * extra;
   re->m_extra = extra;
   re->m_iExecutionError = 0; // no error now
 
+  // inspired by a suggestion by Twisol (to remove a hard-coded limit on the number of wildcards)
+  int capturecount = 0;
+  // how many captures did we get?
+  pcre_fullinfo(program, NULL, PCRE_INFO_CAPTURECOUNT, &capturecount);
+  // allocate memory for them
+  re->m_vOffsets.resize ((capturecount + 1) * 3);  // add 1 for the whole expression
+
   return re;
   }
-
-#define MAX_PCRE_WILDCARDS 1000
 
 int regexec(register t_regexp *prog, 
             register const char *string,
@@ -53,7 +58,7 @@ int regexec(register t_regexp *prog,
   {
 int options = App.m_bRegexpMatchEmpty ? 0 : PCRE_NOTEMPTY;    // don't match on an empty string
 int count;
-static int offsets [MAX_PCRE_WILDCARDS * 3];  // hopefully we won't recurse and crash ;)
+
 
 LARGE_INTEGER start, 
               finish;
@@ -67,7 +72,7 @@ LARGE_INTEGER start,
 
   pcre_callout = NULL;
   count = pcre_exec(prog->m_program, prog->m_extra, string, strlen (string),
-                    start_offset, options, offsets, NUMITEMS (offsets));
+                    start_offset, options, &prog->m_vOffsets [0], prog->m_vOffsets.size ());
 
   if (App.m_iCounterFrequency)
     {
@@ -83,6 +88,8 @@ LARGE_INTEGER start,
     {
     pcre_free (prog->m_program);
     prog->m_program = NULL;
+    pcre_free (prog->m_extra);
+    prog->m_extra = NULL;
     prog->m_iExecutionError = count; // remember reason
     }
 
@@ -99,9 +106,6 @@ LARGE_INTEGER start,
 
   prog->m_sTarget = string;  // for extracting wildcards
   prog->m_iCount = count;    // ditto
-  prog->m_vOffsets.clear ();
-  // only need first 2/3 of offsets
-  copy (offsets, &offsets [count * 2], back_inserter (prog->m_vOffsets));
 
   return true; // match
   }
