@@ -470,13 +470,9 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
 
     for (i = 0; i <= ncapt; i++) 
       {
-      int j = i * 2;
-        lua_pushlstring(L, regexp->m_sTarget.c_str () + regexp->m_vOffsets[j], regexp->m_vOffsets[j + 1] - regexp->m_vOffsets[j]);
+      lua_pushstring(L, regexp->GetWildcard (i).c_str ());
       lua_rawseti (L, -2, i);
     }
-    // now add item 0 - the whole matching line
-//    lua_pushstring (trigger_item->wildcards [0].c_str ())
-//    lua_rawseti(L, -2, 0);
 
     /* now do named subpatterns  */
     pcre_fullinfo(regexp->m_program, regexp->m_extra, PCRE_INFO_NAMECOUNT, &namecount);
@@ -512,7 +508,7 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
 
         lua_pushstring (L, (LPCTSTR) name);
         if (n >= 0 && n <= ncapt) 
-          lua_pushlstring(L, regexp->m_sTarget.c_str () + regexp->m_vOffsets[j], regexp->m_vOffsets[j + 1] - regexp->m_vOffsets[j]);
+          lua_pushstring(L, regexp->GetWildcard (n).c_str ());
         else
           lua_pushnil (L);  /* n out of range */
         lua_settable (L, -3);
