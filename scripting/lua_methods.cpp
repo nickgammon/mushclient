@@ -291,6 +291,8 @@ LUALIB_API const char *get_option_value (lua_State *L, int narg) {
   // if boolean convert to 0 or 1
   if (lua_isboolean (L, narg))
     return (lua_toboolean (L, narg) ? "1" : "0");
+  else if (lua_isnil (L, narg))
+    return "0";  // nil is considered false
 
   const char *s = lua_tolstring(L, narg, NULL);
   if (!s) 
@@ -4904,6 +4906,8 @@ static int L_SetOption (lua_State *L)
     // if boolean convert to 0 or 1
   if (lua_isboolean (L, 2))
     option = lua_toboolean (L, 2) ? 1 : 0;
+  else if (lua_isnil (L, 2))
+    option = 0;
   else
     option = my_checknumber (L, 2);
 
