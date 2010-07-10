@@ -4770,7 +4770,7 @@ static int L_SetChatOption (lua_State *L)
   lua_pushnumber (L, pDoc->SetChatOption (
       my_checknumber (L, 1),    // Chat ID
       my_checkstring (L, 2),    // OptionName
-      my_checkstring (L, 3)     // Value
+      get_option_value (L, 3)   // Value
       ));
   return 1;  // number of result fields
   } // end of L_SetChatOption
@@ -4899,9 +4899,17 @@ static int L_SetNotes (lua_State *L)
 static int L_SetOption (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
+  lua_Number option;
+
+    // if boolean convert to 0 or 1
+  if (lua_isboolean (L, 2))
+    option = lua_toboolean (L, 2) ? 1 : 0;
+  else
+    option = my_checknumber (L, 2);
+
   lua_pushnumber (L, pDoc->SetOption (
       my_checkstring (L, 1),    // OptionName
-      my_checknumber (L, 2)     // Value
+      option                    // Value
       ));
   return 1;  // number of result fields
   } // end of L_SetOption

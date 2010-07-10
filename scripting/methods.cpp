@@ -8436,6 +8436,16 @@ bool bChanged;
     {
     // this is a numeric option
     
+    // for boolean options, accept "y" or "n"
+    if (ChatOptionsTable [iItem].iMinimum == 0 &&
+      ChatOptionsTable [iItem].iMaximum == 0)
+      {
+      if (strValue == "Y" || strValue == "y")
+        Value = "1";
+      else if (strValue == "N" || strValue == "n")
+        Value = "0";
+      }
+
     if (!IsNumber (Value, true))
        return eOptionOutOfRange;
 
