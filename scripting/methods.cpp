@@ -6283,6 +6283,16 @@ bool bChanged;
     {
     // this is a numeric option
     
+    // for boolean options, accept "y" or "n"
+    if (TriggerOptionsTable [iItem].iMinimum == 0 &&
+      TriggerOptionsTable [iItem].iMaximum == 0)
+      {
+      if (strValue == "Y" || strValue == "y")
+        Value = "1";
+      else if (strValue == "N" || strValue == "n")
+        Value = "0";
+      }
+
     if (!IsNumber (Value, true))
        return eOptionOutOfRange;
 
@@ -6550,7 +6560,17 @@ bool bChanged;
   if (iResult == eOK)
     {
     // this is a numeric option
-    
+
+    // for boolean options, accept "y" or "n"
+    if (AliasOptionsTable [iItem].iMinimum == 0 &&
+      AliasOptionsTable [iItem].iMaximum == 0)
+      {
+      if (strValue == "Y" || strValue == "y")
+        Value = "1";
+      else if (strValue == "N" || strValue == "n")
+        Value = "0";
+      }
+
     if (!IsNumber (Value, true))
        return eOptionOutOfRange;
 
@@ -6849,6 +6869,16 @@ bool bChanged;
     {
     // this is a numeric option
     
+    // for boolean options, accept "y" or "n"
+    if (TimerOptionsTable [iItem].iMinimum == 0 &&
+      TimerOptionsTable [iItem].iMaximum == 0)
+      {
+      if (strValue == "Y" || strValue == "y")
+        Value = "1";
+      else if (strValue == "N" || strValue == "n")
+        Value = "0";
+      }
+
     long iValue = 0;
     double fValue = 0;
 

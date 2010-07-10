@@ -1349,9 +1349,7 @@ POSITION pos;
       if (!trigger_item->strProcedure.IsEmpty ())        // if we have a script routine
          triggerList.AddTail (trigger_item);
 
-      if (!trigger_item->bKeepEvaluating 
-// -- removed in version 3.73         ||  trigger_item->bMultiLine
-         ) // exit loop if no more evaluation wanted
+      if (!trigger_item->bKeepEvaluating) // exit loop if no more evaluation wanted
         break;
 
       }   // end of successful evaluation

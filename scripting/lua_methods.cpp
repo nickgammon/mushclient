@@ -286,6 +286,18 @@ LUALIB_API lua_Number my_optnumber (lua_State *L, int narg, lua_Number def) {
   return luaL_opt(L, my_checknumber, narg, def);
 }
 
+LUALIB_API const char *get_option_value (lua_State *L, int narg) {
+
+  // if boolean convert to 0 or 1
+  if (lua_isboolean (L, narg))
+    return (lua_toboolean (L, narg) ? "1" : "0");
+
+  const char *s = lua_tolstring(L, narg, NULL);
+  if (!s) 
+    my_tag_error(L, narg, LUA_TSTRING);
+  return s;
+}
+
 #define my_checkstring(L,n)	(my_checklstring(L, (n), NULL))
 #define my_optstring(L,n,d)	(my_optlstring(L, (n), (d), NULL))
 
@@ -4705,7 +4717,7 @@ static int L_SetAliasOption (lua_State *L)
   lua_pushnumber (L, pDoc->SetAliasOption (
       my_checkstring (L, 1),    // AliasName
       my_checkstring (L, 2),    // OptionName
-      my_checkstring (L, 3)     // Value
+      get_option_value (L, 3)   // Value
       ));
   return 1;  // number of result fields
   } // end of L_SetAliasOption
@@ -4927,9 +4939,9 @@ static int L_SetTimerOption (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SetTimerOption (
-      my_checkstring (L, 1),    // AliasName
+      my_checkstring (L, 1),    // TimerName
       my_checkstring (L, 2),    // OptionName
-      my_checkstring (L, 3)     // Value
+      get_option_value (L, 3)   // Value
       ));
   return 1;  // number of result fields
   } // end of L_SetTimerOption
@@ -4942,7 +4954,7 @@ static int L_SetToolBarPosition (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SetToolBarPosition (
       my_checknumber (L, 1),    // Which
-      optboolean (L, 2, 0),    // Float
+      optboolean (L, 2, 0),     // Float
       my_checknumber (L, 3),    // Side
       my_checknumber (L, 4),    // Top
       my_checknumber (L, 5)     // Left
@@ -4957,9 +4969,9 @@ static int L_SetTriggerOption (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SetTriggerOption (
-      my_checkstring (L, 1),    // AliasName
+      my_checkstring (L, 1),    // TriggerName
       my_checkstring (L, 2),    // OptionName
-      my_checkstring (L, 3)     // Value
+      get_option_value (L, 3)   // Value
       ));
   return 1;  // number of result fields
   } // end of L_SetTriggerOption
