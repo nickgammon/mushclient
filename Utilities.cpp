@@ -1532,7 +1532,7 @@ void MakeTableItem (lua_State *L, const char * name, const CString & str)
 void MakeTableItem (lua_State *L, const char * name, const string & str)
   {
   lua_pushstring (L, name);
-  lua_pushstring (L, str.c_str ());
+  lua_pushlstring (L, str.c_str (), str.size ());
   lua_rawset(L, -3);
   }
 

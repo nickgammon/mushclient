@@ -470,7 +470,8 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
 
     for (i = 0; i <= ncapt; i++) 
       {
-      lua_pushstring(L, regexp->GetWildcard (i).c_str ());
+      string wildcard (regexp->GetWildcard (i));
+      lua_pushlstring (L, wildcard.c_str (), wildcard.size ());
       lua_rawseti (L, -2, i);
     }
 
@@ -508,7 +509,10 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
 
         lua_pushstring (L, (LPCTSTR) name);
         if (n >= 0 && n <= ncapt) 
-          lua_pushstring(L, regexp->GetWildcard (n).c_str ());
+          {
+          string wildcard (regexp->GetWildcard (n));
+          lua_pushlstring (L, wildcard.c_str (), wildcard.size ());
+          }
         else
           lua_pushnil (L);  /* n out of range */
         lua_settable (L, -3);
