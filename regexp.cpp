@@ -102,7 +102,7 @@ int count;
 
   prog->m_sTarget = string;  // for extracting wildcards
   prog->m_iCount = count;    // ditto
-  prog->m_vOffsets.resize (0); // clear for copy, but leave allocated memory
+  prog->m_vOffsets.clear (); 
   copy (offsets.begin (), offsets.end (), back_inserter (prog->m_vOffsets));
   return true; // match
   }
