@@ -1671,7 +1671,8 @@ public:
                             const bool bExpandWildcards,
                             const bool bFixRegexps, // convert \ to \\ for instance
                             const bool bIsRegexp,   // true = regexp trigger
-                            const bool bThrowExceptions);   // throw exception on error
+                            const bool bThrowExceptions,   // throw exception on error
+                            const char * sName);           // the name of the trigger/timer/alias (for %N)
 
 #ifdef PANE
 
