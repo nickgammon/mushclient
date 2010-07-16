@@ -81,6 +81,8 @@ int count;
     prog->iTimeTaken += finish.QuadPart - start.QuadPart;
     }
 
+  prog->m_iMatchAttempts++;  // how many times did we try to match?
+
   if (count == PCRE_ERROR_NOMATCH)
     return false;  // no match  - don't save matching string etc.
 

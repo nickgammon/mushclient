@@ -35,6 +35,7 @@ class t_regexp
       m_extra = NULL;
       iTimeTaken = 0;
       m_iCount = 0;
+      m_iMatchAttempts = 0;
       m_iExecutionError = 0;
                 };   // constructor
   ~t_regexp () { 
@@ -46,8 +47,9 @@ class t_regexp
 
   // pairs of offsets from match
   vector<int> m_vOffsets;
-  // count of matches
+  // count of matching wildcards
   int m_iCount;
+  long m_iMatchAttempts;
   // the string we match on (to extract wildcards from)
   string m_sTarget;
   // the program itself

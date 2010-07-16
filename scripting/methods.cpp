@@ -2280,6 +2280,11 @@ CAlias * alias_item;
         }
       break;
 
+    case  31:
+      if (alias_item->regexp)
+        SetUpVariantLong   (vaResult, alias_item->regexp->m_iMatchAttempts);
+      break;
+
     case 101: SetUpVariantString (vaResult, alias_item->wildcards [1].c_str ()); break;
     case 102: SetUpVariantString (vaResult, alias_item->wildcards [2].c_str ()); break;
     case 103: SetUpVariantString (vaResult, alias_item->wildcards [3].c_str ()); break;
@@ -2393,6 +2398,11 @@ CTrigger * trigger_item;
 
         SetUpVariantDouble (vaResult, elapsed_time);
         }
+      break;
+
+    case  38:
+      if (trigger_item->regexp)
+        SetUpVariantLong   (vaResult, trigger_item->regexp->m_iMatchAttempts);
       break;
 
 #ifdef PANE
