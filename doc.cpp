@@ -8120,13 +8120,13 @@ void CMUSHclientDoc::EditFileWithEditor (CString strName)
   CString strArgument = m_strScriptEditorArgument;
 
   if (strArgument.IsEmpty ())
-    strArgument = "%file";          // default
+    strArgument = "\"%file\"";          // default
 
   // replace %file
   strArgument.Replace ("%file", strName);
 
   HINSTANCE hInst = ShellExecute (Frame, _T("open"), m_strScriptEditor, 
-            CFormat ("\"%s\"", (LPCTSTR) strArgument),   // quote argument
+            strArgument,   // argument
             NULL, SW_SHOWNORMAL);
 
   if ((long) hInst <= 32)
