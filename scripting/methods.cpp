@@ -2266,6 +2266,20 @@ CAlias * alias_item;
       break;
     case   29: SetUpVariantBool   (vaResult, alias_item->bOneShot); break;
 
+    case  30:
+      if (alias_item->regexp && App.m_iCounterFrequency)
+        {
+        LONGLONG iTimeTaken = 0;
+        double   elapsed_time;
+
+
+        elapsed_time = ((double) alias_item->regexp->iTimeTaken) / 
+                        ((double) App.m_iCounterFrequency);
+
+        SetUpVariantDouble (vaResult, elapsed_time);
+        }
+      break;
+
     case 101: SetUpVariantString (vaResult, alias_item->wildcards [1].c_str ()); break;
     case 102: SetUpVariantString (vaResult, alias_item->wildcards [2].c_str ()); break;
     case 103: SetUpVariantString (vaResult, alias_item->wildcards [3].c_str ()); break;
@@ -2367,8 +2381,22 @@ CTrigger * trigger_item;
       break;
     case   36: SetUpVariantBool   (vaResult, trigger_item->bOneShot); break;
 
+    case  37:
+      if (trigger_item->regexp && App.m_iCounterFrequency)
+        {
+        LONGLONG iTimeTaken = 0;
+        double   elapsed_time;
+
+
+        elapsed_time = ((double) trigger_item->regexp->iTimeTaken) / 
+                        ((double) App.m_iCounterFrequency);
+
+        SetUpVariantDouble (vaResult, elapsed_time);
+        }
+      break;
+
 #ifdef PANE
-    case  37: SetUpVariantString (vaResult, trigger_item->strPane); break;
+    case  38: SetUpVariantString (vaResult, trigger_item->strPane); break;
 #endif // PANE
 
     case 101: SetUpVariantString (vaResult, trigger_item->wildcards [1].c_str ()); break;
