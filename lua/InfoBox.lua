@@ -1,13 +1,15 @@
---[[--
-InfoBox.lua version 1.1
+--[=[--
+InfoBox.lua version 1.2
 Encapsulates and enhances Infobar functionality into miniwindows; gauges and status text.
-01-DEc-08
+14-DEc-08
 
 by: WillFa   (Spellbound on 3k.org:3000)
       portions borrowed or adapted from samples by Nick Gammon.
 
 License: Free for public use in your MushClient plugins and scripts as long as credit for this module is
           attributed to WillFa, and Nick Gammon.
+
+Assumes that the Sylfaen font is installed on the system. Change line 67 if it is not.
 
 Requires: MushClient v. 4.37+ for complete functionality. (CloseWindow() uses DeleteWindow MC function.)
           MushClient v. 4.35+ for basic functionality. (WindowGradient calls)
@@ -28,11 +30,11 @@ Usage:
 
   General Usage is more easily deduced by tprint(InfoBox), tprint(MW), tprint(MW.Bar) rather than reading this source.
     The metatables are setup in such a way that tprint will not recurse up the inheritance chain and spam you.
---]]--
+--]=]--
 
 local world, colour_names = world, colour_names, _M
 local os = {time = os.time}
-local math, string, table, bit, utils = math, string, table, bit, utils
+local math, string, table, bit = math, string, table, bit
 local tonumber, tostring, rawget, rawset, type, print = tonumber, tostring, rawget, rawset, type, print
 local unpack, assert, require, getmetatable, setmetatable = unpack, assert, require, getmetatable, setmetatable
 local pairs, ipairs, check = pairs, ipairs, check
@@ -62,19 +64,7 @@ windowPosition = 7
 windowFlags = 0
 
 fontID = "fn"
-
-local fonts = utils.getfontfamilies ()
-
-if fonts.Sylfaen then
-	fontName = "Sylfaen"
-elseif fonts.Dina then
-	fontName = "Dina"
-elseif fonts ["Lucida Sans Unicode"] then
-	fontName = "Lucida Sans Unicode"
-else
-	fontName = "Courier"
-end -- if
-
+fontName = "Sylfaen"
 fontSize = 10
 fontPadding = 2
 fontBold = true
@@ -245,6 +235,8 @@ end end
 --[=[  Internal Function that draws the pretty boxes ]=]--
 function Draw (self, vOffset, hOffset)
     --TraceOut (string.format("%s: Window %s Bar %i", "Draw", self.windowName, self.id))
+    self.cellTop, self.cellLeft = vOffset , hOffset
+    WindowRectOp (self.windowName , 2, self.cellLeft, self.cellTop - 1 , self.cellLeft + self.cellWidth , self.cellTop + self.cellHeight + self.padding - 2 , self.backgroundColour, nil)
     local Percent = self.value or 0
     local colour, fcolour
     if Percent < self.threshold then
@@ -264,11 +256,11 @@ function Draw (self, vOffset, hOffset)
     local pixels = self.gaugeWidth * Percent / 100
     if self.barStyle > 0 then
         local bezel = {[true] = 10, [false] = 5}
-        local frameLeft = hOffset + self.gaugeLeft
-        local frameTop =  vOffset + self.cellHeight - self.gaugeHeight
-        local frameRight =  hOffset + self.gaugeLeft + self.gaugeWidth
-        local frameBottom = vOffset + self.cellHeight
-        local topX, topY, bottomX, bottomY = frameLeft + 2, frameTop + 2 , hOffset + self.gaugeLeft + pixels, frameBottom - 2
+        local frameLeft = self.cellLeft + self.gaugeLeft
+        local frameTop =  self.cellTop + self.cellHeight - self.gaugeHeight
+        local frameRight =  self.cellLeft + self.gaugeLeft + self.gaugeWidth
+        local frameBottom = self.cellTop + self.cellHeight
+        local topX, topY, bottomX, bottomY = frameLeft + 2, frameTop + 2 , self.cellLeft + self.gaugeLeft + pixels, frameBottom - 2
         local colorL, colorR = self.badColour, (fcolour or self.goodColour)
         local ftopX, ftopY, fbottomX, fbottomY = bottomX + 1, frameTop, frameRight, frameBottom  --fill region for fixed gradients
         if self.anchorRight == true then
@@ -280,9 +272,9 @@ function Draw (self, vOffset, hOffset)
         end
         if bit.band(barStyles.raisedCap, self.barStyle) == barStyles.raisedCap then
             if self.captionPlacement == 0 then
-                frameLeft = hOffset + 3
+                frameLeft = self.cellLeft + 3
             elseif self.captionPlacement == 3 then
-                frameRight = hOffset + self.cellWidth -3
+                frameRight = self.cellLeft + self.cellWidth -3
         end end
         if Percent >= 1  then
             if CheckStyle(self, self.barStyles.solid) then
@@ -297,12 +289,12 @@ function Draw (self, vOffset, hOffset)
                 check (WindowRectOp (self.parent.windowName, 2, topX , topY , bottomX, bottomY, padFillColour) )
                 if  ( (self.anchorRight == false) and (self.threshold <= 50) ) or
                     ( (self.anchorRight == true)  and (self.threshold  > 50) ) then         --need more colorR than colorL
-                        check (WindowGradient (self.parent.windowName, hOffset + self.gaugeLeft, frameTop, frameRight - padWidth, bottomY, colorL, colorR, 1 ) )
+                        check (WindowGradient (self.parent.windowName, self.cellLeft + self.gaugeLeft, frameTop, frameRight - padWidth, bottomY, colorL, colorR, 1 ) )
                 elseif  ( (self.anchorRight == true)  and (self.threshold <= 50) ) or
                         ( (self.anchorRight == false) and (self.threshold  > 50) ) then     --need more colorL than colorR
-                        check (WindowGradient (self.parent.windowName, hOffset + self.gaugeLeft + padWidth, topY, frameRight -2, bottomY, colorL, colorR, 1 ) )
+                        check (WindowGradient (self.parent.windowName, self.cellLeft + self.gaugeLeft + padWidth, topY, frameRight -2, bottomY, colorL, colorR, 1 ) )
                 end
-                check (WindowRectOp (self.parent.windowName, 2, ftopX , ftopY , fbottomX , fbottomY -1 , self.parent.backgroundColour) )
+                check (WindowRectOp (self.parent.windowName, 2, ftopX , ftopY , fbottomX , fbottomY -1 , self.backgroundColour) )
             elseif CheckStyle(self, self.barStyles.gradientShift) then                       -- Thermometer gradients.
                 local midpointX = bottomX
                 local pixel = self.gaugeWidth / 100
@@ -314,8 +306,8 @@ function Draw (self, vOffset, hOffset)
                 check (WindowRectOp (self.parent.windowName, 2, topX , topY , bottomX , bottomY, (fcolour or self.goodColour) ) )
                 check (WindowRectOp (self.parent.windowName, 2, ftopX, ftopY , fbottomX, bottomY, self.badColour) )
                 check (WindowGradient (self.parent.windowName, midpointX - gradientWidth, topY, midpointX + gradientWidth, bottomY, colorR, colorL, 1 ) )
-                check (WindowRectOp (self.parent.windowName, 2, hOffset + 1, vOffset, hOffset + self.gaugeLeft, vOffset + self.cellHeight , self.parent.backgroundColour) )
-                check (WindowRectOp (self.parent.windowName, 2, frameRight, frameTop, -2, frameBottom, self.parent.backgroundColour) )
+                check (WindowRectOp (self.parent.windowName, 2, self.cellLeft + 1, self.cellTop, self.cellLeft + self.gaugeLeft, self.cellTop + self.cellHeight , self.backgroundColour) )
+                check (WindowRectOp (self.parent.windowName, 2, frameRight, frameTop, -2, frameBottom, self.backgroundColour) )
             end
             if  CheckStyle(self, self.barStyles.glass) then                                      -- glass frame
                 local glassWidth, dtX,dtY, dbX, dbY = pixels, topX, topY,  bottomX, bottomY
@@ -329,22 +321,27 @@ function Draw (self, vOffset, hOffset)
                 check (WindowImageFromWindow ( self.parent.windowName, self.parent.windowName .. "glass", self.parent.windowName .. "glass") )
                 check (WindowBlendImage ( self.parent.windowName, self.parent.windowName .. "glass", dtX, dtY,  dbX, dbY, 21, .45) )
             elseif CheckStyle(self, barStyles.raised + barStyles.raisedCap + barStyles.sunken) then      -- 3D frame rectangle
-                check (WindowRectOp (self.parent.windowName, 5, topX , topY , bottomX, bottomY, bezel[not CheckStyle(self, barStyles.sunken + barStyles.glass)] ,1+2+4+8 + 0x1000) )
+                check (WindowRectOp (self.parent.windowName, 5, topX , topY , bottomX, bottomY, bezel[not CheckStyle(self, barStyles.sunken + barStyles.glass)] ,0x100F) )
         end end
         if bit.band( self.barStyle , 31 ) ~= 0 then                         -- frame rectangle on border
             local pen = {[true]=1,[false]=5}
             check (WindowRectOp (self.parent.windowName, pen[CheckStyle(self, self.barStyles.flat)], frameLeft, frameTop, frameRight, frameBottom, bezel[not CheckStyle(self, barStyles.raised + barStyles.raisedCap)], 15+0x1000) )
     end end
-    vOffset = vOffset
-    PrintText (self, vOffset, hOffset)
-    return vOffset + self.cellHeight + self.padding
+    PrintText (self, self.cellTop, self.cellLeft)
+    if type(self.button) == 'table' then
+        WindowAddHotspot(self.windowName, self.id, self.cellLeft, self.cellTop, self.cellLeft + self.cellWidth, self.cellTop + self.cellHeight,
+            self.button.mouseOver or "", self.button.cancelMouseOver or "", self.button.mouseDown or "", self.button.cancelMouseDown or "",
+            self.button.mouseUp or "", self.button.tooltipText or "", self.button.cursor or 0, 0 )
+
+    end
+    return self.cellTop + self.cellHeight + self.padding
 end
 
 --[=[  Internal Function that calculates different shades of colors ]=]--
 function DoFade(self)
     --TraceOut (string.format("%s: Window %s Bar %i", "DoFade", self.windowName, self.id))
     local color
-    if not self.shades then
+    if self.shades == nil or (self.Bar.shades and self.goodColour ~= self.Bar.goodColour and self.badColour ~= self.Bar.badColour) then
         self.shades = CalcShades(self, math.ceil(100 - self.threshold)/5)
     end
     if self.value >= self.threshold then
@@ -354,6 +351,18 @@ function DoFade(self)
     end
     return color
 end
+
+
+--[=[     See :Doc( "Fade" )  --]=]--
+function Bar:Fade (bool)
+	assert(bool and type(bool)=="boolean", "Boolean expected. Got " .. tostring( bool ) .. "(" .. type(bool) .. ")")
+	self.fade = bool
+    self.shades = nil
+	if bool then
+		DoFade(self)
+	end
+end
+
 
 --[=[     See :Doc( "TextColour" )  --]=]--
 function Bar:TextColour (x)
@@ -539,6 +548,19 @@ function _M:New (winName)
     return q
 end
 
+--[=[     See :Doc( "BackgroundColour" )  --]=]--
+function _M:BackgroundColour (col)
+    assert (col, "Nil passed. specify a colour.")
+    local n = tonumber(col) or ColourNameToRGB(col)
+    assert(n and n~= -1,'Bad value passed. Acceptable examples: "red", 255, 0x0000ff, "#FF0000"  - Got '.. tostring(x) .. '('.. type(x) ..')')
+    self.backgroundColour = n
+    self.matteHilight, self.matteShadow = self.backgroundColour,self.backgroundColour
+    for i = 1,10 do
+        self.matteHilight = AdjustColour(self.matteHilight,2)
+        self.matteShadow = AdjustColour(self.matteShadow,3)
+    end
+end
+
 --[=[     See :Doc( "Rows" )  --]=]--
 function _M:Rows(num)
     assert(type(num)=="number" and num > 0, "How many rows? Need a positive number. Got " .. type(num) )
@@ -606,20 +628,20 @@ function _M:RemoveBar(index)
 end end
 
 --[=[     See :Doc( "Update" )  --]=]--
-function _M:Update ()
+function _M:Update (force)
     --TraceOut (string.format("%s: Window %s", "Update", self.windowName))
     assert(self ~= _M , "Pass a table called from ".. _NAME .. ":New(), not ".. _NAME .. " itself.")
             --Note: It is possible to pass any table instance into this. i.e. foo, foo.Bar, foo.Bars[i]
             --It may be bad style, but it intentionally will work. foo.Bars[i] still updates the entire window, not just its region.
-    if os.time() > (self.lastUpdated or 0) then
+    if os.time() > (self.lastUpdated or 0) or force then
         local MiniWindow = self.parent or self
         check (WindowCreate (self.windowName, 0, 0, self.windowWidth, self.windowHeight, self.windowPosition, self.windowFlags, GetInfo(278)) )
         check (WindowRectOp (self.windowName, 2, 2, 2, -2, -2, self.backgroundColour) )  -- "erase" miniwindw
-        local vertical,horizontal, curRow, curCol, t = 4, 0, 1, 1
+        local vertical,horizontal, curRow, curCol, t = 6, 0, 1, 1
         for _, curBar in ipairs(self.Bars) do
             local finishY = vertical + curBar.cellHeight + curBar.padding
             if curRow > self.rows or finishY > self.windowHeight then
-                vertical = 4
+                vertical = 6
                 curCol = curCol + 1
                 curRow = 1
                 if curCol > self.columns then               --Maybe Fonts are distorting the grid
@@ -632,6 +654,7 @@ function _M:Update ()
             curRow=curRow+1
         end
         check (WindowRectOp (self.windowName, 5, 0, 1, -1, -2, 10, 15) )                -- 3D border effect on canvas
+        WindowRectOp (self.windowName, 2, self.windowWidth - 2 , 0, 0, 0, GetInfo(278), nil)
         WindowShow (self.windowName, true)
         self.lastUpdated = os.time()
         return true
@@ -675,7 +698,7 @@ function _M:ResizeOutput()
     if self.displaceOutput then
         if self.windowPosition == 9 or self.windowPosition == 10 then
             if sum(9,10) == 1 then
-                height = -self.windowHeight
+                height = -self.windowHeight - 8
             else
                 height = -math.max(math.abs(height), self.windowHeight)
             end
@@ -833,7 +856,6 @@ function _M:Font(...)
         self.fontName, self.fontSize = name, fontParams[1]
         if self == MiniWindow then
             MiniWindow.windowHeight = _M.windowHeight
-            tp = require "tprint" tp(fontParams)
             check(WindowFont(MiniWindow.windowName, unpack(fontParams) ) )
             MiniWindow.Bar.cellHeight = WindowFontInfo (MiniWindow.windowName, MiniWindow.fontID, 1) + MiniWindow.Bar.cellPadding
         else
@@ -963,7 +985,7 @@ function CalcShades(self, shades) -- the number of shades including start and en
     step.g = (g1-g2)/shades
     step.b = (b1-b2)/shades
     for i = 0, shades do
-        Cs[i+1] = tonumber(string.format("%02x%02x%02x",  math.floor(b1 - (step.b * i)%256 ), math.floor(g1 - (step.g * i)%256 ), math.floor(r1 - (step.r * i) )%256 ),16)
+        Cs[i+1] = tonumber(string.format("%02x%02x%02x",  math.floor(b1 - (step.b * i) ) % 256 , math.floor(g1 - (step.g * i) ) % 256 , math.floor(r1 - (step.r * i) ) % 256 ),16)
     end
     Cs[#Cs] = self.badColour
     return Cs, step, step.r, step.g, step.b
@@ -1549,6 +1571,90 @@ Assuming:
   MW,
   then InfoBox
   ]],
+  
+["button"] =[[
+Applies To: Bar
+Protoype:   bar.button = {mouseUp = "funcname", ...}
+
+
+This value expects a table with certain keys paired to the _names_ of functions you write. If there is a table present a Hotspot is added that is drawn over the entire region of the cell (not just the gauge).
+Missing keys are fine. (i.e. {mouseUp="f"} is OK. {mouseUp="f", mouseDown="", cancelMouseDown=""... is not necessary.)
+
+Expected keys are named:
+mouseUp
+mouseDown
+cancelMouseDown
+tooltipText
+mouseOver
+cancelMouseOver
+cursor
+
+Your functions should be structured as: 
+   function myClickFunction (flags, strBarsIndex)
+     local id = tonumber(strBarsIndex)  -- because tbl["1"] is a different key than tbl[1]
+     ...
+     MW.Bars[id].caption = "Clicked"
+   end
+]],
+
+["cellTop"] =[[
+Applies To: Bar
+Protoype:   x = bar.cellTop
+
+This value is set by the Update function. It is provided if you wish to add any custom coding and need to know where a bar was drawn. Setting this value produces no effect and will be overwritten the next time the Update function is called.
+]],
+
+["cellLeft"] =[[
+Applies To: Bar
+Protoype:   x = bar.cellLeft
+
+This value is set by the Update function. It is provided if you wish to add any custom coding and need to know where a bar was drawn. Setting this value produces no effect and will be overwritten the next time the Update function is called.
+]],
+
+["Fade"] =[[
+Applies To: Bar
+Protoype:   bar:Fade(bool)
+
+Calling this function sets the fade value and recalculates the shades table to which the fade effect refers. It's not required to call this function, since the draw routine will recalculate the shades table if necessary. There is an interesting bug that can be exploited by calling this function however.
+
+Try the following:
+ for x = 100,30,-10 do
+   local foo = MW:AddBar("", x, "green", "red", false, MW.barStyles.glass + MW.barStyles.gradientScale)
+   foo:Fade(true)
+   foo.badColour = colour_names.dodgerblue
+ end
+
+It's a bug, but it looks cool. Also this is why using the functions to set values is recommended!
+]],
+
+["cellWidth"] =[[
+Applies To: Bar 
+Protoype:   x = bar.cellWidth
+
+The value for this property is generated by the Miniwindow's __index metamethod. The function in the metamethod returns (windowWidth / columns) for you. You should never have a reason to set your own value, and doing so will probably break things in uncool ways.
+]], --']]
+
+["*AddYourOwn"] =[[
+Applies To: ALL
+Protoype:   N/A
+
+A Bar is a table, after all, and you might find it useful to attach your own data, or a reference, to a bar. This is mostly safe to do as the module uses the pairs() and ipairs() functions in limited places. 
+pairs() is used to copy InfoBox.Bar to MW.Bar
+ipairs() is used on the MW.Bar table to find the functions for the default parameters for AddBar.
+ipairs() is used on the MW.Bars table to draw the bars.
+
+Other than avoiding numerical indices in the 2 Bar(s) tables, it should be safe to add to a table as you see fit.
+]],
+
+--[=[ 
+[""] =[[
+Applies To: 
+Protoype:   
+
+
+]],
+
+--]=]-- ']]
 }
 
 function Doc (self, topic)
