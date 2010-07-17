@@ -73,12 +73,21 @@ tConfigurationNumericOption OptionsTable [] = {
 {"ctrl_z_goes_to_end_of_buffer",        false, O(m_bCtrlZGoesToEndOfBuffer)},
 {"custom_16_is_default_colour",         false, O(m_bCustom16isDefaultColour), 0, 0, OPT_UPDATE_VIEWS},  
 
-{"default_send_to",                     eSendToWorld, O(m_iDefaultSendTo), eSendToWorld, eSendToLast - 1},                      
-{"default_sequence",                    DEFAULT_TRIGGER_SEQUENCE, O(m_iDefaultSequence), 0, 10000},                      
-{"default_regexp",                      false, O(m_bDefaultRegexp)},                      
-{"default_expand_variables",            false, O(m_bDefaultExpandVariables)},                      
-{"default_keep_evaluating",             false, O(m_bDefaultKeepEvaluating)},                      
-{"default_ignore_case",                 false, O(m_bDefaultIgnoreCase)},                      
+{"default_trigger_send_to",              eSendToWorld, O(m_iDefaultTriggerSendTo), eSendToWorld, eSendToLast - 1},                      
+{"default_trigger_sequence",             DEFAULT_TRIGGER_SEQUENCE, O(m_iDefaultTriggerSequence), 0, 10000},                      
+{"default_trigger_regexp",               false, O(m_bDefaultTriggerRegexp)},                      
+{"default_trigger_expand_variables",     false, O(m_bDefaultTriggerExpandVariables)},                      
+{"default_trigger_keep_evaluating",      false, O(m_bDefaultTriggerKeepEvaluating)},                      
+{"default_trigger_ignore_case",          false, O(m_bDefaultTriggerIgnoreCase)},                      
+
+{"default_alias_send_to",                eSendToWorld, O(m_iDefaultAliasSendTo), eSendToWorld, eSendToLast - 1},                      
+{"default_alias_sequence",               DEFAULT_ALIAS_SEQUENCE, O(m_iDefaultAliasSequence), 0, 10000},                      
+{"default_alias_regexp",                 false, O(m_bDefaultAliasRegexp)},                      
+{"default_alias_expand_variables",       false, O(m_bDefaultAliasExpandVariables)},                      
+{"default_alias_keep_evaluating",        false, O(m_bDefaultAliasKeepEvaluating)},                      
+{"default_alias_ignore_case",            false, O(m_bDefaultAliasIgnoreCase)},                      
+
+{"default_timer_send_to",                eSendToWorld, O(m_iDefaultTimerSendTo), eSendToWorld, eSendToLast - 1},                      
          
 {"detect_pueblo",                       true,  O(m_bPueblo)},
 {"do_not_add_macros_to_command_history",false, O(m_bDoNotAddMacrosToCommandHistory)}, 

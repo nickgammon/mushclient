@@ -2593,19 +2593,19 @@ void CPrefsP7::InitDialog (CDialog * pDlg)
 
   dlg->m_pDoc = m_doc;
 
-  dlg->m_bIgnoreCase = m_doc->m_bDefaultIgnoreCase;
+  dlg->m_bIgnoreCase = m_doc->m_bDefaultAliasIgnoreCase;
   dlg->m_bEnabled = TRUE;
-  dlg->m_bExpandVariables = m_doc->m_bDefaultExpandVariables; 
+  dlg->m_bExpandVariables = m_doc->m_bDefaultAliasExpandVariables; 
   dlg->m_bOmitFromLogFile = FALSE; 
-  dlg->m_bRegexp = m_doc->m_bDefaultRegexp;
-  dlg->m_iSequence = m_doc->m_iDefaultSequence; 
-  dlg->m_bKeepEvaluating = m_doc->m_bDefaultKeepEvaluating;
+  dlg->m_bRegexp = m_doc->m_bDefaultAliasRegexp;
+  dlg->m_iSequence = m_doc->m_iDefaultAliasSequence; 
+  dlg->m_bKeepEvaluating = m_doc->m_bDefaultAliasKeepEvaluating;
   dlg->m_bOneShot = FALSE;
   dlg->m_bEchoAlias = FALSE;
   dlg->m_bOmitFromCommandHistory = FALSE;
   dlg->m_bTemporary = FALSE; 
 //  dlg->m_bDelayed = FALSE; 
-  dlg->m_iSendTo = m_doc->m_iDefaultSendTo;
+  dlg->m_iSendTo = m_doc->m_iDefaultAliasSendTo;
 
   dlg->m_pAliasMap = &m_doc->m_AliasMap;
   dlg->m_current_alias = NULL;
@@ -3367,22 +3367,22 @@ void CPrefsP8::InitDialog (CDialog * pDlg)
   dlg->m_pDoc = m_doc;
 
   dlg->m_bUTF_8 = m_doc->m_bUTF_8;
-  dlg->m_ignore_case = m_doc->m_bDefaultIgnoreCase;
+  dlg->m_ignore_case = m_doc->m_bDefaultTriggerIgnoreCase;
   dlg->m_colour = 0;    // no change
   dlg->m_sound_pathname = NOSOUNDLIT;
   dlg->m_omit_from_log = FALSE;
   dlg->m_pTriggerMap = &m_doc->m_TriggerMap;
   dlg->m_current_trigger = NULL;
   dlg->m_bOmitFromOutput = FALSE;
-  dlg->m_bKeepEvaluating = m_doc->m_bDefaultKeepEvaluating;
+  dlg->m_bKeepEvaluating = m_doc->m_bDefaultTriggerKeepEvaluating;
   dlg->m_bOneShot = FALSE;
   dlg->m_bEnabled = TRUE;
   dlg->m_iClipboardArg = 0;
-  dlg->m_iSendTo = m_doc->m_iDefaultSendTo;
-  dlg->m_bRegexp = m_doc->m_bDefaultRegexp;
+  dlg->m_iSendTo = m_doc->m_iDefaultTriggerSendTo;
+  dlg->m_bRegexp = m_doc->m_bDefaultTriggerRegexp;
   dlg->m_bRepeat = FALSE; 
-  dlg->m_bExpandVariables = m_doc->m_bDefaultExpandVariables; 
-  dlg->m_iSequence = m_doc->m_iDefaultSequence; 
+  dlg->m_bExpandVariables = m_doc->m_bDefaultTriggerExpandVariables; 
+  dlg->m_iSequence = m_doc->m_iDefaultTriggerSequence; 
   dlg->m_iMatchTextColour = 0;  // any
   dlg->m_iMatchBackColour = 0;  // any
   dlg->m_iMatchBold = 2;        // any
@@ -5828,7 +5828,7 @@ void CPrefsP16::InitDialog (CDialog * pDlg)
 
   dlg->m_pTimerMap = &m_doc->m_TimerMap;
   dlg->m_current_timer = NULL;
-  dlg->m_iSendTo = m_doc->m_iDefaultSendTo;
+  dlg->m_iSendTo = m_doc->m_iDefaultTimerSendTo;
 
   }  // end of CPrefsP16::InitDialog
 

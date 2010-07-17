@@ -845,12 +845,21 @@ public:
 
   // version 4.54
 
-  unsigned short m_iDefaultSendTo;            // default send-to location for triggers/aliases/timers
-  unsigned short m_iDefaultSequence;          // default sequence for triggers/aliases
-  unsigned short m_bDefaultRegexp;            // default regular expression flag for triggers/aliases
-  unsigned short m_bDefaultExpandVariables;   // default expand-variables flag for triggers/aliases
-  unsigned short m_bDefaultKeepEvaluating;    // default keep-evaluating flag for triggers/aliases
-  unsigned short m_bDefaultIgnoreCase;        // default ignore-case flag for triggers/aliases
+  unsigned short m_iDefaultTriggerSendTo;            // default send-to location for triggers
+  unsigned short m_iDefaultTriggerSequence;          // default sequence for triggers
+  unsigned short m_bDefaultTriggerRegexp;            // default regular expression flag for triggers
+  unsigned short m_bDefaultTriggerExpandVariables;   // default expand-variables flag for triggers
+  unsigned short m_bDefaultTriggerKeepEvaluating;    // default keep-evaluating flag for triggers
+  unsigned short m_bDefaultTriggerIgnoreCase;        // default ignore-case flag for triggers
+
+  unsigned short m_iDefaultAliasSendTo;              // default send-to location for aliases
+  unsigned short m_iDefaultAliasSequence;            // default sequence for aliases
+  unsigned short m_bDefaultAliasRegexp;              // default regular expression flag for aliases
+  unsigned short m_bDefaultAliasExpandVariables;     // default expand-variables flag for aliases
+  unsigned short m_bDefaultAliasKeepEvaluating;      // default keep-evaluating flag for aliases
+  unsigned short m_bDefaultAliasIgnoreCase;          // default ignore-case flag for aliases
+                                                    
+  unsigned short m_iDefaultTimerSendTo;              // default send-to location for timers
 
   // end of stuff saved to disk **************************************************************
 
