@@ -843,6 +843,15 @@ public:
   unsigned short m_bDoNotAddMacrosToCommandHistory;    // macros not into command history
   unsigned short m_bSendKeepAlives;            // set the socket option SO_KEEPALIVE on the TCP/IP connections
 
+  // version 4.54
+
+  unsigned short m_iDefaultSendTo;            // default send-to location for triggers/aliases/timers
+  unsigned short m_iDefaultSequence;          // default sequence for triggers/aliases
+  unsigned short m_bDefaultRegexp;            // default regular expression flag for triggers/aliases
+  unsigned short m_bDefaultExpandVariables;   // default expand-variables flag for triggers/aliases
+  unsigned short m_bDefaultKeepEvaluating;    // default keep-evaluating flag for triggers/aliases
+  unsigned short m_bDefaultIgnoreCase;        // default ignore-case flag for triggers/aliases
+
   // end of stuff saved to disk **************************************************************
 
   // stuff from pre version 11, read from disk but not saved

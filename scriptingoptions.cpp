@@ -71,7 +71,15 @@ tConfigurationNumericOption OptionsTable [] = {
 {"ctrl_n_goes_to_next_command",         false, O(m_bCtrlNGoesToNextCommand)},           
 {"ctrl_p_goes_to_previous_command",     false, O(m_bCtrlPGoesToPreviousCommand)},       
 {"ctrl_z_goes_to_end_of_buffer",        false, O(m_bCtrlZGoesToEndOfBuffer)},
-{"custom_16_is_default_colour",         false, O(m_bCustom16isDefaultColour), 0, 0, OPT_UPDATE_VIEWS},           
+{"custom_16_is_default_colour",         false, O(m_bCustom16isDefaultColour), 0, 0, OPT_UPDATE_VIEWS},  
+
+{"default_send_to",                     eSendToWorld, O(m_iDefaultSendTo), eSendToWorld, eSendToLast - 1},                      
+{"default_sequence",                    DEFAULT_TRIGGER_SEQUENCE, O(m_iDefaultSequence), 0, 10000},                      
+{"default_regexp",                      false, O(m_bDefaultRegexp)},                      
+{"default_expand_variables",            false, O(m_bDefaultExpandVariables)},                      
+{"default_keep_evaluating",             false, O(m_bDefaultKeepEvaluating)},                      
+{"default_ignore_case",                 false, O(m_bDefaultIgnoreCase)},                      
+         
 {"detect_pueblo",                       true,  O(m_bPueblo)},
 {"do_not_add_macros_to_command_history",false, O(m_bDoNotAddMacrosToCommandHistory)}, 
 {"do_not_show_outstanding_lines",       false, O(m_bDoNotShowOutstandingLines)},
