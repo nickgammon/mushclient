@@ -309,9 +309,6 @@ void LuaError (lua_State *L,
   {    
   CScriptErrorDlg dlg;
 
-  const char * sForeColour = "darkorange";
-  const char * sBackColour = "black";
-
   if (!strlen (strProcedure) == 0)
     {
     dlg.m_strCalledBy = "Function/Sub: ";
@@ -364,10 +361,10 @@ void LuaError (lua_State *L,
     }
   else
     {
-    pDoc->ColourNote (sForeColour, sBackColour, strEvent);
-    pDoc->ColourNote (sForeColour, sBackColour, dlg.m_strRaisedBy);
-    pDoc->ColourNote (sForeColour, sBackColour, dlg.m_strCalledBy);
-    pDoc->ColourNote (sForeColour, sBackColour, dlg.m_strDescription);
+    pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, strEvent);
+    pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, dlg.m_strRaisedBy);
+    pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, dlg.m_strCalledBy);
+    pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, dlg.m_strDescription);
 
 // show bad lines?
 

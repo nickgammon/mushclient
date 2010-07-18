@@ -570,6 +570,8 @@ void CMUSHclientDoc::LoadError (const char * sType, const char * sMessage, UINT 
   CString strTitle = "XML import warnings - ";
   strTitle += strFileName;
 
+  ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, strTitle);
+
   // line defaults to last attribute line
   if (iLine == 0)
     iLine = iLineLastItemFound;
@@ -580,13 +582,7 @@ void CMUSHclientDoc::LoadError (const char * sType, const char * sMessage, UINT 
                       sType,  // type of thing (eg, trigger)
                       ENDLINE);
 
-  AppendToTheNotepad (strTitle, 
-                      str,                 // start new line
-                      false,   // append
-                      eNotepadWorldLoadError);
-
-  // make sure they see it
-  ActivateNotepad (strTitle);
+  ColourNote (SCRIPTERRORCONTEXTFORECOLOUR, SCRIPTERRORBACKCOLOUR, str);
 
   iErrorCount++;
   }   // end of CMUSHclientDoc::LoadError

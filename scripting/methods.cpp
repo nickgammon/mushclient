@@ -237,13 +237,16 @@ void CMUSHclientDoc::Note(LPCTSTR Message)
 void CMUSHclientDoc::Tell(LPCTSTR Message) 
 {
 
-  // return if attempt to do tell (or note) before output buffer exists
-  if (m_pCurrentLine == NULL)
-    return;
-
   // don't muck around if empty message
   if (Message [0] == 0)
     return;
+
+  // if output buffer doesn't exist yet, remember note for later
+  if (m_pCurrentLine == NULL)
+    {
+    m_OutstandingLines.push_back (CPaneStyle (Message, m_iNoteColourFore, m_iNoteColourBack, m_iNoteStyle));
+    return;
+    }
 
   // If current line is not a note line, force a line change (by displaying
   // an empty string), so that the style change is on the note line and not

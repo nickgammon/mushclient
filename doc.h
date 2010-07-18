@@ -1275,6 +1275,8 @@ public:
   // for mapping colours to colours
   map<COLORREF, COLORREF> m_ColourTranslationMap;
 
+  list<CPaneStyle> m_OutstandingLines;
+
 #ifdef PANE
   // for pane windows
 
@@ -1462,6 +1464,7 @@ public:
 
   BOOL OpenSession (void);
   void SetUpOutputWindow (void);
+  void OutputOutstandingLines (void);
 
   bool m_bInPlaySoundFilePlugin;
   bool m_bInCancelSoundFilePlugin;

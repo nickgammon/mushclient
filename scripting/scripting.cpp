@@ -495,9 +495,6 @@ bool CMUSHclientDoc::ExecuteScript (DISPID & dispid,  // dispatch ID, will be ze
 
 void CMUSHclientDoc::ShowErrorLines (const int iLine)  // show script file around the error point
   {
-const char * sForeColour = "darkorange";
-const char * sBackColour = "black";
-const char * sContextForeColour = "burlywood";
 
 string sScript;
 vector<string> v;
@@ -512,7 +509,7 @@ vector<string> v;
   // provided wanted line is in the table
   if (!sScript.empty () && v.size () >= iLine)
     {
-    ColourNote (sForeColour, sBackColour, Translate ("Error context in script:"));
+    ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, Translate ("Error context in script:"));
 
     int iStart = iLine - 4;   // start 4 lines back
     if (iStart < 1) 
@@ -525,7 +522,7 @@ vector<string> v;
 
     // show that range, marking error line with an asterisk
     for (int i = iStart; i <= iEnd; i++)
-       ColourNote (sContextForeColour, sBackColour, 
+       ColourNote (SCRIPTERRORCONTEXTFORECOLOUR, SCRIPTERRORBACKCOLOUR, 
          CFormat ("%4i%s: %s", 
             i,   // line number
             i == iLine ? "*" : " ",   // mark current line

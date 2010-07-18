@@ -674,6 +674,49 @@ static void zlib_free (void * opaque, void * address)
 */
 
 
+void CMUSHclientDoc::OutputOutstandingLines (void)
+  {
+
+  // minimal work ...
+  if (m_OutstandingLines.empty ())
+    return;
+
+  // save old colours
+  bool bOldNotesInRGB = m_bNotesInRGB;
+  COLORREF iOldNoteColourFore = m_iNoteColourFore;
+  COLORREF iOldNoteColourBack = m_iNoteColourBack;
+  unsigned short  iOldNoteStyle = m_iNoteStyle;
+
+  m_bNotesInRGB = true;
+
+  // output saved lines
+
+  list<CPaneStyle>::iterator it;
+  
+  for (it = m_OutstandingLines.begin (); it != m_OutstandingLines.end (); it++)
+    {
+    m_iNoteColourFore = it->m_cText;
+    m_iNoteColourBack = it->m_cBack;
+    m_iNoteStyle = it->m_iStyle;
+    Tell (it->m_sText.c_str ());
+    }
+
+  m_OutstandingLines.clear ();
+
+  // put the colours back
+  if (bOldNotesInRGB)
+    {
+    m_iNoteColourFore = iOldNoteColourFore;
+    m_iNoteColourBack = iOldNoteColourBack;
+    }
+  else  
+    m_bNotesInRGB = false;
+
+  m_iNoteStyle = iOldNoteStyle;
+
+
+  } // end of CMUSHclientDoc::OutputOutstandingLines
+
 
 void CMUSHclientDoc::SetUpOutputWindow (void)
   {
@@ -747,6 +790,10 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
   Hyperlink (MUSHCLIENT_FORUM_URL, FORUM_URL, Translate ("Go to forum"), 
              "deepskyblue", "black", TRUE);
   Note ("");
+
+
+  // output stuff that appeared before we set up the output buffer
+  OutputOutstandingLines ();
 
   // set output window(s) to "pause" if wanted
 
@@ -825,7 +872,7 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
   catch (CArchiveException* e) 
     {
     UMessageBox (TFormat ("There was a problem loading the plugin %s. "
-                     "See the error window for more details",
+                     "See the output window for more details",
                      (LPCTSTR) strPath), MB_ICONEXCLAMATION);
     e->Delete ();
     }

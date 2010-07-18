@@ -697,7 +697,42 @@ assemble the full text of the original line.
       if (m_LineList.GetCount () % JUMP_SIZE == 1)
             m_pLinePositions [m_LineList.GetCount () / JUMP_SIZE] = NULL;
 
-      delete m_LineList.GetTail (); // delete contents of tail iten -- version 3.85
+      // version 4.54 - keep notes, even if omitted from output ;)
+
+      // we have to push_front because we are going through the lines backwards
+      // this means the newline goes first. Also we process the styles in reverse order.
+
+      CLine* pLine = m_LineList.GetTail ();
+
+      if (pLine->flags & COMMENT)
+        {
+       CString strLine = CString (pLine->text, pLine->len);
+       int iCol = 0;
+
+       // throw in the newline if required
+       if (pLine->hard_return)
+         m_OutstandingLines.push_front (CPaneStyle (ENDLINE, 0, 0, 0));
+
+       for (POSITION stylepos = pLine->styleList.GetTailPosition(); stylepos; )
+         {
+         CStyle * pStyle = pLine->styleList.GetPrev (stylepos);
+
+         COLORREF cText,
+                  cBack;
+
+         // find actual RGB colour of style
+         GetStyleRGB (pStyle, cText, cBack); 
+                          
+         m_OutstandingLines.push_front (CPaneStyle ((const char *)
+                              strLine.Mid (iCol, pStyle->iLength), 
+                              cText, cBack, pStyle->iFlags & 7));
+         iCol += pStyle->iLength; // new column
+         }     // end of each style
+
+
+        }  // end of coming across a note line
+
+      delete pLine; // delete contents of tail iten -- version 3.85
       m_LineList.RemoveTail ();   // get rid of the line
       m_total_lines--;            // don't count as received
 
@@ -736,6 +771,9 @@ assemble the full text of the original line.
     }
   else
     Screendraw (0, !bNoLog, strCurrentLine);
+
+  // put note lines back
+  OutputOutstandingLines ();
 
   // display any stuff sent to output window
 

@@ -362,7 +362,7 @@ void CPluginsDlg::OnAddPlugin()
     catch (CException* e) 
       {
       ::UMessageBox (TFormat ("There was a problem loading the plugin %s. "
-                       "See the error window for more details",
+                       "See the output window for more details",
                        (LPCTSTR) strPath), MB_ICONEXCLAMATION);
       e->Delete ();
       EditPlugin (strPath);  // let them see the problem
@@ -506,7 +506,7 @@ for (int nItem = -1;
       catch (CArchiveException* e) 
         {
         ::UMessageBox (TFormat ("There was a problem loading the plugin %s. "
-                         "See the error window for more details",
+                         "See the output window for more details",
                          (LPCTSTR) strName), MB_ICONEXCLAMATION);
         e->Delete ();
         }

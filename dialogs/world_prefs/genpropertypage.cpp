@@ -957,7 +957,7 @@ CString strContents;
   catch (CArchiveException* e) 
     {
     ::TMessageBox ("There was a problem parsing the XML on the clipboard. "
-                     "See the error window for more details");
+                     "See the output window for more details");
     e->Delete ();
     }
 

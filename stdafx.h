@@ -916,3 +916,6 @@ long LoadPngMemory (unsigned char * Buffer, const size_t Length, HBITMAP & hbmp,
 void ChangeToFileBrowsingDirectory ();
 void ChangeToStartupDirectory ();
 
+#define SCRIPTERRORFORECOLOUR "darkorange"
+#define SCRIPTERRORBACKCOLOUR "black"
+#define SCRIPTERRORCONTEXTFORECOLOUR "burlywood"

@@ -240,7 +240,7 @@ void CImportXMLdlg::ImportArchive (CArchive & ar)
   catch (CArchiveException* e) 
     {
     ::TMessageBox ("There was a problem parsing the XML. "
-                     "See the error window for more details");
+                     "See the output window for more details");
     e->Delete ();
 
     }

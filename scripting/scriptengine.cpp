@@ -163,9 +163,6 @@ STDMETHODIMP CActiveScriptSite::OnScriptError(IActiveScriptError *pscripterror)
   EXCEPINFO ei; 
   ZeroMemory(&ei, sizeof(ei));
 
-  const char * sForeColour = "darkorange";
-  const char * sBackColour = "black";
-
   TRACE ("CActiveScriptSite: OnScriptError\n");
   
   pscripterror->GetSourcePosition(&dwCookie, &nLine, &nChar);
@@ -236,11 +233,11 @@ STDMETHODIMP CActiveScriptSite::OnScriptError(IActiveScriptError *pscripterror)
     }
   else
     {
-    m_pDoc->ColourNote (sForeColour, sBackColour, Translate ("Script error"));
-    m_pDoc->ColourNote (sForeColour, sBackColour, dlg.m_strRaisedBy);
-    m_pDoc->ColourNote (sForeColour, sBackColour, dlg.m_strEvent);
-    m_pDoc->ColourNote (sForeColour, sBackColour, dlg.m_strCalledBy);
-    m_pDoc->ColourNote (sForeColour, sBackColour, dlg.m_strDescription);
+    m_pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, Translate ("Script error"));
+    m_pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, dlg.m_strRaisedBy);
+    m_pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, dlg.m_strEvent);
+    m_pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, dlg.m_strCalledBy);
+    m_pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, dlg.m_strDescription);
 
 // show bad lines?
 
