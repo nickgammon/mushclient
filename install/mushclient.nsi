@@ -388,9 +388,9 @@ Section "Start Menu Shortcuts"
   ; Which section type it is in
   SectionIn 1 2   ; typical, full
 
-  SetOutPath $INSTDIR
-  CreateShortCut "$SMPROGRAMS\MUSHclient\MUSHclient.lnk" "$INSTDIR\MUSHclient.exe" "" "$INSTDIR\MUSHclient.exe" 0
+;  SetOutPath $INSTDIR
   SetOutPath "$SMPROGRAMS\MUSHclient"
+  CreateShortCut "$SMPROGRAMS\MUSHclient\MUSHclient.lnk" "$INSTDIR\MUSHclient.exe" "" "$INSTDIR\MUSHclient.exe" 0
   CreateShortCut "$SMPROGRAMS\MUSHclient\Read Me.lnk" "$INSTDIR\Readme.txt" "" "$INSTDIR\Readme.txt" 0
   CreateShortCut "$SMPROGRAMS\MUSHclient\Uninstall MUSHclient.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 SectionEnd
