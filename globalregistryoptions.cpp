@@ -267,8 +267,6 @@ void CMUSHclientApp::SaveGlobalsToDatabase (void)
 
       db_rc = db_write_string ("prefs", AlphaGlobalOptionsTable [i].pName, (LPCTSTR) strValue);
       
-      strValue.Replace ("'", "''");  // fix up quotes
-
       if (db_rc != SQLITE_OK)
         break;
 

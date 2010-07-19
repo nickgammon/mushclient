@@ -2323,7 +2323,7 @@ void CMUSHclientDoc::Load_Plugin_XML (CXMLelement & parent)
         {
         CPlugin * p = m_PluginList.GetNext (pos);
         if (m_CurrentPlugin->m_strID == p->m_strID)
-           ThrowErrorException ("A plugin with this plugin ID is already loaded.");
+           ThrowErrorException ("The plugin '%s' is already loaded.", p->m_strName);
         }      // end of looping through each plugins
 
       // check language
