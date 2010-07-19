@@ -876,6 +876,8 @@ ASSERT_VALID(pDoc);
   if (!pDoc->m_FontHeight)
     return;
 
+  // sigh. How many times did we do this?
+  pDoc->m_iOutputWindowRedrawCount++;
 
   pDC->SelectClipRgn (NULL);
 

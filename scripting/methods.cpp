@@ -4285,6 +4285,7 @@ tInfoTypeMapping InfoTypes [] =
 { 292, "Actual text rectangle - right" },
 { 293, "Actual text rectangle - bottom" },
 { 294, "State of keyboard modifiers" },
+{ 295, "Times output window redrawn" },
    
 
 // (dates - calculated at runtime)
@@ -4999,6 +5000,10 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
 
       SetUpVariantLong (vaResult, result); 
       }
+      break; // state of virtual keys    
+
+    case 295:
+      SetUpVariantLong (vaResult, m_iOutputWindowRedrawCount); 
       break; // state of virtual keys    
 
     case  301: 

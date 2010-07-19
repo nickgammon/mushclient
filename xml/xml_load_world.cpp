@@ -557,7 +557,7 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
     m_CurrentPlugin = pCurrentPlugin;   
     if (iLineLastItemFound == 0)
       iLineLastItemFound = parser.m_xmlLine;
-    HandleLoadException ("problem in this file", e);
+    HandleLoadException ("Cannot load", e);
     AfxThrowArchiveException (CArchiveException::badSchema);
     }
 
