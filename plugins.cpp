@@ -605,16 +605,17 @@ bool CPlugin::SaveState (void)
 
   if (!m_bSaveState)
     return true;   // not needed
+
+// need a directory
+          
+  if (App.m_strDefaultStateFilesDirectory.IsEmpty ())
+    return true;
   
-CString strFilename = CString (Make_Absolute_Path (App.m_strPluginsDirectory)) + "state\\";
+CString strFilename = CString (Make_Absolute_Path (App.m_strDefaultStateFilesDirectory));
 CFile * f = NULL;
 CArchive * ar = NULL;
 bool bError = true;
   
-// need a directory
-          
-  if (App.m_strPluginsDirectory.IsEmpty ())
-    return true;
 
 // need a world id
 

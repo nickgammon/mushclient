@@ -694,7 +694,7 @@ void CPluginsDlg::OnRdblclkPluginsList(NMHDR* pNMHDR, LRESULT* pResult)
       continue;
 
     // need a directory
-    CString strName = CString (Make_Absolute_Path (App.m_strPluginsDirectory)) + "state\\";
+    CString strName = CString (Make_Absolute_Path (App.m_strDefaultStateFilesDirectory));
 
     strName += m_pDoc->m_strWorldID;    // world ID
     strName += "-";

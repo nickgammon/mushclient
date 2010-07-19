@@ -88,6 +88,7 @@ static tGlobalConfigurationAlphaOption AlphaGlobalOptionsTable  [] = {
 { GLB_ALPHA_OPT (m_strNotepadQuoteString       ), "NotepadQuoteString",     "> " },                    
 { GLB_ALPHA_OPT (m_strPluginList               ), "PluginList",                  "" },
 { GLB_ALPHA_OPT (m_strPluginsDirectory         ), "PluginsDirectory", ".\\worlds\\plugins\\" },
+{ GLB_ALPHA_OPT (m_strDefaultStateFilesDirectory), "StateFilesDirectory", ".\\worlds\\plugins\\state\\" },
 { GLB_ALPHA_OPT (m_strPrinterFont              ), "PrinterFont",                "Courier" },
 { GLB_ALPHA_OPT (m_strTrayIconFileName         ), "TrayIconFileName",  "" },                    
 { GLB_ALPHA_OPT (m_strWordDelimiters           ), "WordDelimiters",         ".,()[]\"\'" },
@@ -251,9 +252,7 @@ void CMUSHclientApp::SaveGlobalsToDatabase (void)
     const char * p = (const char *) this +  GlobalOptionsTable [i].iOffset;
     const int Value = * (const long *) p;
 
-
-    db_rc = db_execute ((LPCTSTR) CFormat ("UPDATE prefs SET value = %i WHERE name = '%s'",
-                        Value, GlobalOptionsTable [i].pName), true);
+    db_rc = db_write_int ("prefs", GlobalOptionsTable [i].pName, Value);
 
     if (db_rc != SQLITE_OK)
       break;
@@ -265,11 +264,10 @@ void CMUSHclientApp::SaveGlobalsToDatabase (void)
       {
       const char * p = (const char *) this +  AlphaGlobalOptionsTable [i].iOffset;
       CString strValue = * (CString *) p;
-    
-      strValue.Replace ("'", "''");  // fix up quotes
 
-      db_rc = db_execute ((LPCTSTR) CFormat ("UPDATE prefs SET value = '%s' WHERE name = '%s'",
-                          (LPCTSTR) strValue, AlphaGlobalOptionsTable [i].pName), true);
+      db_rc = db_write_string ("prefs", AlphaGlobalOptionsTable [i].pName, (LPCTSTR) strValue);
+      
+      strValue.Replace ("'", "''");  // fix up quotes
 
       if (db_rc != SQLITE_OK)
         break;

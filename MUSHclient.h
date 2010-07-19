@@ -180,6 +180,7 @@ public:
   CString	m_strDefaultTriggersFile;
   CString m_strDefaultLogFileDirectory;
   CString m_strDefaultWorldFileDirectory;
+  CString m_strDefaultStateFilesDirectory;
   CString m_strNotepadQuoteString;
   CString m_strPluginList;
   CString m_strPluginsDirectory;
@@ -277,9 +278,9 @@ public:
   int db_execute (const char * sql, const bool bShowError = false);
   void db_show_error (const char * sql);
   CString db_get_string (LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszDefault = "" );
-  void db_write_string (LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszValue);
+  int db_write_string (LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszValue);
   int db_get_int (LPCTSTR lpszSection, LPCTSTR lpszEntry, int iDefault = 0 );
-  void db_write_int (LPCTSTR lpszSection, LPCTSTR lpszEntry, int iValue);
+  int db_write_int (LPCTSTR lpszSection, LPCTSTR lpszEntry, int iValue);
 
 
   void WorkOutFixedFont ();

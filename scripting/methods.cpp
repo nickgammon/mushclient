@@ -4165,6 +4165,7 @@ tInfoTypeMapping InfoTypes [] =
  { 82, "Preferences database pathname" },
  { 83, "SQLite3 version" },
  { 84, "File browsing directory" },
+ { 85, "State files path (directory)" },
 
 
  
@@ -4504,6 +4505,8 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case   82: SetUpVariantString (vaResult, App.m_PreferencesDatabaseName.c_str ()); break;
     case   83: SetUpVariantString (vaResult, sqlite3_libversion ()); break;
     case   84: SetUpVariantString (vaResult, file_browsing_dir); break;
+    case   85: SetUpVariantString (vaResult, App.m_strDefaultStateFilesDirectory); break;
+
 
     case  101: SetUpVariantBool (vaResult, m_bNoEcho); break;
     case  102: SetUpVariantBool (vaResult, m_bDebugIncomingPackets); break;

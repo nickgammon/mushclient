@@ -2323,7 +2323,7 @@ void CMUSHclientDoc::Load_Plugin_XML (CXMLelement & parent)
         {
         CPlugin * p = m_PluginList.GetNext (pos);
         if (m_CurrentPlugin->m_strID == p->m_strID)
-           ThrowErrorException ("Plugin \"id\" field must be unique for this world");
+           ThrowErrorException ("A plugin with this plugin ID is already loaded.");
         }      // end of looping through each plugins
 
       // check language
@@ -2367,7 +2367,7 @@ void CMUSHclientDoc::Load_Plugin_XML (CXMLelement & parent)
         CArchive * ar = NULL;
         CXMLparser parser;
 
-        strFileName = CString (Make_Absolute_Path (App.m_strPluginsDirectory)) + "state\\";
+        strFileName = CString (Make_Absolute_Path (App.m_strDefaultStateFilesDirectory));
         // need a directory
           
         if (App.m_strPluginsDirectory.IsEmpty ())

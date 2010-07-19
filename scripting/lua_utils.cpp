@@ -765,6 +765,7 @@ static int info (lua_State *L)
 
   MakeTableItem (L, "app_directory", ExtractDirectory (App.m_strMUSHclientFileName));
   MakeTableItem (L, "world_files_directory", App.m_strDefaultWorldFileDirectory);
+  MakeTableItem (L, "state_files_directory", App.m_strDefaultStateFilesDirectory);
   MakeTableItem (L, "locale", App.m_strLocale);
   MakeTableItem (L, "fixed_pitch_font", App.m_strFixedPitchFont);
   MakeTableItem (L, "fixed_pitch_font_size", App.m_iFixedPitchFontSize);

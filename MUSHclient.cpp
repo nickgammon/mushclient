@@ -2039,11 +2039,11 @@ int CMUSHclientApp::db_execute (const char * sql, const bool bShowError)
 
 
 // replaces: WriteProfileString
-void CMUSHclientApp::db_write_string (LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszValue)
+int CMUSHclientApp::db_write_string (LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszValue)
   {
 
   if (!db)
-    return;
+    return SQLITE_ERROR;
 
   CString strEntry = lpszEntry;
   CString strValue = lpszValue;
@@ -2052,32 +2052,38 @@ void CMUSHclientApp::db_write_string (LPCTSTR lpszSection, LPCTSTR lpszEntry, LP
   strEntry.Replace ("'", "''");  // fix up quotes
   strValue.Replace ("'", "''");  // fix up quotes
 
-  db_execute ((LPCTSTR) CFormat ("UPDATE %s SET value = '%s' WHERE name = '%s'",
+  int db_rc;
+
+  db_rc = db_execute ((LPCTSTR) CFormat ("UPDATE %s SET value = '%s' WHERE name = '%s'",
                         lpszSection, 
                         (LPCTSTR) strValue, 
                         (LPCTSTR) strEntry), 
               true);
 
 
+  if (db_rc != SQLITE_OK)
+    return db_rc;
+
   int count = sqlite3_changes(db);
 
   // if count is zero, row does not exist, so we will add it
 
   if (count == 0)
-    db_execute ((LPCTSTR) CFormat ("INSERT INTO %s (name, value) VALUES ('%s', '%s')",
+    db_rc = db_execute ((LPCTSTR) CFormat ("INSERT INTO %s (name, value) VALUES ('%s', '%s')",
                 lpszSection,
                 (LPCTSTR) strEntry, 
                 (LPCTSTR) strValue), 
                 true);
 
+  return db_rc;
 
   }  // end of CMUSHclientApp::db_write_string 
 
 
 // replaces: WriteProfileInt 
-void CMUSHclientApp::db_write_int (LPCTSTR lpszSection, LPCTSTR lpszEntry, int iValue)
+int CMUSHclientApp::db_write_int (LPCTSTR lpszSection, LPCTSTR lpszEntry, int iValue)
   {
-  db_write_string (lpszSection, lpszEntry, (LPCTSTR) CFormat ("%i", iValue));
+  return db_write_string (lpszSection, lpszEntry, (LPCTSTR) CFormat ("%i", iValue));
   }
 
 
