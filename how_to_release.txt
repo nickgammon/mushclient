@@ -1,0 +1,121 @@
+HOW TO RELEASE MUSHCLIENT
+-------------------------
+
+Author: Nick Gammon
+Date:   20th July 2010
+
+
+PREPARATION
+
+1. Test changes
+2. Document new functions, and changes, in database
+3. Update readme.txt file with today's date as release date
+4. Make sure version number changed in doc.h and resource file
+
+
+HELP GENERATION
+
+1. Open project 'docgen'
+2. Execute program to build help RTF file from database (Ctrl+F5)
+3. To convert RTF file to mushclient.hlp, go to Windows Start Menu -> Run, and enter:
+    "\Program Files\Help Workshop\hcrtf.exe" \source\mushclient\docgen\help.hpj
+4. Help file (mushclient.hlp) should be generated with no errors or warnings.
+
+
+BUILD RELEASE VERSION
+
+1. Open project 'mushclient'
+2. Switch to Win32 Release build
+3. Rebuild all (Build menu) - this ensures all OK, and puts build date into executable
+
+
+MAKE INSTALLER
+
+1. Open directory: \source\mushclient\install
+2. Run shortcut: Make Installer
+3. Rename resulting file 'mushclient40x.exe' as appropriate (eg. mushclient454.exe)
+
+
+COMMIT FINAL CHANGES TO GIT
+
+1. Using the Git Bash window, do:
+    git commit -am "Final changes before release"
+    git push
+    
+2. Tag this release and push tags:
+    git tag -a v4.54 -m "Version 4.54 as released"
+    git push --tags  
+    
+
+FIND INSTALLER MD5 SUM
+
+1. Switch to install directory and type:
+   md5sum *454*    (version number here)
+   
+   
+UPLOAD INSTALLER
+
+1. In install directory:
+
+   sftp username@gammon.com.au
+   cd www/files/mushclient
+   put mushclient454.exe
+   chmod 644 mushclient454.exe
+   Ctrl+D
+   
+2. Check upload:
+
+   ssh username@gammon.com.au
+   cd www/files/mushclient
+   md5sum *454*     (version number here)
+   
+
+DO ANNOUNCEMENT
+
+1. Copy previous announcement from forum and paste into Crimson Editor
+2. Change version number (eg. 4.53 to 4.54) and executable file name: (eg. 453 to 454)
+3. Near the end change the "git diff" and "git log" lines to update the *previous* version (eg. 4.52 to 4.53)
+4. Run the updated "git diff" and "git log" commands, pasting the results into the announcement
+5. Update the size of the installer (eg. from 2.79 Mb to 2.80 Mb)
+6. Update the MD5sum hex figure in the announcement
+7. Amend the "improvements" lines in the announcement to reflect the major changes
+8. Paste resulting message into a new forum message announcing the new release
+9. Find the post number of that new message and amend forum database table bbsection, record 1 (MUSHclient section) to show the latest release and forum post to read about it.
+
+
+UPDATE RELEASE NOTES
+
+1. Change record for relnotes for this release to have today's date as release date
+
+
+GENERATE DOCUMENTATION SQL FROM DATABASE
+
+1. On Ubuntu server, run this:
+    . dumpdoc.sh
+    
+    
+UPLOAD AND INSTALL DOCUMENTATION
+
+1. Upload:
+
+    sftp username@gammon.com.au
+    cd sql
+    put documentation.sql.bz2
+    Ctrl+D
+    
+2. Install:
+
+    ssh username@gammon.com.au
+    cd sql
+    rm documentation.sql
+    bunzip2 documentation.sql.bz2
+    . dbsetup
+    mysql -h $SERVER -u $USER -p $DATABASE < documentation.sql
+    (password)
+    Ctrl+D
+    
+    
+    
+ 
+
+   
