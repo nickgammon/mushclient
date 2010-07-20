@@ -864,13 +864,14 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     // work out operating system
 
-    char * sVersion = "unknown";
+    CString sVersion = TFormat ("Unknown (Platform %ld, Major %ld, Minor %ld)",
+                               ver.dwPlatformId, ver.dwMajorVersion, ver.dwMinorVersion);
 
     if (ver.dwPlatformId == 1)  // Windows 95-style versions
       {
       switch (ver.dwMinorVersion)
         {
-        case 0:  sVersion = "Windows 95"; break;
+        case  0: sVersion = "Windows 95"; break;
         case 10: sVersion = "Windows 98"; break;
         case 90: sVersion = "Windows ME"; break;
         } // end of switch on dwMinorVersion
@@ -880,12 +881,12 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       switch (ver.dwMajorVersion)
         {
         case 3: sVersion = "Windows NT 3.51"; break;
-        case 4:  sVersion = "Windows NT"; break;
+        case 4: sVersion = "Windows NT";      break;
         case 5: 
           switch (ver.dwMinorVersion)
             {
-            case 0: sVersion = "Windows 2000"; break;
-            case 1: sVersion = "Windows XP"; break;
+            case 0: sVersion = "Windows 2000";        break;
+            case 1: sVersion = "Windows XP";          break;
             case 2: sVersion = "Windows Server 2003"; break;
             } // end of switch on dwMinorVersion
           break;  // end case 5 of dwMinorVersion
@@ -894,7 +895,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
           switch (ver.dwMinorVersion)
             {
             case 0: sVersion = "Windows Vista"; break;
-            case 1: sVersion = "Windows 7"; break;
+            case 1: sVersion = "Windows 7";     break;
             } // end of switch on dwMinorVersion
           break;  // end case 6 of dwMinorVersion
 
@@ -902,8 +903,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       }  // end of dwPlatformId == 2
 
 
-    Note (TFormat ("Operating system: %s", sVersion));
-
+    Note (TFormat ("Operating system: %s", (LPCTSTR) sVersion));
 
     // show included library versions
     Note (TFormat ("Using: %s, PCRE %s, PNG %s, SQLite3 %s, Zlib %s", 
@@ -912,7 +912,6 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
           PNG_LIBPNG_VER_STRING, 
           SQLITE_VERSION, 
           ZLIB_VERSION));
-
 
     // scripting info
 
@@ -926,9 +925,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
                     (LPCTSTR) m_strScriptFilename
                     ));
 
-
     // count triggers, aliases, timers
-
 
     POSITION pos;
     CString strName;
@@ -1086,13 +1083,15 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       {
       pPlugin = m_PluginList.GetNext (pos);
       nTotal++;
+      
+      if (pPlugin->m_bEnabled)
+         nEnabled++;
+
       Note (TFormat ("Plugin: %s, '%s', enabled: %s", 
             (LPCTSTR) pPlugin->m_strID, 
             (LPCTSTR) pPlugin->m_strName, 
             (pPlugin->m_bEnabled ? "yes" : "no")));
 
-      if (pPlugin->m_bEnabled)
-         nEnabled++;
 
       }
 
@@ -1141,6 +1140,48 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       }   // end of loop through views
 
     Note (TFormat ("** Commands in command history: %ld", nTotal));
+
+    // miniwindows
+    nTotal = 0;
+    nEnabled = 0;
+
+    for (MiniWindowMapIterator it = m_MiniWindows.begin (); 
+         it != m_MiniWindows.end ();
+         it++)
+           {
+           CMiniWindow * pWindow = it->second;
+           nTotal++;
+           int nHotspots = 0;
+
+           if (pWindow->GetShow ())
+             nEnabled++;
+
+          // count hotspots
+          for (HotspotMapIterator hit = pWindow->m_Hotspots.begin (); 
+               hit != pWindow->m_Hotspots.end ();
+               hit++)
+                 {
+                 nHotspots++;
+                 }
+
+           Note (TFormat ("Window: '%s', at (%ld,%ld,%ld,%ld), enabled: %s",
+                it->first.c_str (), 
+                pWindow->m_rect.left,
+                pWindow->m_rect.top,
+                pWindow->m_rect.right,
+                pWindow->m_rect.bottom,
+                (pWindow->GetShow () ? "yes" : "no")));
+
+           Note (TFormat ("        width: %ld, height: %ld, position: %d, hotspots: %ld", 
+                pWindow->GetWidth (),
+                pWindow->GetHeight (),
+                pWindow->GetPosition (),
+                nHotspots
+                ));
+
+           }
+
+    Note (TFormat ("** Miniwindows: %ld loaded, %ld enabled.", nTotal, nEnabled));
 
     Note ("");
     Note ("-------------- End summary --------------");
