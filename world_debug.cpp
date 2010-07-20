@@ -5,6 +5,8 @@
 #include "sendvw.h"
 #include "Color.h"
 
+#include "png/png.h"  // for version
+
 // my debugging
 
 // memory state tracking
@@ -841,6 +843,310 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     Note (TFormat ("%i info item%s.", PLURAL (iCount)));
 
     } // end of info
+//-----------------------------------------------------------------------
+//          summary
+//-----------------------------------------------------------------------
+  else if (strcmp (Command, "summary") == 0)
+    {
+
+    Note ("");
+    Note ("-------------- MUSHclient summary --------------");
+    Note ("");
+	  Note (TFormat ("MUSHclient version: %s", MUSHCLIENT_VERSION));
+    // show compilation date
+    Note (TFormat ("Compiled: %s.", __DATE__));
+    
+    OSVERSIONINFO ver;
+    // see which OS we are using
+    memset(&ver, 0, sizeof(ver));
+    ver.dwOSVersionInfoSize = sizeof(ver);
+    ::GetVersionEx (&ver);
+
+    // work out operating system
+
+    char * sVersion = "unknown";
+
+    if (ver.dwPlatformId == 1)  // Windows 95-style versions
+      {
+      switch (ver.dwMinorVersion)
+        {
+        case 0:  sVersion = "Windows 95"; break;
+        case 10: sVersion = "Windows 98"; break;
+        case 90: sVersion = "Windows ME"; break;
+        } // end of switch on dwMinorVersion
+      }  // end of dwPlatformId == 1
+    else if  (ver.dwPlatformId == 2)  // Windows NT versions
+      {
+      switch (ver.dwMajorVersion)
+        {
+        case 3: sVersion = "Windows NT 3.51"; break;
+        case 4:  sVersion = "Windows NT"; break;
+        case 5: 
+          switch (ver.dwMinorVersion)
+            {
+            case 0: sVersion = "Windows 2000"; break;
+            case 1: sVersion = "Windows XP"; break;
+            case 2: sVersion = "Windows Server 2003"; break;
+            } // end of switch on dwMinorVersion
+          break;  // end case 5 of dwMinorVersion
+
+        case 6: 
+          switch (ver.dwMinorVersion)
+            {
+            case 0: sVersion = "Windows Vista"; break;
+            case 1: sVersion = "Windows 7"; break;
+            } // end of switch on dwMinorVersion
+          break;  // end case 6 of dwMinorVersion
+
+        }  // end of switch on dwMajorVersion
+      }  // end of dwPlatformId == 2
+
+
+    Note (TFormat ("Operating system: %s", sVersion));
+
+
+    // show included library versions
+    Note (TFormat ("Using: %s, PCRE %s, PNG %s, SQLite3 %s, Zlib %s", 
+          LUA_RELEASE, 
+          XSTRING(PCRE_MAJOR.PCRE_MINOR), 
+          PNG_LIBPNG_VER_STRING, 
+          SQLITE_VERSION, 
+          ZLIB_VERSION));
+
+
+    // scripting info
+
+    Note (TFormat ("Script language: %s, enabled: %s", 
+                  (LPCTSTR) m_strLanguage,
+                  (m_bEnableScripts ? "yes" : "no")));
+    Note (TFormat ("Scripting active: %s", 
+      (GetScriptEngine () ? "yes" : "no")));
+    if (!m_strScriptFilename.IsEmpty ())
+      Note (TFormat ("Script file: %s",
+                    (LPCTSTR) m_strScriptFilename
+                    ));
+
+
+    // count triggers, aliases, timers
+
+
+    POSITION pos;
+    CString strName;
+    CTrigger * pTrigger;
+    CAlias * pAlias;
+    CTimer * pTimer;
+    CPlugin * pPlugin;
+
+    __int64   nTotalMatches = 0;
+    __int64   nTotalMatchAttempts = 0;
+    long      nTotal = 0;
+    long      nEnabled = 0;
+    long      nRegexp = 0;
+    LONGLONG  iTimeTaken = 0;
+    double    elapsed_time;
+
+    
+    // count number of triggers matched
+    for (pos = m_TriggerMap.GetStartPosition(); pos; )
+      {
+      m_TriggerMap.GetNextAssoc (pos, strName, pTrigger);
+      nTotal++;
+
+      if (pTrigger->regexp)
+        {
+        iTimeTaken += pTrigger->regexp->iTimeTaken;
+        nTotalMatchAttempts += pTrigger->regexp->m_iMatchAttempts;
+        }
+
+      nTotalMatches += pTrigger->nMatched;
+
+      if (pTrigger->bRegexp)
+         nRegexp++;
+
+      if (pTrigger->bEnabled)
+         nEnabled++;
+      }
+
+    // time taken to execute triggers
+    if (App.m_iCounterFrequency > 0)
+      {
+      elapsed_time = ((double) iTimeTaken) / 
+                      ((double) App.m_iCounterFrequency);
+      }
+    else
+      elapsed_time = 0;
+
+    Note (TFormat ("** Triggers: %ld in world file, triggers enabled: %s.", 
+                  nTotal,
+                  (m_enable_triggers ? "yes" : "no")));
+    Note (TFormat ("   %ld enabled, %ld regexp, %I64d attempts, %I64d matched, %1.6f seconds.",
+                   nEnabled, nRegexp, nTotalMatchAttempts, nTotalMatches, elapsed_time));
+
+
+    nTotalMatches = 0;
+    nTotalMatchAttempts = 0;
+    nTotal = 0;
+    nEnabled = 0;
+    nRegexp = 0;
+    iTimeTaken = 0;
+    elapsed_time;
+
+    // count number of aliases matched
+    for (pos = m_AliasMap.GetStartPosition(); pos; )
+      {
+      m_AliasMap.GetNextAssoc (pos, strName, pAlias);
+      nTotal++;
+
+      if (pAlias->regexp)
+        {
+        iTimeTaken += pAlias->regexp->iTimeTaken;
+        nTotalMatchAttempts += pAlias->regexp->m_iMatchAttempts;
+        }
+
+      nTotalMatches += pAlias->nMatched;
+      if (pAlias->bRegexp)
+         nRegexp++;
+
+      if (pAlias->bEnabled)
+         nEnabled++;
+      }
+
+    // time taken to execute aliases
+    if (App.m_iCounterFrequency > 0)
+      {
+      elapsed_time = ((double) iTimeTaken) / 
+                      ((double) App.m_iCounterFrequency);
+      }
+    else
+      elapsed_time = 0;
+
+    Note (TFormat ("** Aliases: %ld in world file, aliases enabled: %s.", 
+                  nTotal,
+                  (m_enable_aliases ? "yes" : "no")));
+    Note (TFormat ("   %ld enabled, %ld regexp, %I64d attempts, %I64d matched, %1.6f seconds.",
+                   nEnabled, nRegexp, nTotalMatchAttempts, nTotalMatches, elapsed_time));
+
+    nTotalMatches = 0;
+    nTotal = 0;
+    nEnabled = 0;
+
+    // count number of timers fired
+    for (pos = m_TimerMap.GetStartPosition(); pos; )
+      {
+      m_TimerMap.GetNextAssoc (pos, strName, pTimer);
+      nTotal++;
+
+      nTotalMatches += pTimer->nMatched;
+
+      if (pTimer->bEnabled)
+         nEnabled++;
+      }
+
+
+    Note (TFormat ("** Timers: %ld in world file, timers enabled: %s.", 
+                  nTotal,
+                  (m_bEnableTimers ? "yes" : "no")));
+    Note (TFormat ("   %ld enabled, %I64d fired.",
+                   nEnabled, nTotalMatches));
+
+    // time taken to do MCCP
+    if (App.m_iCounterFrequency > 0)
+      {
+      elapsed_time = ((double) m_iCompressionTimeTaken) / 
+                      ((double) App.m_iCounterFrequency);
+      }
+    else
+      elapsed_time = 0;
+
+
+    nTotal = 0;
+
+    for (pos = GetVariableMap ().GetStartPosition(); pos; nTotal++)
+      {
+      CString strVariableName;
+      CVariable * variable_item;
+
+      GetVariableMap ().GetNextAssoc (pos, strVariableName, variable_item);
+      }
+
+    Note (TFormat ("** Variables: %ld.", nTotal));
+
+    if (m_bCompress)
+      Note (TFormat ("MCCP active, took %1.6f seconds to decompress", elapsed_time));
+    else
+      Note (Translate ("MCCP not active."));
+
+
+    // count and display plugins
+
+    nTotal = 0;
+    nEnabled = 0;
+
+    for (pos = m_PluginList.GetHeadPosition (); pos; iCount++)
+      {
+      pPlugin = m_PluginList.GetNext (pos);
+      nTotal++;
+      Note (TFormat ("Plugin: %s, '%s', enabled: %s", 
+            (LPCTSTR) pPlugin->m_strID, 
+            (LPCTSTR) pPlugin->m_strName, 
+            (pPlugin->m_bEnabled ? "yes" : "no")));
+
+      if (pPlugin->m_bEnabled)
+         nEnabled++;
+
+      }
+
+    Note (TFormat ("** Plugins: %ld loaded, %ld enabled.", nTotal, nEnabled));
+
+    // show bytes sent/received
+
+    __int64 nInK = m_nBytesIn / (__int64) 1024;
+    __int64 nOutK = m_nBytesOut / (__int64) 1024;
+    Note (TFormat ("Received: %I64d bytes (%I64d Kb)", m_nBytesIn, nInK));
+    Note (TFormat ("Sent: %I64d bytes (%I64d Kb)", m_nBytesOut, nOutK));
+
+    Note (TFormat ("Output buffer: %i of %ld lines.", 
+                                  m_LineList.GetCount (),
+                                  m_maxlines));
+
+    Note (TFormat ("Total lines received: %ld", m_total_lines));
+
+    //MXP
+
+    Note (TFormat ("MXP active: %s, Pueblo mode: %s", 
+                    (m_bMXP ? "yes" : "no"),
+                    (m_bPuebloActive ? "yes" : "no") ));
+
+    Note (TFormat ("MXP tags received: %I64d", m_iMXPtags));        
+    Note (TFormat ("MXP entities received: %I64d", m_iMXPentities));    
+    Note (TFormat ("MXP errors: %I64d", m_iMXPerrors));              
+
+
+    // commands typed
+
+    nTotal = 0;
+
+    for(pos = GetFirstViewPosition(); pos != NULL; )
+	    {
+	    CView* pView = GetNextView(pos);
+	    
+	    if (pView->IsKindOf(RUNTIME_CLASS(CSendView)))
+  	    {
+		    CSendView* pmyView = (CSendView*)pView;
+
+        for (POSITION pos = pmyView->m_msgList.GetHeadPosition(); pos; nTotal++)
+            pmyView->m_msgList.GetNext (pos);
+
+	      }	  // end of being a CSendView
+      }   // end of loop through views
+
+    Note (TFormat ("** Commands in command history: %ld", nTotal));
+
+    Note ("");
+    Note ("-------------- End summary --------------");
+
+    } // end of summary
+
 #ifdef PANE
 //-----------------------------------------------------------------------
 //          panes
@@ -924,6 +1230,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     Note ("plugins");
     Note ("server_elements");
     Note ("server_entities");
+    Note ("summary");
     Note ("triggers");
     Note ("variables");
     }   // end of invalid/none entered

@@ -48,14 +48,6 @@ UINT AFXAPI AfxGetFileTitle(LPCTSTR lpszPathName, LPTSTR lpszTitle, UINT nMax);
 #endif
 #endif
 
-/* These macros are the standard way of turning unquoted text into C strings.
-They allow macros like PCRE_MAJOR to be defined without quotes, which is
-convenient for user programs that want to test its value. */
-
-#define STRING(a)  # a
-#define XSTRING(s) STRING(s)
-
-
 #ifdef _DEBUG
 //#define new DEBUG_NEW
 #undef THIS_FILE

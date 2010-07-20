@@ -919,3 +919,10 @@ void ChangeToStartupDirectory ();
 #define SCRIPTERRORFORECOLOUR "orangered"  // "darkorange"
 #define SCRIPTERRORBACKCOLOUR "black"
 #define SCRIPTERRORCONTEXTFORECOLOUR "burlywood"
+
+/* These macros are the standard way of turning unquoted text into C strings.
+They allow macros like PCRE_MAJOR to be defined without quotes, which is
+convenient for user programs that want to test its value. */
+
+#define STRING(a)  # a
+#define XSTRING(s) STRING(s)

@@ -88,7 +88,7 @@ static tGlobalConfigurationAlphaOption AlphaGlobalOptionsTable  [] = {
 { GLB_ALPHA_OPT (m_strNotepadQuoteString       ), "NotepadQuoteString",     "> " },                    
 { GLB_ALPHA_OPT (m_strPluginList               ), "PluginList",                  "" },
 { GLB_ALPHA_OPT (m_strPluginsDirectory         ), "PluginsDirectory", ".\\worlds\\plugins\\" },
-{ GLB_ALPHA_OPT (m_strDefaultStateFilesDirectory), "StateFilesDirectory", ".\\worlds\\plugins\\state\\" },
+{ GLB_ALPHA_OPT (m_strDefaultStateFilesDirectory), "StateFilesDirectory", ".\\worlds\\plugins\\state\\" },   // however see below
 { GLB_ALPHA_OPT (m_strPrinterFont              ), "PrinterFont",                "Courier" },
 { GLB_ALPHA_OPT (m_strTrayIconFileName         ), "TrayIconFileName",  "" },                    
 { GLB_ALPHA_OPT (m_strWordDelimiters           ), "WordDelimiters",         ".,()[]\"\'" },
@@ -136,6 +136,10 @@ int CMUSHclientApp::PopulateDatabase (void)
         strcmp (AlphaGlobalOptionsTable [i].pName, "FixedPitchFont") == 0)
        AlphaGlobalOptionsTable [i].sDefault = (LPCTSTR) m_strFixedPitchFont;
     
+    // For Willfa, see below
+    if (strcmp (AlphaGlobalOptionsTable [i].pName, "StateFilesDirectory") == 0)
+       AlphaGlobalOptionsTable [i].sDefault = (LPCTSTR) (App.m_strPluginsDirectory + "state\\");
+
     CString strValue = GetProfileString ("Global prefs",  
                                 AlphaGlobalOptionsTable [i].pName, 
                                 AlphaGlobalOptionsTable [i].sDefault);
@@ -159,6 +163,13 @@ void CMUSHclientApp::LoadGlobalsFromDatabase (void)
   {
   int i;
   string db_value;
+
+  // for Willfa - make state directory default to plugins directory (whatever that is now) with state\ at the end
+  for (i = 0; AlphaGlobalOptionsTable [i].pName; i++)
+    {
+    if (strcmp (AlphaGlobalOptionsTable [i].pName, "StateFilesDirectory") == 0)
+       AlphaGlobalOptionsTable [i].sDefault = (LPCTSTR) (App.m_strPluginsDirectory + "state\\");
+    }
 
   for (i = 0; GlobalOptionsTable [i].pName; i++)
     {
