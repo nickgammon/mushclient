@@ -1142,11 +1142,6 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     Note (TFormat ("Received: %I64d bytes (%I64d Kb)", m_nBytesIn, nInK));
     Note (TFormat ("Sent: %I64d bytes (%I64d Kb)", m_nBytesOut, nOutK));
     Note (TFormat ("Received %I64d packets, sent %I64d packets.", m_iInputPacketCount, m_iOutputPacketCount));
-
-    Note (TFormat ("Output buffer: %i of %ld lines.", 
-                                  m_LineList.GetCount (),
-                                  m_maxlines));
-
     Note (TFormat ("Total lines received: %ld", m_total_lines));
 
     Note (TFormat ("This connection: Sent %ld lines, received %ld lines.", m_nTotalLinesSent, m_nTotalLinesReceived));
@@ -1271,6 +1266,10 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       Note (TFormat ("               width %ld characters, wrap at column %ld, height %ld lines.",
             r.right / m_FontWidth, m_nWrapColumn, r.bottom / m_FontHeight));
 
+
+    Note (TFormat ("Output buffer: %i of %ld lines.", 
+                                  m_LineList.GetCount (),
+                                  m_maxlines));
 
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Miscellaneous --");
 
