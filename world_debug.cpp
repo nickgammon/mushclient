@@ -853,12 +853,31 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
   else if (strcmp (Command, "summary") == 0)
     {
 
+    POSITION pos;
+    CString strName;
+    CTrigger * pTrigger;
+    CAlias * pAlias;
+    CTimer * pTimer;
+    CPlugin * pPlugin;
+
+    __int64   nTotalMatches = 0;
+    __int64   nTotalMatchAttempts = 0;
+    long      nTotal = 0;
+    long      nEnabled = 0;
+    long      nRegexp = 0;
+    LONGLONG  iTimeTaken = 0;
+    double    elapsed_time;
+    int i;
+
+
     Note ("");
     Note ("-------------- MUSHclient summary --------------");
     Note ("");
 	  Note (TFormat ("MUSHclient version: %s", MUSHCLIENT_VERSION));
     // show compilation date
     Note (TFormat ("Compiled: %s.", __DATE__));
+    Note (CTime::GetCurrentTime().Format (TranslateTime ("Time now: %A, %B %d, %Y, %#I:%M %p")));
+
     
     OSVERSIONINFO ver;
     // see which OS we are using
@@ -920,6 +939,11 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     Note (TFormat ("World name: '%s', ID: %s", 
                     (LPCTSTR) m_mush_name, (LPCTSTR) m_strWorldID));
 
+    CString strStatus = GetConnectionStatus (m_iConnectPhase);
+
+    Note (TFormat ("Connect phase: %i (%s)", 
+          m_iConnectPhase, (LPCTSTR) strStatus));
+
     // scripting info
 
     Note (TFormat ("Script language: %s, enabled: %s", 
@@ -932,24 +956,15 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
                     (LPCTSTR) m_strScriptFilename
                     ));
 
-    // count triggers, aliases, timers
+    // time taken to execute scripts
+    if (App.m_iCounterFrequency > 0)
+      {
+      elapsed_time = ((double) m_iScriptTimeTaken) / 
+                      ((double) App.m_iCounterFrequency);
+      Note (TFormat ("Scripting for: %1.6f seconds.", elapsed_time));
+      }
 
-    POSITION pos;
-    CString strName;
-    CTrigger * pTrigger;
-    CAlias * pAlias;
-    CTimer * pTimer;
-    CPlugin * pPlugin;
-
-    __int64   nTotalMatches = 0;
-    __int64   nTotalMatchAttempts = 0;
-    long      nTotal = 0;
-    long      nEnabled = 0;
-    long      nRegexp = 0;
-    LONGLONG  iTimeTaken = 0;
-    double    elapsed_time;
-
-    
+   
     // count number of triggers matched
     for (pos = m_TriggerMap.GetStartPosition(); pos; )
       {
@@ -1076,10 +1091,17 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     Note (TFormat ("** Variables: %ld.", nTotal));
 
     if (m_bCompress)
+      {
       Note (TFormat ("MCCP active, took %1.6f seconds to decompress", elapsed_time));
+      Note (TFormat ("MCCP received %I64d compressed bytes, decompressed to %I64d bytes.", m_nTotalCompressed, m_nTotalUncompressed));
+      if (m_nTotalUncompressed)
+        {
+        double fRatio = (double) m_nTotalCompressed / (double) m_nTotalUncompressed * 100.0;
+        Note (TFormat ("MCCP compression ratio was: %6.1f%% (lower is better)", fRatio));
+        }
+      }
     else
       Note (Translate ("MCCP not active."));
-
 
     // count and display plugins
 
@@ -1110,12 +1132,15 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     __int64 nOutK = m_nBytesOut / (__int64) 1024;
     Note (TFormat ("Received: %I64d bytes (%I64d Kb)", m_nBytesIn, nInK));
     Note (TFormat ("Sent: %I64d bytes (%I64d Kb)", m_nBytesOut, nOutK));
+    Note (TFormat ("Received %I64d packets, sent %I64d packets.", m_iInputPacketCount, m_iOutputPacketCount));
 
     Note (TFormat ("Output buffer: %i of %ld lines.", 
                                   m_LineList.GetCount (),
                                   m_maxlines));
 
     Note (TFormat ("Total lines received: %ld", m_total_lines));
+
+    Note (TFormat ("This connection: Sent %ld lines, received %ld lines.", m_nTotalLinesSent, m_nTotalLinesReceived));
 
     //MXP
 
@@ -1224,12 +1249,31 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     // telnet negotiation
 
-    Note (TFormat ("** Telnet (IAC) received: DO: %ld, DONT: %ld, WILL: %ld, WONT: %ld, SB: %ld",
+    Note (TFormat ("Telnet (IAC) received: DO: %ld, DONT: %ld, WILL: %ld, WONT: %ld, SB: %ld",
                   m_nCount_IAC_DO,      
                   m_nCount_IAC_DONT,    
                   m_nCount_IAC_WILL,    
                   m_nCount_IAC_WONT,    
                   m_nCount_IAC_SB));
+
+
+    // logging?
+
+    Note (TFormat ("Logging: %s, tracing: %s", 
+          SHOW_TRUE (m_logfile), SHOW_TRUE (m_bTrace) ));
+
+    // databases?
+    Note (TFormat ("SQLite3 databases: %i", m_Databases.size ()));
+
+    // sound buffers?
+
+    nTotal = 0;
+
+    for (i = 0; i < MAX_SOUND_BUFFERS; i++)
+      if (m_pDirectSoundSecondaryBuffer [i])
+        nTotal++;
+
+    Note (TFormat ("DirectSound buffers in use: %ld", nTotal));
 
 
     // end summary
