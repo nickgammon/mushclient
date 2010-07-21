@@ -838,7 +838,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
         Note (CFormat ("%03i: %s = %s", InfoTypes [iCount].iInfoType,
                        InfoTypes [iCount].sDescription,
-                       CString (v.bstrVal)));
+                       (LPCTSTR) CString (v.bstrVal)));
 
         v.Clear ();   // get rid of string (is this necessary?)
         } // end of not VT_NULL
@@ -871,7 +871,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
 
     Note ("");
-    Note ("-------------- MUSHclient summary --------------");
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-------------- MUSHclient summary --------------");
     Note ("");
 	  Note (TFormat ("MUSHclient version: %s", MUSHCLIENT_VERSION));
     // show compilation date
@@ -939,13 +939,10 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     Note (TFormat ("World name: '%s', ID: %s", 
                     (LPCTSTR) m_mush_name, (LPCTSTR) m_strWorldID));
 
-    CString strStatus = GetConnectionStatus (m_iConnectPhase);
-
-    Note (TFormat ("Connect phase: %i (%s)", 
-          m_iConnectPhase, (LPCTSTR) strStatus));
 
     // scripting info
 
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Scripting --");
     Note (TFormat ("Script language: %s, enabled: %s", 
                   (LPCTSTR) m_strLanguage,
                   SHOW_TRUE (m_bEnableScripts)
@@ -964,6 +961,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       Note (TFormat ("Scripting for: %1.6f seconds.", elapsed_time));
       }
 
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Triggers, aliases, timers, variables --");
    
     // count number of triggers matched
     for (pos = m_TriggerMap.GetStartPosition(); pos; )
@@ -1090,6 +1088,8 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     Note (TFormat ("** Variables: %ld.", nTotal));
 
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- MCCP --");
+
     if (m_bCompress)
       {
       Note (TFormat ("MCCP active, took %1.6f seconds to decompress", elapsed_time));
@@ -1102,6 +1102,8 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       }
     else
       Note (Translate ("MCCP not active."));
+
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Plugins --");
 
     // count and display plugins
 
@@ -1126,7 +1128,14 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     Note (TFormat ("** Plugins: %ld loaded, %ld enabled.", nTotal, nEnabled));
 
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Comms --");
+
     // show bytes sent/received
+
+    CString strStatus = GetConnectionStatus (m_iConnectPhase);
+
+    Note (TFormat ("Connect phase: %i (%s)", 
+          m_iConnectPhase, (LPCTSTR) strStatus));
 
     __int64 nInK = m_nBytesIn / (__int64) 1024;
     __int64 nOutK = m_nBytesOut / (__int64) 1024;
@@ -1142,6 +1151,17 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     Note (TFormat ("This connection: Sent %ld lines, received %ld lines.", m_nTotalLinesSent, m_nTotalLinesReceived));
 
+    // telnet negotiation
+
+    Note (TFormat ("Telnet (IAC) received: DO: %ld, DONT: %ld, WILL: %ld, WONT: %ld, SB: %ld",
+                  m_nCount_IAC_DO,      
+                  m_nCount_IAC_DONT,    
+                  m_nCount_IAC_WILL,    
+                  m_nCount_IAC_WONT,    
+                  m_nCount_IAC_SB));
+
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- MXP --");
+
     //MXP
 
     Note (TFormat ("MXP active: %s, Pueblo mode: %s", 
@@ -1152,6 +1172,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     Note (TFormat ("MXP entities received: %I64d", m_iMXPentities));    
     Note (TFormat ("MXP errors: %I64d", m_iMXPerrors));              
 
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Commands --");
 
     // commands typed
 
@@ -1171,7 +1192,13 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 	      }	  // end of being a CSendView
       }   // end of loop through views
 
-    Note (TFormat ("** Commands in command history: %ld", nTotal));
+    Note (TFormat ("Commands in command history: %ld", nTotal));
+
+    // accelerators
+
+    Note (TFormat ("Accelerators defined: %ld", m_AcceleratorToCommandMap.size ()));
+
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Miniwindows --");
 
     // miniwindows
     nTotal = 0;
@@ -1227,6 +1254,8 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     Note (TFormat ("** Miniwindows: %ld loaded, %ld shown.", nTotal, nEnabled));
 
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Output window --");
+
     // output window info
 
     CRect r (0, 0, 0, 0);
@@ -1235,27 +1264,15 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     if (pmyView)
         pmyView->GetClientRect(&r);
 
-    Note (TFormat ("** Output pixels: width %ld, height: %ld, font width: %ld, font height: %ld",
+    Note (TFormat ("Output pixels: width %ld, height: %ld, font width: %ld, font height: %ld",
           r.right, r.bottom, m_FontWidth, m_FontHeight));
 
     if (m_FontWidth > 0 && m_FontHeight > 0)
-      Note (TFormat ("                  width %ld characters, wrap at column %ld, height %ld lines.",
+      Note (TFormat ("               width %ld characters, wrap at column %ld, height %ld lines.",
             r.right / m_FontWidth, m_nWrapColumn, r.bottom / m_FontHeight));
 
 
-    // accelerators
-
-    Note (TFormat ("Accelerators defined: %ld", m_AcceleratorToCommandMap.size ()));
-
-    // telnet negotiation
-
-    Note (TFormat ("Telnet (IAC) received: DO: %ld, DONT: %ld, WILL: %ld, WONT: %ld, SB: %ld",
-                  m_nCount_IAC_DO,      
-                  m_nCount_IAC_DONT,    
-                  m_nCount_IAC_WILL,    
-                  m_nCount_IAC_WONT,    
-                  m_nCount_IAC_SB));
-
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Miscellaneous --");
 
     // logging?
 
@@ -1273,13 +1290,12 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       if (m_pDirectSoundSecondaryBuffer [i])
         nTotal++;
 
-    Note (TFormat ("DirectSound buffers in use: %ld", nTotal));
-
+    Note (TFormat ("Sound buffers in use: %ld", nTotal));
 
     // end summary
 
     Note ("");
-    Note ("-------------- End summary --------------");
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-------------- End summary --------------");
 
     } // end of summary
 

@@ -1020,7 +1020,6 @@ CString str;
   m_iInputPacketCount = 0;
   m_iOutputPacketCount = 0;
   m_iUTF8ErrorCount = 0;
-  m_iOutputWindowRedrawCount = 0;
 
   str = TFormat ("Connecting to %s, port %d", 
               (const char *) m_mush_name, m_port);

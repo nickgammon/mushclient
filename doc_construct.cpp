@@ -410,7 +410,7 @@ int i;
   m_nCount_IAC_WONT = 0;    
   m_nCount_IAC_SB = 0;      
 
-
+  m_iOutputWindowRedrawCount = 0;
 
   // set up some default triggers for MUSHes
 
