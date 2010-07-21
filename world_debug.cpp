@@ -4,6 +4,8 @@
 #include "mxp\mxp.h"
 #include "sendvw.h"
 #include "Color.h"
+#include "childfrm.h"
+#include "MUSHview.h"
 
 #include "png/png.h"  // for version
 
@@ -20,6 +22,8 @@ extern tCommandIDMapping CommandIDs [];
 extern CString strMacroDescriptions [MACRO_COUNT];
 extern CString strKeypadNames [eKeypad_Max_Items];
 extern tInfoTypeMapping InfoTypes [];
+
+#define SHOW_TRUE(x) ((x) ? "yes" : "no")
 
 // compare-less for colours
 struct colour_less : binary_function<COLORREF, COLORREF, bool>
@@ -730,7 +734,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       Note (TFormat ("Author:     %s", (LPCTSTR) p->m_strAuthor));
       Note (TFormat ("Disk file:  %s", (LPCTSTR) p->m_strSource));
       Note (TFormat ("Language:   %s", (LPCTSTR) p->m_strLanguage));
-      Note (TFormat ("Enabled:    %s", (LPCTSTR) (p->m_bEnabled ? "yes" : "no")));
+      Note (TFormat ("Enabled:    %s", SHOW_TRUE (p->m_bEnabled)));
 
       if (!p->m_strScript.IsEmpty ())
         {
@@ -906,20 +910,23 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     Note (TFormat ("Operating system: %s", (LPCTSTR) sVersion));
 
     // show included library versions
-    Note (TFormat ("Using: %s, PCRE %s, PNG %s, SQLite3 %s, Zlib %s", 
+    Note (TFormat ("Libraries: %s, PCRE %s, PNG %s, SQLite3 %s, Zlib %s", 
           LUA_RELEASE, 
           XSTRING(PCRE_MAJOR.PCRE_MINOR), 
           PNG_LIBPNG_VER_STRING, 
           SQLITE_VERSION, 
           ZLIB_VERSION));
 
+    Note (TFormat ("World name: '%s', ID: %s", 
+                    (LPCTSTR) m_mush_name, (LPCTSTR) m_strWorldID));
+
     // scripting info
 
     Note (TFormat ("Script language: %s, enabled: %s", 
                   (LPCTSTR) m_strLanguage,
-                  (m_bEnableScripts ? "yes" : "no")));
-    Note (TFormat ("Scripting active: %s", 
-      (GetScriptEngine () ? "yes" : "no")));
+                  SHOW_TRUE (m_bEnableScripts)
+                  ));
+    Note (TFormat ("Scripting active: %s", SHOW_TRUE (GetScriptEngine ()) ));
     if (!m_strScriptFilename.IsEmpty ())
       Note (TFormat ("Script file: %s",
                     (LPCTSTR) m_strScriptFilename
@@ -975,7 +982,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     Note (TFormat ("** Triggers: %ld in world file, triggers enabled: %s.", 
                   nTotal,
-                  (m_enable_triggers ? "yes" : "no")));
+                  SHOW_TRUE (m_enable_triggers)));
     Note (TFormat ("   %ld enabled, %ld regexp, %I64d attempts, %I64d matched, %1.6f seconds.",
                    nEnabled, nRegexp, nTotalMatchAttempts, nTotalMatches, elapsed_time));
 
@@ -1019,7 +1026,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     Note (TFormat ("** Aliases: %ld in world file, aliases enabled: %s.", 
                   nTotal,
-                  (m_enable_aliases ? "yes" : "no")));
+                  SHOW_TRUE (m_enable_aliases)));
     Note (TFormat ("   %ld enabled, %ld regexp, %I64d attempts, %I64d matched, %1.6f seconds.",
                    nEnabled, nRegexp, nTotalMatchAttempts, nTotalMatches, elapsed_time));
 
@@ -1042,7 +1049,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     Note (TFormat ("** Timers: %ld in world file, timers enabled: %s.", 
                   nTotal,
-                  (m_bEnableTimers ? "yes" : "no")));
+                  SHOW_TRUE (m_bEnableTimers)));
     Note (TFormat ("   %ld enabled, %I64d fired.",
                    nEnabled, nTotalMatches));
 
@@ -1090,7 +1097,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       Note (TFormat ("Plugin: %s, '%s', enabled: %s", 
             (LPCTSTR) pPlugin->m_strID, 
             (LPCTSTR) pPlugin->m_strName, 
-            (pPlugin->m_bEnabled ? "yes" : "no")));
+            SHOW_TRUE (pPlugin->m_bEnabled)));
 
 
       }
@@ -1113,8 +1120,8 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     //MXP
 
     Note (TFormat ("MXP active: %s, Pueblo mode: %s", 
-                    (m_bMXP ? "yes" : "no"),
-                    (m_bPuebloActive ? "yes" : "no") ));
+                    SHOW_TRUE (m_bMXP ),
+                    SHOW_TRUE (m_bPuebloActive) ));
 
     Note (TFormat ("MXP tags received: %I64d", m_iMXPtags));        
     Note (TFormat ("MXP entities received: %I64d", m_iMXPentities));    
@@ -1152,6 +1159,8 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
            CMiniWindow * pWindow = it->second;
            nTotal++;
            int nHotspots = 0;
+           int nFonts = 0;
+           int nImages = 0;
 
            if (pWindow->GetShow ())
              nEnabled++;
@@ -1160,28 +1169,70 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
           for (HotspotMapIterator hit = pWindow->m_Hotspots.begin (); 
                hit != pWindow->m_Hotspots.end ();
                hit++)
-                 {
                  nHotspots++;
-                 }
 
-           Note (TFormat ("Window: '%s', at (%ld,%ld,%ld,%ld), enabled: %s",
+          for (FontMap::const_iterator fit = pWindow->GetFonts ().begin (); 
+               fit != pWindow->GetFonts ().end ();
+               fit++)
+                 nFonts++;
+
+          for (ImageMap::const_iterator  imit = pWindow->GetImages ().begin (); 
+               imit != pWindow->GetImages ().end ();
+               imit++)
+                 nImages++;
+
+           Note (TFormat ("Window: '%s', at (%ld,%ld,%ld,%ld), shown: %s",
                 it->first.c_str (), 
                 pWindow->m_rect.left,
                 pWindow->m_rect.top,
                 pWindow->m_rect.right,
                 pWindow->m_rect.bottom,
-                (pWindow->GetShow () ? "yes" : "no")));
+                SHOW_TRUE (pWindow->GetShow ())));
 
-           Note (TFormat ("        width: %ld, height: %ld, position: %d, hotspots: %ld", 
+           Note (TFormat ("        width: %ld, height: %ld, position: %d, hotspots: %ld, fonts: %ld, images: %ld", 
                 pWindow->GetWidth (),
                 pWindow->GetHeight (),
                 pWindow->GetPosition (),
-                nHotspots
+                nHotspots,
+                nFonts,
+                nImages
                 ));
 
            }
 
-    Note (TFormat ("** Miniwindows: %ld loaded, %ld enabled.", nTotal, nEnabled));
+    Note (TFormat ("** Miniwindows: %ld loaded, %ld shown.", nTotal, nEnabled));
+
+    // output window info
+
+    CRect r (0, 0, 0, 0);
+    CMUSHView* pmyView = GetFirstOutputWindow ();
+
+    if (pmyView)
+        pmyView->GetClientRect(&r);
+
+    Note (TFormat ("** Output pixels: width %ld, height: %ld, font width: %ld, font height: %ld",
+          r.right, r.bottom, m_FontWidth, m_FontHeight));
+
+    if (m_FontWidth > 0 && m_FontHeight > 0)
+      Note (TFormat ("                  width %ld characters, wrap at column %ld, height %ld lines.",
+            r.right / m_FontWidth, m_nWrapColumn, r.bottom / m_FontHeight));
+
+
+    // accelerators
+
+    Note (TFormat ("Accelerators defined: %ld", m_AcceleratorToCommandMap.size ()));
+
+    // telnet negotiation
+
+    Note (TFormat ("** Telnet (IAC) received: DO: %ld, DONT: %ld, WILL: %ld, WONT: %ld, SB: %ld",
+                  m_nCount_IAC_DO,      
+                  m_nCount_IAC_DONT,    
+                  m_nCount_IAC_WILL,    
+                  m_nCount_IAC_WONT,    
+                  m_nCount_IAC_SB));
+
+
+    // end summary
 
     Note ("");
     Note ("-------------- End summary --------------");

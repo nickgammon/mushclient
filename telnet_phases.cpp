@@ -278,6 +278,9 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
 
   TRACE1 ("<%d>", c);
   m_phase = NONE;  // back to normal text after this character
+
+  m_nCount_IAC_WILL++;
+
   switch (c)
     {
     case TELOPT_COMPRESS2:
@@ -381,6 +384,8 @@ void CMUSHclientDoc::Phase_WONT (const unsigned char c)
   TRACE1 ("<%d>", c);
   m_phase = NONE;
 
+  m_nCount_IAC_WONT++;
+
   switch (c)
     {
     case TELOPT_ECHO:
@@ -411,6 +416,8 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
 
   TRACE1 ("<%d>", c);
   m_phase = NONE;
+
+  m_nCount_IAC_DO++;
 
   switch (c)
     {
@@ -464,6 +471,8 @@ void CMUSHclientDoc::Phase_DONT (const unsigned char c)
   m_phase = NONE;
   unsigned char p [3] = { IAC, WONT, c };
   SendPacket (p, sizeof p);
+
+  m_nCount_IAC_DONT++;
 
   switch (c)
     {
@@ -540,6 +549,8 @@ void CMUSHclientDoc::Phase_SUBNEGOTIATION_IAC (const unsigned char c)
     TRACE1 ("<%d> (invalid)", c);
 
   m_phase = NONE;      // negotiation is over, next byte is plain text
+
+  m_nCount_IAC_SB++;
 
   // subnegotiation is complete ...
   // we have IAC SB <m_subnegotiation_type> <m_IAC_subnegotiation_data> IAC SE

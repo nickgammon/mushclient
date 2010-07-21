@@ -1239,6 +1239,8 @@ class CMiniWindow
   const long GetFlags ()      const { return m_iFlags; }
   const CPoint GetLocation () const { return m_Location; }
   const COLORREF GetBackgroundColour () const { return m_iBackgroundColour; }
+  const FontMap & GetFonts () const { return m_Fonts; }
+  const ImageMap & GetImages () const { return m_Images; }
 
   void  Create (long Left, long Top, long Width, long Height,
                 short Position, long Flags, 

@@ -1278,6 +1278,12 @@ public:
 
   list<CPaneStyle> m_OutstandingLines;
 
+  long m_nCount_IAC_DO;         // count of IAC DO we got
+  long m_nCount_IAC_DONT;       // count of IAC DONT we got
+  long m_nCount_IAC_WILL;       // count of IAC WILL we got
+  long m_nCount_IAC_WONT;       // count of IAC WONT we got
+  long m_nCount_IAC_SB;         // count of IAC SB x IAC SE we got
+
 #ifdef PANE
   // for pane windows
 

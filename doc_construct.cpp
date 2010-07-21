@@ -404,6 +404,14 @@ int i;
   ZeroMemory (&m_bClient_IAC_WILL, sizeof m_bClient_IAC_WILL);
   ZeroMemory (&m_bClient_IAC_WONT, sizeof m_bClient_IAC_WONT);
 
+  m_nCount_IAC_DO = 0;      
+  m_nCount_IAC_DONT = 0;    
+  m_nCount_IAC_WILL = 0;    
+  m_nCount_IAC_WONT = 0;    
+  m_nCount_IAC_SB = 0;      
+
+
+
   // set up some default triggers for MUSHes
 
   /*
