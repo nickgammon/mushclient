@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="Summary"
+   author="Nick Gammon"
+   id="71a90acddb14f784437b8b80"
+   language="Lua"
+   purpose="Provides a system summary you can post into a forum message"
+   date_written="2010-07-22 07:29:52"
+   requires="4.55"
+   version="1.0"
+   >
+<description trim="y">
+Type "summary" to use.
+</description>
+
+</plugin>
+
+<aliases>
+  <alias
+   match="summary"
+   enabled="y"
+   send_to="12"
+   sequence="100"
+  >
+  <send>Debug "summary"</send>
+  </alias>
+</aliases>
+
+</muclient>
