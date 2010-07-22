@@ -567,7 +567,7 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
 void CMUSHclientDoc::LoadError (const char * sType, const char * sMessage, UINT iLine)
   {
 
-  CString strTitle = "XML import warnings - ";
+  CString strTitle = "[WARNING] ";
   strTitle += strFileName;
 
   ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, strTitle);
@@ -694,7 +694,7 @@ POSITION lpos;
       }
     catch (CException* e)
       {
-      HandleLoadException ("include file not loaded", e);
+      HandleLoadException ("Not loaded", e);
       } // end of catch
 
     CheckUsed (*pIncludeElement);
@@ -783,7 +783,7 @@ bool bPlugin;
         {
         // don't include it twice
         if (m_strCurrentIncludeFileList.Find (strFileName))
-          ThrowErrorException ("Include file \"%s\" has already been included.",
+          ThrowErrorException ("File \"%s\" has already been included.",
                                 (LPCTSTR) strFileName);
 
         m_strCurrentIncludeFileList.AddTail (strFileName);
@@ -817,7 +817,7 @@ bool bPlugin;
         catch (CArchiveException* e)
           {
           e->Delete ();
-          ThrowErrorException ("Error processing include file \"%s\"",
+          ThrowErrorException ("Error in file \"%s\"",
                                (LPCTSTR) strFileName);
           } // end of catch
 
