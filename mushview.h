@@ -5,7 +5,7 @@
 #define PALETTE 0x02000000    // makes RGB calls palletized (See PALETTERGB)
 
 #define MXP_FIRST_MENU 10000
-#define MXP_MENU_COUNT 30   // number of MXP menu items we support
+#define MXP_MENU_COUNT 100   // number of MXP menu items we support
 
 class CMUSHView : public CView
 {
