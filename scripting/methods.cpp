@@ -5614,7 +5614,7 @@ CPlugin * pPlugin = GetPlugin (PluginID);
   if (!pPlugin)                            
 	  return eNoSuchPlugin;                       
 
-  if (strlen (Routine) == 0)
+  if (strlen (Routine) == 0 || pPlugin->m_ScriptEngine == NULL)
     return eNoSuchRoutine;
 
   if (!pPlugin->m_bEnabled)
@@ -5636,7 +5636,7 @@ long nInvocationCount = 0;
                                (LPCTSTR) pPlugin->m_strName,
                                Routine ); 
       
-  if (pPlugin->m_ScriptEngine && pPlugin->m_ScriptEngine->IsLua ())
+  if (pPlugin->m_ScriptEngine->IsLua ())
     {
     list<double> nparams;
     list<string> sparams;
