@@ -23,7 +23,6 @@
 
 #define USE_PYTHON    // Nick's "use Python" extension ;)
 #define USE_TCL       // Nick's "use TCL" extension ;)
-#define USE_LUA       // Nick's "use LUA" extension ;)
 #define USE_PHP       // Nick's "use PHP" extension ;)
 #define USE_RUBY      // Nick's "use Ruby" extension ;)
 

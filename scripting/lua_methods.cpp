@@ -9,8 +9,6 @@
 #include "..\sendvw.h"
 #include "..\dialogs\DebugLuaDlg.h"
 
-#ifdef USE_LUA
-
 const char mushclient_typename[] = "mushclient.world";
 
 /*------------------------------------------------------------------------
@@ -1018,7 +1016,7 @@ static int L_CallPlugin (lua_State *L)
 
     }
 
-  // new in 4.55 - Lua to Lua calls can handle multiple arguments and a return value
+  // new in 4.55 - Lua to Lua calls can handle multiple arguments and multiple return values
 
   // don't need to check *our* scripting language, we must be Lua, duh, or we wouldn't be here.
 
@@ -1129,7 +1127,7 @@ static int L_CallPlugin (lua_State *L)
     if (CallLuaWithTraceBack (pL, n - 2, LUA_MULTRET))   // true on error
       {
 
-      // here for executioin error in plugin function ...
+      // here for execution error in plugin function ...
 
       CString strType = TFormat ("Plugin %s", (LPCTSTR) pPlugin->m_strName); 
       CString strReason = TFormat ("Executing plugin %s sub %s", 
@@ -1244,7 +1242,7 @@ static int L_CallPlugin (lua_State *L)
   // old fashioned way ...
   lua_pushnumber (L, pDoc->CallPlugin (
                   sPluginID,  // PluginID
-                  sRoutine,  // Routine  
+                  sRoutine,   // Routine  
                   my_optstring   (L, 3, "")   // Argument - optional
                   ));
   return 1;  // number of result fields
@@ -7739,4 +7737,3 @@ int DisableDLLs (lua_State * L)
   return 0;
   } // end of DisableDLLs
 
-#endif  // LUA

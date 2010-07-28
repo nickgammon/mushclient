@@ -2340,9 +2340,7 @@ void CMUSHclientDoc::Load_Plugin_XML (CXMLelement & parent)
 #ifdef USE_TCL
             && m_CurrentPlugin->m_strLanguage != "tclscript"
 #endif
-#ifdef USE_LUA
             && m_CurrentPlugin->m_strLanguage != "lua"
-#endif
 #ifdef USE_PHP
             && m_CurrentPlugin->m_strLanguage != "phpscript"
 #endif

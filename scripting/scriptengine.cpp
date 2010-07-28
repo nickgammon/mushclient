@@ -21,7 +21,6 @@ bool CScriptEngine::Execute (DISPID & dispid,  // dispatch ID, will be set to DI
                               )
   {
 
-#ifdef USE_LUA
 
   // If Lua, we may have been called with no arguments, so just do that
   if (L)
@@ -47,8 +46,6 @@ bool CScriptEngine::Execute (DISPID & dispid,  // dispatch ID, will be set to DI
       }
     return status;
     } // have Lua 
-
-#endif // USE_LUA
 
   // don't do it if no routine address 
   if (dispid == DISPID_UNKNOWN)
@@ -258,16 +255,12 @@ STDMETHODIMP CActiveScriptSite::OnScriptError(IActiveScriptError *pscripterror)
 bool CScriptEngine::CreateScriptEngine (void)
   {
   
-#ifdef USE_LUA
-
  // Lua does not use scripting engine
   if (m_strLanguage.CompareNoCase ("Lua") == 0)
     {
     OpenLua ();
     return false;
     }  // end of Lua
-
-#endif // USE_LUA
 
   // not under Wine
  if (bWine)
@@ -406,13 +399,9 @@ bool CScriptEngine::Parse (const CString & strCode, const CString & strWhat)
   else
     bImmediate = true;
 
-#ifdef USE_LUA
-
  // Do Lua differently
   if (L)
     return ParseLua (strCode, strWhat);
-
-#endif // USE_LUA
 
   if (!m_IActiveScriptParse || !m_IActiveScript)
     return true;   // no script engine
@@ -475,13 +464,9 @@ SCRIPTSTATE ss;
 DISPID CScriptEngine::GetDispid (const CString & strName)
     {
 
-#ifdef USE_LUA
-
  // Do Lua differently
   if (L)
     return GetLuaDispid (strName);
-
-#endif // USE_LUA
 
   if (!m_pDispatch)
     return DISPID_UNKNOWN;   // no script engine
@@ -586,16 +571,12 @@ CString str;
 void CScriptEngine::DisableScripting (void)
   {
 
-#ifdef USE_LUA
-
   // Do Lua differently
   if (L)
     {
     CloseLua ();
     return;
     }
-
-#endif // USE_LUA
 
   // release engine
 

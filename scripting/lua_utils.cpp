@@ -11,8 +11,6 @@
 #include "..\dmetaph.h"
 #include <direct.h>
 
-#ifdef USE_LUA
-
 extern char working_dir [_MAX_PATH];
 
 // recursive node outputter
@@ -1398,4 +1396,3 @@ static const struct luaL_reg xmllib [] =
 
 const struct luaL_reg *ptr_xmllib = xmllib;
 
-#endif  // LUA
