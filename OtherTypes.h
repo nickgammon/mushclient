@@ -926,6 +926,7 @@ class CPlugin :public CObject
   double  m_dVersion;         // plugin version
   double  m_dRequiredVersion; // minimum MUSHclient version required
   CTime   m_tDateInstalled;   // date installed
+  CString m_strCallingPluginID; // during a CallPlugin - the ID of the calling plugin
 
   CScriptEngine * m_ScriptEngine; // script engine for script, if any
 

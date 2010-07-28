@@ -1111,9 +1111,18 @@ static int L_CallPlugin (lua_State *L)
     unsigned short iOldStyle = pDoc->m_iNoteStyle;
     pDoc->m_iNoteStyle = NORMAL;    // back to default style
 
+    CString strOldCallingPluginID = pPlugin->m_strCallingPluginID;
+
+    pPlugin->m_strCallingPluginID.Empty ();
+    
+    if (pDoc->m_CurrentPlugin)
+      pPlugin->m_strCallingPluginID = pDoc->m_CurrentPlugin->m_strID;
+
     // do this so plugin can find its own state (eg. with GetPluginID)
     CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin; 
-    pDoc->m_CurrentPlugin = pPlugin;   
+    pDoc->m_CurrentPlugin = pPlugin;  
+    
+
 
     // now call the routine in the plugin
 
@@ -1152,12 +1161,15 @@ static int L_CallPlugin (lua_State *L)
       // what the exact Lua error message was (result value 3)
       lua_pushstring (L, strLuaError);
 
+      pPlugin->m_strCallingPluginID = strOldCallingPluginID;
+
       return 3;  // ie. eErrorCallingPluginRoutine, explanation, Lua error message
       }
 
     // back to who *we* are (if no error)
     pDoc->m_CurrentPlugin = pSavedPlugin;
     pDoc->m_iNoteStyle = iOldStyle;
+    pPlugin->m_strCallingPluginID = strOldCallingPluginID;
 
     int ret_n = lua_gettop(pL);  // number of returned values (might be zero)
 

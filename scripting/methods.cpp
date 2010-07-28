@@ -5387,6 +5387,7 @@ VARIANT CMUSHclientDoc::GetPluginInfo(LPCTSTR PluginID, short InfoType)
       break;
 
     case  22: SetUpVariantDate   (vaResult, COleDateTime (pPlugin->m_tDateInstalled.GetTime ()));  break;
+    case  23: SetUpVariantString (vaResult, pPlugin->m_strCallingPluginID); break;
 
     default:
       vaResult.vt = VT_NULL;
@@ -5627,6 +5628,13 @@ DISPID iDispid = pPlugin->m_ScriptEngine->GetDispid (Routine);
 
 long nInvocationCount = 0;
 
+  CString strOldCallingPluginID = pPlugin->m_strCallingPluginID;
+
+  pPlugin->m_strCallingPluginID.Empty ();
+  
+  if (m_CurrentPlugin)
+    pPlugin->m_strCallingPluginID = m_CurrentPlugin->m_strID;
+
   // do this so plugin can find its own state (eg. with GetPluginID)
   CPlugin * pSavedPlugin = m_CurrentPlugin; 
   m_CurrentPlugin = pPlugin;   
@@ -5677,6 +5685,8 @@ long nInvocationCount = 0;
     } // not Lua
 
   m_CurrentPlugin = pSavedPlugin;
+
+  pPlugin->m_strCallingPluginID = strOldCallingPluginID;
 
   if (iDispid == DISPID_UNKNOWN)
     return eErrorCallingPluginRoutine;
