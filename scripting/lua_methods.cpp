@@ -1070,17 +1070,11 @@ static int L_CallPlugin (lua_State *L)
             break;
 
           case LUA_TBOOLEAN:
-            {
-            int b = lua_toboolean (L, i);
-            lua_pushboolean (pL, b);
-            }
+            lua_pushboolean (pL, lua_toboolean (L, i));
             break;
 
           case LUA_TNUMBER:
-            {
-            double num = lua_tonumber (L, i);
-            lua_pushnumber (pL, num);
-            }
+            lua_pushnumber (pL, lua_tonumber (L, i));
             break;
 
           case LUA_TSTRING:
@@ -1097,7 +1091,7 @@ static int L_CallPlugin (lua_State *L)
             lua_pushnumber (L, eBadParameter);
             CString strError = TFormat ("Cannot pass argument #%i (%s type) to CallPlugin",
                                         i, 
-                                        lua_typename (L, lua_type (L, i)));
+                                        luaL_typename (L, i));
             lua_pushstring (L, strError);
             return 2;    // eBadParameter, explanation
 
@@ -1196,17 +1190,11 @@ static int L_CallPlugin (lua_State *L)
           break;
 
         case LUA_TBOOLEAN:
-          {
-          int b = lua_toboolean (pL, i);
-          lua_pushboolean (L, b);
-          }
+          lua_pushboolean (L, lua_toboolean (pL, i));
           break;
 
         case LUA_TNUMBER:
-          {
-          double num = lua_tonumber (pL, i);
-          lua_pushnumber (L, num);
-          }
+          lua_pushnumber (L, lua_tonumber (pL, i));
           break;
 
         case LUA_TSTRING:
@@ -1222,7 +1210,7 @@ static int L_CallPlugin (lua_State *L)
           lua_pushnumber (L, eErrorCallingPluginRoutine);
           CString strError = CFormat ("Cannot handle return value #%i (%s type) from function '%s' in plugin '%s' (%s)",
                                       i, 
-                                      lua_typename (pL, lua_type (pL, i)), 
+                                      luaL_typename (pL, i), 
                                       sRoutine,
                                       (LPCTSTR) pPlugin->m_strName, 
                                       sPluginID);
