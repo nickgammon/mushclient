@@ -3624,10 +3624,6 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
 
   } // end of CMiniWindow::MergeImageAlpha
 
-
-#define MXP_FIRST_MENU 10000
-#define MXP_MENU_COUNT 100   // number of MXP menu items we support
-
 static CString strMXP_menu_item [MXP_MENU_COUNT];
 
 CMenu* GrabAMenu (void)

@@ -147,6 +147,7 @@ static void BuildLuaTables (lua_State * L)
       "timer_flag",
       "custom_colour",
       "error_code",
+//      "error_desc",   // don't do this, wrong table type
       "sendto",
       "miniwin",
 
