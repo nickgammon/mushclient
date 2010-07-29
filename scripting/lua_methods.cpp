@@ -969,6 +969,15 @@ static int L_CallPlugin (lua_State *L)
 
   const char * sPluginID = my_checkstring (L, 1);
   const char * sRoutine = my_checkstring (L, 2);
+
+  // remove plugin ID and function name
+  // this is so, after the lua_pcall the stack should be empty
+  // so, if the called function does a CallPlugin back to us, it won't matter
+  // if we do a lua_settop (pL, 0) (below) to clear the stack
+
+  lua_remove (L, 1);  // remove plugin ID
+  lua_remove (L, 1);  // remove function name
+
   int i;    // for iterating through arguments / return values
 
   // preliminary checks ...
@@ -1022,7 +1031,7 @@ static int L_CallPlugin (lua_State *L)
 
   if (pPlugin->m_ScriptEngine->IsLua ())
     {
-    int n = lua_gettop(L);  // number of arguments in calling script
+    int n = lua_gettop(L);  // number of arguments in calling script (we removed plugin ID and function name already)
 
     lua_State *pL = pPlugin->m_ScriptEngine->L;  // plugin's Lua state
 
@@ -1044,10 +1053,7 @@ static int L_CallPlugin (lua_State *L)
    
     // if we are calling ourselves, don't make a copy of everything
     if (pL == L)
-      {
-      lua_insert (L, 3);    // move function to be called as third item 
-                            // (after plugin ID and function name), pushing others up
-      }   // end of calling ourselves
+      lua_insert (pL, 1);    // move function to be called as first item 
     else
       {   // calling a different plugin
 
@@ -1056,11 +1062,10 @@ static int L_CallPlugin (lua_State *L)
       // but NOT: table, function, userdata, thread
 
       // check we can push our arguments.
-      // we have (n - 2) arguments (first two are the plugin ID and the function name)
-      // however we need room for the function itself and at least room for the return value
-      lua_checkstack (pL, n);
+      // we need room for the function itself and at least room for the return value
+      lua_checkstack (pL, n + 2);
 
-      for (i = 3; i <= n; i++)    // arg 1 is plugin ID, arg 2 is function name, so start at 3
+      for (i = 1; i <= n; i++) 
         {
       
         switch (lua_type (L, i))
@@ -1090,7 +1095,7 @@ static int L_CallPlugin (lua_State *L)
             lua_settop (pL, 0);     // clear target plugin's stack to remove whatever we pushed onto it
             lua_pushnumber (L, eBadParameter);
             CString strError = TFormat ("Cannot pass argument #%i (%s type) to CallPlugin",
-                                        i, 
+                                        i + 2,  // add two because we deleted plugin ID and function name
                                         luaL_typename (L, i));
             lua_pushstring (L, strError);
             return 2;    // eBadParameter, explanation
@@ -1114,11 +1119,9 @@ static int L_CallPlugin (lua_State *L)
     CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin; 
     pDoc->m_CurrentPlugin = pPlugin;  
     
-
-
     // now call the routine in the plugin
 
-    if (CallLuaWithTraceBack (pL, n - 2, LUA_MULTRET))   // true on error
+    if (CallLuaWithTraceBack (pL, n, LUA_MULTRET))   // true on error
       {
 
       // here for execution error in plugin function ...
@@ -1170,8 +1173,8 @@ static int L_CallPlugin (lua_State *L)
     // if we are calling ourselves, don't make a copy of everything
     if (pL == L)
       {
-      lua_insert (L, 3);    // put return code as third item (after plugin ID, function name), pushing others up
-      return 1 + ret_n - 2;  // eOK plus all returned values, minus plugin ID and function name
+      lua_insert (L, 1);    // put return code as first item pushing others up
+      return 1 + ret_n;     // eOK plus all returned values
       }
 
     lua_checkstack (L, ret_n + 1);  // check we can push eOK plus all the return results
@@ -1229,9 +1232,9 @@ static int L_CallPlugin (lua_State *L)
 
   // old fashioned way ...
   lua_pushnumber (L, pDoc->CallPlugin (
-                  sPluginID,  // PluginID
-                  sRoutine,   // Routine  
-                  my_optstring   (L, 3, "")   // Argument - optional
+                  sPluginID,  // PluginID     - was argument 1 earlier on
+                  sRoutine,   // Routine      - was argument 2 earlier on
+                  my_optstring   (L, 1, "")   // Argument - optional (originally argument 3)
                   ));
   return 1;  // number of result fields
   } // end of L_CallPlugin
