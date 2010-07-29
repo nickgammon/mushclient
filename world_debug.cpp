@@ -596,15 +596,15 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
         }
 
       if (OptionsTable [i].iFlags & OPT_CUSTOM_COLOUR)
-        strNote = "Custom colour";
+        strNote = ", Custom colour";
       else
       if (OptionsTable [i].iFlags & OPT_RGB_COLOUR)
-        strNote = "RGB colour";
+        strNote = ", RGB colour";
       else
         strNote.Empty ();
 
-      Note (CFormat ("%s, %s, %s, %i, %s",  // name, type, range, default, note
-                     (LPCTSTR) OptionsTable [i].pName,
+      Note (CFormat ("%s, %s, %s, %0.0f%s",  // name, type, range, default, note
+                     OptionsTable [i].pName,
                      (LPCTSTR) strType,
                      (LPCTSTR) strRange,
                      OptionsTable [i].iDefault,
