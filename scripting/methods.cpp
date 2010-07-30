@@ -7176,7 +7176,7 @@ if (!m_strScriptPrefix.IsEmpty () &&    // and we *have* a script prefix
       m_ScriptEngine->Parse (strCommand, "Command line");
     else
       ColourNote ("white", "red", 
-          Translate ("Script cannot execute because of parse error in script file"));
+          Translate ("Scripting is not active yet, or script file had a parse error."));
 
     m_bInSendToScript = true;
     
