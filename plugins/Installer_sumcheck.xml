@@ -56,4 +56,8 @@ end -- if have name
   </alias>
 </aliases>
 
+<script>
+ColourNote ("cyan", "", "Type 'md5sum' to sumcheck a file.")
+</script>
+
 </muclient>
