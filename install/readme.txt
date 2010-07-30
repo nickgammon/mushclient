@@ -1,4 +1,4 @@
-MUSHclient version 4.55
+MUSHclient version 4.56
 =======================
 
 Friday, 30th July 2010

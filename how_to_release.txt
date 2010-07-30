@@ -4,6 +4,8 @@ HOW TO RELEASE MUSHCLIENT
 Author: Nick Gammon
 Date:   20th July 2010
 
+Time required: Approx. 20 minutes.
+
 
 PREPARATION
 
