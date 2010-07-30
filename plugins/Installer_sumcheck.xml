@@ -17,6 +17,19 @@
    version="1.0"
    >
 
+<description trim="y">
+* Type 'md5sum' to activate. 
+
+* Navigate to the mushclientXXX.exe file you downloaded.
+(The XXX will be the version number).
+
+* Click 'Open'. 
+
+The resulting message (in the output window) will show you the sumcheck.
+
+This should agree with the sumcheck shown on the web page announcing the MUSHclient version.
+</description>
+
 </plugin>
 
 
@@ -35,7 +48,7 @@
 if name then
   f = io.open (name, "rb")
   if f then
-    print ("sumcheck of", name, "=", utils.tohex (utils.md5 (f:read ("*a"))))
+    print ("sumcheck of", name, "=", string.lower (utils.tohex (utils.md5 (f:read ("*a")))))
     f:close () 
   end -- if opened file ok
 end -- if have name
