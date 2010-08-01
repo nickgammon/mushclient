@@ -25,6 +25,18 @@ extern tInfoTypeMapping InfoTypes [];
 
 #define SHOW_TRUE(x) ((x) ? "yes" : "no")
 
+static char * sColourNames [8] = 
+  {
+  "Black",
+  "Red",
+  "Green",
+  "Yellow",
+  "Blue",
+  "Magenta",
+  "Cyan",
+  "White"
+   };
+
 // compare-less for colours
 struct colour_less : binary_function<COLORREF, COLORREF, bool>
   {
@@ -88,7 +100,7 @@ static void ShowOneColour (CMUSHclientDoc * pDoc,
 
   pDoc->ColourTell (strTextColour, ColourToName (iColour), strName);
 
-  strName = CFormat ("R=%3i G=%3i B=%3i ",     // RGB
+  strName = CFormat (" R=%3i G=%3i B=%3i ",     // RGB
                      iRed,
                      iGreen,
                      iBlue);
@@ -113,6 +125,34 @@ static void ShowOneColour (CMUSHclientDoc * pDoc,
   pDoc->Note (strName);
 
   } // end of ShowOneColour
+
+static void ShowAnsiColour (CMUSHclientDoc * pDoc, 
+                           CString strColourName,
+                           const COLORREF iColour)
+
+  {
+  int iRed    = GetRValue (iColour);
+  int iGreen  = GetGValue (iColour);
+  int iBlue   = GetBValue (iColour);
+
+  CString strName = CFormat ("%-24s ", (LPCTSTR) strColourName);
+
+  CString strTextColour = "black";
+
+   // if colour is dark, use white, otherwise use black
+   if (((GetRValue (iColour) & 0xFF) +
+       (GetGValue (iColour) & 0xFF) +
+       (GetBValue (iColour) & 0xFF) ) < (128 * 3))
+     strTextColour = "white";
+
+  pDoc->ColourTell (strTextColour, ColourToName (iColour), strName);
+  pDoc->ColourTell (ColourToName (iColour), ColourToName (pDoc->m_normalcolour [0]), strName);
+  pDoc->ColourTell (ColourToName (pDoc->m_normalcolour [7]), ColourToName (iColour),  strName);
+
+  pDoc->Note ("");
+
+  } // end of ShowAnsiColour
+
 
 VARIANT CMUSHclientDoc::Debug(LPCTSTR Command) 
 {
@@ -150,7 +190,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 //-----------------------------------------------------------------------
 //          colours
 //-----------------------------------------------------------------------
-  if (strcmp (Command, "colours") == 0)
+  if (strcmp (Command, "colours") == 0 || strcmp (Command, "colors") == 0)
     {
 
     multimap<COLORREF, string, colour_less> mColours;
@@ -176,7 +216,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 //-----------------------------------------------------------------------
 //          colours256
 //-----------------------------------------------------------------------
-  else if (strcmp (Command, "colours256") == 0)
+  else if (strcmp (Command, "colours256") == 0 || strcmp (Command, "colors256") == 0)
     {
 
     for (int i = 0; i < 256; i++)
@@ -211,6 +251,44 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     } // end of colours256
   
+//-----------------------------------------------------------------------
+//          ansi
+//-----------------------------------------------------------------------
+  if (strcmp (Command, "ansi") == 0)
+    {
+
+    int i;
+
+    Note (TFormat ("%-24s %-24s %-24s", " Name", " On normal background", " Under normal text"));
+    Note ("------------------------ ------------------------ ------------------------ ");
+
+    for (i = 0; i < 8; i++)
+      {
+      CString strName = TFormat (" Normal #%i (%s)", i, sColourNames [i]);
+      ShowAnsiColour (this, strName, m_normalcolour [i]);
+      }   // end for loop
+
+    for (i = 0; i < 8; i++)
+      {
+      CString strName = TFormat (" Bold   #%i (%s)", i, sColourNames [i]);
+      ShowAnsiColour (this, strName, m_boldcolour [i]);
+      }   // end for loop
+
+    } // end of ansi
+
+//-----------------------------------------------------------------------
+//          custom_colour
+//-----------------------------------------------------------------------
+  if (strcmp (Command, "custom_colours") == 0 || strcmp (Command, "custom_colors") == 0)
+    {
+    int i;
+    for (i = 0; i < MAX_CUSTOM; i++)
+      {
+      CString strName = TFormat (" Custom #%2i (%s)", i + 1, m_strCustomColourName [i]);
+      ColourNote ( ColourToName (m_customtext [i]), ColourToName (m_customback [i]), strName);
+      }     // end for loop
+    } // end of custom_colour
+
 //-----------------------------------------------------------------------
 //          entities
 //-----------------------------------------------------------------------
@@ -1374,10 +1452,12 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     Note ("actions");
     Note ("aliases");
     Note ("alpha_options");
+    Note ("ansi");
     Note ("arrays");
-    Note ("colours");
-    Note ("colours256");
+    Note ("colours (or colors)");
+    Note ("colours256 (or colors256)");
     Note ("commands");
+    Note ("custom_colours (or custom_colors)");
     Note ("entities");
     Note ("global_options");
     Note ("included_options");
