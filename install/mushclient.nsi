@@ -379,7 +379,7 @@ Section "Plugins"
   File "..\plugins\InfoBox_Demo.xml"
   File "..\plugins\ATCP_NJG.xml"
   File "..\plugins\Summary.xml"  
-
+  File "..\plugins\Code_Chart.xml"  
 
 SectionEnd
 
@@ -538,7 +538,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\InfoBox_Demo.xml"
   Delete "$INSTDIR\worlds\plugins\ATCP_NJG.xml"
   Delete "$INSTDIR\worlds\plugins\Summary.xml"  
-
+  Delete "$INSTDIR\worlds\plugins\Code_Chart.xml"  
   
   ; locale stuff
   

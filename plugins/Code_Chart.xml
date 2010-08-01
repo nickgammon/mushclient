@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="Code_Chart"
+   author="Nick Gammon"
+   id="fe800afdd06ded4235f35baa"
+   language="Lua"
+   purpose="Displays an ASCII code chart"
+   date_written="2010-08-01 13:51:03"
+   requires="4.40"
+   version="1.0"
+   >
+<description trim="y">
+<![CDATA[
+Type 'code_chart' to display a code chart.
+]]>
+</description>
+
+</plugin>
+
+<!--  Aliases  -->
+
+<aliases>
+  <alias
+   script="ascii_chart"
+   match="code_chart"
+   enabled="y"
+   sequence="100"
+  >
+  </alias>
+</aliases>
+
+<!--  Script  -->
+
+
+<script>
+<![CDATA[
+function ascii_chart (name, line, wildcards)
+    
+  local control_characters = {
+  
+  -- control sequences
+  
+  [0] = "NUL", "SOH", "STX", "ETX", "EOT", "ENQ",
+        "ACK", "BEL", "BS",  "TAB", "LF",  "VT",
+        "FF",  "CR",  "SO",  "SI",  "DLE", "DC1",
+        "DC2", "DC3", "DC4", "NAK", "SYN", "ETB",
+        "CAN", "EM",  "SUB", "ESC", "FS",  "GS",
+        "RS",  "US",  "Space",  
+          
+  [127] = "DEL",
+    
+  -- telnet codes
+  
+  [0xEF] = "EOR",
+  [0xF0] = "SE",
+  [0xF1] = "NOP",
+  [0xF2] = "DM",
+  [0xF3] = "BRK",
+  [0xF4] = "IP",
+  [0xF5] = "AO",
+  [0xF6] = "AYT",
+  [0xF7] = "EC",
+  [0xF8] = "EL",
+  [0xF9] = "GA",
+  [0xFA] = "SB",
+  [0xFB] = "WILL",
+  [0xFC] = "WONT",
+  [0xFD] = "DO",
+  [0xFE] = "DONT",
+  [0xFF] = "IAC",
+  }
+  
+  -- telnet negotiation requests (eg. IAC WILL ECHO)
+  local telnet_options = {
+  [0x01] = "ECHO",                    --  1 Echo
+  [0x03] = "Suppress Go-ahead (GA)",  --  3 Suppress go ahead
+  [0x05] = "Status",                  --  5 Status
+  [0x06] = "Timing Mark",             --  6 Timing mark
+  [0x18] = "Termtype",                -- 24 Terminal type
+  [0x19] = "End of record (EOR)",     -- 25 EOR
+  [0x1F] = "Window Size (NAWS)",      -- 31 Window size
+  [0x20] = "Terminal Speed",          -- 32 Terminal speed
+  [0x21] = "RFC",                     -- 33 Remote flow control
+  [0x22] = "LM",                      -- 34 Line mode
+  [0x24] = "EV",                      -- 36 Environment variables
+  [0x2A] = "Charset",                 -- 42 Character set
+  [0x55] = "MCCP1",       --  85 MUD Compression Protocol v1
+  [0x56] = "MCCP2",       --  86 MUD Compression Protocol v2
+  [0x5A] = "MSP",         --  90 (MUD Sound Protocol)
+  [0x5B] = "MXP",         --  91 (MUD eXtension Protocol)
+  [0x5D] = "ZMP",         --  93 (ZMP Protocol)
+  [0x66] = "Aardwolf",    -- 102
+  [0xC8] = "ATCP",        -- 200 ATCP (Achaea Telnet Protocol)
+  [0xC9] = "ATCP2/GMCP",  -- 201 ATCP2/GMCP (Generic Mud Control Protocol)
+  [0xFF] = "Extended Options", -- for future expansion
+  }
+
+  -- show each character
+  for i = 0, 255 do
+    local special = control_characters [i] or ""
+    local telnet = telnet_options [i] or ""
+    if i >= 32 then
+      char = string.char (i)
+    else
+      char = " ";
+    end -- if
+    print (string.format ("%3i  %-5s  %s  0x%02X  %s", i, special, char, i, telnet)) 
+  end -- for
+
+end -- ascii_chart
+
+-- show description
+ColourNote ("cyan", "", GetPluginInfo (GetPluginID (), 3))
+
+]]>
+</script>
+
+
+</muclient>
