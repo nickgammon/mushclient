@@ -75,8 +75,9 @@ function ascii_chart (name, line, wildcards)
   
   -- telnet negotiation requests (eg. IAC WILL ECHO)
   local telnet_options = {
-  [0x01] = "ECHO",                    --  1 Echo
-  [0x03] = "Suppress Go-ahead (GA)",  --  3 Suppress go ahead
+  
+  [0x01] = "Echo",                    --  1 Echo
+  [0x03] = "Suppress Go-ahead (SGA)", --  3 Suppress go ahead
   [0x05] = "Status",                  --  5 Status
   [0x06] = "Timing Mark",             --  6 Timing mark
   [0x18] = "Termtype",                -- 24 Terminal type
@@ -84,7 +85,7 @@ function ascii_chart (name, line, wildcards)
   [0x1F] = "Window Size (NAWS)",      -- 31 Window size
   [0x20] = "Terminal Speed",          -- 32 Terminal speed
   [0x21] = "RFC",                     -- 33 Remote flow control
-  [0x22] = "LM",                      -- 34 Line mode
+  [0x22] = "Line Mode",               -- 34 Line mode
   [0x24] = "EV",                      -- 36 Environment variables
   [0x2A] = "Charset",                 -- 42 Character set
   [0x55] = "MCCP1",       --  85 MUD Compression Protocol v1
@@ -92,7 +93,7 @@ function ascii_chart (name, line, wildcards)
   [0x5A] = "MSP",         --  90 (MUD Sound Protocol)
   [0x5B] = "MXP",         --  91 (MUD eXtension Protocol)
   [0x5D] = "ZMP",         --  93 (ZMP Protocol)
-  [0x66] = "Aardwolf",    -- 102
+  [0x66] = "Aardwolf",    -- 102 (Aardwolf telnet protocol)
   [0xC8] = "ATCP",        -- 200 ATCP (Achaea Telnet Protocol)
   [0xC9] = "ATCP2/GMCP",  -- 201 ATCP2/GMCP (Generic Mud Control Protocol)
   [0xFF] = "Extended Options", -- for future expansion
@@ -103,10 +104,14 @@ function ascii_chart (name, line, wildcards)
     local special = control_characters [i] or ""
     local telnet = telnet_options [i] or ""
     if i >= 32 then
-      char = string.char (i)
+      if GetOption ("utf_8") == 1 then
+        char = utils.utf8encode (i)
+      else
+        char = string.char (i)
+      end -- if Unicode or not
     else
       char = " ";
-    end -- if
+    end -- if printable or not
     print (string.format ("%3i  %-5s  %s  0x%02X  %s", i, special, char, i, telnet)) 
   end -- for
 
