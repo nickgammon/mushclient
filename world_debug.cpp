@@ -264,13 +264,13 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     for (i = 0; i < 8; i++)
       {
-      CString strName = TFormat (" Normal #%i (%s)", i, sColourNames [i]);
+      CString strName = TFormat (" Normal #%i (%s)", i + 1, sColourNames [i]);
       ShowAnsiColour (this, strName, m_normalcolour [i]);
       }   // end for loop
 
     for (i = 0; i < 8; i++)
       {
-      CString strName = TFormat (" Bold   #%i (%s)", i, sColourNames [i]);
+      CString strName = TFormat (" Bold   #%i (%s)", i + 1, sColourNames [i]);
       ShowAnsiColour (this, strName, m_boldcolour [i]);
       }   // end for loop
 
