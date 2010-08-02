@@ -861,6 +861,11 @@ public:
                                                     
   unsigned short m_iDefaultTimerSendTo;              // default send-to location for timers
 
+  // version 4.56
+
+  unsigned short m_bPlaySoundsInBackground;   // if true, PlaySound uses a global sound buffer
+
+
   // end of stuff saved to disk **************************************************************
 
   // stuff from pre version 11, read from disk but not saved

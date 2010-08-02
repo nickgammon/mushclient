@@ -12300,7 +12300,12 @@ int i;
  // we need to create a DirectSoundBuffer 
   // Set up bd structure for a static secondary buffer.       
   bd.dwSize = sizeof( bd ) ;       
-  bd.dwFlags = (DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY) | DSBCAPS_STATIC ;  
+  bd.dwFlags = (DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY) | DSBCAPS_STATIC;  
+
+  // want to hear in background?
+  if (m_bPlaySoundsInBackground)
+    bd.dwFlags |= DSBCAPS_GLOBALFOCUS;
+
   // Buffer size retrieved from the mmckinfo structure for the data 
   // portion of the wav
   bd.dwBufferBytes = mmckinfoSubchunk.cksize ; 

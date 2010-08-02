@@ -151,6 +151,7 @@ tConfigurationNumericOption OptionsTable [] = {
 {"paste_delay",                         0,     O(m_nPasteDelay),  0, 100000},         
 {"paste_delay_per_lines",               1,     O(m_nPasteDelayPerLines), 1, 100000}, 
 {"paste_echo",                          false, O(m_bPasteEcho)},
+{"play_sounds_in_background",           false, O(m_bPlaySoundsInBackground)},
 {"pixel_offset",                        1,     O(m_iPixelOffset), 0, 20, OPT_UPDATE_VIEWS},        
 {"port",                                4000,  O(m_port), 1, USHRT_MAX, OPT_PLUGIN_CANNOT_WRITE},                        
 {"proxy_port",                          1080,  O(m_iProxyServerPort), 0, USHRT_MAX, OPT_PLUGIN_CANNOT_WRITE},                        
