@@ -114,7 +114,6 @@ int CMUSHclientApp::PopulateDatabase (void)
 
   for (i = 0; GlobalOptionsTable [i].pName; i++)
     {
-    const char * p = (const char *) this +  GlobalOptionsTable [i].iOffset;
     const int Value = GetProfileInt ("Global prefs",  
                                 GlobalOptionsTable [i].pName, 
                                 GlobalOptionsTable [i].iDefault);
@@ -128,7 +127,6 @@ int CMUSHclientApp::PopulateDatabase (void)
 
   for (i = 0; AlphaGlobalOptionsTable [i].pName; i++)
     {
-    const char * p = (const char *) this +  AlphaGlobalOptionsTable [i].iOffset;
 
     // fix up the fixed-pitch font
     if (strcmp (AlphaGlobalOptionsTable [i].pName, "DefaultInputFont") == 0 ||
@@ -164,13 +162,6 @@ void CMUSHclientApp::LoadGlobalsFromDatabase (void)
   int i;
   string db_value;
 
-  // for Willfa - make state directory default to plugins directory (whatever that is now) with state\ at the end
-  for (i = 0; AlphaGlobalOptionsTable [i].pName; i++)
-    {
-    if (strcmp (AlphaGlobalOptionsTable [i].pName, "StateFilesDirectory") == 0)
-       AlphaGlobalOptionsTable [i].sDefault = (LPCTSTR) (App.m_strPluginsDirectory + "state\\");
-    }
-
   for (i = 0; GlobalOptionsTable [i].pName; i++)
     {
     const char * p = (const char *) this +  GlobalOptionsTable [i].iOffset;
@@ -196,6 +187,10 @@ void CMUSHclientApp::LoadGlobalsFromDatabase (void)
           AlphaGlobalOptionsTable [i].sDefault);
 
     * (CString *) p = db_value.c_str ();
+
+   // for Willfa - make state directory default to plugins directory (whatever that is now) with state\ at the end
+    if (strcmp (AlphaGlobalOptionsTable [i].pName, "StateFilesDirectory") == 0)
+       AlphaGlobalOptionsTable [i].sDefault = (LPCTSTR) (App.m_strPluginsDirectory + "state\\");
 
     };
 
