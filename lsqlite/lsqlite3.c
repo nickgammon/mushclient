@@ -1,8 +1,7 @@
 // These first few lines added by NJG
-// version 0.6-devel
+// version 0.7-devel
 #  pragma warning(disable: 4244)
 // Warning - in db_last_insert_rowid change %ll to %I64d
-
 /************************************************************************
 * lsqlite3                                                              *
 * Copyright (C) 2002-2007 Tiago Dionizio, Doug Currie                   *
@@ -103,14 +102,14 @@ static void vm_push_column(lua_State *L, sqlite3_stmt *vm, int idx) {
                 if (n == i64)
                     lua_pushnumber(L, n);
                 else
-                    lua_pushlstring(L, sqlite3_column_text(vm, idx), sqlite3_column_bytes(vm, idx));
+                    lua_pushlstring(L, (const char*)sqlite3_column_text(vm, idx), sqlite3_column_bytes(vm, idx));
             }
             break;
         case SQLITE_FLOAT:
             lua_pushnumber(L, sqlite3_column_double(vm, idx));
             break;
         case SQLITE_TEXT:
-            lua_pushlstring(L, sqlite3_column_text(vm, idx), sqlite3_column_bytes(vm, idx));
+            lua_pushlstring(L, (const char*)sqlite3_column_text(vm, idx), sqlite3_column_bytes(vm, idx));
             break;
         case SQLITE_BLOB:
             lua_pushlstring(L, sqlite3_column_blob(vm, idx), sqlite3_column_bytes(vm, idx));
@@ -460,7 +459,7 @@ static int dbvm_bind_index(lua_State *L, sqlite3_stmt *vm, int index, int lindex
         case LUA_TBOOLEAN:
             return sqlite3_bind_null(vm, index);
         default:
-            luaL_error(L, "index (%d) - invalid data type for bind (%s)", index, lua_typename(L, lindex));
+            luaL_error(L, "index (%d) - invalid data type for bind (%s)", index, lua_typename(L, lua_type(L, lindex)));
             return SQLITE_MISUSE; /*!*/
     }
 }
@@ -541,6 +540,7 @@ static int dbvm_bind_names(lua_State *L) {
             lua_pushstring(L, ++name);
             lua_gettable(L, 2);
             result = dbvm_bind_index(L, vm, n, -1);
+            lua_pop(L, 1);	// Fix    - see Lua mailing list // added by NJG
         }
         else {
             lua_pushnumber(L, n);
@@ -873,7 +873,7 @@ static int db_interrupt(lua_State *L) {
 static void db_push_value(lua_State *L, sqlite3_value *value) {
     switch (sqlite3_value_type(value)) {
         case SQLITE_TEXT:
-            lua_pushlstring(L, sqlite3_value_text(value), sqlite3_value_bytes(value));
+            lua_pushlstring(L, (const char*)sqlite3_value_text(value), sqlite3_value_bytes(value));
             break;
 
         case SQLITE_INTEGER:
@@ -883,7 +883,7 @@ static void db_push_value(lua_State *L, sqlite3_value *value) {
                 if (n == i64)
                     lua_pushnumber(L, n);
                 else
-                    lua_pushlstring(L, sqlite3_value_text(value), sqlite3_value_bytes(value));
+                    lua_pushlstring(L, (const char*)sqlite3_value_text(value), sqlite3_value_bytes(value));
             }
             break;
 
@@ -930,8 +930,7 @@ static void db_sql_normal_function(sqlite3_context *context, int argc, sqlite3_v
         ctx = lsqlite_make_context(L); /* push context - used to set results */
     }
     else {
-        // reuse context userdata value
-
+        /* reuse context userdata value */
         void *p = sqlite3_aggregate_context(context, 1);
         /* i think it is OK to use assume that using a light user data
         ** as an entry on LUA REGISTRY table will be unique */
@@ -954,7 +953,7 @@ static void db_sql_normal_function(sqlite3_context *context, int argc, sqlite3_v
         db_push_value(L, argv[n]);
     }
 
-    // set context
+    /* set context */
     ctx->ctx = context;
 
     if (lua_pcall(L, argc + 1, 0, 0)) {
@@ -963,7 +962,7 @@ static void db_sql_normal_function(sqlite3_context *context, int argc, sqlite3_v
         sqlite3_result_error(context, errmsg, size);
     }
 
-    // invalidate context
+    /* invalidate context */
     ctx->ctx = NULL;
 
     if (!func->aggregate) {
@@ -997,14 +996,14 @@ static void db_sql_finalize_function(sqlite3_context *context) {
     else
         ctx = lsqlite_getcontext(L, -1);
 
-    // set context
+    /* set context */
     ctx->ctx = context;
 
     if (lua_pcall(L, 1, 0, 0)) {
         sqlite3_result_error(context, lua_tostring(L, -1), -1);
     }
 
-    // invalidate context
+    /* invalidate context */
     ctx->ctx = NULL;
 
     /* cleanup context */
@@ -1135,8 +1134,8 @@ static int db_create_collation(lua_State *L) {
     else if (!lua_isnil(L,3))
         luaL_error(L,"create_collation: function or nil expected");
     if (collfunc != NULL) {
-        co=(scc *)malloc(sizeof(scc)); // userdata is a no-no as it
-                                         // will be garbage-collected
+        co=(scc *)malloc(sizeof(scc)); /* userdata is a no-no as it
+                                          will be garbage-collected */
         if (co) {
             co->L=L;
             /* lua_settop(L,3) above means we don't need: lua_pushvalue(L,3); */
@@ -1360,8 +1359,7 @@ static int db_busy_timeout(lua_State *L) {
 */
 static int db_exec_callback(void* user, int columns, char **data, char **names) {
     int result = SQLITE_ABORT; /* abort by default */
-    sdb *db = (sdb*)user;
-    lua_State *L = db->L;
+    lua_State *L = (lua_State*)user;
     int n;
 
     int top = lua_gettop(L);
@@ -1417,7 +1415,7 @@ static int db_exec(lua_State *L) {
         lua_pushnil(L);     /* column names not known at this point */
         lua_newtable(L);    /* column values table */
 
-        result = sqlite3_exec(db->db, sql, db_exec_callback, db, NULL);
+        result = sqlite3_exec(db->db, sql, db_exec_callback, L, NULL);
     }
     else {
         /* no callbacks */
@@ -1522,7 +1520,7 @@ static int db_next_named_row(lua_State *L) {
 }
 
 static int dbvm_do_rows(lua_State *L, int(*f)(lua_State *)) {
-    //sdb_vm *svm = 
+    /* sdb_vm *svm =  */
     lsqlite_checkvm(L, 1);
     lua_pushvalue(L,1);
     lua_pushcfunction(L, f);
