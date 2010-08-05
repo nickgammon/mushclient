@@ -959,6 +959,7 @@ class CPlugin :public CObject
   DISPID m_dispid_plugin_disconnect   ;  //  "OnPluginDisconnect" 
   DISPID m_dispid_plugin_close        ;  //  "OnPluginClose"      
   DISPID m_dispid_plugin_save_state   ;  //  "OnPluginSaveState"  
+  DISPID m_dispid_plugin_world_save   ;  //  "OnPluginWorldSave"  
   DISPID m_dispid_plugin_enable       ;  //  "OnPluginEnable"     
   DISPID m_dispid_plugin_disable      ;  //  "OnPluginDisable"    
   DISPID m_dispid_plugin_command      ;  //  "OnPluginCommand" 

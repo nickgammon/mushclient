@@ -490,6 +490,7 @@ void DeleteStyle (CStyle * pStyle, const char * filename, const long linenumber)
 #define ON_PLUGIN_DISCONNECT  "OnPluginDisconnect"
 #define ON_PLUGIN_CLOSE       "OnPluginClose"
 #define ON_PLUGIN_SAVE_STATE  "OnPluginSaveState"
+#define ON_PLUGIN_WORLD_SAVE  "OnPluginWorldSave"
 #define ON_PLUGIN_ENABLE      "OnPluginEnable"
 #define ON_PLUGIN_DISABLE     "OnPluginDisable"
 #define ON_PLUGIN_COMMAND     "OnPluginCommand" 

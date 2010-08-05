@@ -34,6 +34,7 @@ CPlugin::CPlugin (CMUSHclientDoc * pDoc)
   m_dispid_plugin_disconnect    = DISPID_UNKNOWN;
   m_dispid_plugin_close         = DISPID_UNKNOWN;
   m_dispid_plugin_save_state    = DISPID_UNKNOWN;
+  m_dispid_plugin_world_save    = DISPID_UNKNOWN;
   m_dispid_plugin_enable        = DISPID_UNKNOWN;
   m_dispid_plugin_disable       = DISPID_UNKNOWN; 
   m_dispid_plugin_command       = DISPID_UNKNOWN;

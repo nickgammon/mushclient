@@ -427,6 +427,8 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
           = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_CLOSE     );
         m_CurrentPlugin->m_dispid_plugin_save_state    
           = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_SAVE_STATE);
+        m_CurrentPlugin->m_dispid_plugin_world_save    
+          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_WORLD_SAVE);
         m_CurrentPlugin->m_dispid_plugin_enable        
           = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_ENABLE    );
         m_CurrentPlugin->m_dispid_plugin_disable       

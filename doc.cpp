@@ -4945,6 +4945,26 @@ BOOL CMUSHclientDoc::DoSave(LPCTSTR lpszPathName, BOOL bReplace)
       }
     } // end of executing save script
 
+
+  // now do plugins "world save"
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+  m_CurrentPlugin = NULL;
+
+  // tell each plugin the world is saving
+  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+    {
+    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+
+    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
+      continue;
+
+    // see what the plugin makes of this,
+    pPlugin->ExecutePluginScript (ON_PLUGIN_WORLD_SAVE, pPlugin->m_dispid_plugin_world_save);
+    }   // end of doing each plugin
+
+  m_CurrentPlugin = pSavedPlugin;
+
+
   BOOL bSuccess = CDocument::DoSave (newName, bReplace);
 
   if (bSuccess)
