@@ -5302,7 +5302,7 @@ void CMUSHView::OnAcceleratorCommand (UINT nID)
 // if accelerator commands are received in the top view, activate bottom view and pass command on
 
   OnKeysActivatecommandview ();  
-  m_bottomview->SendMessage (nID);
+  m_bottomview->OnAcceleratorCommand (nID);
   }
 
 
