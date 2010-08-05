@@ -254,7 +254,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 //-----------------------------------------------------------------------
 //          ansi
 //-----------------------------------------------------------------------
-  if (strcmp (Command, "ansi") == 0)
+  else if (strcmp (Command, "ansi") == 0)
     {
 
     int i;
@@ -279,7 +279,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 //-----------------------------------------------------------------------
 //          custom_colour
 //-----------------------------------------------------------------------
-  if (strcmp (Command, "custom_colours") == 0 || strcmp (Command, "custom_colors") == 0)
+  else if (strcmp (Command, "custom_colours") == 0 || strcmp (Command, "custom_colors") == 0)
     {
     int i;
     for (i = 0; i < MAX_CUSTOM; i++)
@@ -1030,6 +1030,9 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       Note (TFormat ("Script file: %s",
                     (LPCTSTR) m_strScriptFilename
                     ));
+    Note (TFormat ("Lua sandbox is %i characters, DLL loading allowed: %s",  
+                  App.m_strLuaScript.GetLength (),
+                  SHOW_TRUE (App.m_bEnablePackageLibrary)));
 
     // time taken to execute scripts
     if (App.m_iCounterFrequency > 0)
@@ -1143,6 +1146,13 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
                   SHOW_TRUE (m_bEnableTimers)));
     Note (TFormat ("   %ld enabled, %I64d fired.",
                    nEnabled, nTotalMatches));
+    if (App.m_nTimerInterval > 0)
+      Note (TFormat ("   Timers checked every %i second(s).", App.m_nTimerInterval));
+    else
+      Note (TFormat ("   Timers checked every %0.1f seconds.", (float) MIN_TIMER_INTERVAL / 1000.0));
+
+
+    
 
     // time taken to do MCCP
     if (App.m_iCounterFrequency > 0)
