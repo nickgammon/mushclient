@@ -1411,3 +1411,10 @@ class CMiniWindow
 typedef map<string, CMiniWindow *> MiniWindowMap;
 
 typedef MiniWindowMap::iterator MiniWindowMapIterator;
+
+// for plugin callbacks
+typedef struct
+  {
+  char *  pName;      // name, eg. "OnPluginListChanged"
+  int     iOffset;    // offset in CPlugin
+  }  tPluginCallbackNames;

@@ -527,6 +527,23 @@ static int functionlist (lua_State *L)
   } // end of functionlist
 
 
+extern tPluginCallbackNames PluginCallbacksTable [1];
+
+// returns table of internal functions
+static int callbackslist (lua_State *L) 
+  {
+  lua_newtable(L);    // table of function names
+
+  for (int i = 0;  PluginCallbacksTable [i].pName; i++)
+    {
+    lua_pushstring (L, PluginCallbacksTable [i].pName);
+    lua_rawseti(L, -2, i + 1);  // make 1-relative
+    }
+
+  return 1;   // 1 table
+  } // end of callbackslist
+
+
 // file picker routine
 // arg1 = title of dialog
 // arg2 = default file name
@@ -1390,6 +1407,7 @@ static const struct luaL_reg xmllib [] =
   {"activatenotepad", activatenotepad},
   {"showdebugstatus", showdebugstatus},
   {"getfontfamilies", getfontfamilies},
+  {"callbackslist",  callbackslist},
 
   {NULL, NULL}
   };

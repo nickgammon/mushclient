@@ -96,6 +96,68 @@ the root level. ie.
 
 */
 
+#define O(arg) offsetof (CPlugin, arg)
+
+tPluginCallbackNames PluginCallbacksTable [] = {
+
+//{ ON_PLUGIN_TOOLTIP,              O(m_dispid_plugin_tooltip) },
+  
+{ ON_PLUGIN_BROADCAST,              O(m_dispid_plugin_broadcast) }, 
+      
+{ ON_PLUGIN_CHAT_ACCEPT,            O(m_dispid_plugin_On_Chat_Accept) },        
+{ ON_PLUGIN_CHAT_DISPLAY,           O(m_dispid_plugin_On_Chat_Display) },        
+{ ON_PLUGIN_CHAT_MESSAGE,           O(m_dispid_plugin_On_Chat_Message) },        
+{ ON_PLUGIN_CHAT_MESSAGE_OUT,       O(m_dispid_plugin_On_Chat_MessageOut) },        
+{ ON_PLUGIN_CHAT_NEWUSER,           O(m_dispid_plugin_On_Chat_NewUser) },        
+{ ON_PLUGIN_CHAT_USERDISCONNECT,    O(m_dispid_plugin_On_Chat_UserDisconnect) },  
+      
+{ ON_PLUGIN_CLOSE,                  O(m_dispid_plugin_close) },        
+{ ON_PLUGIN_COMMAND,                O(m_dispid_plugin_command) },        
+{ ON_PLUGIN_COMMAND_CHANGED,        O(m_dispid_plugin_on_command_changed) },        
+{ ON_PLUGIN_COMMAND_ENTERED,        O(m_dispid_plugin_command_entered) },        
+{ ON_PLUGIN_CONNECT,                O(m_dispid_plugin_connect) },        
+{ ON_PLUGIN_DISABLE,                O(m_dispid_plugin_disable) },        
+{ ON_PLUGIN_DISCONNECT,             O(m_dispid_plugin_disconnect) },        
+{ ON_PLUGIN_ENABLE,                 O(m_dispid_plugin_enable) },        
+{ ON_PLUGIN_GETFOCUS,               O(m_dispid_plugin_get_focus) },        
+{ ON_PLUGIN_IAC_GA,                 O(m_dispid_plugin_IAC_GA) },        
+{ ON_PLUGIN_INSTALL,                O(m_dispid_plugin_install) },        
+{ ON_PLUGIN_LINE_RECEIVED,          O(m_dispid_plugin_line_received) },        
+{ ON_PLUGIN_LIST_CHANGED,           O(m_dispid_plugin_list_changed) },        
+{ ON_PLUGIN_LOSEFOCUS,              O(m_dispid_plugin_lose_focus) },        
+{ ON_PLUGIN_MOUSE_MOVED,            O(m_dispid_plugin_mouse_moved) },        
+
+{ ON_PLUGIN_MXP_CLOSETAG,           O(m_dispid_plugin_OnMXP_CloseTag) },        
+{ ON_PLUGIN_MXP_ERROR,              O(m_dispid_plugin_OnMXP_Error) },        
+{ ON_PLUGIN_MXP_OPENTAG,            O(m_dispid_plugin_OnMXP_OpenTag) },        
+{ ON_PLUGIN_MXP_SETENTITY,          O(m_dispid_plugin_OnMXP_SetEntity) },        
+{ ON_PLUGIN_MXP_SETVARIABLE,        O(m_dispid_plugin_OnMXP_SetVariable) },        
+{ ON_PLUGIN_MXP_START,              O(m_dispid_plugin_OnMXP_Start) },        
+{ ON_PLUGIN_MXP_STOP,               O(m_dispid_plugin_OnMXP_Stop) },        
+
+{ ON_PLUGIN_PACKET_RECEIVED,        O(m_dispid_plugin_packet_received) },        
+{ ON_PLUGIN_PARTIAL_LINE,           O(m_dispid_plugin_partial_line) },        
+{ ON_PLUGIN_PLAYSOUND,              O(m_dispid_plugin_playsound) },        
+{ ON_PLUGIN_SAVE_STATE,             O(m_dispid_plugin_save_state) },        
+{ ON_PLUGIN_SCREENDRAW,             O(m_dispid_plugin_screendraw) },        
+{ ON_PLUGIN_SEND,                   O(m_dispid_plugin_send) },        
+{ ON_PLUGIN_SENT,                   O(m_dispid_plugin_sent) },        
+{ ON_PLUGIN_TABCOMPLETE,            O(m_dispid_plugin_tabcomplete) },        
+
+{ ON_PLUGIN_TELNET_OPTION,          O(m_dispid_plugin_telnet_option) },        
+{ ON_PLUGIN_TELNET_REQUEST,         O(m_dispid_plugin_telnet_request) },        
+{ ON_PLUGIN_TELNET_SUBNEGOTIATION,  O(m_dispid_plugin_telnet_subnegotiation) },        
+
+{ ON_PLUGIN_TICK,                   O(m_dispid_plugin_tick) },        
+{ ON_PLUGIN_TRACE,                  O(m_dispid_plugin_trace) },        
+{ ON_PLUGIN_WORLD_OUTPUT_RESIZED,   O(m_dispid_plugin_on_world_output_resized) },        
+{ ON_PLUGIN_WORLD_SAVE,             O(m_dispid_plugin_world_save) },        
+
+{NULL}   // end of table marker            
+
+  };  // end of PluginCallbacksTable 
+
+
 extern tConfigurationNumericOption OptionsTable [];
 extern tConfigurationAlphaOption AlphaOptionsTable [];
 extern UINT iLineLastItemFound;
@@ -417,112 +479,22 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
         if (FindAllEntryPoints ())
           ThrowErrorException ("Could not find all required script routines");
 
-        m_CurrentPlugin->m_dispid_plugin_install       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_INSTALL   );
-        m_CurrentPlugin->m_dispid_plugin_connect       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_CONNECT   );
-        m_CurrentPlugin->m_dispid_plugin_disconnect    
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_DISCONNECT);
-        m_CurrentPlugin->m_dispid_plugin_close         
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_CLOSE     );
-        m_CurrentPlugin->m_dispid_plugin_save_state    
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_SAVE_STATE);
-        m_CurrentPlugin->m_dispid_plugin_world_save    
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_WORLD_SAVE);
-        m_CurrentPlugin->m_dispid_plugin_enable        
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_ENABLE    );
-        m_CurrentPlugin->m_dispid_plugin_disable       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_DISABLE   );
-        m_CurrentPlugin->m_dispid_plugin_command       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_COMMAND   );
-        m_CurrentPlugin->m_dispid_plugin_command_entered       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_COMMAND_ENTERED   );
-        m_CurrentPlugin->m_dispid_plugin_get_focus       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_GETFOCUS   );
-        m_CurrentPlugin->m_dispid_plugin_lose_focus       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_LOSEFOCUS   );
-        m_CurrentPlugin->m_dispid_plugin_trace       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_TRACE   );
-        m_CurrentPlugin->m_dispid_plugin_broadcast       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_BROADCAST   );
-        m_CurrentPlugin->m_dispid_plugin_screendraw       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_SCREENDRAW   );
-        m_CurrentPlugin->m_dispid_plugin_playsound       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_PLAYSOUND   );
-        m_CurrentPlugin->m_dispid_plugin_tabcomplete       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_TABCOMPLETE  );
-//        m_CurrentPlugin->m_dispid_plugin_tooltip       
-//          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_TOOLTIP   );
-        m_CurrentPlugin->m_dispid_plugin_list_changed       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_LIST_CHANGED   );
-        m_CurrentPlugin->m_dispid_plugin_tick       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_TICK );
-        m_CurrentPlugin->m_dispid_plugin_mouse_moved       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_MOUSE_MOVED );
 
-        m_CurrentPlugin->m_dispid_plugin_send       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_SEND   );
-        m_CurrentPlugin->m_dispid_plugin_sent       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_SENT   );
-        m_CurrentPlugin->m_dispid_plugin_line_received 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_LINE_RECEIVED);
-        m_CurrentPlugin->m_dispid_plugin_packet_received 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_PACKET_RECEIVED);
-        m_CurrentPlugin->m_dispid_plugin_partial_line 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_PARTIAL_LINE);
-        m_CurrentPlugin->m_dispid_plugin_telnet_option 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_TELNET_OPTION);
-        m_CurrentPlugin->m_dispid_plugin_telnet_request 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_TELNET_REQUEST);
-        m_CurrentPlugin->m_dispid_plugin_telnet_subnegotiation 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_TELNET_SUBNEGOTIATION);
-        m_CurrentPlugin->m_dispid_plugin_IAC_GA 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_IAC_GA);
-        m_CurrentPlugin->m_dispid_plugin_on_world_output_resized 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_WORLD_OUTPUT_RESIZED);
-        m_CurrentPlugin->m_dispid_plugin_on_command_changed 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_COMMAND_CHANGED);
+        // find all plugin callbacks by looping through table
 
-
-        m_CurrentPlugin->m_dispid_plugin_OnMXP_Start        
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_MXP_START    );
-        m_CurrentPlugin->m_dispid_plugin_OnMXP_Stop       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_MXP_STOP   );
-        m_CurrentPlugin->m_dispid_plugin_OnMXP_OpenTag       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_MXP_OPENTAG   );
-        m_CurrentPlugin->m_dispid_plugin_OnMXP_CloseTag       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_MXP_CLOSETAG   );
-        m_CurrentPlugin->m_dispid_plugin_OnMXP_SetVariable 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_MXP_SETVARIABLE);
-        m_CurrentPlugin->m_dispid_plugin_OnMXP_SetEntity 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_MXP_SETENTITY);
-        m_CurrentPlugin->m_dispid_plugin_OnMXP_Error 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_MXP_ERROR);
-
-        m_CurrentPlugin->m_dispid_plugin_On_Chat_Accept       
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_CHAT_ACCEPT   );
-        m_CurrentPlugin->m_dispid_plugin_On_Chat_Message 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_CHAT_MESSAGE);
-        m_CurrentPlugin->m_dispid_plugin_On_Chat_MessageOut 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_CHAT_MESSAGE_OUT);
-        m_CurrentPlugin->m_dispid_plugin_On_Chat_Display 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_CHAT_DISPLAY);
-        m_CurrentPlugin->m_dispid_plugin_On_Chat_NewUser 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_CHAT_NEWUSER);
-        m_CurrentPlugin->m_dispid_plugin_On_Chat_UserDisconnect 
-          = m_CurrentPlugin->GetPluginDispid (ON_PLUGIN_CHAT_USERDISCONNECT);
+        for (int i = 0; PluginCallbacksTable [i].pName; i++)
+          {
+          const char * p = (const char *) m_CurrentPlugin + PluginCallbacksTable [i].iOffset;
+          * (int *) p = m_CurrentPlugin->GetPluginDispid (PluginCallbacksTable [i].pName);
+          }     // end of for each callback
 
         // note if we need to call these routines
-        if (m_CurrentPlugin->m_dispid_plugin_OnMXP_OpenTag != DISPID_UNKNOWN)
-          m_bPluginProcessesOpenTag = true;
-        if (m_CurrentPlugin->m_dispid_plugin_OnMXP_CloseTag != DISPID_UNKNOWN)
-          m_bPluginProcessesCloseTag = true;
-        if (m_CurrentPlugin->m_dispid_plugin_OnMXP_SetVariable != DISPID_UNKNOWN)
-          m_bPluginProcessesSetVariable = true;
-        if (m_CurrentPlugin->m_dispid_plugin_OnMXP_SetEntity != DISPID_UNKNOWN)
-          m_bPluginProcessesSetEntity = true;
-        if (m_CurrentPlugin->m_dispid_plugin_OnMXP_Error != DISPID_UNKNOWN)
-          m_bPluginProcessesError = true;
+
+        m_bPluginProcessesOpenTag       = m_CurrentPlugin->m_dispid_plugin_OnMXP_OpenTag      != DISPID_UNKNOWN;
+        m_bPluginProcessesCloseTag      = m_CurrentPlugin->m_dispid_plugin_OnMXP_CloseTag     != DISPID_UNKNOWN;
+        m_bPluginProcessesSetVariable   = m_CurrentPlugin->m_dispid_plugin_OnMXP_SetVariable  != DISPID_UNKNOWN; 
+        m_bPluginProcessesSetEntity     = m_CurrentPlugin->m_dispid_plugin_OnMXP_SetEntity    != DISPID_UNKNOWN;
+        m_bPluginProcessesError         = m_CurrentPlugin->m_dispid_plugin_OnMXP_Error        != DISPID_UNKNOWN;
 
         }  // end of having a script
 
