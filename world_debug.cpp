@@ -1034,6 +1034,11 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
                   App.m_strLuaScript.GetLength (),
                   SHOW_TRUE (App.m_bEnablePackageLibrary)));
 
+    Note (TFormat ("Scripting prefix: '%s'. External editor in use: %s.",
+          m_strScriptPrefix, SHOW_TRUE (!m_bEditScriptWithNotepad)));
+    if (!m_bEditScriptWithNotepad)
+      Note (TFormat ("Editor path: %s", (LPCTSTR) m_strScriptEditor));
+
     // time taken to execute scripts
     if (App.m_iCounterFrequency > 0)
       {
@@ -1276,6 +1281,10 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       }   // end of loop through views
 
     Note (TFormat ("Commands in command history: %ld", nTotal));
+    Note (TFormat ("Speed walking enabled: %s. Speed walking prefix: %s",
+          SHOW_TRUE (m_enable_speed_walk), (LPCTSTR) m_speed_walk_prefix));
+    Note (TFormat ("Command stacking enabled: %s. Command stack character: '%s'",
+          SHOW_TRUE (m_enable_command_stack), (LPCTSTR) m_strCommandStackCharacter));
 
     // accelerators
 
@@ -1351,7 +1360,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
           r.right, r.bottom, m_FontWidth, m_FontHeight));
 
     if (m_FontWidth > 0 && m_FontHeight > 0)
-      Note (TFormat ("               width %ld characters, wrap at column %ld, height %ld lines.",
+      Note (TFormat ("               can show %ld characters, wrapping at column %ld, height %ld lines.",
             r.right / m_FontWidth, m_nWrapColumn, r.bottom / m_FontHeight));
 
 
