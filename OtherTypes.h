@@ -1006,7 +1006,7 @@ class CPlugin :public CObject
 
   CPlugin (CMUSHclientDoc * pDoc);  // constructor
   ~CPlugin (); // destructor
-  bool SaveState (void);
+  bool SaveState (const bool bScripted = false);
   DISPID GetPluginDispid (const char * sName);
   void ExecutePluginScript (const char * sName, 
                             DISPID & iRoutine);   // no arguments

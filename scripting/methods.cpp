@@ -5748,10 +5748,7 @@ long CMUSHclientDoc::SaveState()
   if (!m_CurrentPlugin)                            
 	  return eNotAPlugin;                       
 
-  if (!m_CurrentPlugin->m_bSaveState)
-    return ePluginDoesNotSaveState;
-
-  if (m_CurrentPlugin->SaveState ())
+  if (m_CurrentPlugin->SaveState (true))
     return ePluginCouldNotSaveState;
 
   return eOK;

@@ -2328,87 +2328,87 @@ void CMUSHclientDoc::Load_Plugin_XML (CXMLelement & parent)
       // find <description> text
       FindNodeContents (*node, "description", m_CurrentPlugin->m_strDescription, false);
 
-      // load the state
-      if (m_CurrentPlugin->m_bSaveState)
-        {
-        CString strSavedFileName = strFileName;
-        int iSavedLineLastItemFound = iLineLastItemFound;
-        int iSavedErrorCount = iErrorCount;
+      CString strSavedFileName = strFileName;
+      int iSavedLineLastItemFound = iLineLastItemFound;
+      int iSavedErrorCount = iErrorCount;
 
-        CFile * f = NULL;
-        CArchive * ar = NULL;
-        CXMLparser parser;
+      CFile * f = NULL;
+      CArchive * ar = NULL;
+      CXMLparser parser;
 
-        strFileName = CString (Make_Absolute_Path (App.m_strDefaultStateFilesDirectory));
-        // need a directory
-          
-        if (App.m_strPluginsDirectory.IsEmpty ())
-          ThrowErrorException ("No plugins directory specified");
+      strFileName = CString (Make_Absolute_Path (App.m_strDefaultStateFilesDirectory));
+      // need a directory
+        
+      if (App.m_strPluginsDirectory.IsEmpty ())
+        ThrowErrorException ("No plugins directory specified");
 
-        // need a world id
+      // need a world id
 
-        if (m_strWorldID.IsEmpty ())
-          ThrowErrorException ("No world ID specified");
+      if (m_strWorldID.IsEmpty ())
+        ThrowErrorException ("No world ID specified");
 
-        strFileName += m_strWorldID;    // world ID
-        strFileName += "-";
-        strFileName += m_CurrentPlugin->m_strID;                 // plugin ID
-        strFileName += "-state.xml";            // suffix
+      strFileName += m_strWorldID;    // world ID
+      strFileName += "-";
+      strFileName += m_CurrentPlugin->m_strID;                 // plugin ID
+      strFileName += "-state.xml";            // suffix
 
 //      ::TMessageBox ("Plugin Load State");
 
-        try
+      try
+        {
+        f = new CFile (strFileName, CFile::modeRead | CFile::shareDenyWrite);
+
+        ar = new CArchive(f, CArchive::load);
+
+        if (IsArchiveXML (*ar))
           {
-          f = new CFile (strFileName, CFile::modeRead | CFile::shareDenyWrite);
 
-          ar = new CArchive(f, CArchive::load);
-  
-          if (IsArchiveXML (*ar))
+          try
             {
+            Load_World_XML (*ar, 
+                            XML_VARIABLES | XML_NO_PLUGINS | XML_OVERWRITE,
+                            0);
+            }
+          catch (CArchiveException* e)
+            {
+            e->Delete ();
+            ThrowErrorException ("Error processing plugin state file \"%s\"",
+                                 (LPCTSTR) strFileName);
+            } // end of catch
 
-            try
-              {
-              Load_World_XML (*ar, 
-                              XML_VARIABLES | XML_NO_PLUGINS | XML_OVERWRITE,
-                              0);
-              }
-            catch (CArchiveException* e)
-              {
-              e->Delete ();
-              ThrowErrorException ("Error processing plugin state file \"%s\"",
-                                   (LPCTSTR) strFileName);
-              } // end of catch
-
-            } 
-          else
+          } 
+        else
+          {
+          // ignore empty state files
+          if (ar->GetFile ()->GetLength () > 0)
             ThrowErrorException ("Plugin state \"%s\" is not an XML file",
                                  (LPCTSTR) strFileName);
 
-          } // end of try
+          }  // end of not archive
+        } // end of try
 
-        catch(CFileException*)
-          {
-          // silently ignore no state file :)
+      catch(CFileException*)
+        {
+        // silently ignore no state file :)
 //          HandleLoadException ("plugin state file not found, assuming empty", e);
-          }
+        }
 
-        catch(CException*)
-          {
-          strFileName = strSavedFileName;
-          iLineLastItemFound = iSavedLineLastItemFound;
-          iErrorCount = iSavedErrorCount;
-          delete ar;
-          delete f;
-          throw;
-          }
-
+      catch(CException*)
+        {
         strFileName = strSavedFileName;
         iLineLastItemFound = iSavedLineLastItemFound;
         iErrorCount = iSavedErrorCount;
         delete ar;
         delete f;
+        throw;
+        }
 
-        } // end of getting the state
+      strFileName = strSavedFileName;
+      iLineLastItemFound = iSavedLineLastItemFound;
+      iErrorCount = iSavedErrorCount;
+      delete ar;
+      delete f;
+
 
       }
     catch (CException*)

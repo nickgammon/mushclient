@@ -689,10 +689,6 @@ void CPluginsDlg::OnRdblclkPluginsList(NMHDR* pNMHDR, LRESULT* pResult)
     if (!pos)
       continue;
 
-    // no state file, don't bother
-    if (!(p->m_bSaveState))
-      continue;
-
     // need a directory
     CString strName = CString (Make_Absolute_Path (App.m_strDefaultStateFilesDirectory));
 

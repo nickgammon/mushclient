@@ -601,10 +601,10 @@ void CPlugin::ExecutePluginScript (const char * sName,
 
   } // end of CPlugin::ExecutePluginScript 
 
-bool CPlugin::SaveState (void)
+bool CPlugin::SaveState (const bool bScripted)
   {
 
-  if (!m_bSaveState)
+  if (!m_bSaveState && !bScripted)
     return true;   // not needed
 
 // need a directory
