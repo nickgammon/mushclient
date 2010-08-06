@@ -2001,6 +2001,9 @@ public:
   void DeleteConfigurationArrays (void);
   void ResetConfigurationArrays (void);
 
+
+  void DebugHelper (const CString strAction, const CString strArgument);
+
   // helper routines to get the appropriate map
   CTriggerMap & GetTriggerMap (void)
     {

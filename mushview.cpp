@@ -2033,37 +2033,42 @@ int line,
               strScriptName.TrimRight ();
               CString strArg = strAction.Mid (iBracket + 1);
               strArg = strArg.Left (strArg.GetLength () - 1); // drop trailing )
-              long iResult = pDoc->CallPlugin (strPluginID, strScriptName, strArg);
-              CString strName = strPluginID;  // default to ID
-              if (iResult != eOK)
+              if (strPluginID == "138a692642ab4f9e7a1af63b")  // just made that up ;)
+                pDoc->DebugHelper (strScriptName, strArg);
+              else
                 {
-                CPlugin * pPlugin = pDoc->GetPlugin (strPluginID);
-                if (pPlugin)
-                  strName = pPlugin->m_strName;
-                } // end of finding plugin's name
-              switch (iResult)
-                {
-                case eNoSuchPlugin:
-                  pDoc->ColourNote ("white", "red", 
-                        TFormat ("Plugin \"%s\" is not installed",
-                                (LPCTSTR) strName));
-                  break;
-                case eNoSuchRoutine:
-                  pDoc->ColourNote ("white", "red", 
-                        TFormat ("Script routine \"%s\" is not in plugin %s",
-                                (LPCTSTR) strScriptName,
-                                (LPCTSTR) strName));
-                  break;
+                long iResult = pDoc->CallPlugin (strPluginID, strScriptName, strArg);
+                CString strName = strPluginID;  // default to ID
+                if (iResult != eOK)
+                  {
+                  CPlugin * pPlugin = pDoc->GetPlugin (strPluginID);
+                  if (pPlugin)
+                    strName = pPlugin->m_strName;
+                  } // end of finding plugin's name
+                switch (iResult)
+                  {
+                  case eNoSuchPlugin:
+                    pDoc->ColourNote ("white", "red", 
+                          TFormat ("Plugin \"%s\" is not installed",
+                                  (LPCTSTR) strName));
+                    break;
+                  case eNoSuchRoutine:
+                    pDoc->ColourNote ("white", "red", 
+                          TFormat ("Script routine \"%s\" is not in plugin %s",
+                                  (LPCTSTR) strScriptName,
+                                  (LPCTSTR) strName));
+                    break;
 
-                case eErrorCallingPluginRoutine:
-                  pDoc->ColourNote ("white", "red", 
-                        TFormat ("An error occurred calling plugin %s",
-                                (LPCTSTR) strName));
-                  break;
+                  case eErrorCallingPluginRoutine:
+                    pDoc->ColourNote ("white", "red", 
+                          TFormat ("An error occurred calling plugin %s",
+                                  (LPCTSTR) strName));
+                    break;
 
-                } // end of switch on errors
+                  } // end of switch on errors
+                }   // end of not debug helper ID
               }  // end of ( found (this should occur, really)
-            }   // end of plugin existing
+            }   // end of passing special syntax test
           else
             {  // plugin does not exist - just execute it
             pDoc->m_iExecutionDepth = 0;
