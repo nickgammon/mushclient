@@ -1600,14 +1600,14 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
       IsPluginID (strArgument.Mid (1, PLUGIN_UNIQUE_ID_LENGTH)) 
       )
     { // correct syntax for plugin call
-    strPluginID = strArgument.Mid (1, PLUGIN_UNIQUE_ID_LENGTH);
+    strPluginID = strArgument.Mid (0, PLUGIN_UNIQUE_ID_LENGTH + 2);
     strArgument = strArgument.Mid (PLUGIN_UNIQUE_ID_LENGTH + 2);  // drop the plugin ID stuff
 
-    m_CurrentPlugin = GetPlugin (strPluginID);
+    m_CurrentPlugin = GetPlugin (strPluginID.Mid (1, PLUGIN_UNIQUE_ID_LENGTH));
 
     if (!m_CurrentPlugin)
       {
-      Note (TFormat ("Plugin ID %s does not exist.", (LPCTSTR) strPluginID));
+      Note (TFormat ("Plugin ID %s does not exist.", (LPCTSTR) strPluginID.Mid (1, PLUGIN_UNIQUE_ID_LENGTH)));
       m_CurrentPlugin = pSavedPlugin;
       return;
       }    // if not found
@@ -1681,7 +1681,7 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 
       ColourTell (strColour, "", CFormat ("%3i. ", iTrigger + 1));
       ColourTell (strColour, "", CFormat ("%6s, %8s : ", pType, pActive));
-      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":showtrigger(%s)", pLabel), 
+      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":showtrigger(%s%s)", (LPCTSTR) strPluginID, pLabel), 
                  pLabel, "Click to view this trigger", "cyan", "", 0);
 
       ColourNote (strColour, "", CFormat ("%*s %s", iSpaces, "", (LPCTSTR) strMatch));
@@ -1743,7 +1743,7 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
       ColourTell (strColour, "", CFormat ("%3i. ", iAlias + 1));
       ColourTell (strColour, "", CFormat ("%6s, %8s : ", pType, pActive));
 
-      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":showalias(%s)", pLabel), 
+      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":showalias(%s%s)", (LPCTSTR) strPluginID, pLabel), 
                  pLabel, "Click to view this alias", "cyan", "", 0);
 
 
@@ -1818,7 +1818,7 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
       ColourTell (strColour, "", CFormat ("%3i. ", iCount + 1));
       ColourTell (strColour, "", CFormat ("%8s : ", pActive));
 
-      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":showtimer(%s)", pLabel), 
+      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":showtimer(%s%s)", (LPCTSTR) strPluginID, pLabel), 
                  pLabel, "Click to view this timer", "cyan", "", 0);
 
 
