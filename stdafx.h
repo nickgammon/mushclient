@@ -926,3 +926,7 @@ convenient for user programs that want to test its value. */
 
 #define STRING(a)  # a
 #define XSTRING(s) STRING(s)
+
+#define DEBUG_PLUGIN_ID "138a692642ab4f9e7a1af63b"  // special plugin ID for Debug "summary"
+bool IsPluginID (const char * sID);
+bool IsSubName (const char * sName);

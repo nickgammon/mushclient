@@ -2002,7 +2002,7 @@ public:
   void ResetConfigurationArrays (void);
 
 
-  void DebugHelper (const CString strAction, const CString strArgument);
+  void DebugHelper (const CString strAction, CString strArgument);
 
   // helper routines to get the appropriate map
   CTriggerMap & GetTriggerMap (void)

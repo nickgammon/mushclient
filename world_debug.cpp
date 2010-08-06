@@ -23,7 +23,7 @@ extern CString strMacroDescriptions [MACRO_COUNT];
 extern CString strKeypadNames [eKeypad_Max_Items];
 extern tInfoTypeMapping InfoTypes [];
 
-#define SHOW_TRUE(x) ((x) ? "yes" : "no")
+#define SHOW_TRUE(x) ((x) ? "yes" : "NO")
 
 static char * sColourNames [8] = 
   {
@@ -947,6 +947,13 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     double    elapsed_time;
     int i;
 
+    CString enabledFore = "#0080FF";
+    CString disabledFore = "gray";
+
+    // work out colour for not-disabled messages
+    if (m_iNoteTextColour >= 0 && m_iNoteTextColour < MAX_CUSTOM)
+      enabledFore = ColourToName (m_customtext [m_iNoteTextColour]);
+
 
     Note ("");
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-------------- MUSHclient summary --------------");
@@ -1079,11 +1086,12 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     else
       elapsed_time = 0;
 
-    Tell (TFormat ("** Triggers: %ld in world file, triggers enabled: %s. ", 
+    Tell (TFormat ("** Triggers: %ld in world file, triggers enabled: %s. [", 
                   nTotal,
                   SHOW_TRUE (m_enable_triggers)));
-    Hyperlink ("!!138a692642ab4f9e7a1af63b:triggerlist()", "Trigger list", "Click to list triggers", "cyan", "", 0);
-    Note ("");
+    Hyperlink ("!!" DEBUG_PLUGIN_ID ":triggerlist()", 
+               "Triggers", "Click to list triggers", "cyan", "", 0);
+    Note ("]");
 
 
     Note (TFormat ("   %ld enabled, %ld regexp, %I64d attempts, %I64d matched, %1.6f seconds.",
@@ -1128,11 +1136,12 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     else
       elapsed_time = 0;
 
-    Tell (TFormat ("** Aliases: %ld in world file, aliases enabled: %s. ", 
+    Tell (TFormat ("** Aliases: %ld in world file, aliases enabled: %s. [", 
                   nTotal,
                   SHOW_TRUE (m_enable_aliases)));
-    Hyperlink ("!!138a692642ab4f9e7a1af63b:aliaslist()", "Alias list", "Click to list aliases", "cyan", "", 0);
-    Note ("");
+    Hyperlink ("!!" DEBUG_PLUGIN_ID ":aliaslist()", 
+               "Aliases", "Click to list aliases", "cyan", "", 0);
+    Note ("]");
     
     Note (TFormat ("   %ld enabled, %ld regexp, %I64d attempts, %I64d matched, %1.6f seconds.",
                    nEnabled, nRegexp, nTotalMatchAttempts, nTotalMatches, elapsed_time));
@@ -1154,12 +1163,13 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       }
 
 
-    Tell (TFormat ("** Timers: %ld in world file, timers enabled: %s. ", 
+    Tell (TFormat ("** Timers: %ld in world file, timers enabled: %s. [", 
                   nTotal,
                   SHOW_TRUE (m_bEnableTimers)));
 
-    Hyperlink ("!!138a692642ab4f9e7a1af63b:timerlist()", "Timer list", "Click to list timers", "cyan", "", 0);
-    Note ("");
+    Hyperlink ("!!" DEBUG_PLUGIN_ID ":timerlist()", 
+               "Timers", "Click to list timers", "cyan", "", 0);
+    Note ("]");
 
     Note (TFormat ("   %ld enabled, %I64d fired.",
                    nEnabled, nTotalMatches));
@@ -1191,10 +1201,11 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       GetVariableMap ().GetNextAssoc (pos, strVariableName, variable_item);
       }
 
-    Tell (TFormat ("** Variables: %ld. ", nTotal));
+    Tell (TFormat ("** Variables: %ld. [", nTotal));
 
-    Hyperlink ("!!138a692642ab4f9e7a1af63b:variablelist()", "Variable list", "Click to list variables", "cyan", "", 0);
-    Note ("");
+    Hyperlink ("!!" DEBUG_PLUGIN_ID ":variablelist()", 
+               "Variables", "Click to list variables", "cyan", "", 0);
+    Note ("]");
 
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- MCCP --");
 
@@ -1226,11 +1237,31 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       if (pPlugin->m_bEnabled)
          nEnabled++;
 
-      Note (TFormat ("Plugin: %s, '%s', enabled: %s", 
+      CString strColour = enabledFore;
+      const char * pActive = "Enabled";
+      if (!pPlugin->m_bEnabled)
+        {
+        pActive = "DISABLED";
+        strColour = disabledFore; 
+        }
+
+      ColourTell (strColour, "", TFormat ("ID: %s, '%s', %8s [", 
             (LPCTSTR) pPlugin->m_strID, 
             (LPCTSTR) pPlugin->m_strName, 
-            SHOW_TRUE (pPlugin->m_bEnabled)));
+            pActive));
 
+      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":triggerlist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
+                 "Tr", "Click to list triggers", "cyan", "", 0);
+      Tell (" ");
+      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":aliaslist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
+                 "Al", "Click to list aliases", "cyan", "", 0);
+      Tell (" ");
+      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":timerlist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
+                 "Ti", "Click to list timers", "cyan", "", 0);
+      Tell (" ");
+      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":variablelist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
+                 "Va", "Click to list variables", "cyan", "", 0);
+      ColourNote (strColour, "", "]");
 
       }
 
@@ -1549,11 +1580,51 @@ void CMUSHclientDoc::ShowAlphaOptions (void)
 //     above. (eg. you can get a list of triggers, or info on one trigger)
 //-----------------------------------------------------------------------
 
-void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgument)
+void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
   {
+
+  Note ("");
+
+  CString strPluginID;
+
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+  m_CurrentPlugin = NULL;
+
+  // if the argument starts with _<plugin_id>_
+  // eg. _584f2e481b30ea09e4a32537_triggerlist
+  // then switch to that plugin
+
+  if (strArgument.GetLength () >= PLUGIN_UNIQUE_ID_LENGTH + 2 &&
+      strArgument.Left (1) == "_" &&
+      strArgument.Mid (PLUGIN_UNIQUE_ID_LENGTH + 1, 1) == "_" && 
+      IsPluginID (strArgument.Mid (1, PLUGIN_UNIQUE_ID_LENGTH)) 
+      )
+    { // correct syntax for plugin call
+    strPluginID = strArgument.Mid (1, PLUGIN_UNIQUE_ID_LENGTH);
+    strArgument = strArgument.Mid (PLUGIN_UNIQUE_ID_LENGTH + 2);  // drop the plugin ID stuff
+
+    m_CurrentPlugin = GetPlugin (strPluginID);
+
+    if (!m_CurrentPlugin)
+      {
+      Note (TFormat ("Plugin ID %s does not exist.", (LPCTSTR) strPluginID));
+      m_CurrentPlugin = pSavedPlugin;
+      return;
+      }    // if not found
+
+    if (m_CurrentPlugin)
+      ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", TFormat ("For plugin: %s", (LPCTSTR) m_CurrentPlugin->m_strName ));
+
+    if (!m_CurrentPlugin->m_bEnabled)
+      ColourNote  (SCRIPTERRORFORECOLOUR, "", TFormat ("Warning: Plugin '%s' disabled.", (LPCTSTR) m_CurrentPlugin->m_strName ));
+
+    }  // seeing if plugin info wanted
+
+
   CString enabledFore = "#0080FF";
   CString disabledFore = "gray";
 
+  // work out colour for not-disabled messages
   if (m_iNoteTextColour >= 0 && m_iNoteTextColour < MAX_CUSTOM)
     enabledFore = ColourToName (m_customtext [m_iNoteTextColour]);
 
@@ -1566,13 +1637,17 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
   if (strAction == "triggerlist")
     {
 
-    Note ("");
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "------ Trigger List (evaluation order) ------");
-    Note ("");
+    if (!m_enable_triggers)
+      ColourNote  (SCRIPTERRORFORECOLOUR, "", "Warning: All triggers disabled.");
 
-    for (int iTrigger = 0; iTrigger < m_TriggerArray.GetSize (); iTrigger++)
+
+    Note ("");
+    int iTrigger;
+
+    for (iTrigger = 0; iTrigger < GetTriggerArray ().GetSize (); iTrigger++)
       {
-      CTrigger * pTrigger = m_TriggerArray [iTrigger];
+      CTrigger * pTrigger = GetTriggerArray () [iTrigger];
 
       // get unlabelled trigger's internal name
       const char * pLabel = pTrigger->strLabel;
@@ -1606,14 +1681,15 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
 
       ColourTell (strColour, "", CFormat ("%3i. ", iTrigger + 1));
       ColourTell (strColour, "", CFormat ("%6s, %8s : ", pType, pActive));
-      Hyperlink (CFormat ("!!138a692642ab4f9e7a1af63b:showtrigger(%s)", pLabel), 
+      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":showtrigger(%s)", pLabel), 
                  pLabel, "Click to view this trigger", "cyan", "", 0);
 
       ColourNote (strColour, "", CFormat ("%*s %s", iSpaces, "", (LPCTSTR) strMatch));
 
       }   // end of for loop
 
-    return;
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", TFormat ("%i trigger%s.", PLURAL (iTrigger)));
+
     }   // end of triggerlist
 
 
@@ -1621,16 +1697,18 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
 //          aliaslist
 //-----------------------------------------------------------------------
 
-  if (strAction == "aliaslist")
+  else if (strAction == "aliaslist")
     {
 
-    Note ("");
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "------ Alias List (evaluation order) ------");
+    if (!m_enable_aliases)
+      ColourNote  (SCRIPTERRORFORECOLOUR, "", "Warning: All aliases disabled.");
     Note ("");
 
-    for (int iAlias = 0; iAlias < m_AliasArray.GetSize (); iAlias++)
+    int iAlias;
+    for (iAlias = 0; iAlias < GetAliasArray ().GetSize (); iAlias++)
       {
-      CAlias * pAlias = m_AliasArray [iAlias];
+      CAlias * pAlias = GetAliasArray () [iAlias];
 
       // get unlabelled alias's internal name
       const char * pLabel = pAlias->strLabel;
@@ -1665,7 +1743,7 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
       ColourTell (strColour, "", CFormat ("%3i. ", iAlias + 1));
       ColourTell (strColour, "", CFormat ("%6s, %8s : ", pType, pActive));
 
-      Hyperlink (CFormat ("!!138a692642ab4f9e7a1af63b:showalias(%s)", pLabel), 
+      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":showalias(%s)", pLabel), 
                  pLabel, "Click to view this alias", "cyan", "", 0);
 
 
@@ -1673,28 +1751,49 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
 
       }   // end of for loop
 
-    return;
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", TFormat ("%i alias%s.", PLURALES (iAlias)));
+
     }   // end of aliaslist
 
 //-----------------------------------------------------------------------
 //          timerlist
 //-----------------------------------------------------------------------
 
-  if (strAction == "timerlist")
+  else if (strAction == "timerlist")
     {
 
-    Note ("");
-    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "------ Timer List ------");
-    Note ("");
-    int iCount = 1;
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "------ Timer List (firing order) ------");
+    if (!m_bEnableTimers)
+      ColourNote  (SCRIPTERRORFORECOLOUR, "", "Warning: All timers disabled.");
 
-    for (pos = m_TimerMap.GetStartPosition(); pos; iCount++)
+    if (m_iConnectPhase != eConnectConnectedToMud)
+      ColourNote  (SCRIPTERRORFORECOLOUR, "", "Warning: Not connected - some timers may not fire.");
+
+    Note ("");
+    int iCount = 0;
+    CmcDateTime timeNow = CmcDateTime::GetTimeNow ();
+
+    map<double,CTimer *> sortedTimers;
+
+    // put into map for sorting into firing order
+    for (pos = GetTimerMap ().GetStartPosition(); pos; )
       {
       CTimer * pTimer;
       CString strName;
 
-      m_TimerMap.GetNextAssoc (pos, strName, pTimer);
+      GetTimerMap ().GetNextAssoc (pos, strName, pTimer);
+
+      sortedTimers [pTimer->tFireTime.GetTime ()] = pTimer;
+      } // end of for loop
+
       
+    // now pull out of map and display
+    for (map<double,CTimer *>::const_iterator it = sortedTimers.begin ();
+         it != sortedTimers.end ();
+         it++, iCount++)
+           {
+
+      CTimer * pTimer = it->second;
 
       // get unlabelled timer's internal name
       const char * pLabel = pTimer->strLabel;
@@ -1716,35 +1815,41 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
       if (pTimer->iType == CTimer::eInterval)
         pType = "Every";
 
-      ColourTell (strColour, "", CFormat ("%3i. ", iCount));
+      ColourTell (strColour, "", CFormat ("%3i. ", iCount + 1));
       ColourTell (strColour, "", CFormat ("%8s : ", pActive));
 
-      Hyperlink (CFormat ("!!138a692642ab4f9e7a1af63b:showtimer(%s)", pLabel), 
+      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":showtimer(%s)", pLabel), 
                  pLabel, "Click to view this timer", "cyan", "", 0);
 
 
 
-      ColourNote (strColour, "", TFormat (" %5s %02i:%02i:%04.2f",
+      ColourTell (strColour, "", TFormat (" %5s %02i:%02i:%04.2f",
                       pType,
                       pTimer->iAtHour + pTimer->iEveryHour,
                       pTimer->iAtMinute + pTimer->iEveryMinute,
                       pTimer->fAtSecond + pTimer->fEverySecond));
 
+      if (pTimer->tFireTime.GetTime () > 0)
+        {
+        CmcDateTimeSpan ts = pTimer->tFireTime - timeNow;
+        ColourTell (strColour, "", TFormat (" - firing in %8.1f seconds.", ts.GetTotalSeconds () ));
+        }
+
+      Note ("");
 
       }   // end of for loop
 
-    return;
-    }   // end of timerlist
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", TFormat ("%i timer%s.", PLURAL (iCount)));
 
+    }   // end of timerlist
 
 //-----------------------------------------------------------------------
 //          variablelist
 //-----------------------------------------------------------------------
 
-  if (strAction == "variablelist")
+  else if (strAction == "variablelist")
     {
 
-    Note ("");
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "------ Variable List (alphabetic order) ------");
     Note ("");
     map<string,string> sortedVariables;
@@ -1779,7 +1884,9 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
                                 it->first.c_str (),
                                 it->second.c_str ()));
 
-    return;
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", TFormat ("%i variable%s.", PLURAL (sortedVariables.size ())));
+
+
     }   // end of variablelist
 
 
@@ -1787,7 +1894,7 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
 //          showtrigger
 //-----------------------------------------------------------------------
 
-  if (strAction == "showtrigger")
+  else if (strAction == "showtrigger")
     {
 
     CTrigger * pTrigger;
@@ -1815,7 +1922,6 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
       free (p);   // remove memory allocated in CMemFile
       p = NULL;
     
-      Note ("");
       ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", CFormat ("------ Trigger: %s ------",(LPCTSTR) strArgument) );
       Note ("");
       Note (strXML);
@@ -1831,7 +1937,6 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
 	    e->Delete();
 	    }
     
-    return;
     }   // end of showtrigger
 
 //-----------------------------------------------------------------------
@@ -1839,7 +1944,7 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
 //-----------------------------------------------------------------------
 
 
-  if (strAction == "showalias")
+  else if (strAction == "showalias")
     {
 
     CAlias * pAlias;
@@ -1867,7 +1972,6 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
       free (p);   // remove memory allocated in CMemFile
       p = NULL;
     
-      Note ("");
       ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", CFormat ("------ Alias: %s ------",(LPCTSTR) strArgument) );
       Note ("");
       Note (strXML);
@@ -1883,7 +1987,6 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
 	    e->Delete();
 	    }
     
-    return;
     }   // end of showalias
 
 
@@ -1891,7 +1994,7 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
 //          showtimer
 //-----------------------------------------------------------------------
 
-  if (strAction == "showtimer")
+  else if (strAction == "showtimer")
     {
 
     CTimer * pTimer;
@@ -1919,7 +2022,6 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
       free (p);   // remove memory allocated in CMemFile
       p = NULL;
     
-      Note ("");
       ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", CFormat ("------ Timer: %s ------",(LPCTSTR) strArgument) );
       Note ("");
       Note (strXML);
@@ -1935,10 +2037,12 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, const CString strArgu
 	    e->Delete();
 	    }
     
-    return;
     }   // end of showtimer
 
+  else
+    Note (TFormat ("DebugHelper: %s, %s", (LPCTSTR) strAction,(LPCTSTR) strArgument));
 
-  Note (TFormat ("DebugHelper: %s, %s", (LPCTSTR) strAction,(LPCTSTR) strArgument));
+  // put current plugin back
+  m_CurrentPlugin = pSavedPlugin;
 
   } // end of CMUSHclientDoc::DebugHelper

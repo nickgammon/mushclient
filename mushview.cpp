@@ -1874,37 +1874,6 @@ CPoint menupoint = point;
 
   } // end of CMUSHView::AliasMenu
 
-// quick check to see if a string is a plugin ID
-static bool IsPluginID (const char * sID)
-  {
-  // return if id wrong length
-  if (strlen (sID) != PLUGIN_UNIQUE_ID_LENGTH)
-    return false;
-
-  for (const char * p = sID; *p; p++)
-    if (!isxdigit (*p))
-      return false;
-
-  return true;
-  }  // end of IsPluginID
-
-// quick check to see if a string is a subroutine name
-static bool IsSubName (const char * sName)
-  {
-const char * p = sName;
-
-  int i;
-// check for A-Z, 0-9 or underscore
-  for (i = 0; *p && *p != '('; p++, i++)
-    if (!isalnum (*p) && *p != '_' && *p != '.')
-      return false;
-
-// can't be zero length
-  if (i == 0)
-    return false;
-
-  return true;
-  }  // end of IsSubName
 
 void CMUSHView::OnLButtonDown(UINT nFlags, CPoint point) 
 {
@@ -2033,7 +2002,7 @@ int line,
               strScriptName.TrimRight ();
               CString strArg = strAction.Mid (iBracket + 1);
               strArg = strArg.Left (strArg.GetLength () - 1); // drop trailing )
-              if (strPluginID == "138a692642ab4f9e7a1af63b")  // just made that up ;)
+              if (strPluginID == DEBUG_PLUGIN_ID)  // just made that up ;)
                 pDoc->DebugHelper (strScriptName, strArg);
               else
                 {
