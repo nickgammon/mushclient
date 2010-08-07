@@ -2003,6 +2003,13 @@ public:
 
 
   void DebugHelper (const CString strAction, CString strArgument);
+  void DebugShow   (const char * sTitle, const char * sString);
+  void DebugShow   (const char * sTitle, const long iNumber);
+  void DebugShow   (const char * sTitle, const bool iBoolean);
+  void DebugShow   (const char * sTitle, const CmcDateTime theDate);
+  void DebugShow   (const char * sTitle, const CTime theDate);
+  void DebugShowD  (const char * sTitle, const double fNumber);
+
 
   // helper routines to get the appropriate map
   CTriggerMap & GetTriggerMap (void)

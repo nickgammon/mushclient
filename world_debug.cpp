@@ -1228,7 +1228,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     else
       Note (Translate ("MCCP not active."));
 
-    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Plugins --");
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Plugins (Processing order) --");
 
     // count and display plugins
 
@@ -2005,6 +2005,26 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 	    e->ReportError();
 	    e->Delete();
 	    }
+
+    DebugShow (Translate ("Matched count"),       pTrigger->nMatched);
+    DebugShow (Translate ("Has script"),          pTrigger->dispid != DISPID_UNKNOWN);
+    DebugShow (Translate ("Times script called"), pTrigger->nInvocationCount);
+    DebugShow (Translate ("When last matched"),   pTrigger->tWhenMatched);
+    DebugShow (Translate ("Send to"),             GetSendToString (pTrigger->iSendTo));
+    DebugShow (Translate ("Temporary"),           pTrigger->bTemporary);
+
+    if (pTrigger->regexp)
+      {
+      if (App.m_iCounterFrequency > 0)
+        {
+        DebugShowD (Translate ("Time to match"), ((double) pTrigger->regexp->iTimeTaken) / 
+                        ((double) App.m_iCounterFrequency));
+        }
+
+      DebugShow  (Translate ("Match attempts"), pTrigger->regexp->m_iMatchAttempts);
+      }
+
+    Note ("");
     
     }   // end of showtrigger
 
@@ -2055,6 +2075,24 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 	    e->ReportError();
 	    e->Delete();
 	    }
+
+    DebugShow (Translate ("Matched count"),       pAlias->nMatched);
+    DebugShow (Translate ("Has script"),          pAlias->dispid != DISPID_UNKNOWN);
+    DebugShow (Translate ("Times script called"), pAlias->nInvocationCount);
+    DebugShow (Translate ("When last matched"),   pAlias->tWhenMatched);
+    DebugShow (Translate ("Send to"),             GetSendToString (pAlias->iSendTo));
+    DebugShow (Translate ("Temporary"),           pAlias->bTemporary);
+    if (pAlias->regexp)
+      {
+      if (App.m_iCounterFrequency > 0)
+        {
+        DebugShowD (Translate ("Time to match"), ((double) pAlias->regexp->iTimeTaken) / 
+                        ((double) App.m_iCounterFrequency));
+        }
+      DebugShow  (Translate ("Match attempts"), pAlias->regexp->m_iMatchAttempts);
+      }
+
+    Note ("");
     
     }   // end of showalias
 
@@ -2105,6 +2143,20 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 	    e->ReportError();
 	    e->Delete();
 	    }
+
+    CmcDateTimeSpan ts = pTimer->tFireTime - CmcDateTime::GetTimeNow ();
+
+    DebugShow  (Translate ("Fired count"),          pTimer->nMatched);
+    DebugShow  (Translate ("Has script"),           pTimer->dispid != DISPID_UNKNOWN);
+    DebugShow  (Translate ("Times script called"),  pTimer->nInvocationCount);
+    DebugShow  (Translate ("When to fire next"),    pTimer->tFireTime);
+    DebugShowD (Translate ("Seconds to fire next"), ts.GetTotalSeconds ());
+    DebugShow  (Translate ("When last reset/fired"),      pTimer->tWhenFired);
+    DebugShow  (Translate ("Send to"),              GetSendToString (pTimer->iSendTo));
+    DebugShow  (Translate ("Temporary"),            pTimer->bTemporary);
+
+
+    Note ("");
     
     }   // end of showtimer
 
@@ -2180,3 +2232,52 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
   m_CurrentPlugin = pSavedPlugin;
 
   } // end of CMUSHclientDoc::DebugHelper
+
+
+#define DEBUG_LABEL_WIDTH 22
+
+void CMUSHclientDoc::DebugShow (const char * sTitle, const char * sString)
+  {
+  ColourTell  (SCRIPTERRORCONTEXTFORECOLOUR, "", CFormat ("%*s: ", DEBUG_LABEL_WIDTH, sTitle) );
+  Note (CFormat ("%s", sString));
+  } // end of CMUSHclientDoc::DebugShow  (string)
+
+void CMUSHclientDoc::DebugShow (const char * sTitle, const long iNumber)
+  {
+  ColourTell  (SCRIPTERRORCONTEXTFORECOLOUR, "", CFormat ("%*s: ", DEBUG_LABEL_WIDTH, sTitle) );
+  Note (CFormat ("%ld", iNumber));
+  } // end of CMUSHclientDoc::DebugShow  (number)
+
+void CMUSHclientDoc::DebugShow (const char * sTitle, const bool iBoolean)
+  {
+  ColourTell  (SCRIPTERRORCONTEXTFORECOLOUR, "", CFormat ("%*s: ", DEBUG_LABEL_WIDTH, sTitle) );
+  if (iBoolean)
+    Note ("Yes");
+  else
+    Note ("No");
+  } // end of CMUSHclientDoc::DebugShow  (boolean)
+
+void CMUSHclientDoc::DebugShow (const char * sTitle, const CmcDateTime theDate)
+  {
+  ColourTell  (SCRIPTERRORCONTEXTFORECOLOUR, "", CFormat ("%*s: ", DEBUG_LABEL_WIDTH, sTitle) );
+  if (theDate.GetTime () == 0)
+    Note (Translate ("Never"));
+  else
+    Note (CFormat ("%02i:%02i:%02i", theDate.GetHour (), theDate.GetMinute (), theDate.GetSecond ()));
+  } // end of CMUSHclientDoc::DebugShow  (date)
+
+void CMUSHclientDoc::DebugShow (const char * sTitle, const CTime theDate)
+  {
+  ColourTell  (SCRIPTERRORCONTEXTFORECOLOUR, "", CFormat ("%*s: ", DEBUG_LABEL_WIDTH, sTitle) );
+  if (theDate.GetTime () == 0)
+    Note (Translate ("Never"));
+  else
+    Note (CFormat ("%02i:%02i:%02i", theDate.GetHour (), theDate.GetMinute (), theDate.GetSecond ()));
+  } // end of CMUSHclientDoc::DebugShow  (date)
+
+void CMUSHclientDoc::DebugShowD (const char * sTitle, const double fNumber)
+  {
+  ColourTell  (SCRIPTERRORCONTEXTFORECOLOUR, "", CFormat ("%*s: ", DEBUG_LABEL_WIDTH, sTitle) );
+  Note (CFormat ("%1.6f", fNumber));
+  } // end of CMUSHclientDoc::DebugShowD  (double)
+
