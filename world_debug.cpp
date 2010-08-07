@@ -2146,14 +2146,14 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 
     CmcDateTimeSpan ts = pTimer->tFireTime - CmcDateTime::GetTimeNow ();
 
-    DebugShow  (Translate ("Fired count"),          pTimer->nMatched);
-    DebugShow  (Translate ("Has script"),           pTimer->dispid != DISPID_UNKNOWN);
-    DebugShow  (Translate ("Times script called"),  pTimer->nInvocationCount);
-    DebugShow  (Translate ("When to fire next"),    pTimer->tFireTime);
-    DebugShowD (Translate ("Seconds to fire next"), ts.GetTotalSeconds ());
-    DebugShow  (Translate ("When last reset/fired"),      pTimer->tWhenFired);
-    DebugShow  (Translate ("Send to"),              GetSendToString (pTimer->iSendTo));
-    DebugShow  (Translate ("Temporary"),            pTimer->bTemporary);
+    DebugShow  (Translate ("Fired count"),           pTimer->nMatched);
+    DebugShow  (Translate ("Has script"),            pTimer->dispid != DISPID_UNKNOWN);
+    DebugShow  (Translate ("Times script called"),   pTimer->nInvocationCount);
+    DebugShow  (Translate ("When to fire next"),     pTimer->tFireTime);
+    DebugShowD (Translate ("Seconds to fire next"),  ts.GetTotalSeconds ());
+    DebugShow  (Translate ("When last reset/fired"), pTimer->tWhenFired);
+    DebugShow  (Translate ("Send to"),               GetSendToString (pTimer->iSendTo));
+    DebugShow  (Translate ("Temporary"),             pTimer->bTemporary);
 
 
     Note ("");
