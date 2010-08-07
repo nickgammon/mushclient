@@ -6,6 +6,7 @@
 #include "Color.h"
 #include "childfrm.h"
 #include "MUSHview.h"
+#include "TextDocument.h"
 
 #include "png/png.h"  // for version
 
@@ -1034,9 +1035,14 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
                   ));
     Note (TFormat ("Scripting active: %s", SHOW_TRUE (GetScriptEngine ()) ));
     if (!m_strScriptFilename.IsEmpty ())
-      Note (TFormat ("Script file: %s",
-                    (LPCTSTR) m_strScriptFilename
-                    ));
+      {
+      Tell (Translate ("Script file: "));
+
+      Hyperlink ("!!" DEBUG_PLUGIN_ID ":editscript()", 
+           m_strScriptFilename, "Click to edit script", "cyan", "", 0);
+
+      Note ("");
+      }
     Note (TFormat ("Lua sandbox is %i characters, DLL loading allowed: %s",  
                   App.m_strLuaScript.GetLength (),
                   SHOW_TRUE (App.m_bEnablePackageLibrary)));
@@ -1193,12 +1199,12 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     nTotal = 0;
 
-    for (pos = GetVariableMap ().GetStartPosition(); pos; nTotal++)
+    for (pos = m_VariableMap.GetStartPosition(); pos; nTotal++)
       {
       CString strVariableName;
       CVariable * variable_item;
 
-      GetVariableMap ().GetNextAssoc (pos, strVariableName, variable_item);
+      m_VariableMap.GetNextAssoc (pos, strVariableName, variable_item);
       }
 
     Tell (TFormat ("** Variables: %ld. [", nTotal));
@@ -1245,9 +1251,13 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
         strColour = disabledFore; 
         }
 
-      ColourTell (strColour, "", TFormat ("ID: %s, '%s', %8s [", 
-            (LPCTSTR) pPlugin->m_strID, 
-            (LPCTSTR) pPlugin->m_strName, 
+      ColourTell (strColour, "", TFormat ("ID: %s, '", 
+                  (LPCTSTR) pPlugin->m_strID));
+
+      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":editplugin(_%s_)",(LPCTSTR) pPlugin->m_strID), 
+                 pPlugin->m_strName, "Click to edit plugin", "cyan", "", 0);
+
+      ColourTell (strColour, "", TFormat ("', %8s [", 
             pActive));
 
       Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":triggerlist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
@@ -1334,7 +1344,11 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     // accelerators
 
-    Note (TFormat ("Accelerators defined: %ld", m_AcceleratorToCommandMap.size ()));
+    Tell (TFormat ("Accelerators defined: %ld [", m_AcceleratorToCommandMap.size ()));
+
+    Hyperlink ("!!" DEBUG_PLUGIN_ID ":acceleratorlist()", 
+               "Accelerators", "Click to list accelerators", "cyan", "", 0);
+    Note ("]");
 
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Miniwindows --");
 
@@ -1448,7 +1462,8 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     // end summary
 
     Note ("");
-    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-------------- End summary --------------");
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", 
+                  "---------------------- End summary ----------------------");
 
     } // end of summary
 
@@ -1583,8 +1598,6 @@ void CMUSHclientDoc::ShowAlphaOptions (void)
 void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
   {
 
-  Note ("");
-
   CString strPluginID;
 
   CPlugin * pSavedPlugin = m_CurrentPlugin;
@@ -1612,14 +1625,21 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
       return;
       }    // if not found
 
-    if (m_CurrentPlugin)
-      ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", TFormat ("For plugin: %s", (LPCTSTR) m_CurrentPlugin->m_strName ));
+    if (strAction != "editplugin")
+      {
+      Note ("");
+      if (m_CurrentPlugin)
+        ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", TFormat ("(For plugin: %s)", (LPCTSTR) m_CurrentPlugin->m_strName ));
 
-    if (!m_CurrentPlugin->m_bEnabled)
-      ColourNote  (SCRIPTERRORFORECOLOUR, "", TFormat ("Warning: Plugin '%s' disabled.", (LPCTSTR) m_CurrentPlugin->m_strName ));
+      if (!m_CurrentPlugin->m_bEnabled)
+        ColourNote  (SCRIPTERRORFORECOLOUR, "", TFormat ("Warning: Plugin '%s' disabled.", (LPCTSTR) m_CurrentPlugin->m_strName ));
+      }
 
     }  // seeing if plugin info wanted
+  else
+    Note ("");
 
+  strArgument.MakeLower ();   // have to do this for lookups to work (eg. triggers)
 
   CString enabledFore = "#0080FF";
   CString disabledFore = "gray";
@@ -1891,6 +1911,55 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 
 
 //-----------------------------------------------------------------------
+//          acceleratorlist
+//-----------------------------------------------------------------------
+
+  else if (strAction == "acceleratorlist")
+    {
+
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "------ Accelerator List (alphabetic order) ------");
+    Note ("");
+    map<string,string> sortedAccelerators;
+
+    map<long, WORD>::const_iterator sit;
+
+    for (sit = m_AcceleratorToCommandMap.begin (); 
+         sit != m_AcceleratorToCommandMap.end (); sit++)
+      {
+      CString key = KeyCodeToString (sit->first >> 16, sit->first);
+      string command = m_CommandToMacroMap [sit->second];
+
+      CString strSendTo;
+      strSendTo.Format (" [%s]", (LPCTSTR) GetSendToString (m_CommandToSendToMap [sit->second]));
+
+      CString strContents = Replace (command.c_str (), ENDLINE, "\\n", true);
+
+      if (strContents.GetLength () > 40)
+        {
+        strContents = strContents.Left (37);
+        strContents = strContents + "...";
+        }
+
+      strContents += strSendTo;
+      sortedAccelerators [(LPCTSTR) key] = strContents;
+      }      // end of looping through each accelerator
+
+    // this will get them into alphabetic order
+
+    for (map<string,string>::const_iterator it = sortedAccelerators.begin ();
+         it != sortedAccelerators.end ();
+         it++)
+
+      Note ( CFormat ("%-20s = %s", 
+                                it->first.c_str (),
+                                it->second.c_str ()));
+
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", TFormat ("%i accelerator%s.", PLURAL (sortedAccelerators.size ())));
+
+
+    }   // end of acceleratorlist
+
+//-----------------------------------------------------------------------
 //          showtrigger
 //-----------------------------------------------------------------------
 
@@ -2038,6 +2107,71 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 	    }
     
     }   // end of showtimer
+
+//-----------------------------------------------------------------------
+//          editplugin
+//-----------------------------------------------------------------------
+
+  else if (strAction == "editplugin")
+    {
+
+    if (m_CurrentPlugin)
+      {
+      CString strName = m_CurrentPlugin->m_strSource;
+
+      if (m_bEditScriptWithNotepad)
+        {
+        CTextDocument * pNewDoc =
+          (CTextDocument *) App.OpenDocumentFile (strName);
+        if (pNewDoc)
+          {
+          pNewDoc->SetTheFont ();
+          pNewDoc->m_pRelatedWorld = this;
+          pNewDoc->m_iUniqueDocumentNumber = m_iUniqueDocumentNumber;
+          }
+        else
+          ::UMessageBox(TFormat ("Unable to edit the plugin file %s.",
+                      (LPCTSTR) strName), 
+                          MB_ICONEXCLAMATION);
+        return;
+        }   // end of using inbuilt notepad
+
+      EditFileWithEditor (strName);
+      }   // end of having a plugin
+
+    }   // end of editplugin
+
+//-----------------------------------------------------------------------
+//          editscript
+//-----------------------------------------------------------------------
+
+  else if (strAction == "editscript")
+    {
+
+    if (m_bEditScriptWithNotepad)
+      {
+      CTextDocument * pNewDoc =
+        (CTextDocument *) App.OpenDocumentFile (m_strScriptFilename);
+      if (pNewDoc)
+        {
+        pNewDoc->SetTheFont ();
+        pNewDoc->m_pRelatedWorld = this;
+        pNewDoc->m_iUniqueDocumentNumber = m_iUniqueDocumentNumber;
+        }
+      else
+        ::UMessageBox(TFormat ("Unable to edit the script file %s.",
+                    (LPCTSTR) m_strScriptFilename), 
+                        MB_ICONEXCLAMATION);
+      return;
+      }   // end of using inbuilt notepad
+
+    EditFileWithEditor (m_strScriptFilename);
+
+    }   // end of editscript
+
+//-----------------------------------------------------------------------
+//          unexpected command
+//-----------------------------------------------------------------------
 
   else
     Note (TFormat ("DebugHelper: %s, %s", (LPCTSTR) strAction,(LPCTSTR) strArgument));
