@@ -380,6 +380,7 @@ Section "Plugins"
   File "..\plugins\ATCP_NJG.xml"
   File "..\plugins\Summary.xml"  
   File "..\plugins\Code_Chart.xml"  
+  File "..\plugins\Config_Option_Changer.xml"  
 
 SectionEnd
 
@@ -539,6 +540,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\ATCP_NJG.xml"
   Delete "$INSTDIR\worlds\plugins\Summary.xml"  
   Delete "$INSTDIR\worlds\plugins\Code_Chart.xml"  
+  Delete "$INSTDIR\worlds\plugins\Config_Option_Changer.xml"  
   
   ; locale stuff
   
