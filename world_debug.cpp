@@ -1092,13 +1092,18 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     else
       elapsed_time = 0;
 
-    Tell (TFormat ("** Triggers: %ld in world file, triggers enabled: %s. [", 
+    Tell (TFormat ("** Triggers: %ld in world file, triggers enabled: %s.", 
                   nTotal,
                   SHOW_TRUE (m_enable_triggers)));
-    Hyperlink ("!!" DEBUG_PLUGIN_ID ":triggerlist()", 
-               "Triggers", "Click to list triggers", "cyan", "", 0);
-    Note ("]");
-
+    if (nTotal > 0)
+      {
+      Tell (" [");
+      Hyperlink ("!!" DEBUG_PLUGIN_ID ":triggerlist()", 
+                 "Triggers", "Click to list triggers", "cyan", "", 0);
+      Note ("]");
+      }
+    else
+      Note ("");
 
     Note (TFormat ("   %ld enabled, %ld regexp, %I64d attempts, %I64d matched, %1.6f seconds.",
                    nEnabled, nRegexp, nTotalMatchAttempts, nTotalMatches, elapsed_time));
@@ -1142,12 +1147,18 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     else
       elapsed_time = 0;
 
-    Tell (TFormat ("** Aliases: %ld in world file, aliases enabled: %s. [", 
+    Tell (TFormat ("** Aliases: %ld in world file, aliases enabled: %s.", 
                   nTotal,
                   SHOW_TRUE (m_enable_aliases)));
-    Hyperlink ("!!" DEBUG_PLUGIN_ID ":aliaslist()", 
-               "Aliases", "Click to list aliases", "cyan", "", 0);
-    Note ("]");
+    if (nTotal > 0)
+      {
+      Tell (" [");
+      Hyperlink ("!!" DEBUG_PLUGIN_ID ":aliaslist()", 
+                 "Aliases", "Click to list aliases", "cyan", "", 0);
+      Note ("]");
+      }
+    else
+      Note ("");
     
     Note (TFormat ("   %ld enabled, %ld regexp, %I64d attempts, %I64d matched, %1.6f seconds.",
                    nEnabled, nRegexp, nTotalMatchAttempts, nTotalMatches, elapsed_time));
@@ -1169,13 +1180,19 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       }
 
 
-    Tell (TFormat ("** Timers: %ld in world file, timers enabled: %s. [", 
+    Tell (TFormat ("** Timers: %ld in world file, timers enabled: %s.", 
                   nTotal,
                   SHOW_TRUE (m_bEnableTimers)));
 
-    Hyperlink ("!!" DEBUG_PLUGIN_ID ":timerlist()", 
-               "Timers", "Click to list timers", "cyan", "", 0);
-    Note ("]");
+    if (nTotal > 0)
+      {
+      Tell (" [");
+      Hyperlink ("!!" DEBUG_PLUGIN_ID ":timerlist()", 
+                 "Timers", "Click to list timers", "cyan", "", 0);
+      Note ("]");
+      }
+    else
+      Note ("");
 
     Note (TFormat ("   %ld enabled, %I64d fired.",
                    nEnabled, nTotalMatches));
@@ -1207,11 +1224,17 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       m_VariableMap.GetNextAssoc (pos, strVariableName, variable_item);
       }
 
-    Tell (TFormat ("** Variables: %ld. [", nTotal));
+    Tell (TFormat ("** Variables: %ld.", nTotal));
 
-    Hyperlink ("!!" DEBUG_PLUGIN_ID ":variablelist()", 
-               "Variables", "Click to list variables", "cyan", "", 0);
-    Note ("]");
+    if (nTotal > 0)
+      {
+      Tell (" [");
+      Hyperlink ("!!" DEBUG_PLUGIN_ID ":variablelist()", 
+                 "Variables", "Click to list variables", "cyan", "", 0);
+      Note ("]");
+      }
+    else
+      Note ("");
 
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- MCCP --");
 
@@ -1257,23 +1280,74 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":editplugin(_%s_)",(LPCTSTR) pPlugin->m_strID), 
                  pPlugin->m_strName, "Click to edit plugin", "cyan", "", 0);
 
-      ColourTell (strColour, "", TFormat ("', %8s [", 
+      ColourTell (strColour, "", TFormat ("', %8s", 
             pActive));
 
-      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":triggerlist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
-                 "Tr", "Click to list triggers", "cyan", "", 0);
-      Tell (" ");
-      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":aliaslist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
-                 "Al", "Click to list aliases", "cyan", "", 0);
-      Tell (" ");
-      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":timerlist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
-                 "Ti", "Click to list timers", "cyan", "", 0);
-      Tell (" ");
-      Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":variablelist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
-                 "Va", "Click to list variables", "cyan", "", 0);
-      ColourNote (strColour, "", "]");
+      // no quick way of finding variables count
+      int nTotalVariables = 0;
+      for (POSITION varpos = pPlugin->m_VariableMap.GetStartPosition(); varpos; nTotalVariables++)
+        {
+        CString strVariableName;
+        CVariable * variable_item;
+        pPlugin->m_VariableMap.GetNextAssoc (varpos, strVariableName, variable_item);
+        }
 
-      }
+      // first time we find a non-zero count, we draw the left bracket
+      // afterwards, we put a space between the previous item and this one
+      int bDoneOne = false;
+
+      // hyperlink for triggers
+      if (pPlugin->m_TriggerArray.GetSize () > 0)
+        {
+        ColourTell (strColour, "", " [");
+        Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":triggerlist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
+                   "Tr", "Click to list triggers", "cyan", "", 0);
+        bDoneOne = true;
+        }
+
+      // hyperlink for aliases
+      if (pPlugin->m_AliasArray.GetSize () > 0)
+        {
+        if (bDoneOne)
+          Tell (" ");
+        else
+          ColourTell (strColour, "", " [");
+        Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":aliaslist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
+                   "Al", "Click to list aliases", "cyan", "", 0);
+        bDoneOne = true;
+        }
+
+      // hyperlink for timers
+      if (pPlugin->m_TimerRevMap.size () > 0)
+        {
+        if (bDoneOne)
+          Tell (" ");
+        else
+          ColourTell (strColour, "", " [");
+        Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":timerlist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
+                   "Ti", "Click to list timers", "cyan", "", 0);
+        bDoneOne = true;
+        }
+
+      // hyperlink for variables
+      if (nTotalVariables > 0)
+        {
+        if (bDoneOne)
+          Tell (" ");
+        else
+          ColourTell (strColour, "", " [");
+        Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":variablelist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
+                   "Va", "Click to list variables", "cyan", "", 0);
+        bDoneOne = true;
+        }
+
+      // wrap up line
+      if (bDoneOne)
+        ColourNote (strColour, "", "]");
+      else
+        Note ("");
+
+      }  // end of for each plugin
 
     Note (TFormat ("** Plugins: %ld loaded, %ld enabled.", nTotal, nEnabled));
 
@@ -1344,11 +1418,17 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     // accelerators
 
-    Tell (TFormat ("Accelerators defined: %ld [", m_AcceleratorToCommandMap.size ()));
+    Tell (TFormat ("Accelerators defined: %ld", m_AcceleratorToCommandMap.size ()));
 
-    Hyperlink ("!!" DEBUG_PLUGIN_ID ":acceleratorlist()", 
-               "Accelerators", "Click to list accelerators", "cyan", "", 0);
-    Note ("]");
+    if (m_AcceleratorToCommandMap.size () > 0)
+      {
+      Tell (" [");
+      Hyperlink ("!!" DEBUG_PLUGIN_ID ":acceleratorlist()", 
+                 "Accelerators", "Click to list accelerators", "cyan", "", 0);
+      Note ("]");
+      }
+    else
+      Note ("");
 
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Miniwindows --");
 
