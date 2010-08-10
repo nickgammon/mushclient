@@ -510,22 +510,36 @@ static int multilistbox (lua_State *L)
 } // end of multilistbox
 
 
-extern const char * sFunctions [1];
+extern tInternalFunctionsTable InternalFunctionsTable [1];
 
 // returns table of internal functions
 static int functionlist (lua_State *L) 
   {
   lua_newtable(L);    // table of function names
 
-  for (int i = 0; sFunctions [i] [0]; i++)
+  for (int i = 0; InternalFunctionsTable [i].sFunction [0]; i++)
     {
-    lua_pushstring (L, sFunctions [i]);
+    lua_pushstring (L, InternalFunctionsTable [i].sFunction);
     lua_rawseti(L, -2, i + 1);  // make 1-relative
     }
 
   return 1;   // 1 table
   } // end of functionlist
 
+// returns table of internal functions keyed by name, value is argument list
+static int functionargs (lua_State *L) 
+  {
+  lua_newtable(L);    // table of function names
+
+  for (int i = 0; InternalFunctionsTable [i].sFunction [0]; i++)
+    {
+    lua_pushstring (L, InternalFunctionsTable [i].sFunction);
+    lua_pushstring (L, InternalFunctionsTable [i].sArgs);
+    lua_rawset(L, -3);  
+    }
+
+  return 1;   // 1 table
+  } // end of functionargs
 
 extern tPluginCallbackNames PluginCallbacksTable [1];
 
@@ -1392,6 +1406,7 @@ static const struct luaL_reg xmllib [] =
   {"multilistbox",  multilistbox},
   {"xmlread",       xmlread},
   {"functionlist",  functionlist},
+  {"functionargs",  functionargs},
   {"filepicker",    filepicker},
   {"directorypicker", directorypicker},
   {"fontpicker",    fontpicker},

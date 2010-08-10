@@ -51,7 +51,7 @@ BEGIN_MESSAGE_MAP(CFunctionListDlg, CDialog)
 
 END_MESSAGE_MAP()
 
-extern const char * sFunctions [1];
+extern tInternalFunctionsTable InternalFunctionsTable [1];
 
 BOOL CFunctionListDlg::ReloadList ()
   {
@@ -69,14 +69,14 @@ BOOL CFunctionListDlg::ReloadList ()
 
   int nItem = 0;
 
-  for (int i = 0; sFunctions [i] [0]; i++)
+  for (int i = 0; InternalFunctionsTable [i].sFunction [0]; i++)
     {
-    strFunction = sFunctions [i];
+    strFunction = InternalFunctionsTable [i].sFunction;
     strFunction.MakeLower ();
 
     if (m_strFilter.IsEmpty () || strFunction.Find (m_strFilter) != -1)
       {
-      m_ctlFunctions.InsertItem (nItem, sFunctions [i]);
+      m_ctlFunctions.InsertItem (nItem, InternalFunctionsTable [i].sFunction);
 
       // select the exact match, if any (so, if they highlight world.Note then it is selected)
 

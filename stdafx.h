@@ -930,3 +930,9 @@ convenient for user programs that want to test its value. */
 #define DEBUG_PLUGIN_ID "138a692642ab4f9e7a1af63b"  // special plugin ID for Debug "summary"
 bool IsPluginID (const char * sID);
 bool IsSubName (const char * sName);
+
+typedef struct 
+  {
+  const char *  sFunction;			// name of function (eg. "WindowShow")
+  const char *	sArgs;          // arguments (eg. "(Window, Showflag)")
+  } tInternalFunctionsTable;

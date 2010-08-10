@@ -51,7 +51,7 @@ END_MESSAGE_MAP()
 
 static const char * sNoMatches = "(no matches)";
 
-extern const char * sFunctions [1];
+extern tInternalFunctionsTable InternalFunctionsTable [1];
 
 void CCompleteWordDlg::ReloadList ()
   {
@@ -72,15 +72,15 @@ void CCompleteWordDlg::ReloadList ()
 
   if (m_bFunctions)
     {
-    for (int i = 0; sFunctions [i] [0]; i++)
+    for (int i = 0; InternalFunctionsTable [i].sFunction [0]; i++)
       {
-      strFunction = sFunctions [i];
+      strFunction = InternalFunctionsTable [i].sFunction;
       strFunction.MakeLower ();
       strFunction = strFunction.Left (iFilterLength);
 
       if (m_strFilter == strFunction)
         {
-        m_ctlFunctions.AddString  (sFunctions [i]);
+        m_ctlFunctions.AddString  (InternalFunctionsTable [i].sFunction);
         iCount++;
         }
 
@@ -192,6 +192,17 @@ void CCompleteWordDlg::OnOK()
   // can't return our "no matches" string
   if (m_strResult == sNoMatches)
     m_strResult.Empty ();
+  else
+    {
+    for (int i = 0; InternalFunctionsTable [i].sFunction [0]; i++)
+      {
+      if (m_strResult == InternalFunctionsTable [i].sFunction)
+        {
+        m_strArgs = InternalFunctionsTable [i].sArgs;
+        break;
+        } // end if function found
+      }  // end for
+    }  // not "no matches"
 
 	CDialog::OnOK();
 }

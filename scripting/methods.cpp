@@ -11540,7 +11540,8 @@ BSTR CMUSHclientDoc::ErrorDesc(long Code)
 }
 
 
-extern const char * sFunctions [1];
+
+extern tInternalFunctionsTable InternalFunctionsTable [1];
 
 void CMUSHclientDoc::Help(LPCTSTR Name) 
 {
@@ -11594,14 +11595,14 @@ CString m_strFilter = Name;
       }
 
     // then try a world function
-    for (int i = 0; sFunctions [i] [0]; i++)
+    for (int i = 0; InternalFunctionsTable [i].sFunction [0]; i++)
       {
-      strFunction = sFunctions [i];
+      strFunction = InternalFunctionsTable [i].sFunction;
       strFunction.MakeLower ();
 
       if (strFunction == m_strFilter)
         {
-        ShowHelp ("FNC_", sFunctions [i]);   // back to proper capitalization
+        ShowHelp ("FNC_", InternalFunctionsTable [i].sFunction);   // back to proper capitalization
         return;
         }
       }

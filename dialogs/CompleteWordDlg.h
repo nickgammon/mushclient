@@ -25,6 +25,7 @@ public:
   const char * m_sFunctionsPtr;
   int m_nFunctions;
   CString m_strResult;
+  CString m_strArgs;
 	CString	m_strFilter;
   CPoint m_pt;  // where to put it
 
