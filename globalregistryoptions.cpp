@@ -195,39 +195,11 @@ void CMUSHclientApp::LoadGlobalsFromDatabase (void)
     };
 
 
-  // get Lua initialisation if necessary
+  // get Lua initialisation (sandbox) if necessary
 
   if (m_strLuaScript.IsEmpty ())
-    {
-
-    /*
-    HRSRC hRsrc;
-    HGLOBAL hRsrc_text = NULL;
-    const char * p = NULL;
-    DWORD iLength = 0;
-
-  // Load the text of the Lua sandbox
-
-    hRsrc = FindResource (App.m_hInstDLL, MAKEINTRESOURCE (IDR_LUA_SCRIPT), "TEXT");
-
-    if (hRsrc)
-      {
-      hRsrc_text = LoadResource (App.m_hInstDLL, hRsrc);
-      iLength = SizeofResource (App.m_hInstDLL, hRsrc);
-      }
-
-    if (hRsrc_text)
-      p = (const char *) LockResource (hRsrc_text);
-
-    if (p)
-      m_strLuaScript = CString (p, iLength);
-    else
-      m_strLuaScript = "-- Lua initialization could not be loaded";
-    */
     m_strLuaScript = "-- Put Lua initialization code (eg. sandbox) here.\r\n" 
-                     "-- Possible sandbox here: http://mushclient.com/forum/?id=7344\r\n";
-    } // end of no sandbox
-
+                     "-- Possible sandbox here: http://mushclient.com/forum/?id=10503\r\n";
 
 
   } // end of CMUSHclientApp::LoadGlobalsFromDatabase
