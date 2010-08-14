@@ -779,9 +779,15 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
   Note ("");
   Note (Translate ("For information and assistance about MUSHclient visit our forum at:"));
   Tell ("   ");
-  Hyperlink (MUSHCLIENT_FORUM_URL, FORUM_URL, Translate ("Go to forum"), 
+  Hyperlink (MUSHCLIENT_FORUM_URL, FORUM_URL, Translate ("MUSHclient forum"), 
              "deepskyblue", "black", TRUE);
   Note ("");
+  Tell (Translate ("Can you trust your plugins?  See: "));
+  Hyperlink ("http://mushclient.com/forum/?id=10503", 
+             "Security tips", Translate ("How to trust plugins"), 
+             "deepskyblue", "black", TRUE);
+  Note ("");
+
 
 
   // output stuff that appeared before we set up the output buffer

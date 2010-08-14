@@ -199,7 +199,7 @@ void CMUSHclientApp::LoadGlobalsFromDatabase (void)
 
   if (m_strLuaScript.IsEmpty ())
     m_strLuaScript = "-- Put Lua initialization code (eg. sandbox) here.\r\n" 
-                     "-- Possible sandbox here: http://mushclient.com/forum/?id=10503\r\n";
+                     "-- Possible sandbox, and security tips: http://mushclient.com/forum/?id=10503\r\n";
 
 
   } // end of CMUSHclientApp::LoadGlobalsFromDatabase
