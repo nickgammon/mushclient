@@ -25,7 +25,7 @@ static tGlobalConfigurationNumericOption GlobalOptionsTable [] = {
 { GLB_OPT (m_bConfirmBeforeSavingVariables  ), "ConfirmBeforeSavingVariables",  1 },
 { GLB_OPT (m_bConfirmLogFileClose           ), "ConfirmLogFileClose",           1 },
 { GLB_OPT (m_bEnableSpellCheck              ), "EnableSpellCheck", 1 },
-{ GLB_OPT (m_bEnablePackageLibrary          ), "AllowLoadingDlls", 0 },
+{ GLB_OPT (m_bEnablePackageLibrary          ), "AllowLoadingDlls", 1 },
 { GLB_OPT (m_bF1macro                       ), "F1macro",  0 },
 { GLB_OPT (m_bFixedFontForEditing           ), "FixedFontForEditing",  1 },
 { GLB_OPT (m_bNotepadWordWrap               ), "NotepadWordWrap", 1 }, 
@@ -200,6 +200,7 @@ void CMUSHclientApp::LoadGlobalsFromDatabase (void)
   if (m_strLuaScript.IsEmpty ())
     {
 
+    /*
     HRSRC hRsrc;
     HGLOBAL hRsrc_text = NULL;
     const char * p = NULL;
@@ -222,7 +223,12 @@ void CMUSHclientApp::LoadGlobalsFromDatabase (void)
       m_strLuaScript = CString (p, iLength);
     else
       m_strLuaScript = "-- Lua initialization could not be loaded";
-    }
+    */
+    m_strLuaScript = "-- Put Lua initialization code (eg. sandbox) here.\r\n" 
+                     "-- Possible sandbox here: http://mushclient.com/forum/?id=7344\r\n";
+    } // end of no sandbox
+
+
 
   } // end of CMUSHclientApp::LoadGlobalsFromDatabase
 
