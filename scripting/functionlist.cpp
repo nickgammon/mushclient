@@ -437,9 +437,7 @@ CString GetSelectedFunction (CString & strWindowContents, int & nStartChar, int 
 
     if (nStartChar == nEndChar)
       {
-      // if at end-of-file, go back a character
-  //    if (nStartChar >= strWindowContents.GetLength ())
-        nStartChar--;
+      nStartChar--;   // go back one so we are not at end of string
 
       // scan backwards from cursor
       while (nStartChar >= 0 && 
@@ -510,10 +508,38 @@ CString GetSelectedFunction (CString & strWindowContents, int & nStartChar, int 
 
   } // end of GetSelectedFunction
 
-void ShowFunctionslist (CString & strSelection, int nStartChar, int nEndChar, const bool bLua)
+void ShowFunctionslist (CString & strWindowContents, int nStartChar, int nEndChar, const bool bLua)
 {
 
-CString strWord = GetSelectedFunction (strSelection, nStartChar, nEndChar);
+  // skip backwards over any whitespace or LH brackets (which the new
+  // function context stuff probably put there)
+
+  if (!strWindowContents.IsEmpty ())
+    {
+
+    if (nStartChar == nEndChar)
+      {
+      nStartChar--;    // error if at end of string, so go back one
+      nEndChar--;
+
+      // scan backwards from cursor
+      while (nStartChar >= 0 && 
+             (isspace (strWindowContents [nStartChar]) || 
+              strWindowContents [nStartChar] == '(')
+             )
+        {
+        nStartChar--;
+        nEndChar--;
+        }
+
+      } // no selection
+      nStartChar++;    // compensate for earlier subtract
+      nEndChar++;
+
+     }   // end of some contents
+
+
+CString strWord = GetSelectedFunction (strWindowContents, nStartChar, nEndChar);
 
 CFunctionListDlg dlg;
 
