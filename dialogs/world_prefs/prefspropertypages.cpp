@@ -6980,7 +6980,8 @@ void CPrefsP18::LoadDialog (CDialog * pDlg, CObject * pItem)
   ASSERT( variable_item->IsKindOf( RUNTIME_CLASS( CVariable ) ) );
 
   dlg->m_strName     = variable_item->strLabel;
-  dlg->m_strContents = variable_item->strContents;
+  dlg->m_strContents = Replace (variable_item->strContents, "\r", "", true);
+  dlg->m_strContents = Replace (dlg->m_strContents, "\n", ENDLINE, true);
 
   dlg->m_pVariableMap = &m_doc->m_VariableMap;
   dlg->m_bDoingChange = true;
@@ -7157,8 +7158,12 @@ int nItem;
   	m_ctlVariableList.SetItemText(nItem, eColumnName, variable_item->strLabel);
     }
 
-	m_ctlVariableList.SetItemText(nItem, eColumnContents, 
-                 Replace (variable_item->strContents, ENDLINE, "\\n", true));
+  // first get rid of carriage-returns
+  CString strContents = Replace (variable_item->strContents, "\r", "", true);
+  // now show newlines as \n
+  strContents = Replace (strContents, "\n", "\\n", true);
+
+	m_ctlVariableList.SetItemText(nItem, eColumnContents, strContents);
 
   return nItem;
 

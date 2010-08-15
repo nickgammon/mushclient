@@ -2015,8 +2015,11 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
       CString strSendTo;
       strSendTo.Format (" [%s]", (LPCTSTR) GetSendToString (m_CommandToSendToMap [sit->second]));
 
-      CString strContents = Replace (command.c_str (), ENDLINE, "\\n", true);
-
+      // first get rid of carriage-returns
+      CString strContents = Replace (command.c_str (), "\r", "", true);
+      // now show newlines as \n
+      strContents = Replace (strContents, "\n", "\\n", true);
+      
       if (strContents.GetLength () > 40)
         {
         strContents = strContents.Left (37);
