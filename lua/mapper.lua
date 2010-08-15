@@ -4,7 +4,7 @@
 
 Author: Nick Gammon
 Date:   11th March 2010
-Amended: 15h August 2010
+Amended: 15th August 2010
 
 Generic MUD mapper.
 
@@ -61,7 +61,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 1.9   -- for querying by plugins
+VERSION = 2.0   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -230,138 +230,6 @@ local function check_connected ()
   return true
 end -- check_connected
 
-function start_speedwalk (path)
-
-  if not check_connected () then
-    return
-  end -- if 
-  
-  if current_speedwalk and #current_speedwalk > 0 then
-    mapprint ("You are already speedwalking! (Ctrl + LH-click on any room to cancel)")
-    return
-  end -- if
-
-  current_speedwalk = path
-
-  if current_speedwalk then
-    if #current_speedwalk > 0 then
-      last_speedwalk_uid = current_speedwalk [#current_speedwalk].uid
-      
-      -- fast speedwalk: just send # 4s 3e  etc.
-      if type (speedwalk_prefix) == "string" and speedwalk_prefix ~= "" then
-        local s = speedwalk_prefix .. " " .. build_speedwalk (path)
-        Execute (s)
-        current_speedwalk = nil
-        return  
-      end -- if
-      
-      local dir = table.remove (current_speedwalk, 1)
-      local room = get_room (dir.uid)
-      walk_to_room_name = room.name
-      SetStatus ("Walking " .. (expand_direction [dir.dir] or dir.dir) .. 
-                 " to " .. walk_to_room_name ..
-                 ". Speedwalks to go: " .. #current_speedwalk + 1)
-      Send (dir.dir)
-      expected_room = dir.uid
-    else
-      cancel_speedwalk ()
-    end -- if any left    
-  end -- if
-    
-end -- start_speedwalk
-
-function cancel_speedwalk ()
-  if current_speedwalk and #current_speedwalk > 0 then
-    mapprint "Speedwalk cancelled."
-  end -- if
-  current_speedwalk = nil
-  expected_room = nil
-  hyperlink_paths = nil
-  SetStatus ("Ready")
-end -- cancel_speedwalk
-
-function mouseup_room (flags, hotspot_id)
-  local uid = hotspot_id
-
-  if bit.band (flags, 0x20) ~= 0 then
-    
-    -- RH click
-    
-    if type (room_click) == "function" then
-      room_click (uid, flags)
-    end -- if 
-
-    return
-  end -- if RH click
-
-  -- here for LH click
-    
-   -- Control key down?
-  if bit.band (flags, 0x02) ~= 0 then
-    cancel_speedwalk ()
-    return
-  end -- if ctrl-LH click
-  
-  start_speedwalk (speedwalks [uid])
-   
-end -- mouseup_room
-
-function mouseup_configure (flags, hotspot_id)
-  draw_configure_box = true
-  draw (current_room)
-end -- mouseup_configure
-
-function mouseup_close_configure (flags, hotspot_id)
-  draw_configure_box = false
-  draw (current_room)
-end -- mouseup_player
-
-function mouseup_change_colour (flags, hotspot_id)
- 
-  local which = string.match (hotspot_id, "^$colour:([%a%d_]+)$")
-  if not which then
-    return  -- strange ...
-  end -- not found
-
-  local newcolour = PickColour (config [which].colour)
-      
-  if newcolour == -1 then
-    return
-  end -- if dismissed
-  
-  config [which].colour = newcolour
-  
-  draw (current_room)
-end -- mouseup_change_colour
-
-function mouseup_change_font (flags, hotspot_id)
-  
-  local newfont =  utils.fontpicker (config.FONT.name, config.FONT.size, config.ROOM_NAME_TEXT.colour)
-      
-  if not newfont then
-    return
-  end -- if dismissed
-  
-  config.FONT.name = newfont.name
-  
-  if newfont.size > 12 then
-    utils.msgbox ("Maximum allowed font size is 12 points.", "Font too large", "ok", "!", 1)
-  else
-    config.FONT.size = newfont.size
-  end -- if
-  
-  config.ROOM_NAME_TEXT.colour = newfont.colour
-
-  -- reload new font  
-  WindowFont (win, FONT_ID, config.FONT.name, config.FONT.size)
-  WindowFont (win, FONT_ID_UL, config.FONT.name, config.FONT.size, false, false, true)
-  
-  -- see how high it is
-  font_height = WindowFontInfo (win, FONT_ID, 1)  -- height
-  
-  draw (current_room)
-end -- mouseup_change_font
-
 local function get_number_from_user (msg, title, current, min, max)
   local n =  utils.inputbox (msg, title, current)
       
@@ -382,55 +250,6 @@ local function get_number_from_user (msg, title, current, min, max)
 
   return n
 end -- get_number_from_user
-
-function mouseup_change_width (flags, hotspot_id)
-  
-  local width = get_number_from_user ("Choose window width (200 to 1000 pixels)", "Width", config.WINDOW.width, 200, 1000)
-      
-  if not width then
-    return
-  end -- if dismissed
-    
-  config.WINDOW.width = width
-  draw (current_room)
-end -- mouseup_change_width
-
-function mouseup_change_height (flags, hotspot_id)
-  
-  local height = get_number_from_user ("Choose window height (200 to 1000 pixels)", "Width", config.WINDOW.height, 200, 1000)
-      
-  if not height then
-    return
-  end -- if dismissed
-    
-  config.WINDOW.height = height
-  draw (current_room)
-end -- mouseup_change_height
-
-function mouseup_change_depth (flags, hotspot_id)
-  
-  local depth = get_number_from_user ("Choose scan depth (3 to 100 rooms)", "Depth", config.SCAN.depth, 3, 100)
-      
-  if not depth then
-    return
-  end -- if dismissed
-    
-  config.SCAN.depth = depth
-  draw (current_room)
-end -- mouseup_change_depth
-
-function mouseup_change_delay (flags, hotspot_id)
-  
-  local delay = get_number_from_user ("Choose speedwalk delay time (0 to 10 seconds)", "Delay in seconds", config.DELAY.time, 0, 10)
-      
-  if not delay then
-    return
-  end -- if dismissed
-    
-  config.DELAY.time = delay
-  draw (current_room)
-end -- mouseup_change_delay
-
 
 local function draw_configuration ()
   local width =  max_text_width (win, FONT_ID, {"Configuration", "Font", "Width", "Height", "Depth"}, true)
@@ -850,6 +669,39 @@ local function changed_room (uid)
 
 end -- changed_room
 
+local function draw_zone_exit (exit)
+
+  local x, y = exit.x, exit.y
+  local offset = ROOM_SIZE
+  
+  -- draw circle around us
+  WindowCircleOp (win, 1, 
+                  x - offset, y - offset,
+                  x + offset, y + offset,
+                  ColourNameToRGB "cornflowerblue",  -- pen colour
+                  0, -- solid pen
+                  3, -- pen width
+                  0, -- brush colour
+                  1 ) -- null brush
+                  
+  WindowCircleOp (win, 1, 
+                  x - offset, y - offset,
+                  x + offset, y + offset,
+                  ColourNameToRGB "cyan",  -- pen colour
+                  0, -- solid pen
+                  1, -- pen width
+                  0, -- brush colour
+                  1 ) -- null brush
+
+end --  draw_zone_exit 
+
+               
+----------------------------------------------------------------------------------
+--  EXPOSED FUNCTIONS
+----------------------------------------------------------------------------------
+
+-- can we find another room right now?
+
 function check_we_can_find ()
 
   if not check_connected () then
@@ -877,118 +729,90 @@ end -- check_we_can_find
 --   we have done searching (ie. all wanted rooms found)
 
 function find_paths (uid, f)
-	
+  
   local function make_particle (curr_loc, prev_path)
     local prev_path = prev_path or {}
     return {current_room=curr_loc, path=prev_path}
   end
 
-	local depth = 0
-	local count = 0
-	local done = false
+  local depth = 0
+  local count = 0
+  local done = false
   local found, reason 
-	local explored_rooms, particles = {}, {}
-	
-	-- this is where we collect found paths
-	-- the table is keyed by destination, with paths as values
-	local paths = {}
-	
-	-- create particle for the initial room
-	table.insert (particles, make_particle (uid))
-	
-	while (not done) and #particles > 0 and depth < config.SCAN.depth do
-	
-		-- create a new generation of particles
-		new_generation = {}
-		depth = depth + 1
-		
-		SetStatus (string.format ("Scanning: %i/%i depth (%i rooms)", depth, config.SCAN.depth, count))
-		
-		-- process each active particle
-		for i, part in ipairs (particles) do
-		
-		  count = count + 1
-		  
-		  if not rooms [part.current_room] then
+  local explored_rooms, particles = {}, {}
+  
+  -- this is where we collect found paths
+  -- the table is keyed by destination, with paths as values
+  local paths = {}
+  
+  -- create particle for the initial room
+  table.insert (particles, make_particle (uid))
+  
+  while (not done) and #particles > 0 and depth < config.SCAN.depth do
+  
+    -- create a new generation of particles
+    new_generation = {}
+    depth = depth + 1
+    
+    SetStatus (string.format ("Scanning: %i/%i depth (%i rooms)", depth, config.SCAN.depth, count))
+    
+    -- process each active particle
+    for i, part in ipairs (particles) do
+    
+      count = count + 1
+      
+      if not rooms [part.current_room] then
         rooms [part.current_room] = get_room (part.current_room)
-		  end -- if not in memory yet
-		
-			-- if room doesn't exist, forget it
+      end -- if not in memory yet
+    
+      -- if room doesn't exist, forget it
       if rooms [part.current_room] then
-			
-				-- get a list of exits from the current room
-				exits = rooms [part.current_room].exits
-				
-				-- create one new particle for each exit
-				for dir, dest in pairs(exits) do
-				
-					-- if we've been in this room before, drop it
-					if not explored_rooms[dest] then
-						explored_rooms[dest] = true						
-						rooms [dest] = supplied_get_room (dest)  -- make sure this room in table
-						if rooms [dest] then
-  						new_path = copytable.deep (part.path)
-  						table.insert(new_path, { dir = dir, uid = dest } )
-  						
-  						-- if this room is in the list of destinations then save its path
-  						found, done = f (dest)
-  						if found then
-  							paths[dest] = { path = new_path, reason = found }
-  						end -- found one!
-  						
-  						-- make a new particle in the new room
-  	        	table.insert(new_generation, make_particle(dest, new_path))
-	        	end -- if room exists
-					end -- not explored this room
-    			if done then
-    			  break
-    			end
-					
-				end  -- for each exit
-			
-			end -- if room exists
-			
-			if done then
-			  break
-			end
-		end  -- for each particle
-			
-		particles = new_generation
-	end	  -- while more particles
-	
+      
+        -- get a list of exits from the current room
+        exits = rooms [part.current_room].exits
+        
+        -- create one new particle for each exit
+        for dir, dest in pairs(exits) do
+        
+          -- if we've been in this room before, drop it
+          if not explored_rooms[dest] then
+            explored_rooms[dest] = true           
+            rooms [dest] = supplied_get_room (dest)  -- make sure this room in table
+            if rooms [dest] then
+              new_path = copytable.deep (part.path)
+              table.insert(new_path, { dir = dir, uid = dest } )
+              
+              -- if this room is in the list of destinations then save its path
+              found, done = f (dest)
+              if found then
+                paths[dest] = { path = new_path, reason = found }
+              end -- found one!
+              
+              -- make a new particle in the new room
+              table.insert(new_generation, make_particle(dest, new_path))
+            end -- if room exists
+          end -- not explored this room
+          if done then
+            break
+          end
+          
+        end  -- for each exit
+      
+      end -- if room exists
+      
+      if done then
+        break
+      end
+    end  -- for each particle
+      
+    particles = new_generation
+  end   -- while more particles
+  
   SetStatus "Ready"
-	return paths, count, depth			
+  return paths, count, depth      
 end -- function find_paths
 
-local function draw_zone_exit (exit)
-
-  local x, y = exit.x, exit.y
-  local offset = ROOM_SIZE
-  
-  -- draw circle around us
-  WindowCircleOp (win, 1, 
-                  x - offset, y - offset,
-                  x + offset, y + offset,
-                  ColourNameToRGB "cornflowerblue",  -- pen colour
-                  0, -- solid pen
-                  3, -- pen width
-                  0, -- brush colour
-                  1 ) -- null brush
-                  
-  WindowCircleOp (win, 1, 
-                  x - offset, y - offset,
-                  x + offset, y + offset,
-                  ColourNameToRGB "cyan",  -- pen colour
-                  0, -- solid pen
-                  1, -- pen width
-                  0, -- brush colour
-                  1 ) -- null brush
-
-end --  draw_zone_exit 
-               
-----------------------------------------------------------------------------------
---  EXPOSED FUNCTIONS
-----------------------------------------------------------------------------------
+-- draw our map starting at room: uid
 
 function draw (uid)
 
@@ -1384,6 +1208,8 @@ function find (f, show_uid, expected_count, walk)
   
 end -- map_find_things
 
+-- executed when the mapper draws a hyperlink to a room
+
 function do_hyperlink (hash)
 
   if not check_connected () then
@@ -1402,6 +1228,8 @@ function do_hyperlink (hash)
   start_speedwalk (path)
     
 end -- do_hyperlink
+
+-- build a speedwalk from a path into a string
 
 function build_speedwalk (path)
 
@@ -1442,3 +1270,194 @@ function build_speedwalk (path)
   return s
   
 end -- build_speedwalk
+
+-- start a speedwalk to a path
+
+function start_speedwalk (path)
+
+  if not check_connected () then
+    return
+  end -- if 
+  
+  if current_speedwalk and #current_speedwalk > 0 then
+    mapprint ("You are already speedwalking! (Ctrl + LH-click on any room to cancel)")
+    return
+  end -- if
+
+  current_speedwalk = path
+
+  if current_speedwalk then
+    if #current_speedwalk > 0 then
+      last_speedwalk_uid = current_speedwalk [#current_speedwalk].uid
+      
+      -- fast speedwalk: just send # 4s 3e  etc.
+      if type (speedwalk_prefix) == "string" and speedwalk_prefix ~= "" then
+        local s = speedwalk_prefix .. " " .. build_speedwalk (path)
+        Execute (s)
+        current_speedwalk = nil
+        return  
+      end -- if
+      
+      local dir = table.remove (current_speedwalk, 1)
+      local room = get_room (dir.uid)
+      walk_to_room_name = room.name
+      SetStatus ("Walking " .. (expand_direction [dir.dir] or dir.dir) .. 
+                 " to " .. walk_to_room_name ..
+                 ". Speedwalks to go: " .. #current_speedwalk + 1)
+      Send (dir.dir)
+      expected_room = dir.uid
+    else
+      cancel_speedwalk ()
+    end -- if any left    
+  end -- if
+    
+end -- start_speedwalk
+
+-- cancel the current speedwalk
+
+function cancel_speedwalk ()
+  if current_speedwalk and #current_speedwalk > 0 then
+    mapprint "Speedwalk cancelled."
+  end -- if
+  current_speedwalk = nil
+  expected_room = nil
+  hyperlink_paths = nil
+  SetStatus ("Ready")
+end -- cancel_speedwalk
+
+
+-- ------------------------------------------------------------------
+-- mouse-up handlers (need to be exposed)
+-- these are for clicking on the map, or the configuration box
+-- ------------------------------------------------------------------
+
+function mouseup_room (flags, hotspot_id)
+  local uid = hotspot_id
+
+  if bit.band (flags, 0x20) ~= 0 then
+    
+    -- RH click
+    
+    if type (room_click) == "function" then
+      room_click (uid, flags)
+    end -- if 
+
+    return
+  end -- if RH click
+
+  -- here for LH click
+    
+   -- Control key down?
+  if bit.band (flags, 0x02) ~= 0 then
+    cancel_speedwalk ()
+    return
+  end -- if ctrl-LH click
+  
+  start_speedwalk (speedwalks [uid])
+   
+end -- mouseup_room
+
+function mouseup_configure (flags, hotspot_id)
+  draw_configure_box = true
+  draw (current_room)
+end -- mouseup_configure
+
+function mouseup_close_configure (flags, hotspot_id)
+  draw_configure_box = false
+  draw (current_room)
+end -- mouseup_player
+
+function mouseup_change_colour (flags, hotspot_id)
+ 
+  local which = string.match (hotspot_id, "^$colour:([%a%d_]+)$")
+  if not which then
+    return  -- strange ...
+  end -- not found
+
+  local newcolour = PickColour (config [which].colour)
+      
+  if newcolour == -1 then
+    return
+  end -- if dismissed
+  
+  config [which].colour = newcolour
+  
+  draw (current_room)
+end -- mouseup_change_colour
+
+function mouseup_change_font (flags, hotspot_id)
+  
+  local newfont =  utils.fontpicker (config.FONT.name, config.FONT.size, config.ROOM_NAME_TEXT.colour)
+      
+  if not newfont then
+    return
+  end -- if dismissed
+  
+  config.FONT.name = newfont.name
+  
+  if newfont.size > 12 then
+    utils.msgbox ("Maximum allowed font size is 12 points.", "Font too large", "ok", "!", 1)
+  else
+    config.FONT.size = newfont.size
+  end -- if
+  
+  config.ROOM_NAME_TEXT.colour = newfont.colour
+
+  -- reload new font  
+  WindowFont (win, FONT_ID, config.FONT.name, config.FONT.size)
+  WindowFont (win, FONT_ID_UL, config.FONT.name, config.FONT.size, false, false, true)
+  
+  -- see how high it is
+  font_height = WindowFontInfo (win, FONT_ID, 1)  -- height
+  
+  draw (current_room)
+end -- mouseup_change_font
+
+
+function mouseup_change_width (flags, hotspot_id)
+  
+  local width = get_number_from_user ("Choose window width (200 to 1000 pixels)", "Width", config.WINDOW.width, 200, 1000)
+      
+  if not width then
+    return
+  end -- if dismissed
+    
+  config.WINDOW.width = width
+  draw (current_room)
+end -- mouseup_change_width
+
+function mouseup_change_height (flags, hotspot_id)
+  
+  local height = get_number_from_user ("Choose window height (200 to 1000 pixels)", "Width", config.WINDOW.height, 200, 1000)
+      
+  if not height then
+    return
+  end -- if dismissed
+    
+  config.WINDOW.height = height
+  draw (current_room)
+end -- mouseup_change_height
+
+function mouseup_change_depth (flags, hotspot_id)
+  
+  local depth = get_number_from_user ("Choose scan depth (3 to 100 rooms)", "Depth", config.SCAN.depth, 3, 100)
+      
+  if not depth then
+    return
+  end -- if dismissed
+    
+  config.SCAN.depth = depth
+  draw (current_room)
+end -- mouseup_change_depth
+
+function mouseup_change_delay (flags, hotspot_id)
+  
+  local delay = get_number_from_user ("Choose speedwalk delay time (0 to 10 seconds)", "Delay in seconds", config.DELAY.time, 0, 10)
+      
+  if not delay then
+    return
+  end -- if dismissed
+    
+  config.DELAY.time = delay
+  draw (current_room)
+end -- mouseup_change_delay
