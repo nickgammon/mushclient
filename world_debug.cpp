@@ -1961,7 +1961,10 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 
       GetVariableMap ().GetNextAssoc (pos, strVariableName, pVariable);
 
-      CString strContents = Replace (pVariable->strContents, ENDLINE, "\\n", true);
+      // first get rid of carriage-returns
+      CString strContents = Replace (pVariable->strContents, "\r", "", true);
+      // now show newlines as \n
+      strContents = Replace (strContents, "\n", "\\n", true);
 
       if (strContents.GetLength () > 46)
         {
