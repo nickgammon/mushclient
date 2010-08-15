@@ -1237,22 +1237,22 @@ local available =  {
 end -- room_change_exit
 
 function change_room_area (room, uid)
-	 
-	if next (areas) == nil then
-		mapper.maperror("There are no available areas to choose from.")
-		return
-	end -- if
-	
-	local chosen_area = utils.listbox ("Choose the area this room belongs to:", "Areas ...", areas)
-	 
-	if not chosen_area then
-		return
-	end -- if
-	
-	rooms[uid].area = chosen_area
-	mapper.draw (current_room)
-	
-	dbcheck (db:execute (string.format ([[
+   
+  if next (areas) == nil then
+    mapper.maperror("There are no available areas to choose from.")
+    return
+  end -- if
+  
+  local chosen_area = utils.listbox ("Choose the area this room belongs to:", "Areas ...", areas)
+   
+  if not chosen_area then
+    return
+  end -- if
+  
+  rooms[uid].area = chosen_area
+  mapper.draw (current_room)
+  
+  dbcheck (db:execute (string.format ([[
     UPDATE rooms SET area = %s WHERE uid = %s;
   ]], fixsql  (chosen_area),  -- area (e.g. "1" for "western ithmia")
       fixsql  (uid)  -- from current room
@@ -1287,7 +1287,7 @@ function room_click (uid, flags)
       { name = "Add Exit", func = room_add_exit} ,
       { name = "Change Exit", func = room_change_exit} ,
       { name = "Delete Exit", func = room_delete_exit} ,
-	    { name = "Set area", func = change_room_area} ,
+      { name = "Set area", func = change_room_area} ,
       } -- handlers
       
   local t, tf = {}, {}
@@ -1812,11 +1812,11 @@ function map_areas (name, line, wildcards)
     function (uid) 
       local room = rooms [uid]
       local reason
-			-- if this room is in the list of wanted areas then save its path
-			if wanted_areas[room.area] then
-			  reason = wanted_areas [room.area]
-				wanted_areas [room.area] = nil
-			end -- found one!
+      -- if this room is in the list of wanted areas then save its path
+      if wanted_areas[room.area] then
+        reason = wanted_areas [room.area]
+        wanted_areas [room.area] = nil
+      end -- found one!
       return reason, next (wanted_areas) == nil
     end,  -- function
     show_vnums,  -- show vnum?
@@ -1877,6 +1877,7 @@ function OnPluginDisconnect ()
 end -- OnPluginConnect
 
 function OnHelp ()
+  mapper.mapprint (string.format ("[MUSHclient mapper, version %0.1f]", mapper.VERSION))
   mapper.mapprint (world.GetPluginInfo (world.GetPluginID (), 3))
 end
 
