@@ -198,9 +198,12 @@ void CMUSHclientApp::LoadGlobalsFromDatabase (void)
   // get Lua initialisation (sandbox) if necessary
 
   if (m_strLuaScript.IsEmpty ())
+    {
     m_strLuaScript = "-- Put Lua initialization code (eg. sandbox) here.\r\n" 
-                     "-- Possible sandbox, and security tips: http://mushclient.com/forum/?id=10503\r\n";
-
+                     "-- Possible sandbox, and security tips: ";
+    m_strLuaScript += SECURITY_URL;
+    m_strLuaScript += "\r\n";
+    } // end of needing to put something in sandbox
 
   } // end of CMUSHclientApp::LoadGlobalsFromDatabase
 

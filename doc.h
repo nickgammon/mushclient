@@ -38,7 +38,7 @@ const CString MUSHCLIENT_VERSION = "4.57";    // Step 2.
 #define DOCUMENTATION_PAGE "http://www.gammon.com.au/scripts/doc.php"
 #define REGEXP_PAGE "http://www.gammon.com.au/mushclient/regexp.htm"
 #define PLUGINS_PAGE "http://www.gammon.com.au/mushclient/plugins/"
-
+#define SECURITY_URL "http://www.gammon.com.au/security"
 #define MAX_LINE_WIDTH 500    // max line we will wrap to
 #define MAX_RECENT_LINES 200  // maximum recent lines we can use for multi-line triggers
 

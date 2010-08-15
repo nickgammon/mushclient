@@ -783,8 +783,7 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
              "deepskyblue", "black", TRUE);
   Note ("");
   Tell (Translate ("Can you trust your plugins?  See: "));
-  Hyperlink ("http://mushclient.com/forum/?id=10503", 
-             "Security tips", Translate ("How to trust plugins"), 
+  Hyperlink (SECURITY_URL, SECURITY_URL, Translate ("How to trust plugins"), 
              "deepskyblue", "black", TRUE);
   Note ("");
 
