@@ -35,6 +35,7 @@ build_speedwalk (path)  -- builds a client speedwalk string from path
 cancel_speedwalk ()     -- cancel current speedwalk, if any
 check_we_can_find ()    -- returns true if doing a find is OK right now
 find (f, show_uid, count, walk)      -- generic room finder
+find_paths (uid, f)     -- lower-level room finder (for getting back a path)
 
 Exposed variables:
 
