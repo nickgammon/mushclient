@@ -1,0 +1,1890 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE muclient [
+  <!ENTITY show_vnums "true" > 
+  <!ENTITY show_timing "false" > 
+  <!ENTITY show_completed "false" > 
+  <!ENTITY show_database_mods "true" > 
+  <!ENTITY show_other_areas "false" > 
+  <!ENTITY show_area_exits "true" > 
+  <!ENTITY show_up_down "false" > 
+  <!ENTITY speedwalk_prefix "" > 
+]>
+
+<muclient>
+<plugin
+   name="ATCP_Mapper"
+   author="Nick Gammon"
+   id="a80b38e2f618fbda79a6440c"
+   language="Lua"
+   purpose="Draws map for ATCP MUDs"
+   date_written="2010-03-04"
+   date_modified="2010-08-15"
+   requires="4.51"
+   version="1.5"
+   save_state="y"
+   >
+<description trim="y">
+<![CDATA[
+AUTOMATIC MAPPER ...  by Nick Gammon
+
+The window can be dragged to a new location by dragging the room name.
+
+Your current room is always in the center with a bolder border.
+
+LH-click on a room to speed-walk to it. RH-click on a room for options. 
+
+LH-click on the "*" button on the bottom-left corner to configure it.
+
+** WHY DOES THE MAP CHANGE? **
+
+The mapper draws from your room outwards - that is, it draws your room's exits
+first, then the rooms leading from those rooms, and so on.
+
+Eventually it finds an overlap, and draws a short "stub" line to indicate there
+is a room there which there isn't space to draw. If you get closer to that 
+room the stub will disappear and the room(s) in question will be drawn.
+
+ACTIONS
+
+mapper help         --> this help  (or click the "?" button on the bottom right)
+mapper zoom out     --> zoom out
+mapper zoom in      --> zoom in
+mapper hide         --> hide map
+mapper show         --> show map
+
+FINDING THINGS
+
+mapper bookmarks    --> show nearby rooms that you bookmarked
+mapper find <text>  --> full-text search  (eg. shop OR baker)
+mapper areas        --> show path to nearby areas (zones)
+mapper heal         --> show nearby healers
+mapper shop         --> show nearby shops/banks etc.
+mapper train        --> show nearby trainers
+mapper quest        --> show nearby quest-givers
+mapper where <room> --> show directions to a room
+
+MOVING  
+
+mapper goto <room>  --> walk to a room by its room number
+mapper stop         --> cancel any current speedwalk
+mapper resume       --> resume last speedwalk or hyperlinked speedwalk
+
+]]>
+</description>
+
+</plugin>
+
+<aliases>
+ 
+  <!--  zooming aliases -->
+
+ <alias
+   match="mapper zoom out"
+   enabled="y"
+   sequence="100"
+   omit_from_command_history="y"
+   omit_from_output="y"
+   script="mapper.zoom_out"
+  >
+  </alias>
+  
+<alias
+   match="mapper zoom in"
+   enabled="y"
+   sequence="100"
+   omit_from_command_history="y"
+   omit_from_output="y"
+   script="mapper.zoom_in"
+  >
+  </alias>  
+    
+  <!--  finding aliases -->
+  
+ <alias
+   match="^mapper find ([\w* %d/&quot;]+)$"
+   enabled="y"
+   sequence="100"
+   script="map_find"
+   regexp="y"
+  >
+  
+  </alias>  
+    
+ <alias
+   match="mapper areas"
+   enabled="y"
+   sequence="100"
+   script="map_areas"
+  >
+  
+  </alias>  
+    
+ <alias
+   match="^mapper shops?$"
+   regexp="y"
+   enabled="y"
+   sequence="100"
+   script="map_shops"
+  >
+  
+  </alias>  
+
+ <alias
+   match="^mapper train\w*$"
+   regexp="y"
+   enabled="y"
+   sequence="100"
+   script="map_trainers"
+  >
+  
+  </alias>  
+
+ <alias
+   match="^mapper quest\w*$"
+   regexp="y"
+   enabled="y"
+   sequence="100"
+   script="map_quests"
+  >
+  
+  </alias>  
+        
+<alias
+   match="^mapper heal\w*$"
+   regexp="y"
+   enabled="y"
+   sequence="100"
+   script="map_healers"
+  >
+  
+  </alias>  
+    
+ <alias
+   match="mapper goto *"
+   enabled="y"
+   sequence="100"
+   script="map_goto"
+  >
+  
+  </alias>  
+    
+ <alias
+   match="mapper where *"
+   enabled="y"
+   sequence="100"
+   script="map_where"
+  >
+  
+  </alias>  
+    
+  <alias
+   match="^mapper book\w*$"
+   regexp="y"
+   enabled="y"
+   sequence="100"
+   script="map_bookmarks"
+  >
+  
+  </alias>  
+    
+ <alias
+   match="mapper resume"
+   enabled="y"
+   sequence="100"
+   script="map_resume"
+  >
+  
+  </alias>  
+    
+  <!--  cancel speedwalking -->
+  
+ <alias
+   match="mapper stop"
+   enabled="y"
+   sequence="100"
+   script="mapper.cancel_speedwalk"
+  >
+  </alias>  
+
+  <!--  show/hide mapper -->
+      
+  <alias
+   match="mapper hide"
+   enabled="y"
+   sequence="100"
+   script="mapper.hide"
+  >
+  </alias>  
+  
+   <alias
+   match="mapper show"
+   enabled="y"
+   sequence="100"
+   script="mapper.show"
+  >
+  </alias>  
+  
+</aliases>
+
+<triggers>
+
+  <!--  auto-swim -->
+ 
+ <trigger
+   enabled="y"
+   match="There's water ahead of you. You'll have to * to make it through."
+   sequence="100"
+  >
+  <send>%1</send>
+  </trigger>
+  
+ <trigger
+   enabled="y"
+   match="You'll have to swim to make it through the water in that direction."
+   send_to="12"
+   sequence="100"
+  >
+  <send>
+    if last_direction_moved then
+      Send ("swim " .. last_direction_moved)
+    end -- if
+  </send>
+  </trigger>
+  
+  <!-- auto-open -->
+  
+  <trigger
+   enabled="y"
+   regexp="y"
+   match="^There is a door in the way"
+   send_to="12"
+   sequence="100"
+  >
+  <send>
+    if last_direction_moved then
+      Send ("open door " .. last_direction_moved)
+    end -- if
+  </send>
+  </trigger>
+  
+  <!--  various messages that cancel speedwalks -->
+  
+  <trigger
+   enabled="y"
+   match="Now now\, don\'t be so hasty\!$"
+   regexp="y"
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  > 
+  </trigger>
+  
+  <trigger
+   enabled="y"
+   match="^You cannot walk through"
+   regexp="y"
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger>
+  
+  <trigger
+   enabled="y"
+   match="As you stroll in, you feel your feet slipping on something slimy."
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  <send>stand</send>
+  </trigger>
+  
+  <trigger
+   enabled="y"
+   match="The door is locked."
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger>
+  
+  <trigger
+   enabled="y"
+   match="You are regaining balance and are unable to move."
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger>
+  <trigger
+   enabled="y"
+   match="You are surrounded by a pocket of air and so must move normally through water."
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger>
+  <trigger
+   enabled="y"
+   match="You fumble about drunkenly."
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger>
+  
+  <trigger
+   enabled="y"
+   match="You are asleep and can do nothing. WAKE will attempt to wake you."
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger>
+  
+   <trigger
+   enabled="y"
+   match="You must be standing first."
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger>
+  
+   <trigger
+   enabled="y"
+   match="You need to use a boat, fly, or swim underwater to go there."
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger> 
+  
+  <trigger
+   enabled="y"
+   match="You can't * while sitting."
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger> 
+  
+ <trigger
+   enabled="y"
+   regexp="y"
+   match="^You dream about "
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger>
+   
+ <trigger
+   enabled="y"
+   match="There is no exit in that direction."
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger> 
+  
+ <trigger
+   enabled="y"
+   match="Alas, you cannot go that way."
+   script="mapper.cancel_speedwalk"
+   sequence="100"
+  >
+  </trigger>   
+  
+</triggers>
+
+
+
+<!--  Plugin help  -->
+
+<aliases>
+  <alias
+   script="OnHelp"
+   match="mapper help"
+   enabled="y"
+  >
+  </alias>
+</aliases>
+
+<!--  Script  -->
+
+
+<script>
+
+local show_vnums = &show_vnums;
+local show_timing = &show_timing;
+local show_completed = &show_completed;
+local show_database_mods = &show_database_mods;
+local show_other_areas = &show_other_areas;
+local show_up_down = &show_up_down;
+local show_area_exits = &show_area_exits;
+local speedwalk_prefix = "&speedwalk_prefix;"
+
+<![CDATA[
+
+require "serialize"
+require "checkplugin"
+mapper = require "mapper"
+
+
+default_config = {
+  -- assorted colours
+  BACKGROUND_COLOUR       = { name = "Background",        colour =  ColourNameToRGB "lightseagreen", },
+  ROOM_COLOUR             = { name = "Room",              colour =  ColourNameToRGB "cyan", },
+  EXIT_COLOUR             = { name = "Exit",              colour =  ColourNameToRGB "darkgreen", },
+  EXIT_COLOUR_UP_DOWN     = { name = "Exit up/down",      colour =  ColourNameToRGB "darkmagenta", },
+  EXIT_COLOUR_IN_OUT      = { name = "Exit in/out",       colour =  ColourNameToRGB "#3775E8", },
+  OUR_ROOM_COLOUR         = { name = "Our room",          colour =  ColourNameToRGB "black", },
+  UNKNOWN_ROOM_COLOUR     = { name = "Unknown room",      colour =  ColourNameToRGB "#00CACA", },
+  DIFFERENT_AREA_COLOUR   = { name = "Another area",      colour =  ColourNameToRGB "#009393", },
+  SHOP_FILL_COLOUR        = { name = "Shop",              colour =  ColourNameToRGB "darkolivegreen", },
+  POSTOFFICE_FILL_COLOUR  = { name = "Post Office",       colour =  ColourNameToRGB "yellowgreen", },
+  BANK_FILL_COLOUR        = { name = "Bank",              colour =  ColourNameToRGB "gold", },
+  NEWSROOM_FILL_COLOUR    = { name = "Newsroom",          colour =  ColourNameToRGB "lightblue", },
+  MAPPER_NOTE_COLOUR      = { name = "Messages",          colour =  ColourNameToRGB "lightgreen" },
+  
+  ROOM_NAME_TEXT          = { name = "Room name text",    colour = ColourNameToRGB "#BEF3F1", },
+  ROOM_NAME_FILL          = { name = "Room name fill",    colour = ColourNameToRGB "#105653", },
+  ROOM_NAME_BORDER        = { name = "Room name box",     colour = ColourNameToRGB "black", },
+  
+  AREA_NAME_TEXT          = { name = "Area name text",    colour = ColourNameToRGB "#BEF3F1",},
+  AREA_NAME_FILL          = { name = "Area name fill",    colour = ColourNameToRGB "#105653", },   
+  AREA_NAME_BORDER        = { name = "Area name box",     colour = ColourNameToRGB "black", },
+               
+  FONT = { name =  get_preferred_font {"Dina",  "Lucida Console",  "Fixedsys", "Courier", "Sylfaen",} ,
+           size = 8
+         } ,
+         
+  -- size of map window
+  WINDOW = { width = 400, height = 400 },
+  
+  -- how far from where we are standing to draw (rooms)
+  SCAN = { depth = 30 },
+  
+  -- speedwalk delay
+  DELAY = { time = 0.3 },
+  
+  -- how many seconds to show "recent visit" lines (default 3 minutes)
+  LAST_VISIT_TIME = { time = 60 * 3 },  
+  
+  }
+
+local rooms = {}
+local areas = {}
+local environments = {}
+local user_terrain_colour = {}
+
+room_not_in_database = {}
+room_in_database = {}
+
+function dbcheck (code)
+
+ if code ~= sqlite3.OK and    -- no error
+    code ~= sqlite3.ROW and   -- completed OK with another row of data
+    code ~= sqlite3.DONE then -- completed OK, no more rows
+    local err = db:errmsg ()  -- the rollback will change the error message
+    db:exec ("ROLLBACK")      -- rollback any transaction to unlock the database
+    error (err, 2)            -- show error in caller's context
+  end -- if
+
+end -- dbcheck 
+
+function fixsql (s)
+  
+  if s then
+    return "'" .. (string.gsub (s, "'", "''")) .. "'" -- replace single quotes with two lots of single quotes
+  else
+    return "NULL"
+  end -- if
+end -- fixsql
+
+function fixbool (b)
+  if b then
+    return 1
+  else
+    return 0
+  end -- if
+end -- fixbool
+
+function save_room_to_database (uid, title)
+  
+  assert (uid, "No UID supplied to save_room_to_database")
+  
+  dbcheck (db:execute (string.format (
+        "INSERT INTO rooms (uid, name, area, date_added) VALUES (%s, %s, '0', DATETIME('NOW'));",
+          fixsql (uid), 
+          fixsql (title)
+        )))
+        
+  dbcheck (db:execute (string.format ([[
+        INSERT INTO rooms_lookup (uid, name) VALUES (%s, %s);
+      ]], fixsql  (uid),       
+          fixsql  (title) 
+          )))
+        
+  room_not_in_database [uid] = false
+  
+  if show_database_mods then
+    mapper.mapprint ("Added room", uid, "to database. Name:", title)
+  end -- if
+  
+end -- function save_room_to_database
+      
+function save_exits_to_database (uid, exits)
+  
+  local room = rooms [uid]
+  
+  db:exec ("BEGIN TRANSACTION;") 
+
+  for dir in string.gmatch (exits, "[^,]+") do
+
+    -- fix up in and out
+    dir = ({ ['i'] = "in", o = "out", }) [dir] or dir
+    
+    dbcheck (db:execute (string.format ([[
+      INSERT INTO exits (dir, fromuid, touid, date_added) 
+          VALUES (%s, %s, %s, DATETIME('NOW'));
+    ]], fixsql  (dir),  -- direction (eg. "n")
+        fixsql  (uid),         -- from current room
+        fixsql  (0)     -- destination room (not known)
+        )))
+    if show_database_mods then
+      mapper.mapprint ("Added exit", dir, "from room", uid, "to database.")
+    end -- if
+    
+    room.exits [dir] = "0"
+    
+  end -- for each exit
+  
+  db:exec ("COMMIT;") 
+  
+end -- function save_room_to_database
+
+function save_full_exits_to_database (uid, exits)
+  
+  local room = rooms [uid]
+  
+  db:exec ("BEGIN TRANSACTION;") 
+
+  for exit in string.gmatch (exits, "[^,]+") do
+
+    dir, touid = string.match (exit, "^(%a+)%((%d+)%)$")
+    
+    if dir then
+      -- fix up in and out
+      dir = ({ ['i'] = "in", o = "out", }) [dir] or dir
+      
+      dbcheck (db:execute (string.format ([[
+        INSERT INTO exits (dir, fromuid, touid, date_added) 
+            VALUES (%s, %s, %s, DATETIME('NOW'));
+      ]], fixsql  (dir),  -- direction (eg. "n")
+          fixsql  (uid),  -- from current room
+          fixsql  (touid) -- destination room 
+          )))
+      if show_database_mods then
+        mapper.mapprint ("Added exit", dir, "from room", uid, "to room", touid, "to database.")
+      end -- if
+      
+      room.exits [dir] = touid
+    else
+      mapper.maperror ("Cannot make sense of:", exit)
+    end -- if can decode
+    
+  end -- for each exit
+  
+  db:exec ("COMMIT;") 
+  
+end -- function save_full_exits_to_database
+
+function fix_up_exit ()
+
+  local room = rooms [from_room]
+  
+  dbcheck (db:execute (string.format ([[
+      UPDATE exits SET touid = %s WHERE fromuid = %s AND dir = %s;
+    ]], 
+        fixsql  (current_room),     -- destination room
+        fixsql  (from_room),       -- from previous room
+        fixsql  (last_direction_moved)  -- direction (eg. "n")
+        )))
+        
+  if show_database_mods then
+    mapper.mapprint ("Fixed exit", last_direction_moved, "from room", from_room, "to be to", current_room)
+  end -- if
+  
+  room.exits [last_direction_moved] = current_room
+    
+  last_direction_moved = nil
+  from_room = nil
+  
+end -- fix_up_exit
+
+function save_environment_to_database (uid, s)
+  local room = rooms [uid]
+
+  dbcheck (db:execute (string.format ([[
+      UPDATE rooms SET terrain = %s WHERE uid = %s;
+    ]], 
+        fixsql  (s),     -- environment
+        fixsql  (uid)    -- room
+        )))
+     
+  room.terrain = s   
+  
+  if show_database_mods then
+    mapper.mapprint ("Fixed room", uid, "to have environment:", s)
+  end -- if
+end -- save_environment_to_database
+
+function save_info_to_database (uid, s)
+  local room = rooms [uid]
+
+  dbcheck (db:execute (string.format ([[
+      UPDATE rooms SET info = %s WHERE uid = %s;
+    ]], 
+        fixsql  (s),     -- info
+        fixsql  (uid)    -- room
+        )))
+     
+  room.info = s   
+  
+  if show_database_mods then
+    mapper.mapprint ("Fixed room", uid, "to have info:", s)
+  end -- if
+end -- save_info_to_database
+
+function save_coordinates_to_database (uid, s)
+  local room = rooms [uid]
+
+  local area, x, y, z = string.match (s, "^(.-),([%d-]+),([%d-]+),([%d-]+)")
+  
+  if x then
+    dbcheck (db:execute (string.format ([[
+        UPDATE rooms SET x = %i, y = %i, z = %i, area = %s WHERE uid = %s;
+      ]], 
+          x, y, z, fixsql (area),   -- coordinates, area
+          fixsql  (uid)    -- room
+          )))
+       
+    room.x = x
+    room.y = y
+    room.z = z
+    room.area = area
+      
+    if show_database_mods then
+      mapper.mapprint ("Fixed room", uid, "to have coordinates:", x, y, z, "and area", area)
+    end -- if
+ else
+   mapper.maperror ("Cannot make sense of coordinates:", s)
+ end -- if
+end -- save_coordinates_to_database
+
+function load_room_from_database (uid)
+
+  local room
+ 
+  assert (uid, "No UID supplied to load_room_from_database")
+  
+  -- if not in database, don't look again
+  if room_not_in_database [uid] then
+    return nil
+  end -- no point looking
+  
+  for row in db:nrows(string.format ("SELECT * FROM rooms WHERE uid = %s", fixsql (uid))) do
+     room = {
+       name = row.name,
+       area = row.area,
+       building = row.building,
+       terrain = row.terrain,
+       info = row.info,
+       notes = row.notes,
+       x = row.x,
+       y = row.y,
+       z = row.z,
+  
+       exits = {} }
+      
+    for exitrow in db:nrows(string.format ("SELECT * FROM exits WHERE fromuid = %s", fixsql (uid))) do
+       room.exits [exitrow.dir] = tostring (exitrow.touid)
+    end -- for each exit
+    
+  end   -- finding room
+
+  if room then
+    rooms [uid] = room
+    for row in db_bm:nrows(string.format ("SELECT * FROM bookmarks WHERE uid = %s", fixsql (uid))) do
+      rooms [uid].notes = row.notes
+    end   -- finding room
+        
+    return room
+  end -- if found
+  
+  room_not_in_database [uid] = true
+  return nil
+    
+end -- load_room_from_database
+
+function create_tables ()
+  -- create rooms table
+  dbcheck (db:execute[[
+  
+  PRAGMA foreign_keys = ON;
+  
+  CREATE TABLE IF NOT EXISTS areas (
+      areaid      INTEGER PRIMARY KEY AUTOINCREMENT,
+      uid         TEXT    NOT NULL,   -- vnum or how the MUD identifies the area
+      name        TEXT,               -- name of area
+      date_added  DATE,               -- date added to database
+      UNIQUE (uid)
+    );
+
+  CREATE TABLE IF NOT EXISTS environments (
+      environmentid INTEGER PRIMARY KEY AUTOINCREMENT,
+      uid           TEXT    NOT NULL,   -- code for the environment
+      name          TEXT,               -- name of environment
+      color         INTEGER,            -- ANSI colour code
+      date_added    DATE,               -- date added to database
+      UNIQUE (uid)
+    );
+  CREATE INDEX IF NOT EXISTS name_index ON environments (name);
+   
+  CREATE TABLE IF NOT EXISTS rooms (
+      roomid        INTEGER PRIMARY KEY AUTOINCREMENT,
+      uid           TEXT NOT NULL,   -- vnum or how the MUD identifies the room
+      name          TEXT,            -- name of room
+      area          TEXT,            -- which area
+      building      TEXT,            -- which building it is in
+      terrain       TEXT,            -- eg. road OR water
+      info          TEXT,            -- eg. shop,postoffice
+      notes         TEXT,            -- player notes
+      x             INTEGER,
+      y             INTEGER,
+      z             INTEGER,
+      date_added    DATE,            -- date added to database
+      UNIQUE (uid)
+    );
+  CREATE INDEX IF NOT EXISTS info_index ON rooms (info);
+  CREATE INDEX IF NOT EXISTS terrain_index ON rooms (terrain);
+  CREATE INDEX IF NOT EXISTS area_index ON rooms (area);
+
+  CREATE TABLE IF NOT EXISTS exits (
+      exitid      INTEGER PRIMARY KEY AUTOINCREMENT,
+      dir         TEXT    NOT NULL, -- direction, eg. "n", "s"
+      fromuid     STRING  NOT NULL, -- exit from which room (in rooms table)
+      touid       STRING  NOT NULL, -- exit to which room (in rooms table)
+      date_added  DATE,             -- date added to database
+      FOREIGN KEY(fromuid) REFERENCES rooms(uid)
+    );
+  CREATE INDEX IF NOT EXISTS fromuid_index ON exits (fromuid);
+  CREATE INDEX IF NOT EXISTS touid_index   ON exits (touid);
+  
+  ]])
+  
+  -- check if rooms_lookup table exists
+  local table_exists
+  for a in db:nrows "SELECT * FROM sqlite_master WHERE name = 'rooms_lookup' AND type = 'table'" do
+    table_exists = true
+  end  -- for
+  
+  if not table_exists then
+    dbcheck (db:execute "CREATE VIRTUAL TABLE rooms_lookup USING FTS3(uid, name);")
+    -- in case we only deleted the rooms_lookup table to save space in the download
+    dbcheck (db:execute "INSERT INTO rooms_lookup (uid, name) SELECT uid, name FROM rooms;")
+  end -- if
+  
+  -- create bookmarks and terrain colours table in separate database
+  dbcheck (db_bm:execute[[
+  
+  PRAGMA foreign_keys = ON;
+  
+  CREATE TABLE IF NOT EXISTS bookmarks (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      uid         TEXT    NOT NULL,   -- vnum of room
+      notes       TEXT,               -- user notes
+      date_added  DATE,               -- date added to database
+      UNIQUE (uid)
+    );
+    
+  CREATE TABLE IF NOT EXISTS terrain (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      name        TEXT    NOT NULL,   -- terrain name
+      color       INTEGER,            -- RGB code
+      date_added  DATE,               -- date added to database
+      UNIQUE (name)
+    );
+        
+    
+  ]])
+      
+end -- function create_tables
+
+function get_room (uid)
+
+  -- check we got room at all
+  if not uid then
+   -- return nil
+  end -- if
+  
+  -- look it up
+  local ourroom = rooms [uid]
+  
+  -- not cached - see if in database
+  if not ourroom then
+    ourroom = load_room_from_database (uid)
+    rooms [uid] = ourroom -- cache for later
+  end -- not in cache
+  
+  if not ourroom then
+     return nil
+  end -- if
+
+  local room = copytable.deep (ourroom)
+  
+  room.area = areas [room.area] or string.format ("Area %s", room.area or "<unknown>")
+  
+  if uid == current_room then
+    current_area = room.area
+  end -- if
+  
+  -- build hover message
+  
+  local environmentname = room.terrain
+  if tonumber (environmentname) then
+    environmentname = environments [tonumber (environmentname)]
+  end -- convert to name
+  
+  local terrain = ""
+  if environmentname then
+    terrain = "\nTerrain: " .. capitalize (environmentname)
+  end -- if terrain known
+  
+  local info = ""
+  if room.info then
+    info = "\nInfo: " .. capitalize (room.info)
+  end -- if info known
+  
+  local notes = ""
+  if room.notes then
+    notes = "\nBookmark: " .. room.notes
+  end -- if notes
+  
+  local texits = {}
+  for dir in pairs (room.exits) do
+    table.insert (texits, dir)
+  end -- for
+  table.sort (texits)
+   
+  local areaname = room.area
+  if tonumber (areaname) then
+    areaname = areas [tonumber (areaname)]
+  end -- convert to name
+    
+  room.hovermessage = string.format (
+      "%s\tExits: %s\nRoom: %s\nArea: %s%s%s%s",
+      room.name, 
+      table.concat (texits, ", "),
+      uid,
+      areaname,
+      terrain,
+      info,
+      notes
+      -- depth,
+      -- table.concat (path, ",")
+      )
+      
+  room.bordercolour = config.ROOM_COLOUR.colour
+  room.borderpen = 0 -- solid
+  room.borderpenwidth = 1
+  room.fillcolour = 0xff0000
+  room.fillbrush = 1 -- no fill
+              
+  -- special room fill colours
+  
+  if room.info then
+    if string.match (room.info, "shop") then
+      room.fillcolour = config.SHOP_FILL_COLOUR.colour
+      room.fillbrush = 8
+    elseif string.match (room.info, "postoffice") then
+      room.fillcolour = config.POSTOFFICE_FILL_COLOUR.colour
+      room.fillbrush = 8
+    elseif string.match (room.info, "bank") then
+      room.fillcolour = config.BANK_FILL_COLOUR.colour
+      room.fillbrush = 8
+    elseif string.match (room.info, "newsroom") then
+      room.fillcolour = config.NEWSROOM_FILL_COLOUR.colour
+      room.fillbrush = 8
+    end -- if
+  else  
+    -- use terrain colour
+    if environmentname then
+      if user_terrain_colour [environmentname] then
+        room.fillcolour = user_terrain_colour [environmentname]
+        room.fillbrush = 0  -- solid
+      elseif terrain_colours [environmentname] then
+        room.fillcolour = colour_lookup [terrain_colours [environmentname]]
+        room.fillbrush = 0  -- solid
+      end
+    end -- if environmentname
+  end -- if 
+       
+  if uid == current_room then
+    room.bordercolour = config.OUR_ROOM_COLOUR.colour
+    room.borderpenwidth = 2
+  elseif room.area ~= current_area then
+    room.bordercolour = config.DIFFERENT_AREA_COLOUR.colour
+  end -- not in this area
+  
+  return room      
+      
+end -- get_room
+
+function room_edit_bookmark (room, uid)
+
+  local notes, found
+  
+  for row in db_bm:nrows(string.format ("SELECT * FROM bookmarks WHERE uid = %s", fixsql (uid))) do
+    notes = row.notes
+    found = true
+  end   -- finding room
+  
+  if found then  
+    newnotes = utils.inputbox ("Modify room comment (clear it to delete from database)", room.name, notes)
+  else
+    newnotes = utils.inputbox ("Enter room comment (creates a bookmark for this room)", room.name, notes)
+  end -- if
+  
+  if not newnotes then
+    return
+  end -- if cancelled 
+  
+  if newnotes == "" then
+    if not found then
+      mapper.mapprint ("No comment entered, bookmark not saved.")
+      return
+    else
+      dbcheck (db_bm:execute (string.format (
+        "DELETE FROM bookmarks WHERE uid = %s;",
+          fixsql (uid)
+        )))
+      mapper.mapprint ("Bookmark for room", uid, "deleted. Was previously:", notes)
+      rooms [uid].notes = nil
+      return
+    end -- if
+  end -- if
+  
+  if notes == newnotes then
+    return -- no change made
+  end -- if
+  
+  if found then
+    dbcheck (db_bm:execute (string.format (
+        "UPDATE bookmarks SET notes = %s, date_added = DATETIME('NOW') WHERE uid = %s;",
+          fixsql (newnotes),
+          fixsql (uid)
+        )))
+     mapper.mapprint ("Bookmark for room", uid, "changed to:", newnotes)
+   else
+    dbcheck (db_bm:execute (string.format (
+        "INSERT INTO bookmarks (uid, notes, date_added) VALUES (%s, %s, DATETIME('NOW'));",
+          fixsql (uid), 
+          fixsql (newnotes)
+        )))
+     mapper.mapprint ("Bookmark added to room", uid, ":", newnotes)
+   end -- if    
+   
+   rooms [uid].notes = newnotes
+   
+end -- room_edit_bookmark
+
+function room_edit_terrain_colour (room, uid)
+
+  if not room.terrain then
+    utils.msgbox ("This room does not have a terrain type", "Unknown terrain!", "ok", "!", 1)
+    return
+  end -- not known
+   
+  local environmentname = room.terrain
+  if tonumber (environmentname) then
+    environmentname = environments [tonumber (environmentname)]
+  end -- convert to name
+  
+  local colour
+  local colourtype = terrain_colours [environmentname]
+  
+  
+  if colourtype then 
+    colour = colour_lookup [colourtype]
+  end -- if type known
+
+  if user_terrain_colour [environmentname] then
+    colour = user_terrain_colour [environmentname]
+  end -- if already have user colour
+  
+  local newcolour = PickColour (colour or 0x000000)
+  if newcolour == -1 or newcolour == colour then
+    return
+  end -- cancelled
+  
+  if user_terrain_colour [environmentname] then
+    dbcheck (db_bm:execute (string.format (
+        "UPDATE terrain SET color = %s, date_added = DATETIME('NOW') WHERE name = %s;",
+          fixsql (newcolour),
+          fixsql (environmentname)
+        )))
+     mapper.mapprint ("Colour for terrain '" .. environmentname .. "' changed to:", RGBColourToName (newcolour))
+   else
+    dbcheck (db_bm:execute (string.format (
+        "INSERT INTO terrain (name, color, date_added) VALUES (%s, %s, DATETIME('NOW'));",
+          fixsql (environmentname), 
+          fixsql (newcolour)
+        )))
+     mapper.mapprint ("Colour for terrain '" .. environmentname .. "' is now", RGBColourToName (newcolour))
+   end -- if    
+   
+   user_terrain_colour [environmentname] = newcolour
+
+   mapper.draw (current_room)
+
+end -- room_edit_terrain_colour
+
+function room_add_exit (room, uid)
+
+local available =  {
+  n = "North",
+  s = "South",
+  e = "East",
+  w = "West",
+  u = "Up",
+  d = "Down",
+  ne = "Northeast",
+  sw = "Southwest",
+  nw = "Northwest",
+  se = "Southeast",
+  ['in'] = "In",
+  out = "Out",
+  }  -- end of available
+
+  -- remove existing exits
+  for k in pairs (room.exits) do
+    available [k] = nil
+  end -- for
+  
+  if next (available) == nil then
+    utils.msgbox ("All exits already used.", "No free exits!", "ok", "!", 1)
+    return
+  end -- not known
+  
+  local chosen_exit = utils.listbox ("Choose exit to add", "Exits ...", available )
+  if not chosen_exit then
+    return
+  end
+  
+  exit_destination = utils.inputbox ("Enter destination room identifier (number) for " .. available [chosen_exit], room.name, "")
+
+  if not exit_destination then
+    return
+  end -- cancelled
+  
+    -- look it up
+  local dest_room = rooms [exit_destination]
+  
+  -- not cached - see if in database
+  if not dest_room then
+    dest_room = load_room_from_database (exit_destination)
+    rooms [exit_destination] = dest_room -- cache for later
+  end -- not in cache
+  
+  if not dest_room then
+    utils.msgbox ("Room " .. exit_destination .. " does not exist.", "Room does not exist!", "ok", "!", 1)
+    return
+  end -- if still not there
+
+  dbcheck (db:execute (string.format ([[
+    INSERT INTO exits (dir, fromuid, touid, date_added) 
+        VALUES (%s, %s, %s, DATETIME('NOW'));
+  ]], fixsql  (chosen_exit),  -- direction (eg. "n")
+      fixsql  (uid),  -- from current room
+      fixsql  (exit_destination) -- destination room 
+      )))
+  if show_database_mods then
+    mapper.mapprint ("Added exit", available [chosen_exit], "from room", uid, "to room", exit_destination, "to database.")
+  end -- if
+  
+  -- update in-memory table
+  rooms [uid].exits [chosen_exit] = exit_destination
+  
+  mapper.draw (current_room)
+   
+end -- room_add_exit
+
+
+function room_delete_exit (room, uid)
+
+local available =  {
+  n = "North",
+  s = "South",
+  e = "East",
+  w = "West",
+  u = "Up",
+  d = "Down",
+  ne = "Northeast",
+  sw = "Southwest",
+  nw = "Northwest",
+  se = "Southeast",
+  ['in'] = "In",
+  out = "Out",
+  }  -- end of available
+
+  -- remove non-existent exits
+  for k in pairs (available) do
+    if room.exits [k] then
+      available [k] = available [k] .. " --> " .. room.exits [k] 
+    else
+      available [k] = nil
+    end -- if not a room exit
+  end -- for
+  
+  if next (available) == nil then
+    utils.msgbox ("There are no exits from this room.", "No exits!", "ok", "!", 1)
+    return
+  end -- not known
+  
+  local chosen_exit = utils.listbox ("Choose exit to delete", "Exits ...", available )
+  if not chosen_exit then
+    return
+  end
+
+  dbcheck (db:execute (string.format ([[
+    DELETE FROM exits WHERE dir = %s AND fromuid = %s;
+  ]], fixsql  (chosen_exit),  -- direction (eg. "n")
+      fixsql  (uid)  -- from current room
+      )))
+  if show_database_mods then
+    mapper.mapprint ("Deleted exit", available [chosen_exit], "from room", uid, "from database.")
+  end -- if
+  
+  -- update in-memory table
+  rooms [uid].exits [chosen_exit] = nil
+  
+  mapper.draw (current_room)
+   
+end -- room_delete_exit
+
+
+function room_change_exit (room, uid)
+
+local available =  {
+  n = "North",
+  s = "South",
+  e = "East",
+  w = "West",
+  u = "Up",
+  d = "Down",
+  ne = "Northeast",
+  sw = "Southwest",
+  nw = "Northwest",
+  se = "Southeast",
+  ['in'] = "In",
+  out = "Out",
+  }  -- end of available
+
+  -- remove non-existent exits
+  for k in pairs (available) do
+    if room.exits [k] then
+      available [k] = available [k] .. " --> " .. room.exits [k] 
+    else
+      available [k] = nil
+    end -- if not a room exit
+  end -- for
+  
+  if next (available) == nil then
+    utils.msgbox ("There are no exits from this room.", "No exits!", "ok", "!", 1)
+    return
+  end -- not known
+  
+  local chosen_exit = utils.listbox ("Choose exit to change destination of:", "Exits ...", available )
+  if not chosen_exit then
+    return
+  end
+
+  exit_destination = utils.inputbox ("Enter destination room identifier (number) for " .. available [chosen_exit], room.name, "")
+
+  if not exit_destination then
+    return
+  end -- cancelled
+  
+    -- look it up
+  local dest_room = rooms [exit_destination]
+  
+  -- not cached - see if in database
+  if not dest_room then
+    dest_room = load_room_from_database (exit_destination)
+    rooms [exit_destination] = dest_room -- cache for later
+  end -- not in cache
+  
+  if not dest_room then
+    utils.msgbox ("Room " .. exit_destination .. " does not exist.", "Room does not exist!", "ok", "!", 1)
+    return
+  end -- if still not there
+    
+  dbcheck (db:execute (string.format ([[
+    UPDATE exits SET touid = %s WHERE dir = %s AND fromuid = %s;
+  ]], fixsql  (exit_destination),
+      fixsql  (chosen_exit),  -- direction (eg. "n")
+      fixsql  (uid)  -- from current room
+      )))
+      
+  if show_database_mods then
+    mapper.mapprint ("Modified exit", available [chosen_exit], "from room", uid, "to be to room", exit_destination, "in database.")
+  end -- if
+  
+  -- update in-memory table
+  rooms [uid].exits [chosen_exit] = exit_destination
+  mapper.draw (current_room)
+   
+end -- room_change_exit
+
+function change_room_area (room, uid)
+	 
+	if next (areas) == nil then
+		mapper.maperror("There are no available areas to choose from.")
+		return
+	end -- if
+	
+	local chosen_area = utils.listbox ("Choose the area this room belongs to:", "Areas ...", areas)
+	 
+	if not chosen_area then
+		return
+	end -- if
+	
+	rooms[uid].area = chosen_area
+	mapper.draw (current_room)
+	
+	dbcheck (db:execute (string.format ([[
+    UPDATE rooms SET area = %s WHERE uid = %s;
+  ]], fixsql  (chosen_area),  -- area (e.g. "1" for "western ithmia")
+      fixsql  (uid)  -- from current room
+      )))
+end -- change_room_area
+
+function room_click (uid, flags)
+
+  -- check we got room at all
+  if not uid then
+    return nil
+  end -- if
+  
+  -- look it up
+  local room = rooms [uid]
+  
+  -- not cached - see if in database
+  if not room then
+    room = load_room_from_database (uid)
+    rooms [uid] = room -- cache for later
+  end -- not in cache
+  
+  if not room then
+    return
+  end -- if still not there
+  
+  local handlers = {
+      { name = "Edit bookmark", func = room_edit_bookmark} ,
+      { name = "Edit terrain colour", func = room_edit_terrain_colour} ,
+      { name = "-", } ,
+--      { name = "^Exits", } ,
+      { name = "Add Exit", func = room_add_exit} ,
+      { name = "Change Exit", func = room_change_exit} ,
+      { name = "Delete Exit", func = room_delete_exit} ,
+	    { name = "Set area", func = change_room_area} ,
+      } -- handlers
+      
+  local t, tf = {}, {}
+  for _, v in pairs (handlers) do
+    table.insert (t, v.name)
+    tf [v.name] = v.func
+  end -- for
+      
+  local choice = WindowMenu (mapper.win, 
+                            WindowInfo (mapper.win, 14), 
+                            WindowInfo (mapper.win, 15), 
+                            table.concat (t, "|"))
+   
+  local f = tf [choice]
+  
+  if f then
+    f (room, uid)
+  end -- if handler found
+                           
+end -- room_click
+
+function OnPluginInstall ()
+  
+  config = {}  -- in case not found
+
+  -- get saved configuration
+  assert (loadstring (GetVariable ("config") or "")) ()
+
+  -- allow for additions to config
+  for k, v in pairs (default_config) do
+    config [k] = config [k] or v
+  end -- for
+  
+  -- initialize mapper engine
+  mapper.init { config = config,            -- colours, timing etc.
+                get_room = get_room,        -- get_room (uid) called to get room info
+                show_help = OnHelp,         -- to show help
+                room_click = room_click,    -- called on RH click on room square
+                timing = show_timing,       -- want to see timing
+                show_completed = show_completed,  -- want to see "Speedwalk completed." message
+                show_other_areas = show_other_areas,  -- want to see areas other than the current one?
+                show_up_down = show_up_down,          -- want to follow up/down exits?
+                show_area_exits = show_area_exits,    -- want to see area exits?
+                speedwalk_prefix = speedwalk_prefix,  -- how to speedwalk
+                } 
+  
+  mapper.mapprint (string.format ("MUSHclient mapper installed, version %0.1f", mapper.VERSION))
+  
+  -- open databases on disk 
+  db    = assert (sqlite3.open(GetInfo (66) .. Trim (WorldAddress ()) .. "_" .. WorldPort () .. ".db"))
+  db_bm = assert (sqlite3.open(GetInfo (66) .. Trim (WorldAddress ()) .. "_" .. WorldPort () .. "_bookmarks.db"))
+  
+  create_tables ()    -- create database structure if necessary
+  
+  -- grab all area names
+  for row in db:nrows("SELECT * FROM areas") do
+    areas [row.uid] = row.name
+  end   -- finding areas
+  
+  -- grab all user terrain info
+  for row in db_bm:nrows("SELECT * FROM terrain") do
+    user_terrain_colour [row.name] = row.color
+  end   -- finding terrains
+ 
+  -- grab all environment names
+  for row in db:nrows("SELECT * FROM environments") do
+    environments [tonumber (row.uid)] = row.name
+    terrain_colours [row.name] = tonumber (row.color)
+  end   -- finding environments
+  
+end -- OnPluginInstall
+
+function OnPluginEnable ()
+  mapper.show ()
+end -- OnPluginDisable
+
+function OnPluginDisable ()
+  mapper.hide ()
+end -- OnPluginDisable
+
+-- hide window on removal
+function OnPluginClose ()
+  mapper.hide ()
+  -- close databases
+  db:close()
+  db_bm:close()
+end -- OnPluginClose
+
+function OnPluginSaveState ()
+  mapper.save_state ()
+  SetVariable ("config", "config = " .. serialize.save_simple (config))
+end -- OnPluginSaveState
+ 
+terrain_colours = {}
+
+
+-- ANSI colours lookup (for terrain_colours)
+
+colour_lookup = {
+    [0] =   ColourNameToRGB  "black",  
+    [1] =   ColourNameToRGB  "maroon", 
+    [2] =   ColourNameToRGB  "green",  
+    [3] =   ColourNameToRGB  "olive",  
+    [4] =   ColourNameToRGB  "navy",   
+    [5] =   ColourNameToRGB  "purple", 
+    [6] =   ColourNameToRGB  "teal",   
+    [7] =   ColourNameToRGB  "silver", 
+    [8] =   ColourNameToRGB  "gray",   
+    [9] =   ColourNameToRGB  "red",    
+    [10] =  ColourNameToRGB  "lime",   
+    [11] =  ColourNameToRGB  "yellow", 
+    [12] =  ColourNameToRGB  "blue",   
+    [13] =  ColourNameToRGB  "magenta",
+    [14] =  ColourNameToRGB  "cyan",   
+    [15] =  ColourNameToRGB  "white",  
+  } -- end of colour_lookup
+
+
+-- here when location changes, eg. : Room.Num 7476
+function got_room_number (s)
+  
+  local room_number = s
+    
+  if not room_number then
+    return
+  end -- no room number
+
+  current_room = room_number
+  mapper.draw (room_number)
+  
+  if expected_exit == "0" and from_room then
+    fix_up_exit ()
+  end -- exit was wrong
+
+end -- got_room_number
+
+-- we got a room name, eg. : Room.Brief On the edge of a great plain
+function got_room_name (s)
+  local brief = s
+  
+  if not current_room then
+   return
+  end -- don't have room
+   
+  local room = rooms [current_room]
+  
+  -- not cached - see if in database
+  if not room then
+    room = load_room_from_database (current_room)
+  end -- not in cache
+  
+  if not room then
+    save_room_to_database (current_room, brief)
+    mapper.draw (current_room)    -- redraw room with name
+  end -- if room not there
+  
+end -- got_room_name
+
+-- we got room exits, eg. : Room.Exits ne,sw,nw
+function got_room_exit (s)
+   
+  -- don't do if we are expecting full exits at some stage
+  if full_exits_found then
+    return
+  end -- if
+
+  local exits = string.match (s, "^([%a,]+)$")
+   
+  if not (current_room and exits) then
+    return
+  end -- if
+  
+  local room = rooms [current_room]
+  
+  -- not cached - see if in database
+  if not room then
+    room = load_room_from_database (current_room)
+  end -- not in cache
+  
+  if room and next (room.exits) == nil then
+    save_exits_to_database (current_room, exits)
+    mapper.draw (current_room)    -- redraw room with exits
+  end -- need to save exits
+
+
+end -- got_room_exit
+
+function got_vitals (s)
+  -- ignore
+end -- function got_vitals
+
+-- we got room exits, eg. : Room.FullExits ne(8564),w(8428)
+function got_room_full_exits (s)
+   
+  full_exits_found = true
+  
+  local exits = string.match (s, "^([%a,(%d)]+)$")
+   
+  if not (current_room and exits) then
+    return
+  end -- if
+  
+  local room = rooms [current_room]
+  
+  -- not cached - see if in database
+  if not room then
+    room = load_room_from_database (current_room)
+  end -- not in cache
+  
+  if room and next (room.exits) == nil then
+    save_full_exits_to_database (current_room, exits)
+    mapper.draw (current_room)    -- redraw room with exits
+  end -- need to save exits
+
+end -- got_room_exit
+
+-- we got room environment, eg. : Urban
+function got_environment (s)
+  
+  if not current_room then
+    return
+  end -- if
+  
+  local room = rooms [current_room]
+  
+  -- not cached - see if in database
+  if not room then
+    room = load_room_from_database (current_room)
+  end -- not in cache
+  
+  if room and room.terrain == nil then
+    save_environment_to_database (current_room, s)
+    mapper.draw (current_room)    -- redraw room with environment
+  end -- need to save environment
+
+end -- got_environment
+
+-- we got room coordinates, eg. : "38,3,1,0"
+function got_coordinates (s)
+  
+  if not current_room then
+    return
+  end -- if
+  
+  local room = rooms [current_room]
+  
+  -- not cached - see if in database
+  if not room then
+    room = load_room_from_database (current_room)
+  end -- not in cache
+  
+  if room and room.area == nil then
+    save_coordinates_to_database (current_room, s)
+    mapper.draw (current_room)    -- redraw room with area
+  end -- need to save environment
+
+end -- got_coordinates
+
+-- we got room info, eg. : shops,postoffice
+function got_info (s)
+  
+  if not current_room then
+    return
+  end -- if
+  
+  local room = rooms [current_room]
+  
+  -- not cached - see if in database
+  if not room then
+    room = load_room_from_database (current_room)
+  end -- not in cache
+  
+  if room and room.info == nil then
+    save_info_to_database (current_room, s)
+    mapper.draw (current_room)    -- redraw room with info
+  end -- need to save environment
+
+end -- got_info
+
+handlers = {
+  [1] = got_vitals,             -- eg. "H:496/496 M:412/412 E:1380/1380 W:960/960 NL:89/100"
+                                --      health    mana      endurance   willpower experience
+  [2] = got_room_name,          -- eg. "Continuing on the Parade of Zarathustra"
+  [3] = got_room_exit,          -- eg. "n,s"
+  [4] = got_room_number,        -- eg. "401"
+  [5] = got_room_full_exits,    -- eg. "ne(8564),w(8428)"
+  [6] = got_environment,        -- eg. "Urban"
+  [7] = got_coordinates,        -- eg. "38,3,1,0"
+  [8] = got_info,               -- eg. "shops,postoffice"
+  }
+  
+function OnPluginBroadcast (msg, id, name, text)
+  if id == "85f72d0e263d75df7bde6f00" then
+  
+    local f = handlers [msg]
+    
+    if f then
+      f (text)
+    end -- have handler
+ 
+  end -- if ATCP message
+end
+
+function map_find (name, line, wildcards)
+ 
+  local rooms = {}
+  local count = 0
+  
+  -- find matching rooms using FTS3
+  for row in db:nrows(string.format ("SELECT uid, name FROM rooms_lookup WHERE rooms_lookup MATCH %s", fixsql (wildcards [1]))) do
+     rooms [row.uid] = true
+     count = count + 1
+  end   -- finding room
+  
+  -- see if nearby
+  mapper.find (
+    function (uid) 
+      local room = rooms [uid] 
+      if room then
+        rooms [uid] = nil
+      end -- if
+      return room, next (rooms) == nil
+    end,  -- function
+    show_vnums,  -- show vnum?
+    count,      -- how many to expect
+    false       -- don't auto-walk
+    )
+  
+end -- map_find
+
+
+function map_find_special (which_ones)
+
+local wanted_items = {}
+
+  for _, v in ipairs (which_ones) do 
+    wanted_items [v:lower ()] = true 
+  end
+            
+  local rooms = {}
+  local count = 0
+  
+  -- build table of special places (with info in them)
+  for row in db:nrows(string.format ("SELECT uid, name, info FROM rooms WHERE info IS NOT NULL")) do
+     if row.info ~= "" then
+       local wanted = false
+       local t = {}
+       for item in string.gmatch (row.info, "[^,]+") do
+          if wanted_items [item:lower ()] then 
+            wanted = true
+            table.insert (t, capitalize (item))
+          end -- if
+       end -- for
+       if wanted then
+         rooms [row.uid] = table.concat(t, ", ")
+         count = count + 1
+       end -- if
+     end -- if
+  end   -- finding room
+  
+  -- find such places
+  mapper.find (
+    function (uid) 
+      local room = rooms [uid] 
+      if room then
+        rooms [uid] = nil
+      end -- if
+      return room, next (rooms) == nil  -- room will be type of info (eg. shop)
+    end,  -- function
+    show_vnums,  -- show vnum?
+    count,      -- how many to expect
+    false       -- don't auto-walk
+    )
+        
+end -- map_find_special
+
+  --[[
+for _, v in ipairs ({
+     
+    -- "guild", "healer", "trainer", "questor",
+            }) do wanted_items [v] = true end
+      --]]
+            
+function map_shops (name, line, wildcards)
+  map_find_special { "shop", "postoffice", "bank", "newsroom", }
+end -- map_shops
+
+function map_trainers (name, line, wildcards)
+  map_find_special { "trainer", }
+end -- map_trainers
+
+function map_quests (name, line, wildcards)
+  map_find_special { "questor", }
+end -- map_quests
+
+function map_healers (name, line, wildcards)
+  map_find_special { "healers", }
+end -- map_healers
+
+function map_goto (name, line, wildcards)
+
+  local wanted = wildcards [1]
+  
+  if current_room and wanted == current_room then
+    mapper.mapprint ("You are already in that room.")
+    return
+  end -- if
+  
+  -- find desired room
+  mapper.find (
+    function (uid) 
+      return uid == wanted, uid == wanted  
+    end,  -- function
+    show_vnums,  -- show vnum?
+    1,          -- how many to expect
+    true        -- just walk there
+    )
+        
+end -- map_goto
+
+function map_where (name, line, wildcards)
+
+  if not mapper.check_we_can_find () then
+    return
+  end -- if
+
+  local wanted = wildcards [1]
+  
+  if current_room and wanted == current_room then
+    mapper.mapprint ("You are already in that room.")
+    return
+  end -- if
+  
+  local paths = mapper.find_paths (current_room, 
+           function (uid) 
+             return uid == wanted,  -- wanted room?
+                    uid == wanted   -- stop searching?
+            end)
+
+  local uid, item = next (paths, nil) -- extract first (only) path
+  
+  -- nothing? room not found
+  if not item then
+    mapper.mapprint (string.format ("Room %s not found", wanted))
+    return
+  end -- if
+  
+  -- turn into speedwalk
+  local path = mapper.build_speedwalk (item.path)
+  
+  -- display it
+  mapper.mapprint (string.format ("Path to %s is: %s", wanted, path))
+  
+end -- map_where
+
+function map_resume (name, line, wildcards)
+
+  local wanted = mapper.last_hyperlink_uid or mapper.last_speedwalk_uid
+  
+  if not wanted then
+    mapper.print "No outstanding speedwalks or hyperlinks."
+    return
+  end -- if nothing to do
+  
+  -- find desired room
+  mapper.find (
+    function (uid) 
+      return uid == wanted, uid == wanted  
+    end,  -- function
+    show_vnums,  -- show vnum?
+    1,      -- how many to expect
+    true    -- just walk there
+    )
+        
+end -- map_resume
+
+function map_bookmarks (name, line, wildcards)
+
+  local rooms = {}
+  local count = 0
+  
+  -- build table of special places (with info in them)
+  for row in db_bm:nrows(string.format ("SELECT uid, notes FROM bookmarks")) do
+     rooms [row.uid] = capitalize (row.notes)
+     count = count + 1
+  end   -- finding room
+  
+  -- find such places
+  mapper.find (
+    function (uid) 
+      local room = rooms [uid] 
+      if room then
+        rooms [uid] = nil
+      end -- if
+      return room, next (rooms) == nil  -- room will be type of info (eg. shop)
+    end,  -- function
+    show_vnums,  -- show vnum?
+    count,       -- how many to expect
+    false        -- don't auto-walk
+    )
+        
+end -- map_bookmarks
+
+function map_areas (name, line, wildcards)
+
+  local wanted_areas = {}
+  local count = 0
+  
+  if next (areas) == nil then
+    mapper.maperror "No areas known."
+    return
+  end -- if
+ 
+  -- build table of all areas, keyed by area code
+  for k, v in pairs (areas) do
+    wanted_areas [k] = v
+    count = count + 1
+  end -- for
+    
+  -- find all areas
+  mapper.find (
+    function (uid) 
+      local room = rooms [uid]
+      local reason
+			-- if this room is in the list of wanted areas then save its path
+			if wanted_areas[room.area] then
+			  reason = wanted_areas [room.area]
+				wanted_areas [room.area] = nil
+			end -- found one!
+      return reason, next (wanted_areas) == nil
+    end,  -- function
+    show_vnums,  -- show vnum?
+    count,       -- how many to expect
+    false        -- don't auto-walk
+    )
+    
+end -- map_areas
+
+
+valid_direction = {
+  n = "n",
+  s = "s",
+  e = "e",
+  w = "w",
+  u = "u",
+  d = "d",
+  ne = "ne",
+  sw = "sw",
+  nw = "nw",
+  se = "se",
+  north = "n",
+  south = "s",
+  east = "e",
+  west = "w",
+  up = "u",
+  down = "d",
+  northeast = "ne",
+  northwest = "nw",
+  southeast = "se",
+  southwest = "sw",
+  ['in'] = "in",
+  out = "out",
+  }  -- end of valid_direction
+  
+-- try to detect when we send a movement command
+function OnPluginSent (sText)
+  if valid_direction [sText] then
+    last_direction_moved = valid_direction [sText]
+--    print ("Just moved", last_direction_moved)
+    if current_room and rooms [current_room] then
+      expected_exit = rooms [current_room].exits [last_direction_moved]
+      if expected_exit then
+        from_room = current_room
+      end -- if
+--     print ("expected exit for this direction is to room", expected_exit)
+    end -- if
+  end -- if 
+end -- function
+
+function OnPluginConnect ()
+  mapper.cancel_speedwalk ()
+  -- DoAfter (3, "look")  -- force mapper update
+end -- OnPluginConnect
+
+function OnPluginDisconnect ()
+  mapper.cancel_speedwalk ()
+end -- OnPluginConnect
+
+function OnHelp ()
+  mapper.mapprint (world.GetPluginInfo (world.GetPluginID (), 3))
+end
+
+function OnPluginListChanged ()
+  do_plugin_check_now ("85f72d0e263d75df7bde6f00", "ATCP_NJG")    -- check we have ATCP plugin
+end -- OnPluginListChanged
+
+]]>
+</script>
+
+</muclient>

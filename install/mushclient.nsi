@@ -381,6 +381,7 @@ Section "Plugins"
   File "..\plugins\Summary.xml"  
   File "..\plugins\Code_Chart.xml"  
   File "..\plugins\Config_Option_Changer.xml"  
+  File "..\plugins\ATCP_Mapper.xml"
 
 SectionEnd
 
@@ -541,6 +542,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\Summary.xml"  
   Delete "$INSTDIR\worlds\plugins\Code_Chart.xml"  
   Delete "$INSTDIR\worlds\plugins\Config_Option_Changer.xml"  
+  Delete "$INSTDIR\worlds\plugins\ATCP_Mapper.xml"  
   
   ; locale stuff
   
