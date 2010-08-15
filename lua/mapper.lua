@@ -4,7 +4,7 @@
 
 Author: Nick Gammon
 Date:   11th March 2010
-Amended: 3rd May 2010
+Amended: 15h August 2010
 
 Generic MUD mapper.
 
@@ -60,7 +60,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 1.8   -- for querying by plugins
+VERSION = 1.9   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -875,7 +875,7 @@ end -- check_we_can_find
 -- f returns true (or a "reason" string) if we want to store this one, and true,true if
 --   we have done searching (ie. all wanted rooms found)
 
-local function find_paths (uid, f)
+function find_paths (uid, f)
 	
   local function make_particle (curr_loc, prev_path)
     local prev_path = prev_path or {}
