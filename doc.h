@@ -1003,10 +1003,15 @@ public:
 
   int m_subnegotiation_type;         // what type of subnegotiation we are currently in (0 to 255)
   string m_IAC_subnegotiation_data;  // last string x from MUD: IAC SB c x IAC SE
-  bool m_bClient_IAC_DO [256];     // client sent IAC DO x
-  bool m_bClient_IAC_DONT [256];     // client sent IAC DONT x
-  bool m_bClient_IAC_WILL [256];     // client sent IAC WILL x
-  bool m_bClient_IAC_WONT [256];     // client sent IAC WONT x
+  bool m_bClient_sent_IAC_DO   [256];    // client sent IAC DO x
+  bool m_bClient_sent_IAC_DONT [256];    // client sent IAC DONT x
+  bool m_bClient_sent_IAC_WILL [256];    // client sent IAC WILL x
+  bool m_bClient_sent_IAC_WONT [256];    // client sent IAC WONT x
+
+  bool m_bClient_got_IAC_DO   [256];     // client got IAC DO x
+  bool m_bClient_got_IAC_DONT [256];     // client got IAC DONT x
+  bool m_bClient_got_IAC_WILL [256];     // client got IAC WILL x
+  bool m_bClient_got_IAC_WONT [256];     // client got IAC WONT x
 
   // MSP (MUD Sound Protocol) stuff
   bool m_bMSP;  // true if using MSP

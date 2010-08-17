@@ -204,15 +204,15 @@ void CMUSHclientDoc::Send_IAC_DO (const unsigned char c)
   // if we are already in a mode do not agree again - see RFC 854 
   // and forum subject 3061                           
 
-  if (m_bClient_IAC_DO [c])
+  if (m_bClient_sent_IAC_DO [c])
       return;
 
   unsigned char do_do_it [3]   = { IAC, DO, c };
 
   TRACE1 ("\nSending IAC DO <%d>\n", c);
   SendPacket (do_do_it, sizeof do_do_it);
-  m_bClient_IAC_DO [c]   = true;
-  m_bClient_IAC_DONT [c] = false;
+  m_bClient_sent_IAC_DO [c]   = true;
+  m_bClient_sent_IAC_DONT [c] = false;
 
   } // end of CMUSHclientDoc::Send_IAC_DO
 
@@ -220,15 +220,15 @@ void CMUSHclientDoc::Send_IAC_DONT (const unsigned char c)
   {
   // if we are already in a mode do not agree again - see RFC 854 
   // and forum subject 3061                           
-  if (m_bClient_IAC_DONT [c])
+  if (m_bClient_sent_IAC_DONT [c])
       return;
 
   unsigned char dont_do_it [3] = { IAC, DONT, c };
 
   TRACE1 ("\nSending IAC DONT <%d>\n", c);
   SendPacket (dont_do_it, sizeof dont_do_it);
-  m_bClient_IAC_DONT [c] = true;
-  m_bClient_IAC_DO [c]   = false;
+  m_bClient_sent_IAC_DONT [c] = true;
+  m_bClient_sent_IAC_DO [c]   = false;
 
   } // end of CMUSHclientDoc::Send_IAC_DONT
 
@@ -236,15 +236,15 @@ void CMUSHclientDoc::Send_IAC_WILL (const unsigned char c)
   {
   // if we are already in a mode do not agree again - see RFC 854 
   // and forum subject 3061                           
-  if (m_bClient_IAC_WILL [c])
+  if (m_bClient_sent_IAC_WILL [c])
       return;
 
   unsigned char will_do_it [3]   = { IAC, WILL, c };
 
   TRACE1 ("\nSending IAC WILL <%d>\n", c);
   SendPacket (will_do_it, sizeof will_do_it);
-  m_bClient_IAC_WILL [c] = true;
-  m_bClient_IAC_WONT [c] = false;
+  m_bClient_sent_IAC_WILL [c] = true;
+  m_bClient_sent_IAC_WONT [c] = false;
 
   } // end of CMUSHclientDoc::Send_IAC_WILL
 
@@ -252,15 +252,15 @@ void CMUSHclientDoc::Send_IAC_WONT (const unsigned char c)
   {
   // if we are already in a mode do not agree again - see RFC 854 
   // and forum subject 3061                           
-  if (m_bClient_IAC_WONT [c])
+  if (m_bClient_sent_IAC_WONT [c])
       return;
 
   unsigned char wont_do_it [3] = { IAC, WONT, c };
 
   TRACE1 ("\nSending IAC WONT <%d>\n", c);
   SendPacket (wont_do_it, sizeof wont_do_it);
-  m_bClient_IAC_WONT [c] = true;
-  m_bClient_IAC_WILL [c] = false;
+  m_bClient_sent_IAC_WONT [c] = true;
+  m_bClient_sent_IAC_WILL [c] = false;
 
   } // end of CMUSHclientDoc::Send_IAC_WONT
 
@@ -280,6 +280,7 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
   m_phase = NONE;  // back to normal text after this character
 
   m_nCount_IAC_WILL++;
+  m_bClient_got_IAC_WILL [c] = true;
 
   switch (c)
     {
@@ -385,6 +386,7 @@ void CMUSHclientDoc::Phase_WONT (const unsigned char c)
   m_phase = NONE;
 
   m_nCount_IAC_WONT++;
+  m_bClient_got_IAC_WONT [c] = true;
 
   switch (c)
     {
@@ -418,6 +420,7 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
   m_phase = NONE;
 
   m_nCount_IAC_DO++;
+  m_bClient_got_IAC_DO [c] = true;
 
   switch (c)
     {
@@ -473,6 +476,7 @@ void CMUSHclientDoc::Phase_DONT (const unsigned char c)
   SendPacket (p, sizeof p);
 
   m_nCount_IAC_DONT++;
+  m_bClient_got_IAC_DONT [c] = true;
 
   switch (c)
     {

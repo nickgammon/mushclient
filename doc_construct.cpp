@@ -399,10 +399,15 @@ int i;
   m_bPluginProcessesSetEntity = false;
   m_bPluginProcessesError = false;      
 
-  ZeroMemory (&m_bClient_IAC_DO, sizeof m_bClient_IAC_DO);
-  ZeroMemory (&m_bClient_IAC_DONT, sizeof m_bClient_IAC_DONT);
-  ZeroMemory (&m_bClient_IAC_WILL, sizeof m_bClient_IAC_WILL);
-  ZeroMemory (&m_bClient_IAC_WONT, sizeof m_bClient_IAC_WONT);
+  ZeroMemory (&m_bClient_sent_IAC_DO,   sizeof m_bClient_sent_IAC_DO);
+  ZeroMemory (&m_bClient_sent_IAC_DONT, sizeof m_bClient_sent_IAC_DONT);
+  ZeroMemory (&m_bClient_sent_IAC_WILL, sizeof m_bClient_sent_IAC_WILL);
+  ZeroMemory (&m_bClient_sent_IAC_WONT, sizeof m_bClient_sent_IAC_WONT);
+
+  ZeroMemory (&m_bClient_got_IAC_DO,   sizeof m_bClient_got_IAC_DO);
+  ZeroMemory (&m_bClient_got_IAC_DONT, sizeof m_bClient_got_IAC_DONT);
+  ZeroMemory (&m_bClient_got_IAC_WILL, sizeof m_bClient_got_IAC_WILL);
+  ZeroMemory (&m_bClient_got_IAC_WONT, sizeof m_bClient_got_IAC_WONT);
 
   m_nCount_IAC_DO = 0;      
   m_nCount_IAC_DONT = 0;    

@@ -7099,10 +7099,17 @@ void CMUSHclientDoc::ConnectionEstablished (void)
   m_strLastCommandSent.Empty ();  // no command sent yet
   m_iNoteStyle = NORMAL;    // back to default style
 
-  ZeroMemory (&m_bClient_IAC_DO, sizeof m_bClient_IAC_DO);
-  ZeroMemory (&m_bClient_IAC_DONT, sizeof m_bClient_IAC_DONT);
-  ZeroMemory (&m_bClient_IAC_WILL, sizeof m_bClient_IAC_WILL);
-  ZeroMemory (&m_bClient_IAC_WONT, sizeof m_bClient_IAC_WONT);
+
+  ZeroMemory (&m_bClient_sent_IAC_DO,   sizeof m_bClient_sent_IAC_DO);
+  ZeroMemory (&m_bClient_sent_IAC_DONT, sizeof m_bClient_sent_IAC_DONT);
+  ZeroMemory (&m_bClient_sent_IAC_WILL, sizeof m_bClient_sent_IAC_WILL);
+  ZeroMemory (&m_bClient_sent_IAC_WONT, sizeof m_bClient_sent_IAC_WONT);
+
+  ZeroMemory (&m_bClient_got_IAC_DO,   sizeof m_bClient_got_IAC_DO);
+  ZeroMemory (&m_bClient_got_IAC_DONT, sizeof m_bClient_got_IAC_DONT);
+  ZeroMemory (&m_bClient_got_IAC_WILL, sizeof m_bClient_got_IAC_WILL);
+  ZeroMemory (&m_bClient_got_IAC_WONT, sizeof m_bClient_got_IAC_WONT);
+
   m_phase = NONE;   // not in middle of telnet/mxp sequence yet
   m_IAC_subnegotiation_data.erase ();
   m_subnegotiation_type = 0;

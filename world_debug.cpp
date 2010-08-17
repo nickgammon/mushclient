@@ -25,6 +25,7 @@ extern CString strKeypadNames [eKeypad_Max_Items];
 extern tInfoTypeMapping InfoTypes [];
 
 #define SHOW_TRUE(x) ((x) ? "yes" : "NO")
+#define SHOW_TRUE_LC(x) ((x) ? "yes" : "no")
 
 static char * sColourNames [8] = 
   {
@@ -37,6 +38,15 @@ static char * sColourNames [8] =
   "Cyan",
   "White"
    };
+
+static char * sMxpModes [] = 
+  {
+  "On command",
+  "On query",
+  "Yes - always",
+  "No - never"
+  };
+
 
 // compare-less for colours
 struct colour_less : binary_function<COLORREF, COLORREF, bool>
@@ -1371,20 +1381,30 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     // telnet negotiation
 
-    Note (TFormat ("Telnet (IAC) received: DO: %ld, DONT: %ld, WILL: %ld, WONT: %ld, SB: %ld",
+    Tell (TFormat ("Telnet (IAC) received: DO: %ld, DONT: %ld, WILL: %ld, WONT: %ld, SB: %ld [",
                   m_nCount_IAC_DO,      
                   m_nCount_IAC_DONT,    
                   m_nCount_IAC_WILL,    
                   m_nCount_IAC_WONT,    
                   m_nCount_IAC_SB));
 
+    Hyperlink ("!!" DEBUG_PLUGIN_ID ":telnetlist()", 
+               "List", "Click to list IAC items", "cyan", "", 0);
+    Note ("]");
+
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- MXP --");
 
     //MXP
 
-    Note (TFormat ("MXP active: %s, Pueblo mode: %s", 
+    const char * sMode = "Unknown";
+
+    if (m_iUseMXP >= eOnCommandMXP && eOnCommandMXP <= eNoMXP)
+       sMode =  sMxpModes [m_iUseMXP];
+
+    Note (TFormat ("MXP active: %s, Pueblo mode: %s, Activated: %s", 
                     SHOW_TRUE (m_bMXP ),
-                    SHOW_TRUE (m_bPuebloActive) ));
+                    SHOW_TRUE (m_bPuebloActive),
+                    sMode));
 
     Note (TFormat ("MXP tags received: %I64d", m_iMXPtags));        
     Note (TFormat ("MXP entities received: %I64d", m_iMXPentities));    
@@ -2044,6 +2064,85 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 
 
     }   // end of acceleratorlist
+
+//-----------------------------------------------------------------------
+//          telnetlist
+//-----------------------------------------------------------------------
+
+  else if (strAction == "telnetlist")
+    {
+
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "------ Telnet negotiation List (numeric order) ------");
+    Note ("");
+
+    map<int,string> telnet_meanings;
+
+    // got these from  Code_Chart.xml plugin
+
+    telnet_meanings [0x01] = "Echo";                    //  1 Echo
+    telnet_meanings [0x03] = "Suppress Go-ahead (SGA)"; //  3 Suppress go ahead
+    telnet_meanings [0x05] = "Status";                  //  5 Status
+    telnet_meanings [0x06] = "Timing Mark";             //  6 Timing mark
+    telnet_meanings [0x18] = "Termtype";                // 24 Terminal type
+    telnet_meanings [0x19] = "End of record (EOR)";     // 25 EOR
+    telnet_meanings [0x1F] = "Window Size (NAWS)";      // 31 Window size
+    telnet_meanings [0x20] = "Terminal Speed";          // 32 Terminal speed
+    telnet_meanings [0x21] = "RFC";                     // 33 Remote flow control
+    telnet_meanings [0x22] = "Line Mode";               // 34 Line mode
+    telnet_meanings [0x24] = "EV";                      // 36 Environment variables
+    telnet_meanings [0x2A] = "Charset";                 // 42 Character set
+    telnet_meanings [0x55] = "MCCP1";       //  85 MUD Compression Protocol v1
+    telnet_meanings [0x56] = "MCCP2";       //  86 MUD Compression Protocol v2
+    telnet_meanings [0x5A] = "MSP";         //  90 (MUD Sound Protocol)
+    telnet_meanings [0x5B] = "MXP";         //  91 (MUD eXtension Protocol)
+    telnet_meanings [0x5D] = "ZMP";         //  93 (ZMP Protocol)
+    telnet_meanings [0x66] = "Aardwolf";    // 102 (Aardwolf telnet protocol)
+    telnet_meanings [0xC8] = "ATCP";        // 200 ATCP (Achaea Telnet Protocol)
+    telnet_meanings [0xC9] = "ATCP2/GMCP";  // 201 ATCP2/GMCP (Generic Mud Control Protocol)
+    telnet_meanings [0xFF] = "Extended Options"; // for future expansion
+
+
+    for (int i = 0; i < 256; i++)
+      {
+      if (m_bClient_sent_IAC_DO   [i] ||
+          m_bClient_sent_IAC_DONT [i] ||
+          m_bClient_sent_IAC_WILL [i] ||
+          m_bClient_sent_IAC_WONT [i] ||
+          m_bClient_got_IAC_DO    [i] ||
+          m_bClient_got_IAC_DONT  [i] ||
+          m_bClient_got_IAC_WILL  [i] ||
+          m_bClient_got_IAC_WONT  [i])
+        {
+
+        string sMeaning = telnet_meanings [i];
+        CString strMeaning;
+        if (!sMeaning.empty ())
+          {
+          strMeaning = " (";
+          strMeaning += sMeaning.c_str ();
+          strMeaning += ")";
+          }
+
+        Note (CFormat ("%3i%s", i, (LPCTSTR) strMeaning));
+        ColourTell ("cyan", "", "     Got:  ");
+        Note (CFormat ("DO:   %-3s, DONT: %-3s, WILL: %-3s, WONT: %-3s ",
+              SHOW_TRUE_LC (m_bClient_got_IAC_DO   [i]), 
+              SHOW_TRUE_LC (m_bClient_got_IAC_DONT [i]), 
+              SHOW_TRUE_LC (m_bClient_got_IAC_WILL [i]), 
+              SHOW_TRUE_LC (m_bClient_got_IAC_WONT [i])));
+
+        ColourTell ("cyan", "", "     Sent: ");
+        Note (CFormat ("WILL: %-3s, WONT: %-3s, DO:   %-3s, DONT: %-3s ",
+              SHOW_TRUE_LC (m_bClient_sent_IAC_WILL [i]), 
+              SHOW_TRUE_LC (m_bClient_sent_IAC_WONT [i]), 
+              SHOW_TRUE_LC (m_bClient_sent_IAC_DO   [i]), 
+              SHOW_TRUE_LC (m_bClient_sent_IAC_DONT [i])));
+
+        } // end of something true
+
+      }  // end of loop
+
+    }   // end of telnetlist
 
 //-----------------------------------------------------------------------
 //          showtrigger
