@@ -1389,7 +1389,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
                   m_nCount_IAC_SB));
 
     Hyperlink ("!!" DEBUG_PLUGIN_ID ":telnetlist()", 
-               "List", "Click to list IAC items", "cyan", "", 0);
+               "Telnet", "Click to list telnet IAC items", "cyan", "", 0);
     Note ("]");
 
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- MXP --");
