@@ -6148,6 +6148,23 @@ static int L_WindowMergeImageAlpha (lua_State *L)
 
 
 //----------------------------------------
+//  world.WindowMoveHotspot
+//----------------------------------------
+static int L_WindowMoveHotspot (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  lua_pushnumber (L, pDoc->WindowMoveHotspot (
+            my_checkstring (L, 1),  // Name
+            my_checkstring (L, 2),  // HotspotId
+            my_checknumber (L, 3),  // Left
+            my_checknumber (L, 4),  // Top
+            my_checknumber (L, 5),  // Right
+            my_checknumber (L, 6)   // Bottom
+            ));
+  return 1;  // number of result fields
+  } // end of L_WindowMoveHotspot
+
+//----------------------------------------
 //  world.WindowPolygon
 //----------------------------------------
 static int L_WindowPolygon (lua_State *L)
@@ -6202,6 +6219,23 @@ static int L_WindowRectOp (lua_State *L)
             ));
   return 1;  // number of result fields
   } // end of L_WindowRectOp
+
+
+//----------------------------------------
+//  world.WindowResize
+//----------------------------------------
+static int L_WindowResize (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  lua_pushnumber (L, pDoc->WindowResize (
+      my_checkstring (L, 1),    // Name
+      my_checknumber (L, 2),    // Width
+      my_checknumber (L, 3),    // Height
+      my_checknumber (L, 4)     // Background Colour
+    ));
+
+  return 1;  // number of result fields
+  } // end of L_WindowResize
 
 //----------------------------------------
 //  world.WindowScrollwheelHandler
@@ -6748,9 +6782,11 @@ static const struct luaL_reg worldlib [] =
   {"WindowLoadImageMemory", L_WindowLoadImageMemory},
   {"WindowMenu", L_WindowMenu},
   {"WindowMergeImageAlpha", L_WindowMergeImageAlpha},
+  {"WindowMoveHotspot", L_WindowMoveHotspot},
   {"WindowPolygon", L_WindowPolygon},
   {"WindowPosition", L_WindowPosition},
   {"WindowRectOp", L_WindowRectOp},
+  {"WindowResize", L_WindowResize},
   {"WindowScrollwheelHandler", L_WindowScrollwheelHandler},
   {"WindowSetPixel", L_WindowSetPixel},
   {"WindowShow", L_WindowShow},

@@ -16,6 +16,7 @@
 // constructor
 CMiniWindow::CMiniWindow ()  :       
           m_oldBitmap (NULL),
+          m_Bitmap (NULL),
           m_iWidth (0), m_iHeight (0),
           m_iPosition (0), m_iFlags (0),
           m_iBackgroundColour (0), m_bShow (false),
@@ -34,11 +35,13 @@ CMiniWindow::~CMiniWindow ()  // destructor
   {
 
   // get rid of old one if any
-  if ((HBITMAP) m_Bitmap)
+  if (m_Bitmap)
     {
 		dc.SelectObject(m_oldBitmap);    // swap old one back
-    m_Bitmap.DeleteObject ();        // delete the one we made
+    m_Bitmap->DeleteObject ();        // delete the one we made
+    delete m_Bitmap;
     }
+
 
   // delete our fonts
   for (FontMapIterator fit = m_Fonts.begin (); 
@@ -145,15 +148,17 @@ void CMiniWindow::Create (long Left, long Top, long Width, long Height,
   m_iBackgroundColour    = BackgroundColour;
 
   // get rid of old one if any
-  if ((HBITMAP) m_Bitmap)
+  if (m_Bitmap)
     {
 		dc.SelectObject(m_oldBitmap);    // swap old one back
-    m_Bitmap.DeleteObject ();
+    m_Bitmap->DeleteObject ();
     }
 
+  m_Bitmap = new CBitmap;
+
   //  CreateBitmap with zero-dimensions creates a monochrome bitmap, so force to be at least 1x1
-  m_Bitmap.CreateBitmap (MAX (m_iWidth, 1), MAX (m_iHeight, 1), 1, GetDeviceCaps(dc, BITSPIXEL), NULL); 
-	m_oldBitmap = dc.SelectObject (&m_Bitmap);
+  m_Bitmap->CreateBitmap (MAX (m_iWidth, 1), MAX (m_iHeight, 1), 1, GetDeviceCaps(dc, BITSPIXEL), NULL); 
+	m_oldBitmap = dc.SelectObject (m_Bitmap);
 	dc.SetWindowOrg(0, 0);
 
   dc.FillSolidRect (0, 0, m_iWidth, m_iHeight, m_iBackgroundColour);
@@ -4131,3 +4136,72 @@ long CMiniWindow::ScrollwheelHandler(CMUSHclientDoc * pDoc, LPCTSTR HotspotId, s
 
 
   } // end of CMiniWindow::ScrollwheelHandler
+
+
+// resize a window
+
+long CMiniWindow::Resize(long Width, long Height, long BackgroundColour)
+  {
+
+  // no change to size? wow, that was easy ...
+  if (Width == m_iWidth && Height == m_iHeight)
+    return eOK;
+
+  // remember new width and height
+
+  m_iWidth  = Width ;
+  m_iHeight = Height;
+
+  CDC bmDC;   // for loading bitmaps into
+  bmDC.CreateCompatibleDC(&dc);
+
+  // select original bitmap out of device context
+  dc.SelectObject(m_oldBitmap);
+
+  // save old bitmap for copying from
+  CBitmap * previousWindowBitmap = m_Bitmap;
+
+  // select into new device context
+  CBitmap * pOldbmp = bmDC.SelectObject (previousWindowBitmap);
+
+  // make new bitmap for different size
+  m_Bitmap = new CBitmap;
+
+  //  CreateBitmap with zero-dimensions creates a monochrome bitmap, so force to be at least 1x1
+  m_Bitmap->CreateBitmap (MAX (m_iWidth, 1), MAX (m_iHeight, 1), 1, GetDeviceCaps(dc, BITSPIXEL), NULL); 
+	m_oldBitmap = dc.SelectObject (m_Bitmap);
+	dc.SetWindowOrg(0, 0);
+
+  // fill with requested border colour
+  dc.FillSolidRect (0, 0, m_iWidth, m_iHeight, BackgroundColour);
+
+  // copy old contents back
+  dc.BitBlt (0, 0, m_iWidth, m_iHeight, &bmDC, 0, 0, SRCCOPY);  
+  bmDC.SelectObject(pOldbmp);
+
+  // done with previous bitmap from this miniwindow
+  previousWindowBitmap->DeleteObject ();
+  delete previousWindowBitmap;
+
+  return eOK;
+
+  } // end of CMiniWindow::Resize
+
+
+
+// move a hotspot (maybe the window was resized)
+
+long CMiniWindow::MoveHotspot(LPCTSTR HotspotId, 
+                             long Left, long Top, long Right, long Bottom)
+  {
+
+  HotspotMapIterator it = m_Hotspots.find (HotspotId);
+
+  if (it == m_Hotspots.end ())
+    return eHotspotNotInstalled;
+
+  it->second->m_rect = CRect (Left, Top, FixRight (Right), FixBottom (Bottom));
+
+  return eOK;
+  }    // end of CMiniWindow::MoveHotspot
+

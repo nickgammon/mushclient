@@ -2668,6 +2668,8 @@ public:
 	afx_msg long WindowDrawImageAlpha(LPCTSTR Name, LPCTSTR ImageId, long Left, long Top, long Right, long Bottom, double Opacity, long SrcLeft, long SrcTop);
 	afx_msg long WindowGetImageAlpha(LPCTSTR Name, LPCTSTR ImageId, long Left, long Top, long Right, long Bottom, long SrcLeft, long SrcTop);
 	afx_msg long WindowScrollwheelHandler(LPCTSTR Name, LPCTSTR HotspotId, LPCTSTR MoveCallback);
+	afx_msg long WindowResize(LPCTSTR Name, long Width, long Height, long BackgroundColour);
+	afx_msg long WindowMoveHotspot(LPCTSTR Name, LPCTSTR HotspotId, long Left, long Top, long Right, long Bottom);
 	afx_msg long GetNormalColour(short WhichColour);
 	afx_msg void SetNormalColour(short WhichColour, long nNewValue);
 	afx_msg long GetBoldColour(short WhichColour);

@@ -14864,6 +14864,32 @@ long CMUSHclientDoc::WindowGetImageAlpha(LPCTSTR Name, LPCTSTR ImageId, long Lef
 }   // end of CMUSHclientDoc::WindowGetImageAlpha
 
 
+
+long CMUSHclientDoc::WindowResize(LPCTSTR Name, long Width, long Height, long BackgroundColour) 
+{
+
+  if (Width < 0 || Height < 0)
+    return eBadParameter;
+
+  MiniWindowMapIterator it = m_MiniWindows.find (Name);
+    
+  if (it == m_MiniWindows.end ())
+    return eNoSuchWindow;
+
+  return it->second->Resize (Width, Height, BackgroundColour);
+}  // end of CMUSHclientDoc::WindowResize
+     
+
+long CMUSHclientDoc::WindowMoveHotspot(LPCTSTR Name, LPCTSTR HotspotId, long Left, long Top, long Right, long Bottom) 
+{
+  MiniWindowMapIterator it = m_MiniWindows.find (Name);
+    
+  if (it == m_MiniWindows.end ())
+  	return eNoSuchWindow;
+
+  return it->second->MoveHotspot (HotspotId, Left, Top, Right, Bottom);
+}   // end of CMUSHclientDoc::WindowMoveHotspot
+
 /*
 
   ======================================================================

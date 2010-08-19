@@ -1196,7 +1196,7 @@ class CMiniWindow
 
     CDC dc;                   // our offscreen device context
   	CBitmap *   m_oldBitmap;  // bitmap originally found in CMyMemDC
-    CBitmap     m_Bitmap;     // where it all happens
+    CBitmap *   m_Bitmap;     // where it all happens
     FontMap     m_Fonts;      // all the fonts they want
     ImageMap    m_Images;     // other images they may want to blt onto the window
 
@@ -1405,6 +1405,11 @@ class CMiniWindow
   long GetImageAlpha(LPCTSTR ImageId, 
                       long Left, long Top, long Right, long Bottom, 
                       long SrcLeft, long SrcTop); 
+
+  long Resize(long Width, long Height, long BackgroundColour);
+
+  long MoveHotspot(LPCTSTR HotspotId, long Left, long Top, long Right, long Bottom);
+
 
   };
 
