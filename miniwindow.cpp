@@ -152,6 +152,7 @@ void CMiniWindow::Create (long Left, long Top, long Width, long Height,
     {
 		dc.SelectObject(m_oldBitmap);    // swap old one back
     m_Bitmap->DeleteObject ();
+    delete m_Bitmap;
     }
 
   m_Bitmap = new CBitmap;
