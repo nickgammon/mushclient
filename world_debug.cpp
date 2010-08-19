@@ -1381,16 +1381,22 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     // telnet negotiation
 
-    Tell (TFormat ("Telnet (IAC) received: DO: %ld, DONT: %ld, WILL: %ld, WONT: %ld, SB: %ld [",
+    Tell (TFormat ("Telnet (IAC) received: DO: %ld, DONT: %ld, WILL: %ld, WONT: %ld, SB: %ld",
                   m_nCount_IAC_DO,      
                   m_nCount_IAC_DONT,    
                   m_nCount_IAC_WILL,    
                   m_nCount_IAC_WONT,    
                   m_nCount_IAC_SB));
 
-    Hyperlink ("!!" DEBUG_PLUGIN_ID ":telnetlist()", 
-               "Telnet", "Click to list telnet IAC items", "cyan", "", 0);
-    Note ("]");
+    if (m_nCount_IAC_DO || m_nCount_IAC_DONT || m_nCount_IAC_WILL || m_nCount_IAC_WONT)
+      {
+      Tell (" [");
+      Hyperlink ("!!" DEBUG_PLUGIN_ID ":telnetlist()", 
+                 "Telnet", "Click to list telnet IAC items", "cyan", "", 0);
+      Tell ("]");
+      }
+
+    Note ("");
 
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- MXP --");
 
