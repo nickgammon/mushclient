@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="Messages_Window"
+   author="Nick Gammon"
+   id="126d9061f9758498c878a204"
+   language="Lua"
+   purpose="Shows messages in a miniwindow"
+   date_written="2010-08-24 10:30"
+   date_modified="2010-08-24 13:30"
+   save_state="y"
+   requires="4.55"
+   version="1.1"
+   >
+   
+<description trim="y">
+<![CDATA[
+Call from scripts to display information messages.
+   
+See: http://www.gammon.com.au/forum/?id=10515
+
+eg.
+
+Note a message (starts a new line):
+
+  CallPlugin ("126d9061f9758498c878a204", "MsgNote", "test note")
+  CallPlugin ("126d9061f9758498c878a204", "MsgNote", "test note", "yellow") -- yellow text
+  CallPlugin ("126d9061f9758498c878a204", "MsgNote", "test note", "yellow", "white") -- yellow on white
+
+Tell a message in the default text colour (stays on same line):
+
+  CallPlugin ("126d9061f9758498c878a204", "MsgTell", "test tell")
+  CallPlugin ("126d9061f9758498c878a204", "MsgTell", "test tell", "yellow") -- yellow text
+  CallPlugin ("126d9061f9758498c878a204", "MsgTell", "test tell", "yellow", "white") -- yellow on white
+  
+Clear the message window:
+
+  CallPlugin ("126d9061f9758498c878a204", "MsgClear")
+
+Hide the message window:
+
+  CallPlugin ("126d9061f9758498c878a204", "MsgHide")
+
+Show the message window:
+
+  CallPlugin ("126d9061f9758498c878a204", "MsgShow")
+  
+Change the message window title:
+
+  CallPlugin ("126d9061f9758498c878a204", "MsgTitle", "Combat text")
+
+]]>
+</description>
+</plugin>
+
+<!--  Script  -->
+
+
+<script>
+<![CDATA[
+
+-- configuration
+
+-- number of lines to show
+local MAX_LINES = 20
+
+-- font
+local FONT_NAME = "Dina"
+local FONT_SIZE = 8
+
+-- where to put the window
+local WINDOW_POSITION = miniwin.pos_top_right 
+
+-- colours
+local WINDOW_BACKGROUND_COLOUR = "black"
+local WINDOW_TITLE_COLOUR = "white"
+local WINDOW_TITLE_BACKGROUND = "darkgoldenrod"
+
+local NOTE_COLOUR = "Cyan"
+
+
+-- window title
+local title = "Messages"
+
+-- offset of text from edge
+local TEXT_INSET = 5
+
+-- where to store the message lines
+local lines = {}  -- table of recent message lines
+local styles = {} -- current line
+
+-- display one line
+local function show_line (n, styles)
+
+  local left = TEXT_INSET
+  local top = (n - 1) * font_height + TEXT_INSET
+  
+  -- display each style, including the appropriate background under it
+  for _, v in ipairs (styles) do
+    local width = WindowTextWidth (win, "f", v.text) -- get width of text
+    local right = left + width                       -- work out RH side
+    local bottom = top + font_height                 -- work out bottom
+    WindowRectOp (win, miniwin.rect_fill, left, top, right, bottom, 
+                  ColourNameToRGB (v.backcolour or WINDOW_BACKGROUND_COLOUR))  -- draw background
+    WindowText (win, "f", v.text, left, top, window_width - TEXT_INSET, 0, 
+                  ColourNameToRGB (v.textcolour or NOTE_COLOUR))  -- draw text
+    left = left + width  -- advance horizontally
+  end -- for each style run                 
+  
+end -- Display_Line
+
+local function add_line (line)
+
+  -- remove first line if filled up
+  if #lines >= MAX_LINES then
+    table.remove (lines, 1)
+  end -- if 
+
+  -- add new line
+  table.insert (lines, line)
+
+end -- add_line
+
+-- here on output to display
+local function redraw_all ()
+
+  -- blank existing window contents
+  WindowRectOp (win, miniwin.rect_fill, 0, 0, 0, 0, ColourNameToRGB (WINDOW_BACKGROUND_COLOUR))
+  
+  -- draw drag bar rectangle
+  WindowRectOp (win, miniwin.rect_fill, 0, 0, 0, font_height, ColourNameToRGB (WINDOW_TITLE_BACKGROUND))
+  
+  local sz = WindowTextWidth (win, "fb", title)
+  WindowText (win, "fb", title, (window_width - sz) / 2, 0, window_width - TEXT_INSET, 0, 
+              ColourNameToRGB (WINDOW_TITLE_COLOUR))
+  
+  -- display all lines
+  for k, v in ipairs (lines) do
+    show_line (k + 1, v)
+  end -- for
+ 
+  Redraw ()
+  
+end -- end redraw_all
+
+local function warning (msg)
+  ColourNote ("white", "red", msg)
+end -- warning
+
+-- EXPOSED FUNCTIONS
+
+-- hide window on removal
+function OnPluginClose ()
+  WindowShow (win,  false)  -- hide it
+end -- OnPluginClose
+
+-- hide window on disable
+function OnPluginDisable ()
+  WindowShow (win,  false)  -- hide it
+end -- OnPluginDisable
+
+-- show window on enable
+function OnPluginEnable ()
+  if #lines > 0 then
+    WindowShow (win,  true)  -- show it
+  end -- if
+end -- OnPluginEnable
+
+function OnPluginSaveState ()
+  -- save window current location for next time  
+  movewindow.save_state (win)
+end -- function OnPluginSaveState
+
+
+-- FOR CALLING BY SCRIPTS:
+
+-- eg. CallPlugin ("126d9061f9758498c878a204", "MsgNote", "test note")
+--     CallPlugin ("126d9061f9758498c878a204", "MsgNote", "test note", "yellow") -- yellow text
+--     CallPlugin ("126d9061f9758498c878a204", "MsgNote", "test note", "yellow", "white") -- yellow on white
+
+-- Note a line (starts a new line afterwards). Text colour and background colour are optional.
+
+function MsgNote (text, textcolour, backcolour)
+
+  -- add this style (if any text)
+  if text then
+  
+    if type (text) ~= "string" then
+     warning ("First argument to MsgNote must be message text (string)")
+     return
+    end -- if
+    
+    table.insert (styles, { text = text, textcolour = textcolour, backcolour = backcolour } )
+  end -- if
+    
+  -- add all styles to this line
+  add_line (styles)
+  
+  -- start new line
+  styles = {}
+  
+  -- display existing lines
+  redraw_all () 
+  
+  WindowShow (win,  true)  -- show it
+  
+end -- MsgNote
+
+
+-- eg. CallPlugin ("126d9061f9758498c878a204", "MsgTell", "test note")
+--     CallPlugin ("126d9061f9758498c878a204", "MsgTell", "test note", "yellow") -- yellow text
+--     CallPlugin ("126d9061f9758498c878a204", "MsgTell", "test note", "yellow", "white") -- yellow on white
+
+-- Tell a line (does not start a new line). Text colour and background colour are optional.
+
+function MsgTell (text, textcolour, backcolour)
+  
+  if type (text) ~= "string" then
+     warning ("First argument to MsgTell must be message text (string)")
+     return
+  end -- if
+
+  -- add this style
+  table.insert (styles, { text = text, textcolour = textcolour, backcolour = backcolour } )
+end -- MsgTell
+
+-- eg.  CallPlugin ("126d9061f9758498c878a204", "MsgClear")
+
+function MsgClear ()
+  lines = {}
+  styles = {}
+   -- display blank window
+  redraw_all () 
+end -- MsgClear
+
+-- eg.  CallPlugin ("126d9061f9758498c878a204", "MsgHide")
+
+function MsgHide ()
+  WindowShow (win,  false)  -- hide it
+end -- MsgHide
+
+-- eg.  CallPlugin ("126d9061f9758498c878a204", "MsgShow")
+
+function MsgShow ()
+  WindowShow (win,  true)  -- show it
+  redraw_all () 
+end -- MsgShow
+
+-- eg.  CallPlugin ("126d9061f9758498c878a204", "MsgTitle", "Combat Messages")
+
+function MsgTitle (new_title)
+  if type (new_title) ~= "string" then
+     warning ("First argument to MsgTitle must be window title (string)")
+     return
+  end -- if
+  
+  title = new_title
+  redraw_all () 
+end -- MsgTitle
+
+-- startup stuff - create window, find font characteristics
+
+win = GetPluginID ()  -- get a unique name
+
+-- make the window
+WindowCreate (win, 0, 0, 1, 1, WINDOW_POSITION, 0, 0)  -- create window
+               
+-- grab a font
+WindowFont (win, "f", FONT_NAME, FONT_SIZE) -- define font
+WindowFont (win, "fb", FONT_NAME, FONT_SIZE, true) -- define font
+
+-- work out how high and wide it is
+font_height = WindowFontInfo (win, "f", 1)   -- height of the font  
+wrap_column = GetOption ("wrap_column")
+
+window_width = (wrap_column * WindowFontInfo (win, "f", 6)) + (TEXT_INSET * 2)
+window_height = (MAX_LINES + 1) * font_height + TEXT_INSET * 2  -- one more line for title
+
+require "movewindow"  -- load the movewindow.lua module
+
+-- install the window movement handler, get back the window position
+windowinfo = movewindow.install (win, WINDOW_POSITION)
+ 
+-- remake the window with the correct width
+WindowCreate (win, 
+               windowinfo.window_left, 
+               windowinfo.window_top, 
+               window_width, window_height,              
+               windowinfo.window_mode,   
+               windowinfo.window_flags,
+               0) 
+
+-- add the drag handler so they can move the window around
+movewindow.add_drag_handler (win, 0, 0, 0, font_height)
+
+fonts = utils.getfontfamilies ()
+
+if not fonts.Dina then
+  AddFont (GetInfo (66) .. "\\Dina.fon")
+end -- if Dina not installed
+      
+]]>
+</script>
+
+</muclient>
+
