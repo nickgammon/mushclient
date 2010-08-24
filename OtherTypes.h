@@ -1189,6 +1189,7 @@ typedef HotspotMap::iterator HotspotMapIterator;
 #define MINIWINDOW_ABSOLUTE_LOCATION 0x02      // use m_iLeft, m_iTop to position 
 #define MINIWINDOW_TRANSPARENT 0x04            // draw transparently, using m_iBackgroundColour 
 #define MINIWINDOW_IGNORE_MOUSE 0x08           // ignore mouse-down, mouse-over etc. 
+#define MINIWINDOW_KEEP_HOTSPOTS 0x10          // retain existing hotspots
 
 class CMiniWindow
   {

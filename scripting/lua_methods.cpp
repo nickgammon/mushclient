@@ -7147,6 +7147,7 @@ static flags_pair miniwindow_flags [] =
   {  "create_absolute_location",  MINIWINDOW_ABSOLUTE_LOCATION  },
   {  "create_transparent",        MINIWINDOW_TRANSPARENT  },
   {  "create_ignore_mouse",       MINIWINDOW_IGNORE_MOUSE  },
+  {  "create_keep_hotspots",      MINIWINDOW_KEEP_HOTSPOTS  },
 
 
   // pen styles for drawing shapes

@@ -167,7 +167,8 @@ void CMiniWindow::Create (long Left, long Top, long Width, long Height,
   m_bShow = false;
 
   // a newly created window has no hotspots
-  DeleteAllHotspots ();
+  if ((Flags & MINIWINDOW_KEEP_HOTSPOTS) == 0)
+    DeleteAllHotspots ();
 
   } // end of MiniWindow::Create
 
