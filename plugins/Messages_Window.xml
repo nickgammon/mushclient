@@ -75,7 +75,7 @@ local WINDOW_POSITION = miniwin.pos_top_right
 
 -- colours
 local WINDOW_BACKGROUND_COLOUR = "black"
-local WINDOW_TITLE_COLOUR = "white"
+local WINDOW_TITLE_COLOUR = "black"
 local WINDOW_TITLE_BACKGROUND = "darkgoldenrod"
 
 local NOTE_COLOUR = "Cyan"
@@ -130,10 +130,13 @@ local function redraw_all ()
   WindowRectOp (win, miniwin.rect_fill, 0, 0, 0, 0, ColourNameToRGB (WINDOW_BACKGROUND_COLOUR))
   
   -- draw drag bar rectangle
-  WindowRectOp (win, miniwin.rect_fill, 0, 0, 0, font_height, ColourNameToRGB (WINDOW_TITLE_BACKGROUND))
-  
+  WindowRectOp (win, miniwin.rect_fill, 0, 0, 0, font_height + 2, ColourNameToRGB (WINDOW_TITLE_BACKGROUND))
+
+  -- draw border
+  check (WindowRectOp (win, miniwin.rect_draw_edge, 0, 0, 0, 0, miniwin.rect_edge_raised, miniwin.rect_edge_at_all))
+      
   local sz = WindowTextWidth (win, "fb", title)
-  WindowText (win, "fb", title, (window_width - sz) / 2, 0, window_width - TEXT_INSET, 0, 
+  WindowText (win, "fb", title, (window_width - sz) / 2, 1, window_width - TEXT_INSET, 0, 
               ColourNameToRGB (WINDOW_TITLE_COLOUR))
   
   -- display all lines
@@ -293,7 +296,7 @@ WindowCreate (win,
                0) 
 
 -- add the drag handler so they can move the window around
-movewindow.add_drag_handler (win, 0, 0, 0, font_height)
+movewindow.add_drag_handler (win, 0, 0, 0, font_height + 2)
 
 fonts = utils.getfontfamilies ()
 
