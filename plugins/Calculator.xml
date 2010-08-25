@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="Calculator"
+   author="Nick Gammon"
+   id="ba1329d6355e728dd100fd41"
+   language="Lua"
+   purpose="Provides a simple calculator"
+   date_written="2010-08-25 14:55:13"
+   requires="4.50"
+   version="1.0"
+   >
+<description trim="y">
+<![CDATA[
+To calculate something enter "=" followed by an expression which can be evaluated by Lua.
+
+eg.
+
+= 2 + 2     (prints 4)
+
+= sqrt (64)  (prints 8)
+
+The functions in the math, bit, string, utils and world libraries can be used without prefixing them with the library name.
+
+eg.
+
+= GetWorldID () 
+= match ("fruit", "u")
+= shl (4, 4)
+
+]]>
+</description>
+
+</plugin>
+
+
+<!--  Aliases  -->
+
+<aliases>
+  <alias
+   match="=*"
+   enabled="y"
+   send_to="12"
+   sequence="100"
+  >
+  <send>
+print ("%1 =", setfenv (assert (loadstring "return %1"), setmetatable ({}, 
+    {__index = function (_, n) return math [n] or bit [n] or string [n] or utils [n] or world [n] end}) ) () )
+</send>
+  </alias>
+</aliases>
+
+</muclient>

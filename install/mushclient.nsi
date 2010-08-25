@@ -383,6 +383,7 @@ Section "Plugins"
   File "..\plugins\Config_Option_Changer.xml"  
   File "..\plugins\ATCP_Mapper.xml"
   File "..\plugins\Messages_Window.xml"
+  File "..\plugins\Calculator.xml"
 
 SectionEnd
 
@@ -545,6 +546,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\Config_Option_Changer.xml"  
   Delete "$INSTDIR\worlds\plugins\ATCP_Mapper.xml"  
   Delete "$INSTDIR\worlds\plugins\Messages_Window.xml"
+  Delete "$INSTDIR\worlds\plugins\Calculator.xml"
   
   ; locale stuff
   
