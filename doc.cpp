@@ -604,6 +604,7 @@ BEGIN_DISPATCH_MAP(CMUSHclientDoc, CDocument)
 	DISP_FUNCTION(CMUSHclientDoc, "WindowScrollwheelHandler", WindowScrollwheelHandler, VT_I4, VTS_BSTR VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION(CMUSHclientDoc, "WindowResize", WindowResize, VT_I4, VTS_BSTR VTS_I4 VTS_I4 VTS_I4)
 	DISP_FUNCTION(CMUSHclientDoc, "WindowMoveHotspot", WindowMoveHotspot, VT_I4, VTS_BSTR VTS_BSTR VTS_I4 VTS_I4 VTS_I4 VTS_I4)
+	DISP_FUNCTION(CMUSHclientDoc, "WindowTranslateImage", WindowTranslateImage, VT_I4, VTS_BSTR VTS_BSTR VTS_R4 VTS_R4 VTS_I2 VTS_R4 VTS_R4 VTS_R4 VTS_R4)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "NormalColour", GetNormalColour, SetNormalColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "BoldColour", GetBoldColour, SetBoldColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "CustomColourText", GetCustomColourText, SetCustomColourText, VT_I4, VTS_I2)
@@ -8248,4 +8249,5 @@ static bool bInPluginListChanged = false;
 
 
   }    // end CMUSHclientDoc::PluginListChanged 
+
 

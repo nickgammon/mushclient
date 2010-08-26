@@ -6316,6 +6316,26 @@ static int L_WindowTextWidth (lua_State *L)
   } // end of WindowTextWidth
 
 //----------------------------------------
+//  world.WindowTranslateImage
+//----------------------------------------
+static int L_WindowTranslateImage (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  lua_pushnumber (L, pDoc->WindowTranslateImage (
+            my_checkstring (L, 1),    // Name
+            my_checkstring (L, 2),    // ImageId
+            my_checknumber (L, 3),    // Left
+            my_checknumber (L, 4),    // Top
+            my_checknumber (L, 5),    // Mode
+            my_checknumber (L, 6),    // Mxx
+            my_checknumber (L, 7),    // Mxy
+            my_checknumber (L, 8),    // Myx
+            my_checknumber (L, 9)     // Myy
+            ));
+  return 1;  // number of result fields
+  } // end of L_WindowTranslateImage
+
+//----------------------------------------
 //  world.WindowWrite
 //----------------------------------------
 static int L_WindowWrite (lua_State *L)
@@ -6792,6 +6812,7 @@ static const struct luaL_reg worldlib [] =
   {"WindowShow", L_WindowShow},
   {"WindowText", L_WindowText},
   {"WindowTextWidth", L_WindowTextWidth},
+  {"WindowTranslateImage", L_WindowTranslateImage},
   {"WindowWrite", L_WindowWrite},
   {"WorldAddress", L_WorldAddress},
   {"WorldName", L_WorldName},

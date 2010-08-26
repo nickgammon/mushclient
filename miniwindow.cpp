@@ -1300,6 +1300,7 @@ long CMiniWindow::DrawImage(LPCTSTR ImageId,
   dc.SetBkMode (TRANSPARENT);
 
   dc.SetStretchBltMode (HALFTONE);  // looks better when squashed
+  SetBrushOrgEx(dc.m_hDC, 0, 0, NULL);  // as recommended after  SetStretchBltMode
 
   BITMAP  bi;
   bitmap->GetBitmap(&bi);
@@ -4207,3 +4208,108 @@ long CMiniWindow::MoveHotspot(LPCTSTR HotspotId,
   return eOK;
   }    // end of CMiniWindow::MoveHotspot
 
+
+
+long CMiniWindow::TranslateImage(LPCTSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy)
+  {
+
+  ImageMapIterator it = m_Images.find (ImageId);
+
+  if (it == m_Images.end ())
+    return eImageNotInstalled;
+
+  CBitmap * bitmap = it->second;
+
+  dc.SetBkMode (TRANSPARENT);
+
+  BITMAP  bi;
+  bitmap->GetBitmap(&bi);
+
+  CDC bmDC;
+  bmDC.CreateCompatibleDC(&dc);
+  CBitmap *pOldbmp = bmDC.SelectObject(bitmap);
+
+  long iWidth  = bi.bmWidth;
+  long iHeight = bi.bmHeight;
+
+  if (iWidth <= 0 || iHeight <= 0)   // Sanity Claus
+    {
+    bmDC.SelectObject(pOldbmp);
+    return eOK;
+    }
+
+  // need advanced mode to do SetWorldTransform successfully
+  if (SetGraphicsMode (dc.m_hDC, GM_ADVANCED) == 0)
+    {
+    bmDC.SelectObject (pOldbmp);
+    return eBadParameter;
+    }
+
+  // x' = x * Mxx + y * Mxy + Dx, 
+  // y' = x * Myx + y * Myy + Dy, 
+
+	XFORM xform;
+	xform.eM11 = Mxx;
+	xform.eM12 = Mxy;
+	xform.eM21 = Myx;
+	xform.eM22 = Myy;
+	xform.eDx = Left;
+	xform.eDy = Top;
+
+	if (SetWorldTransform (dc.m_hDC, &xform) == 0)
+    {
+    bmDC.SelectObject(pOldbmp);
+    return eBadParameter;
+    }
+
+  switch (Mode)
+    {
+    case 1: dc.BitBlt (0, 0, iWidth, iHeight, &bmDC, 0, 0, SRCCOPY);  
+            break;      // straight copy
+
+    case 3:        // transparency, nom nom nom!
+      {
+      COLORREF crOldBack = dc.SetBkColor (RGB (255, 255, 255));    // white
+	    COLORREF crOldText = dc.SetTextColor (RGB (0, 0, 0));        // black
+	    CDC dcTrans;   // transparency mask
+
+
+	    // Create a memory dc for the mask
+	    dcTrans.CreateCompatibleDC(&dc);
+
+	    // Create the mask bitmap for the subset of the main image
+	    CBitmap bitmapTrans;
+	    bitmapTrans.CreateBitmap(iWidth, iHeight, 1, 1, NULL);
+
+	    // Select the mask bitmap into the appropriate dc
+	    CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
+
+      // Our transparent pixel will be at 0,0 (top left corner) of original image (not subimage)
+      COLORREF crOldBackground = bmDC.SetBkColor (::GetPixel (bmDC, 0, 0));
+
+	    // Build mask based on transparent colour at location 0, 0
+	    dcTrans.BitBlt (0, 0, iWidth, iHeight, &bmDC, 0, 0, SRCCOPY);
+
+	    // Do the work 
+	    dc.BitBlt (Left, Top, iWidth, iHeight, &bmDC,    0, 0, SRCINVERT);
+	    dc.BitBlt (Left, Top, iWidth, iHeight, &dcTrans, 0, 0, SRCAND);
+	    dc.BitBlt (Left, Top, iWidth, iHeight, &bmDC,    0, 0, SRCINVERT);
+
+	    // Restore settings
+	    dcTrans.SelectObject(pOldBitmapTrans);
+	    dc.SetBkColor(crOldBack);
+	    dc.SetTextColor(crOldText);
+      bmDC.SetBkColor(crOldBackground);
+      }
+      break;
+
+    default: return eBadParameter;
+    } // end of switch
+
+  bmDC.SelectObject(pOldbmp);
+
+  // reset to identity transformation
+  ModifyWorldTransform(dc.m_hDC, &xform, MWT_IDENTITY);
+
+  return eOK;
+  }   // end of CMiniWindow::TranslateImage

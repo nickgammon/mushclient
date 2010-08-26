@@ -14890,6 +14890,18 @@ long CMUSHclientDoc::WindowMoveHotspot(LPCTSTR Name, LPCTSTR HotspotId, long Lef
   return it->second->MoveHotspot (HotspotId, Left, Top, Right, Bottom);
 }   // end of CMUSHclientDoc::WindowMoveHotspot
 
+
+long CMUSHclientDoc::WindowTranslateImage(LPCTSTR Name, LPCTSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy) 
+{
+  MiniWindowMapIterator it = m_MiniWindows.find (Name);
+    
+  if (it == m_MiniWindows.end ())
+    return eNoSuchWindow;
+
+  return it->second->TranslateImage (ImageId, Left, Top, Mode, Mxx, Mxy, Myx, Myy);
+}
+
+
 /*
 
   ======================================================================
