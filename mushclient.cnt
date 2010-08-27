@@ -557,7 +557,7 @@
 3 WindowShow=FNC_WindowShow
 3 WindowText=FNC_WindowText
 3 WindowTextWidth=FNC_WindowTextWidth
-3 WindowTranslateImage=FNC_WindowTranslateImage
+3 WindowTransformImage=FNC_WindowTransformImage
 3 WindowWrite=FNC_WindowWrite
 3 WorldAddress=FNC_WorldAddress 
 3 WorldName=FNC_WorldName 

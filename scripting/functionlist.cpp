@@ -417,7 +417,7 @@ tInternalFunctionsTable InternalFunctionsTable [] = {
 { "WindowShow" ,                 "( WindowName , Show )" } ,
 { "WindowText" ,                 "( WindowName , FontId , Text , Left , Top , Right , Bottom , Colour , Unicode )" } ,
 { "WindowTextWidth" ,            "( WindowName , FontId , Text , Unicode )" } ,
-{ "WindowTranslateImage" ,       "( WindowName , ImageId , Left , Top , Mode , Mxx , Mxy , Myx , Myy ) " },
+{ "WindowTransformImage" ,       "( WindowName , ImageId , Left , Top , Mode , Mxx , Mxy , Myx , Myy ) " },
 { "WindowWrite" ,                "( WindowName , FileName )" } ,                          
 { "WorldAddress" ,               "( )" } ,
 { "WorldName" ,                  "( )" } ,

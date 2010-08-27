@@ -1411,7 +1411,7 @@ class CMiniWindow
 
   long MoveHotspot(LPCTSTR HotspotId, long Left, long Top, long Right, long Bottom);
 
-  long TranslateImage(LPCTSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy);
+  long TransformImage(LPCTSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy);
 
   };
 

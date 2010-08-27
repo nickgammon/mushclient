@@ -433,7 +433,7 @@ library MUSHclient
 			[id(399)] long WindowScrollwheelHandler(BSTR Name, BSTR HotspotId, BSTR MoveCallback);
 			[id(400)] long WindowResize(BSTR Name, long Width, long Height, long BackgroundColour);
 			[id(401)] long WindowMoveHotspot(BSTR Name, BSTR HotspotId, long Left, long Top, long Right, long Bottom);
-			[id(402)] long WindowTranslateImage(BSTR Name, BSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy);
+			[id(402)] long WindowTransformImage(BSTR Name, BSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy);
 			//}}AFX_ODL_METHOD
 
 	};

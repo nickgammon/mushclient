@@ -4210,7 +4210,7 @@ long CMiniWindow::MoveHotspot(LPCTSTR HotspotId,
 
 
 
-long CMiniWindow::TranslateImage(LPCTSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy)
+long CMiniWindow::TransformImage(LPCTSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy)
   {
 
   ImageMapIterator it = m_Images.find (ImageId);
@@ -4319,4 +4319,4 @@ long CMiniWindow::TranslateImage(LPCTSTR ImageId, float Left, float Top, short M
   ModifyWorldTransform(dc.m_hDC, &xform, MWT_IDENTITY);
 
   return eOK;
-  }   // end of CMiniWindow::TranslateImage
+  }   // end of CMiniWindow::TransformImage
