@@ -4245,14 +4245,14 @@ long CMiniWindow::TranslateImage(LPCTSTR ImageId, float Left, float Top, short M
     return eBadParameter;
     }
 
-  // x' = x * Mxx + y * Mxy + Dx, 
-  // y' = x * Myx + y * Myy + Dy, 
+  // x' = x * Mxx + y * Mxy + Left 
+  // y' = x * Myx + y * Myy + Top 
 
 	XFORM xform;
-	xform.eM11 = Mxx;
-	xform.eM21 = Mxy;
-	xform.eM12 = Myx;
-	xform.eM22 = Myy;
+	xform.eM11 = Mxx;       // cosine
+	xform.eM21 = Mxy;       // sine
+	xform.eM12 = Myx;       // - sine
+	xform.eM22 = Myy;       // cosine
 	xform.eDx = Left;
 	xform.eDy = Top;
 
