@@ -4250,8 +4250,8 @@ long CMiniWindow::TranslateImage(LPCTSTR ImageId, float Left, float Top, short M
 
 	XFORM xform;
 	xform.eM11 = Mxx;
-	xform.eM12 = Mxy;
-	xform.eM21 = Myx;
+	xform.eM21 = Mxy;
+	xform.eM12 = Myx;
 	xform.eM22 = Myy;
 	xform.eDx = Left;
 	xform.eDy = Top;
@@ -4261,6 +4261,10 @@ long CMiniWindow::TranslateImage(LPCTSTR ImageId, float Left, float Top, short M
     bmDC.SelectObject(pOldbmp);
     return eBadParameter;
     }
+
+  // gives smoother rotations, especially with transparency
+  dc.SetStretchBltMode (HALFTONE);  
+  SetBrushOrgEx(dc.m_hDC, 0, 0, NULL);  // as recommended after  SetStretchBltMode
 
   switch (Mode)
     {
@@ -4277,23 +4281,23 @@ long CMiniWindow::TranslateImage(LPCTSTR ImageId, float Left, float Top, short M
 	    // Create a memory dc for the mask
 	    dcTrans.CreateCompatibleDC(&dc);
 
-	    // Create the mask bitmap for the subset of the main image
+	    // Create the mask bitmap 
 	    CBitmap bitmapTrans;
-	    bitmapTrans.CreateBitmap(iWidth, iHeight, 1, 1, NULL);
+	    bitmapTrans.CreateBitmap(m_iWidth, m_iHeight, 1, 1, NULL);
 
 	    // Select the mask bitmap into the appropriate dc
 	    CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
 
-      // Our transparent pixel will be at 0,0 (top left corner) of original image (not subimage)
+      // Our transparent pixel will be at 0,0 (top left corner) of original image 
       COLORREF crOldBackground = bmDC.SetBkColor (::GetPixel (bmDC, 0, 0));
 
 	    // Build mask based on transparent colour at location 0, 0
 	    dcTrans.BitBlt (0, 0, iWidth, iHeight, &bmDC, 0, 0, SRCCOPY);
 
 	    // Do the work 
-	    dc.BitBlt (Left, Top, iWidth, iHeight, &bmDC,    0, 0, SRCINVERT);
-	    dc.BitBlt (Left, Top, iWidth, iHeight, &dcTrans, 0, 0, SRCAND);
-	    dc.BitBlt (Left, Top, iWidth, iHeight, &bmDC,    0, 0, SRCINVERT);
+	    dc.BitBlt (0, 0, iWidth, iHeight, &bmDC,    0, 0, SRCINVERT);
+	    dc.BitBlt (0, 0, iWidth, iHeight, &dcTrans, 0, 0, SRCAND);
+	    dc.BitBlt (0, 0, iWidth, iHeight, &bmDC,    0, 0, SRCINVERT);
 
 	    // Restore settings
 	    dcTrans.SelectObject(pOldBitmapTrans);
@@ -4303,7 +4307,10 @@ long CMiniWindow::TranslateImage(LPCTSTR ImageId, float Left, float Top, short M
       }
       break;
 
-    default: return eBadParameter;
+    default: 
+      bmDC.SelectObject(pOldbmp);
+      return eBadParameter;
+
     } // end of switch
 
   bmDC.SelectObject(pOldbmp);
