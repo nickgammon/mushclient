@@ -4309,6 +4309,8 @@ long CMiniWindow::TransformImage(LPCTSTR ImageId, float Left, float Top, short M
 
     default: 
       bmDC.SelectObject(pOldbmp);
+      ModifyWorldTransform(dc.m_hDC, &xform, MWT_IDENTITY);
+      SetGraphicsMode (dc.m_hDC, GM_COMPATIBLE);
       return eBadParameter;
 
     } // end of switch
@@ -4317,6 +4319,7 @@ long CMiniWindow::TransformImage(LPCTSTR ImageId, float Left, float Top, short M
 
   // reset to identity transformation
   ModifyWorldTransform(dc.m_hDC, &xform, MWT_IDENTITY);
+  SetGraphicsMode (dc.m_hDC, GM_COMPATIBLE);
 
   return eOK;
   }   // end of CMiniWindow::TransformImage
