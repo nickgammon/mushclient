@@ -248,6 +248,7 @@ Section "Documentation"
   File "..\docs\lpeg.html"
   File "..\docs\re.html"
   File "..\docs\Lua Colors LICENSE.txt"
+  File "..\docs\JSON License.txt"
   
 SectionEnd
 
@@ -321,6 +322,41 @@ SetOverwrite ifnewer
    File "..\lua\ppi.lua"
    File "..\lua\mapper.lua"  
 
+   ; JSON stuff from http://luaforge.net/projects/luajson/ 
+   ; version 1.1
+   
+   File "..\lua\json.lua"
+
+  CreateDirectory "$INSTDIR\lua\json"
+  SetOutPath $INSTDIR\lua
+  
+    File "..\lua\json\encode.lua"
+    File "..\lua\json\decode.lua"
+    File "..\lua\json\encode.lua"
+  
+  CreateDirectory "$INSTDIR\lua\json\encode"
+  SetOutPath $INSTDIR\lua\encode
+  
+    File "..\lua\json\encode\array.lua"
+    File "..\lua\json\encode\calls.lua"
+    File "..\lua\json\encode\number.lua"
+    File "..\lua\json\encode\object.lua"
+    File "..\lua\json\encode\others.lua"
+    File "..\lua\json\encode\output.lua"
+    File "..\lua\json\encode\output_utility.lua"
+    File "..\lua\json\encode\strings.lua"
+  
+  CreateDirectory "$INSTDIR\lua\json\decode"
+  SetOutPath $INSTDIR\lua\decode
+  
+    File "..\lua\json\decode\array.lua"
+    File "..\lua\json\decode\calls.lua"
+    File "..\lua\json\decode\number.lua"
+    File "..\lua\json\decode\object.lua"
+    File "..\lua\json\decode\others.lua"
+    File "..\lua\json\decode\strings.lua"
+    File "..\lua\json\decode\util.lua"
+        
   ; Set output path to the scripts subdirectory.
   SetOutPath $INSTDIR\scripts
 
@@ -472,6 +508,30 @@ Section Uninstall
   Delete "$INSTDIR\lua\ppi.lua"
   Delete "$INSTDIR\lua\mapper.lua"  
   
+  Delete "$INSTDIR\lua\json.lua"
+  Delete "$INSTDIR\lua\json\encode.lua"
+  Delete "$INSTDIR\lua\json\decode.lua"
+  Delete "$INSTDIR\lua\json\encode.lua"
+  Delete "$INSTDIR\lua\json\encode\array.lua"
+  Delete "$INSTDIR\lua\json\encode\calls.lua"
+  Delete "$INSTDIR\lua\json\encode\number.lua"
+  Delete "$INSTDIR\lua\json\encode\object.lua"
+  Delete "$INSTDIR\lua\json\encode\others.lua"
+  Delete "$INSTDIR\lua\json\encode\output.lua"
+  Delete "$INSTDIR\lua\json\encode\output_utility.lua"
+  Delete "$INSTDIR\lua\json\encode\strings.lua"
+  Delete "$INSTDIR\lua\json\decode\array.lua"
+  Delete "$INSTDIR\lua\json\decode\calls.lua"
+  Delete "$INSTDIR\lua\json\decode\number.lua"
+  Delete "$INSTDIR\lua\json\decode\object.lua"
+  Delete "$INSTDIR\lua\json\decode\others.lua"
+  Delete "$INSTDIR\lua\json\decode\strings.lua"
+  Delete "$INSTDIR\lua\json\decode\util.lua"
+
+  RMDir  "$INSTDIR\lua\json\decode"
+  RMDir  "$INSTDIR\lua\json\encode"
+  RMDir  "$INSTDIR\lua\json"
+        
   ; spell checker stuff
   Delete "$INSTDIR\spellchecker.lua"
   Delete "$INSTDIR\spell\english-words.10"
@@ -498,6 +558,7 @@ Section Uninstall
   Delete "$INSTDIR\docs\lpeg.html"
   Delete "$INSTDIR\docs\re.html"
   Delete "$INSTDIR\docs\Lua Colors LICENSE.txt"
+  Delete "$INSTDIR\docs\JSON License.txt"
   
   RMDir  "$INSTDIR\docs"
 
