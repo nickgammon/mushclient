@@ -249,6 +249,7 @@ Section "Documentation"
   File "..\docs\re.html"
   File "..\docs\Lua Colors LICENSE.txt"
   File "..\docs\JSON License.txt"
+  File "..\docs\LuaJSON.txt"
   
 SectionEnd
 
@@ -559,6 +560,7 @@ Section Uninstall
   Delete "$INSTDIR\docs\re.html"
   Delete "$INSTDIR\docs\Lua Colors LICENSE.txt"
   Delete "$INSTDIR\docs\JSON License.txt"
+  Delete "$INSTDIR\docs\LuaJSON.txt"
   
   RMDir  "$INSTDIR\docs"
 
