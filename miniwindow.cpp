@@ -86,6 +86,29 @@ static int BytesPerLine (int nWidth, int nBitsPerPixel)
   return ( (nWidth * nBitsPerPixel + 31) & (~31) ) / 8;
   }
 
+// helper function to make normal/geometric pens
+// legacy behaviour is to do what we always did
+// however if an endcap or join mask bit is on we juse the ExtCreatePen function
+static void MakeAPen (CPen & pen, long PenColour, long PenStyle, long PenWidth) 
+  {
+
+  // legacy behaviour
+  if ((PenStyle & PS_ENDCAP_MASK) == 0 &&
+      (PenStyle & PS_JOIN_MASK) == 0)
+    {
+    pen.CreatePen (PenStyle, PenWidth, PenColour); 
+    }
+  else
+    {
+    LOGBRUSH logbrush;
+    logbrush.lbStyle = BS_SOLID;
+    logbrush.lbColor = PenColour;
+    logbrush.lbHatch = 0;     // not applicable
+
+    pen.Attach (::ExtCreatePen (PenStyle | PS_GEOMETRIC, PenWidth, &logbrush, 0, NULL));
+    }
+  } // end of MakeAPen
+
 // a negative or zero value for the bottom of a rectange is considered offset from the bottom edge
 long CMiniWindow::FixBottom (const long Bottom)
   {
@@ -308,7 +331,7 @@ long  CMiniWindow::RectOp (short Action, long Left, long Top, long Right, long B
 static long ValidatePenStyle (const long PenStyle, const long PenWidth)
   {
 
-  switch (PenStyle)   
+  switch (PenStyle & PS_STYLE_MASK)   
     {
       // must be one of these flags
       case PS_SOLID:           // 0  
@@ -323,6 +346,28 @@ static long ValidatePenStyle (const long PenStyle, const long PenWidth)
          if (PenWidth > 1) 
            return ePenStyleNotValid;
          break;
+
+    default: return ePenStyleNotValid;
+    }
+
+  switch (PenStyle & PS_ENDCAP_MASK)   
+    {
+      // must be one of these flags
+      case PS_ENDCAP_ROUND:   // 0x000  
+      case PS_ENDCAP_SQUARE:  // 0x100   
+      case PS_ENDCAP_FLAT:    // 0x200
+        break;
+
+    default: return ePenStyleNotValid;
+    }
+
+  switch (PenStyle & PS_JOIN_MASK)   
+    {
+      // must be one of these flags
+      case PS_JOIN_ROUND:     // 0x0000  
+      case PS_JOIN_BEVEL:     // 0x1000   
+      case PS_JOIN_MITER:     // 0x2000
+        break;
 
     default: return ePenStyleNotValid;
     }
@@ -476,8 +521,8 @@ long CMiniWindow::CircleOp (short Action,
 
   // create requested pen 
   CPen pen;
-  pen.CreatePen (PenStyle, PenWidth, PenColour); 
-  
+  MakeAPen (pen, PenColour, PenStyle, PenWidth);
+ 
   // select into DC
   CPen* oldPen = dc.SelectObject(&pen);
   CBrush* oldBrush = dc.SelectObject(&br);
@@ -885,7 +930,8 @@ long CMiniWindow::Line (long x1, long y1, long x2, long y2,
 
   // create requested pen
   CPen pen;
-  pen.CreatePen (PenStyle, PenWidth, PenColour);    
+  MakeAPen (pen, PenColour, PenStyle, PenWidth);
+
   CPen* oldPen = dc.SelectObject(&pen);
 
   dc.MoveTo (x1, y1);
@@ -913,7 +959,8 @@ long CMiniWindow::Arc (long Left, long Top, long Right, long Bottom,
 
   // create requested pen
   CPen pen;
-  pen.CreatePen (PenStyle, PenWidth, PenColour);    
+  MakeAPen (pen, PenColour, PenStyle, PenWidth);
+
   CPen* oldPen = dc.SelectObject(&pen);
 
   dc.Arc(Left, Top, FixRight (Right), FixBottom (Bottom), 
@@ -1480,7 +1527,7 @@ long CMiniWindow::Bezier(LPCTSTR Points, long PenColour, long PenStyle, long Pen
 
   // create requested pen
   CPen pen;
-  pen.CreatePen (PenStyle, PenWidth, PenColour);    
+  MakeAPen (pen, PenColour, PenStyle, PenWidth);
   CPen* oldPen = dc.SelectObject(&pen);
 
   dc.PolyBezier(&points [0], iCount); 
@@ -1545,7 +1592,7 @@ long CMiniWindow::Polygon(LPCTSTR Points,
 
   // create requested pen 
   CPen pen;
-  pen.CreatePen (PenStyle, PenWidth, PenColour);    
+  MakeAPen (pen, PenColour, PenStyle, PenWidth);
 
   // select pen and brush into device context
   CPen* oldPen = dc.SelectObject(&pen);
@@ -1836,7 +1883,7 @@ long CMiniWindow::ImageOp(short Action,
 
   // create requested pen 
   CPen pen;
-  pen.CreatePen (PenStyle, PenWidth, PenColour); 
+  MakeAPen (pen, PenColour, PenStyle, PenWidth);
   
   // select into DC
   CPen* oldPen = dc.SelectObject(&pen);

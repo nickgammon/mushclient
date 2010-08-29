@@ -7173,13 +7173,23 @@ static flags_pair miniwindow_flags [] =
 
   // pen styles for drawing shapes
 
-  {  "pen_solid",        PS_SOLID  },           // solid pen
+  {  "pen_solid",        PS_SOLID  },           // solid pen  (0)
   {  "pen_dash",         PS_DASH  },            // -------    
   {  "pen_dot",          PS_DOT  },             // .......    
   {  "pen_dash_dot",     PS_DASHDOT  },         // _._._._    
   {  "pen_dash_dot_dot", PS_DASHDOTDOT  },      // _.._.._    
   {  "pen_null",         PS_NULL  },            // no pen
   {  "pen_inside_frame", PS_INSIDEFRAME  },     // solid, inside the shape
+
+  // end style ('OR' in one of these)
+  {  "pen_endcap_round", PS_ENDCAP_ROUND  },    // rounded ends  (default)
+  {  "pen_endcap_square",PS_ENDCAP_SQUARE },    // square ends
+  {  "pen_endcap_flat",  PS_ENDCAP_FLAT   },    // flat end (does not extend past end)
+  
+  // join style ('OR' in one of these)
+  {  "pen_join_round",   PS_JOIN_ROUND  },      // rounded join  (default)
+  {  "pen_join_bevel",   PS_JOIN_BEVEL  },      // bevelled join
+  {  "pen_join_miter",   PS_JOIN_MITER  },      // mitered join
 
   // brush styles for drawing shapes
 
