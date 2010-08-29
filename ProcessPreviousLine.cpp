@@ -724,7 +724,7 @@ assemble the full text of the original line.
          GetStyleRGB (pStyle, cText, cBack); 
                           
          m_OutstandingLines.push_front (CPaneStyle ((const char *)
-                              strLine.Mid (iCol, pStyle->iLength), 
+                              strLine.Mid (pLine->len -  pStyle->iLength - iCol, pStyle->iLength), 
                               cText, cBack, pStyle->iFlags & 7));
          iCol += pStyle->iLength; // new column
          }     // end of each style
