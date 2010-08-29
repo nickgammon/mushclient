@@ -4491,10 +4491,11 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
     }
 
   CStringList firedTimersList;
+  POSITION pos;
 
 // iterate through all timers for this document - first build list of them
 
-  for (POSITION pos = TimerMap.GetStartPosition(); pos; )
+  for (pos = TimerMap.GetStartPosition(); pos; )
     {
 
 
