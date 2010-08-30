@@ -156,36 +156,36 @@ string t_regexp::GetWildcard (const string sName) const
 
 // checks a regular expression, raises a dialog if bad
 bool CheckRegularExpression (const CString strRegexp, const int iOptions)
-  {
-const char *error;
-int erroroffset;
-pcre * program;
+{
+  const char *error;
+  int erroroffset;
 
-  program = pcre_compile(strRegexp, iOptions, &error, &erroroffset, NULL);
-
+  pcre* program = pcre_compile(strRegexp, iOptions, &error, &erroroffset, NULL);
   if (program)
     {
     pcre_free (program);
-    return true;     // good
+    return true; // good
     }
 
   CRegexpProblemDlg dlg;
   dlg.m_strErrorMessage = Translate (error);
-
   dlg.m_strErrorMessage += ".";   // end the sentence
+
   // make first character upper-case, so it looks like a sentence. :)
   dlg.m_strErrorMessage.SetAt (0, toupper (dlg.m_strErrorMessage [0]));
 
-  dlg.m_strColumn = TFormat ("Error occurred at column %i.", erroroffset + 1);
+  dlg.m_iColumn = erroroffset + 1;
+  dlg.m_strColumn = TFormat ("Error occurred at column %i.", dlg.m_iColumn);
+
   dlg.m_strText = strRegexp;
   dlg.m_strText += ENDLINE;
   if (erroroffset > 0)
     dlg.m_strText += CString ('-', erroroffset - 1);
   dlg.m_strText += '^';
-  dlg.m_iColumn = erroroffset + 1;
+
   dlg.DoModal ();
   return false;   // bad
-  }
+}
 
 
 /*************************************************
