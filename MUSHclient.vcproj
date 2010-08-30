@@ -49,6 +49,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;LUA51"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -146,6 +147,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;ZLIB_DLL;LUA51"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -3235,23 +3237,49 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="zlib\gzio.c"
+				RelativePath=".\zlib\gzclose.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\zlib\gzlib.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\zlib\gzread.c"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\zlib\gzwrite.c"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
