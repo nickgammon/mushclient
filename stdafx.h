@@ -742,7 +742,6 @@ void metaphone (const char *name, char * metaph, int metalen);
 int EditDistance (const string source, const string target);
 
 const char * Make_Absolute_Path (CString strFileName);
-const char * Convert_PCRE_Runtime_Error (const int iError);
 
 lua_State *MakeLuaState (void);
 

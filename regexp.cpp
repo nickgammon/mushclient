@@ -104,7 +104,7 @@ int regexec(register t_regexp *prog,
 
     prog->m_iExecutionError = count; // remember reason
     ThrowErrorException (TFormat ("Error executing regular expression: %s",
-                         Convert_PCRE_Runtime_Error (count)));
+                                  t_regexp::ErrorCodeToString (count)));
     }
 
   // if, and only if, we match, we will save the matching string, the count
@@ -141,6 +141,39 @@ string t_regexp::GetWildcard (const string sName) const
     iNumber = njg_get_first_set (m_program, sName.c_str (), &m_vOffsets [0]);
 
   return GetWildcard (iNumber);
+}
+
+const char* t_regexp::ErrorCodeToString(const int code)
+{
+  const char* error_msg = NULL;
+  switch (code)
+    {
+    case PCRE_ERROR_NOMATCH:        error_msg = "No match";
+    case PCRE_ERROR_NULL:           error_msg = "Null";
+    case PCRE_ERROR_BADOPTION:      error_msg = "Bad option";
+    case PCRE_ERROR_BADMAGIC:       error_msg = "Bad magic";
+    case PCRE_ERROR_UNKNOWN_OPCODE: error_msg = "Unknown Opcode";
+    case PCRE_ERROR_NOMEMORY:       error_msg = "No Memory";
+    case PCRE_ERROR_NOSUBSTRING:    error_msg = "No Substring";
+    case PCRE_ERROR_MATCHLIMIT:     error_msg = "Match Limit";
+    case PCRE_ERROR_CALLOUT:        error_msg = "Callout";
+    case PCRE_ERROR_BADUTF8:        error_msg = "Bad UTF8";
+    case PCRE_ERROR_BADUTF8_OFFSET: error_msg = "Bad UTF8 Offset";
+    case PCRE_ERROR_PARTIAL:        error_msg = "Partial";
+    case PCRE_ERROR_BADPARTIAL:     error_msg = "Bad Partial";
+    case PCRE_ERROR_INTERNAL:       error_msg = "Internal";
+    case PCRE_ERROR_BADCOUNT:       error_msg = "Bad Count";
+    case PCRE_ERROR_DFA_UITEM:      error_msg = "Dfa Uitem";
+    case PCRE_ERROR_DFA_UCOND:      error_msg = "Dfa Ucond";
+    case PCRE_ERROR_DFA_UMLIMIT:    error_msg = "Dfa Umlimit";
+    case PCRE_ERROR_DFA_WSSIZE:     error_msg = "Dfa Wssize";
+    case PCRE_ERROR_DFA_RECURSE:    error_msg = "Dfa Recurse";
+    case PCRE_ERROR_RECURSIONLIMIT: error_msg = "Recursion Limit";
+    case PCRE_ERROR_NULLWSLIMIT:    error_msg = "Null Ws Limit";
+    case PCRE_ERROR_BADNEWLINE:     error_msg = "Bad Newline";
+    default:                        error_msg = "Unknown PCRE error";
+    }
+  return Translate(error_msg);
 }
 
 // checks a regular expression, raises a dialog if bad

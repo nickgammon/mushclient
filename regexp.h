@@ -28,6 +28,8 @@ public:
   // returns a wildcard by name
   string GetWildcard (const string sName) const;
 
+  static const char* ErrorCodeToString(const int code);
+
 
   // pairs of offsets from match
   vector<int> m_vOffsets;
