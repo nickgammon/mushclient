@@ -11,7 +11,6 @@
 #include "scripting\errors.h"
 
 #include "pcre\config.h"
-#include "pcre\pcre_internal.h"
 
 #define PNG_NO_CONSOLE_IO
 #include "png\png.h"
@@ -2542,47 +2541,6 @@ const char * Convert_PCRE_Runtime_Error (const int iError)
     default: return Translate ("Unknown PCRE error");
     }
   } // end of Convert_PCRE_Runtime_Error
-
-
-/*************************************************
-*    Find first set of multiple named strings    *
-*************************************************/
-
-// taken from pcre_get.c - with minor modifications
-
-/* This function allows for duplicate names in the table of named substrings.
-It returns the number of the first one that was set in a pattern match.
-
-Arguments:
-  code         the compiled regex
-  stringname   the name of the capturing substring
-  ovector      the vector of matched substrings
-
-Returns:       the number of the first that is set,
-               or the number of the last one if none are set,
-               or a negative number on error
-*/
-
-typedef unsigned char uschar;
-
-int
-njg_get_first_set(const pcre *code, const char *stringname, const int *ovector)
-{
-const real_pcre *re = (const real_pcre *)code;
-int entrysize;
-char *first, *last;
-uschar *entry;
-if ((re->options & (PCRE_DUPNAMES | PCRE_JCHANGED)) == 0)
-  return pcre_get_stringnumber(code, stringname);
-entrysize = pcre_get_stringtable_entries(code, stringname, &first, &last);
-if (entrysize <= 0) return entrysize;
-for (entry = (uschar *)first; entry <= (uschar *)last; entry += entrysize)
-  {
-  int n = (entry[0] << 8) + entry[1];
-  if (ovector[n*2] >= 0) return n;
-  }
-return (first[0] << 8) + first[1];
-}
 
 // i18n (Internationalization) stuff
 

@@ -5,12 +5,29 @@
 #include "doc.h"
 #include "dialogs\RegexpProblemDlg.h"
 
+#include "pcre\config.h"
+#include "pcre\pcre_internal.h"
+
 #ifdef _DEBUG
 //#define new DEBUG_NEW
 #undef THIS_FILE
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
+// for duplicate named wildcards
+int njg_get_first_set(const pcre *code, const char *stringname, const int *ovector);
+
+t_regexp::t_regexp ()
+  : m_program(NULL), m_extra(NULL), iTimeTaken(0),
+    m_iCount(0), m_iMatchAttempts(0), m_iExecutionError(0)
+{}
+
+t_regexp::~t_regexp () { 
+  if (m_program) 
+    pcre_free (m_program); 
+  if (m_extra) 
+    pcre_free (m_extra); 
+}
 
 t_regexp * regcomp(const char *exp, const int options)
   {
@@ -109,8 +126,34 @@ int count;
   return true; // match
   }
 
-// checks a regular expression, raises a dialog if bad
+// returns a numbered wildcard
+string t_regexp::GetWildcard (const int iNumber) const
+{
+  if (iNumber >= 0 && iNumber < m_iCount)
+    return string (
+    &m_sTarget.c_str () [m_vOffsets [iNumber * 2]],
+    m_vOffsets [(iNumber * 2) + 1] - m_vOffsets [iNumber * 2]).c_str ();
+  else
+    return "";
+}
 
+// returns a named wildcard
+string t_regexp::GetWildcard (const string sName) const
+{
+  int iNumber;
+  if (IsStringNumber (sName))
+    iNumber = atoi (sName.c_str ());
+  else
+    {
+    if (m_program == NULL)
+      iNumber = PCRE_ERROR_NOSUBSTRING;
+    else
+      iNumber = njg_get_first_set (m_program, sName.c_str (), &m_vOffsets [0]);
+    }
+  return GetWildcard (iNumber);
+}
+
+// checks a regular expression, raises a dialog if bad
 bool CheckRegularExpression (const CString strRegexp, const int iOptions)
   {
 const char *error;
@@ -142,3 +185,44 @@ pcre * program;
   dlg.DoModal ();
   return false;   // bad
   }
+
+
+/*************************************************
+*    Find first set of multiple named strings    *
+*************************************************/
+
+// taken from pcre_get.c - with minor modifications
+
+/* This function allows for duplicate names in the table of named substrings.
+It returns the number of the first one that was set in a pattern match.
+
+Arguments:
+  code         the compiled regex
+  stringname   the name of the capturing substring
+  ovector      the vector of matched substrings
+
+Returns:       the number of the first that is set,
+               or the number of the last one if none are set,
+               or a negative number on error
+*/
+
+typedef unsigned char uschar;
+
+int
+njg_get_first_set(const pcre *code, const char *stringname, const int *ovector)
+{
+const real_pcre *re = (const real_pcre *)code;
+int entrysize;
+char *first, *last;
+uschar *entry;
+if ((re->options & (PCRE_DUPNAMES | PCRE_JCHANGED)) == 0)
+  return pcre_get_stringnumber(code, stringname);
+entrysize = pcre_get_stringtable_entries(code, stringname, &first, &last);
+if (entrysize <= 0) return entrysize;
+for (entry = (uschar *)first; entry <= (uschar *)last; entry += entrysize)
+  {
+  int n = (entry[0] << 8) + entry[1];
+  if (ovector[n*2] >= 0) return n;
+  }
+return (first[0] << 8) + first[1];
+}
