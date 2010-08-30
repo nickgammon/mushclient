@@ -10,8 +10,6 @@
 
 #include "scripting\errors.h"
 
-#include "pcre\config.h"
-
 #define PNG_NO_CONSOLE_IO
 #include "png\png.h"
 
