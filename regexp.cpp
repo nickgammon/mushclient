@@ -30,6 +30,28 @@ t_regexp::~t_regexp ()
     pcre_free (m_extra); 
 }
 
+void t_regexp::AcquirePattern(pcre* program, pcre_extra* extra)
+{
+  this->ReleasePattern();
+  this->m_program = program;
+  this->m_extra = extra;
+  pcre_refcount(program, 1);
+}
+
+void t_regexp::ReleasePattern()
+{
+  if (!this->m_program)
+    return;
+
+  if (pcre_refcount(this->m_program, -1) != 0)
+    {
+    pcre_free(this->m_program);
+    this->m_program = NULL;
+    pcre_free(this->m_extra);
+    this->m_extra = NULL;
+    }
+}
+
 t_regexp * regcomp(const char *exp, const int options)
 {
   const char *error = NULL;

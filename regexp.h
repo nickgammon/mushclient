@@ -47,6 +47,10 @@ public:
   LONGLONG iTimeTaken;
 
   int m_iExecutionError;  // error code if failed execution
+
+private:
+  void AcquirePattern(pcre* program, pcre_extra* extra);
+  void ReleasePattern();
 };
 
 t_regexp * regcomp(const char *exp, const int options = 0);
