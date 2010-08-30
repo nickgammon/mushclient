@@ -1,7 +1,7 @@
 --[[
 	Licensed according to the included 'LICENSE' document
 	Author: Thomas Harning Jr <harningt@gmail.com>
-]]
+--]]
 local jsonutil = require("json.util")
 
 local table_concat = table.concat
@@ -30,7 +30,7 @@ strict = nil
 	Must have parameters in the 'callData' field of the metatable
 		name == name of the function call
 		parameters == array of parameters to encode
-]]
+--]]
 function getEncoder(options)
 	options = options and util_merge({}, defaultOptions, options) or defaultOptions
 	local function encodeCall(value, state)

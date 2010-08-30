@@ -1,7 +1,7 @@
 --[[
 	Licensed according to the included 'LICENSE' document
 	Author: Thomas Harning Jr <harningt@gmail.com>
-]]
+--]]
 local lpeg = require("lpeg")
 
 local error = error
@@ -110,7 +110,7 @@ Options:
 	object => object decode options
 	initialObject => whether or not to require the initial object to be a table/array
 	allowUndefined => whether or not to allow undefined values
-]]
+--]]
 function getDecoder(mode)
 	mode = mode == true and strict or mode or default
 	local decoder = mode == nil and defaultDecoder or prebuilt_decoders[mode]

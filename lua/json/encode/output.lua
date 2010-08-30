@@ -1,7 +1,7 @@
 --[[
 	Licensed according to the included 'LICENSE' document
 	Author: Thomas Harning Jr <harningt@gmail.com>
-]]
+--]]
 local type = type
 local assert, error = assert, error
 local table_concat = table.concat
@@ -27,7 +27,7 @@ local TABLE_INNER_WRITER = ""
 	nextValues can output a max of two values to throw into the data stream
 	expected to be called until nil is first return value
 	value separator should either be attached to v1 or in innerValue
-]]
+--]]
 local function defaultTableCompositeWriter(nextValues, beginValue, closeValue, innerValue, composite, encode, state)
 	if type(nextValues) == 'string' then
 		local fun = output_utility.prepareEncoder(defaultTableCompositeWriter, nextValues, innerValue, TABLE_VALUE_WRITER, TABLE_INNER_WRITER)

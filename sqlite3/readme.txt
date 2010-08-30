@@ -1,6 +1,6 @@
 Sqlite3 built as follows:
 
-1. Download recent version from http://www.sqlite.org/sqlite-amalgamation-3_7_0_1.zip
+1. Download recent version from http://www.sqlite.org/sqlite-amalgamation-3_7_2.zip
 
 2. Unzip and untar the file
 
@@ -14,7 +14,7 @@ sqlite3ext.h
 3. Edit: sqlite3.c and add the following lines to the start of it:
 
 // These first few lines added by NJG
-// version 3.7.0.1
+// version 3.7.2
 #  pragma warning(disable: 4244)
 #  pragma warning(disable: 4018)
 #  pragma warning(disable: 4049)

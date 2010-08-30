@@ -81,9 +81,9 @@ typedef enum Opcode {
 #define HASCHARSET	(ISFENVOFF << 1)
 
 static const byte opproperties[] = {
-  /* IAny */		ISCHECK,
-  /* IChar */		ISCHECK,
-  /* ISet */		ISCHECK | HASCHARSET,
+  /* IAny */		ISCHECK | ISJMP,
+  /* IChar */		ISCHECK | ISJMP,
+  /* ISet */		ISCHECK | ISJMP | HASCHARSET,
   /* ISpan */		ISNOFAIL | HASCHARSET,
   /* IRet */		0,
   /* IEnd */		0,
@@ -127,7 +127,7 @@ static const Instruction giveup = {{IGiveup, 0, 0}};
 #define MAXOFF		0xF
 
 #define isprop(op,p)	(opproperties[(op)->i.code] & (p))
-#define isjmp(op)	isprop(op, ISJMP)
+#define isjmp(op)	(isprop(op, ISJMP) && (op)->i.offset != 0)
 #define iscapture(op) 	isprop(op, ISCAPTURE)
 #define ischeck(op)	(isprop(op, ISCHECK) && (op)->i.offset == 0)
 #define istest(op)	(isprop(op, ISCHECK) && (op)->i.offset != 0)
@@ -1287,15 +1287,8 @@ static int unm_l (lua_State *L) {
 static int pattand_l (lua_State *L) {
   int l1;
   Instruction *p1 = getpatt(L, 1, &l1);
-  CharsetTag st1;
   if (isfail(p1) || issucc(p1))
     lua_pushvalue(L, 1);  /* &fail == fail; &true == true */
-  else if (tocharset(p1, &st1) == ISCHARSET) {
-    Instruction *p = newpatt(L, CHARSETINSTSIZE + 1);
-    setinst(p, ISet, CHARSETINSTSIZE + 1);
-    loopset(i, p[1].buff[i] = ~st1.cs[i]);
-    setinst(p + CHARSETINSTSIZE, IFail, 0);
-  }
   else {
     Instruction *p = newpatt(L, 1 + l1 + 2);
     setinst(p++, IChoice, 1 + l1 + 1);

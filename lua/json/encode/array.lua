@@ -1,7 +1,7 @@
 --[[
 	Licensed according to the included 'LICENSE' document
 	Author: Thomas Harning Jr <harningt@gmail.com>
-]]
+--]]
 local jsonutil = require("json.util")
 
 local type = type
@@ -31,7 +31,7 @@ strict = nil
 		  is an array... may result in false positives (should check some values
 		  before it)
 		* It is a contiguous list of values with zero string-based keys
-]]
+--]]
 function isArray(val, options)
 	local externalIsArray = options and options.isArray
 
@@ -65,7 +65,7 @@ end
 --[[
 	Cleanup function to unmark a value as in the encoding process and return
 	trailing results
-]]
+--]]
 local function unmarkAfterEncode(tab, state, ...)
 	state.already_encoded[tab] = nil
 	return ...
