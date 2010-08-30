@@ -58,13 +58,10 @@ t_regexp * regcomp(const char *exp, const int options)
   return re;
 }
 
-int regexec(register t_regexp *prog, 
+int regexec(register t_regexp *prog,
             register const char *string,
             const int start_offset)
-  {
-int options = App.m_bRegexpMatchEmpty ? 0 : PCRE_NOTEMPTY;    // don't match on an empty string
-int count;
-
+{
   // exit if no regexp program to process (possibly because of previous error)
   if (prog->m_program == NULL)
     return false;
@@ -76,16 +73,15 @@ int count;
   // allocate enough memory
   vector<int> offsets ((capturecount + 1) * 3);  // we always get offset 0 - the whole match
 
-  LARGE_INTEGER start, 
-                finish;
-
-
+  LARGE_INTEGER start, finish;
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
 
+  int options = App.m_bRegexpMatchEmpty ? 0 : PCRE_NOTEMPTY; // don't match on an empty string
+
   pcre_callout = NULL;
-  count = pcre_exec(prog->m_program, prog->m_extra, string, strlen (string),
-                    start_offset, options, &offsets [0], offsets.size ());
+  int count = pcre_exec(prog->m_program, prog->m_extra, string, strlen (string),
+                        start_offset, options, &offsets [0], offsets.size ());
 
   if (App.m_iCounterFrequency)
     {
@@ -93,33 +89,33 @@ int count;
     prog->iTimeTaken += finish.QuadPart - start.QuadPart;
     }
 
-  prog->m_iMatchAttempts++;  // how many times did we try to match?
+  prog->m_iMatchAttempts += 1; // how many times did we try to match?
 
   if (count == PCRE_ERROR_NOMATCH)
-    return false;  // no match  - don't save matching string etc.
+    return false; // no match - don't save matching string etc.
 
-  //  otherwise free program as an indicator that we can't keep trying to do this one
+  // cotherwise free program as an indicator that we can't keep trying to do this one
   if (count <= 0)
     {
     pcre_free (prog->m_program);
     prog->m_program = NULL;
     pcre_free (prog->m_extra);
     prog->m_extra = NULL;
+
     prog->m_iExecutionError = count; // remember reason
     ThrowErrorException (TFormat ("Error executing regular expression: %s",
                          Convert_PCRE_Runtime_Error (count)));
     }
 
-
   // if, and only if, we match, we will save the matching string, the count
   // and offsets, so we can extract the wildcards later on
-
   prog->m_sTarget = string;  // for extracting wildcards
   prog->m_iCount = count;    // ditto
   prog->m_vOffsets.clear (); 
   copy (offsets.begin (), offsets.end (), back_inserter (prog->m_vOffsets));
+
   return true; // match
-  }
+}
 
 // returns a numbered wildcard
 string t_regexp::GetWildcard (const int iNumber) const
