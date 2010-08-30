@@ -156,16 +156,18 @@ static int bit_tostring (lua_State *L)
 
 
 static const struct luaL_reg bitlib[] = {
-  {"neg",   bit_bnot},         // was bnot in Reuben's library
+
+  {"ashr",  bit_arshift},      // was arshift in Reuben's library
   {"band",  bit_band},
   {"bor",   bit_bor},
-  {"xor",   bit_bxor},         // was bxor in Reuben's library
+  {"mod",   bit_mod},          // new
+  {"neg",   bit_bnot},         // was bnot in Reuben's library
   {"shl",   bit_lshift},       // was lshift in Reuben's library
   {"shr",   bit_rshift},       // was rshift in Reuben's library
-  {"ashr",  bit_arshift},      // was arshift in Reuben's library
-  {"mod",   bit_mod},          // new
   {"tonumber", bit_tonumber},  // new by Nick
   {"tostring", bit_tostring},  // new by Nick
+  {"xor",   bit_bxor},         // was bxor in Reuben's library
+
   {NULL, NULL}
 };
 

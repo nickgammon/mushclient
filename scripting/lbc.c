@@ -224,6 +224,7 @@ static int Bneg(lua_State *L)
 
 static const luaL_reg R[] =
 {
+
 	{ "__add",	Badd	},
 	{ "__div",	Bdiv	},
 	{ "__eq",	Beq	},
@@ -247,6 +248,7 @@ static const luaL_reg R[] =
 	{ "sqrt",	Bsqrt	},
 	{ "sub",	Bsub	},
 	{ "tostring",	Bstring	},
+
 	{ NULL,		NULL	}
 };
 
