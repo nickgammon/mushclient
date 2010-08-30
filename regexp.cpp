@@ -22,7 +22,8 @@ t_regexp::t_regexp ()
     m_iCount(0), m_iMatchAttempts(0), m_iExecutionError(0)
 {}
 
-t_regexp::~t_regexp () { 
+t_regexp::~t_regexp ()
+{
   if (m_program) 
     pcre_free (m_program); 
   if (m_extra) 
@@ -207,22 +208,23 @@ Returns:       the number of the first that is set,
 */
 
 typedef unsigned char uschar;
-
-int
-njg_get_first_set(const pcre *code, const char *stringname, const int *ovector)
+int njg_get_first_set(const pcre *code, const char *stringname, const int *ovector)
 {
-const real_pcre *re = (const real_pcre *)code;
-int entrysize;
-char *first, *last;
-uschar *entry;
-if ((re->options & (PCRE_DUPNAMES | PCRE_JCHANGED)) == 0)
-  return pcre_get_stringnumber(code, stringname);
-entrysize = pcre_get_stringtable_entries(code, stringname, &first, &last);
-if (entrysize <= 0) return entrysize;
-for (entry = (uschar *)first; entry <= (uschar *)last; entry += entrysize)
-  {
-  int n = (entry[0] << 8) + entry[1];
-  if (ovector[n*2] >= 0) return n;
-  }
-return (first[0] << 8) + first[1];
+  const real_pcre *re = (const real_pcre *)code;
+  if ((re->options & (PCRE_DUPNAMES | PCRE_JCHANGED)) == 0)
+    return pcre_get_stringnumber(code, stringname);
+
+  char *first, *last;
+  int entrysize = pcre_get_stringtable_entries(code, stringname, &first, &last);
+  if (entrysize <= 0)
+    return entrysize;
+
+  for (uschar* entry = (uschar*)first; entry <= (uschar*)last; entry += entrysize)
+    {
+    int n = (entry[0] << 8) + entry[1];
+    if (ovector[n*2] >= 0)
+      return n;
+    }
+
+  return (first[0] << 8) + first[1];
 }
