@@ -1,7 +1,7 @@
 --[[
 	Licensed according to the included 'LICENSE' document
 	Author: Thomas Harning Jr <harningt@gmail.com>
-]]
+--]]
 local lpeg = require("lpeg")
 local tonumber = tonumber
 local merge = require("json.util").merge
@@ -43,7 +43,7 @@ strict = {
 	   frac: match fraction portion (.0)
 	    exp: match exponent portion  (e1)
 	DEFAULT: nan, inf, frac, exp
-]]
+--]]
 local function buildMatch(options)
 	options = options and merge({}, defaultOptions, options) or defaultOptions
 	local ret = int

@@ -1,7 +1,7 @@
 --[[
 	Licensed according to the included 'LICENSE' document
 	Author: Thomas Harning Jr <harningt@gmail.com>
-]]
+--]]
 local pairs = pairs
 local assert = assert
 
@@ -22,14 +22,14 @@ strict = nil
 --[[
 	Cleanup function to unmark a value as in the encoding process and return
 	trailing results
-]]
+--]]
 local function unmarkAfterEncode(tab, state, ...)
 	state.already_encoded[tab] = nil
 	return ...
 end
 --[[
 	Encode a table as a JSON Object ( keys = strings, values = anything else )
-]]
+--]]
 local function encodeTable(tab, options, state)
 	-- Make sure this value hasn't been encoded yet
 	state.check_unique(tab)

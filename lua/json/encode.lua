@@ -1,7 +1,7 @@
 --[[
 	Licensed according to the included 'LICENSE' document
 	Author: Thomas Harning Jr <harningt@gmail.com>
-]]
+--]]
 local type = type
 local assert, error = assert, error
 local getmetatable, setmetatable = getmetatable, setmetatable
@@ -21,7 +21,7 @@ module("json.encode")
 	List of encoding modules to load.
 	Loaded in sequence such that earlier encoders get priority when
 	duplicate type-handlers exist.
-]]
+--]]
 local modulesToLoad = {
 	"strings",
 	"number",
@@ -76,7 +76,7 @@ end
 
 --[[
 	Encode a value with a given encoding map and state
-]]
+--]]
 local function encodeWithMap(value, map, state)
 	local t = type(value)
 	local encoderList = assert(map[t], "Failed to encode value, unhandled type: " .. t)
@@ -110,7 +110,7 @@ end
 	Retreive an initial encoder instance based on provided options
 	the initial encoder is responsible for initializing state
 		State has at least these values configured: encode, check_unique, already_encoded
-]]
+--]]
 function getEncoder(options)
 	options = options and util_merge({}, defaultOptions, options) or defaultOptions
 	local encode = getBaseEncoder(options)
@@ -147,7 +147,7 @@ end
 	encoder
 	check_unique -- used by inner encoders to make sure value is unique
 	already_encoded -- used to unmark a value as unique
-]]
+--]]
 function encode(data, options)
 	return getEncoder(options)(data)
 end

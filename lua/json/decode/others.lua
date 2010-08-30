@@ -1,7 +1,7 @@
 --[[
 	Licensed according to the included 'LICENSE' document
 	Author: Thomas Harning Jr <harningt@gmail.com>
-]]
+--]]
 local lpeg = require("lpeg")
 local jsonutil = require("json.util")
 local util = require("json.decode.util")

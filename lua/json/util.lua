@@ -1,7 +1,7 @@
 --[[
 	Licensed according to the included 'LICENSE' document
 	Author: Thomas Harning Jr <harningt@gmail.com>
-]]
+--]]
 local type = type
 local print = print
 local tostring = tostring
@@ -73,7 +73,7 @@ local ArrayMT = {}
 	Return's true if the metatable marks it as an array..
 	Or false if it has no array component at all
 	Otherwise nil to get the normal detection component working
-]]
+--]]
 function IsArray(value)
 	if type(value) ~= 'table' then return false end
 	local ret = getmetatable(value) == ArrayMT
