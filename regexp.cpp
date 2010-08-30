@@ -132,15 +132,14 @@ string t_regexp::GetWildcard (const int iNumber) const
 string t_regexp::GetWildcard (const string sName) const
 {
   int iNumber;
+
   if (IsStringNumber (sName))
     iNumber = atoi (sName.c_str ());
+  else if (m_program == NULL)
+    iNumber = PCRE_ERROR_NOSUBSTRING;
   else
-    {
-    if (m_program == NULL)
-      iNumber = PCRE_ERROR_NOSUBSTRING;
-    else
-      iNumber = njg_get_first_set (m_program, sName.c_str (), &m_vOffsets [0]);
-    }
+    iNumber = njg_get_first_set (m_program, sName.c_str (), &m_vOffsets [0]);
+
   return GetWildcard (iNumber);
 }
 
