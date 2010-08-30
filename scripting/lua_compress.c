@@ -541,17 +541,17 @@ static int l_split (lua_State *L) {
 static const struct luaL_reg compresslib [] = 
   {
 
+  {"base64decode", mydecodebase64},
+  {"base64encode", myencodebase64},
   {"compress", mycompress},
   {"decompress", mydecompress},
-  {"hash", myhash},
-  {"sha256", utils_sha256},
-  {"md5", utils_md5},
-  {"tohex", utils_tohex},
   {"fromhex", utils_fromhex},
-  {"base64encode", myencodebase64},
-  {"base64decode", mydecodebase64},
+  {"hash", myhash},
+  {"md5", utils_md5},
   {"readdir", getdirectory},
+  {"sha256", utils_sha256},
   {"split", l_split},
+  {"tohex", utils_tohex},
 
   {NULL, NULL}
   };

@@ -104,15 +104,17 @@ static int Lprogress_new(lua_State *L)
 
 
 static const luaL_reg progress_dialog_meta[] = {
-  {"status",     Lprogress_setstatus},  // set status description
-  {"range",      Lprogress_setrange},   // set range
-  {"position",   Lprogress_setposition},// set position
-  {"checkcancel",Lprogress_checkcancel},// cancelled?
-  {"setstep",    Lprogress_setstep},    // set step amount?
-  {"step",       Lprogress_stepit},     // step it
-  {"close",      Lprogress_gc},         // close dialog (same as garbage-collect)
+
   {"__gc",       Lprogress_gc},
   {"__tostring", Lprogress_tostring},
+  {"checkcancel",Lprogress_checkcancel},// cancelled?
+  {"close",      Lprogress_gc},         // close dialog (same as garbage-collect)
+  {"position",   Lprogress_setposition},// set position
+  {"range",      Lprogress_setrange},   // set range
+  {"setstep",    Lprogress_setstep},    // set step amount?
+  {"status",     Lprogress_setstatus},  // set status description
+  {"step",       Lprogress_stepit},     // step it
+
   {NULL, NULL}
 };
 

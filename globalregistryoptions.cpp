@@ -134,13 +134,12 @@ int CMUSHclientApp::PopulateDatabase (void)
         strcmp (AlphaGlobalOptionsTable [i].pName, "FixedPitchFont") == 0)
        AlphaGlobalOptionsTable [i].sDefault = (LPCTSTR) m_strFixedPitchFont;
     
-    // For Willfa, see below
-    if (strcmp (AlphaGlobalOptionsTable [i].pName, "StateFilesDirectory") == 0)
-       AlphaGlobalOptionsTable [i].sDefault = (LPCTSTR) (App.m_strPluginsDirectory + "state\\");
+
+    CString strDefault = AlphaGlobalOptionsTable [i].sDefault;
 
     CString strValue = GetProfileString ("Global prefs",  
-                                AlphaGlobalOptionsTable [i].pName, 
-                                AlphaGlobalOptionsTable [i].sDefault);
+                                        AlphaGlobalOptionsTable [i].pName, 
+                                        strDefault);     
 
     strValue.Replace ("'", "''");  // fix up quotes
 
@@ -180,17 +179,20 @@ void CMUSHclientApp::LoadGlobalsFromDatabase (void)
     {
     const char * p = (const char *) this +  AlphaGlobalOptionsTable [i].iOffset;
 
+    CString strDefault = AlphaGlobalOptionsTable [i].sDefault;
+    if (strcmp (AlphaGlobalOptionsTable [i].pName, "StateFilesDirectory") == 0)
+      {
+      strDefault =  App.m_strPluginsDirectory;
+      strDefault += "state\\";
+      }
+
     db_simple_query ((LPCTSTR) CFormat (
           "SELECT value FROM prefs WHERE name = '%s'", (LPCTSTR)  AlphaGlobalOptionsTable [i].pName), 
           db_value, 
           true,
-          AlphaGlobalOptionsTable [i].sDefault);
+          strDefault);
 
     * (CString *) p = db_value.c_str ();
-
-   // for Willfa - make state directory default to plugins directory (whatever that is now) with state\ at the end
-    if (strcmp (AlphaGlobalOptionsTable [i].pName, "StateFilesDirectory") == 0)
-       AlphaGlobalOptionsTable [i].sDefault = (LPCTSTR) (App.m_strPluginsDirectory + "state\\");
 
     };
 

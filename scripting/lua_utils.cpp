@@ -1397,32 +1397,32 @@ static int getfontfamilies (lua_State *L)
 static const struct luaL_reg xmllib [] = 
   {
 
-  {"msgbox",        msgbox},       // msgbox - not Unicode
-  {"umsgbox",       umsgbox},      // msgbox - UTF8
-  {"inputbox",      inputbox},
-  {"editbox",       editbox},
-  {"choose",        choose},
-  {"listbox",       listbox},
-  {"multilistbox",  multilistbox},
-  {"xmlread",       xmlread},
-  {"functionlist",  functionlist},
-  {"functionargs",  functionargs},
-  {"filepicker",    filepicker},
-  {"directorypicker", directorypicker},
-  {"fontpicker",    fontpicker},
-  {"metaphone",     metaphone},
-  {"info",          info},
-  {"spellcheckdialog", spellcheckdialog},
-  {"edit_distance", edit_distance},
-  {"utf8encode",    utf8encode}, 
-  {"utf8decode",    utf8decode}, 
-  {"utf8valid",     utf8valid},
-  {"utf8sub",       utf8sub},
-  {"appendtonotepad", appendtonotepad},
   {"activatenotepad", activatenotepad},
-  {"showdebugstatus", showdebugstatus},
-  {"getfontfamilies", getfontfamilies},
+  {"appendtonotepad", appendtonotepad},
   {"callbackslist",  callbackslist},
+  {"choose",        choose},
+  {"directorypicker", directorypicker},
+  {"edit_distance", edit_distance},
+  {"editbox",       editbox},
+  {"filepicker",    filepicker},
+  {"fontpicker",    fontpicker},
+  {"functionargs",  functionargs},
+  {"functionlist",  functionlist},
+  {"getfontfamilies", getfontfamilies},
+  {"info",          info},
+  {"inputbox",      inputbox},
+  {"listbox",       listbox},
+  {"metaphone",     metaphone},
+  {"msgbox",        msgbox},       // msgbox - not Unicode
+  {"multilistbox",  multilistbox},
+  {"showdebugstatus", showdebugstatus},
+  {"spellcheckdialog", spellcheckdialog},
+  {"umsgbox",       umsgbox},      // msgbox - UTF8
+  {"utf8decode",    utf8decode}, 
+  {"utf8encode",    utf8encode}, 
+  {"utf8sub",       utf8sub},
+  {"utf8valid",     utf8valid},
+  {"xmlread",       xmlread},
 
   {NULL, NULL}
   };
