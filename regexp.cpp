@@ -31,21 +31,16 @@ t_regexp::~t_regexp ()
 }
 
 t_regexp * regcomp(const char *exp, const int options)
-  {
-const char *error;
-int erroroffset;
-t_regexp * re;
-pcre * program;
-pcre_extra * extra;
+{
+  const char *error = NULL;
+  int erroroffset;
 
-  program = pcre_compile(exp, options, &error, &erroroffset, NULL);
-
+  pcre* program = pcre_compile(exp, options, &error, &erroroffset, NULL);
   if (!program)
     ThrowErrorException("Failed: %s at offset %d", Translate (error), erroroffset);
 
   // study it for speed purposes
-  extra =  pcre_study(program, 0, &error);        
-
+  pcre_extra* extra = pcre_study(program, 0, &error);
   if (error)
     {
     pcre_free (program);
@@ -53,16 +48,15 @@ pcre_extra * extra;
     }
 
   // we need to allocate memory for the substring offsets
-  re = new t_regexp;
+  t_regexp* re = new t_regexp;
 
   // remember program and extra stuff
   re->m_program = program;
   re->m_extra = extra;
   re->m_iExecutionError = 0; // no error now
 
-
   return re;
-  }
+}
 
 int regexec(register t_regexp *prog, 
             register const char *string,
