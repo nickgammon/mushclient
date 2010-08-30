@@ -329,14 +329,14 @@ SetOverwrite ifnewer
    File "..\lua\json.lua"
 
   CreateDirectory "$INSTDIR\lua\json"
-  SetOutPath $INSTDIR\lua
+  SetOutPath $INSTDIR\lua\json
   
     File "..\lua\json\encode.lua"
     File "..\lua\json\decode.lua"
-    File "..\lua\json\encode.lua"
+    File "..\lua\json\util.lua"
   
   CreateDirectory "$INSTDIR\lua\json\encode"
-  SetOutPath $INSTDIR\lua\encode
+  SetOutPath $INSTDIR\lua\json\encode
   
     File "..\lua\json\encode\array.lua"
     File "..\lua\json\encode\calls.lua"
@@ -348,7 +348,7 @@ SetOverwrite ifnewer
     File "..\lua\json\encode\strings.lua"
   
   CreateDirectory "$INSTDIR\lua\json\decode"
-  SetOutPath $INSTDIR\lua\decode
+  SetOutPath $INSTDIR\lua\json\decode
   
     File "..\lua\json\decode\array.lua"
     File "..\lua\json\decode\calls.lua"
