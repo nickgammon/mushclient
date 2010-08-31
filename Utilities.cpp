@@ -13,6 +13,8 @@
 #define PNG_NO_CONSOLE_IO
 #include "png\png.h"
 
+#include "dialogs\RegexpProblemDlg.h"
+
 #ifdef _DEBUG
 //#define new DEBUG_NEW
 #undef THIS_FILE
@@ -2508,6 +2510,34 @@ static char sPathName [_MAX_PATH];
   return sPathName;  
 
   } // end of Make_Absolute_Path
+
+// checks a regular expression, raises a dialog if bad
+bool CheckRegularExpression (const CString strRegexp, const int iOptions)
+{
+  const char* error;
+  int erroroffset;
+  if (t_regexp::CheckPattern(strRegexp, iOptions, &error, &erroroffset))
+    return true; // It's valid!
+
+  CRegexpProblemDlg dlg;
+  dlg.m_strErrorMessage = Translate (error);
+  dlg.m_strErrorMessage += ".";   // end the sentence
+
+  // make first character upper-case, so it looks like a sentence. :)
+  dlg.m_strErrorMessage.SetAt (0, toupper (dlg.m_strErrorMessage [0]));
+
+  dlg.m_iColumn = erroroffset + 1;
+  dlg.m_strColumn = TFormat ("Error occurred at column %i.", dlg.m_iColumn);
+
+  dlg.m_strText = strRegexp;
+  dlg.m_strText += ENDLINE;
+  if (erroroffset > 0)
+    dlg.m_strText += CString ('-', erroroffset - 1);
+  dlg.m_strText += '^';
+
+  dlg.DoModal ();
+  return false;   // bad
+}
 
 
 // i18n (Internationalization) stuff

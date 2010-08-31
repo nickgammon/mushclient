@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "MUSHclient.h"
 #include "doc.h"
-#include "dialogs\RegexpProblemDlg.h"
 
 #include "pcre\config.h"
 #include "pcre\pcre_internal.h"
@@ -203,34 +202,6 @@ bool t_regexp::CheckPattern (const char* pattern, const int iOptions,
     }
   else
     return false;
-}
-
-// checks a regular expression, raises a dialog if bad
-bool CheckRegularExpression (const CString strRegexp, const int iOptions)
-{
-  const char* error;
-  int erroroffset;
-  if (t_regexp::CheckPattern(strRegexp, iOptions, &error, &erroroffset))
-    return true; // It's valid!
-
-  CRegexpProblemDlg dlg;
-  dlg.m_strErrorMessage = Translate (error);
-  dlg.m_strErrorMessage += ".";   // end the sentence
-
-  // make first character upper-case, so it looks like a sentence. :)
-  dlg.m_strErrorMessage.SetAt (0, toupper (dlg.m_strErrorMessage [0]));
-
-  dlg.m_iColumn = erroroffset + 1;
-  dlg.m_strColumn = TFormat ("Error occurred at column %i.", dlg.m_iColumn);
-
-  dlg.m_strText = strRegexp;
-  dlg.m_strText += ENDLINE;
-  if (erroroffset > 0)
-    dlg.m_strText += CString ('-', erroroffset - 1);
-  dlg.m_strText += '^';
-
-  dlg.DoModal ();
-  return false;   // bad
 }
 
 

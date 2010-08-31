@@ -58,6 +58,4 @@ private:
   void ReleasePattern();
 };
 
-bool CheckRegularExpression (const CString strRegexp, const int iOptions);
-
 #endif  // #ifndef __REGEXP_H

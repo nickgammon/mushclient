@@ -742,6 +742,7 @@ void metaphone (const char *name, char * metaph, int metalen);
 int EditDistance (const string source, const string target);
 
 const char * Make_Absolute_Path (CString strFileName);
+bool CheckRegularExpression (const CString strRegexp, const int iOptions);
 
 lua_State *MakeLuaState (void);
 
