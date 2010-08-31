@@ -2651,9 +2651,9 @@ void CPrefsP7::LoadDialog (CDialog * pDlg, CObject * pItem)
 
   if (alias_item->regexp && 
       alias_item->regexp->m_program == NULL && 
-      alias_item->regexp->m_iExecutionError < PCRE_ERROR_NOMATCH)
+      alias_item->regexp->LastError ())
     dlg->m_strRegexpError = 
-      TFormat ("Error: %s ", t_regexp::ErrorCodeToString (alias_item->regexp->m_iExecutionError));
+      TFormat ("Error: %s ", t_regexp::ErrorCodeToString (alias_item->regexp->LastError ()));
 
   // NB - also see MapDlg.cpp for alias processing
 
@@ -3493,9 +3493,9 @@ void CPrefsP8::LoadDialog (CDialog * pDlg, CObject * pItem)
 
   if (trigger_item->regexp && 
       trigger_item->regexp->m_program == NULL && 
-      trigger_item->regexp->m_iExecutionError < PCRE_ERROR_NOMATCH)
+      trigger_item->regexp->LastError ())
     dlg->m_strRegexpError = 
-      TFormat ("Error: %s ", t_regexp::ErrorCodeToString (trigger_item->regexp->m_iExecutionError));
+      TFormat ("Error: %s ", t_regexp::ErrorCodeToString (trigger_item->regexp->LastError ()));
 
   }   // end of CPrefsP8::LoadDialog
 

@@ -26,6 +26,8 @@ public:
   void Compile (const char* pattern, const int flags);
   bool Execute (const char* string, const int start_offset=0);
 
+  int LastError () const;
+
   // returns a wildcard by number
   string GetWildcard (const int iNumber) const;
   // returns a wildcard by name
@@ -52,14 +54,15 @@ public:
 
   LONGLONG iTimeTaken;
 
-  int m_iExecutionError;  // error code if failed execution
-
 private:
   void AcquirePattern(pcre* program, pcre_extra* extra);
   void ReleasePattern();
 
   // pairs of offsets from match
   vector<int> m_vOffsets;
+
+  // error code from last execution
+  int m_iExecutionError;
 };
 
 #endif  // #ifndef __REGEXP_H

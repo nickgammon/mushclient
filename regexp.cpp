@@ -132,6 +132,11 @@ bool t_regexp::Execute(register const char* string, const int start_offset)
   return true; // match
 }
 
+int t_regexp::LastError () const
+{
+  return this->m_iExecutionError;
+}
+
 // returns a numbered wildcard
 string t_regexp::GetWildcard (const int iNumber) const
 {
