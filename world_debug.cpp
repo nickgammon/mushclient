@@ -1081,7 +1081,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       if (pTrigger->regexp)
         {
         iTimeTaken += pTrigger->regexp->iTimeTaken;
-        nTotalMatchAttempts += pTrigger->regexp->m_iMatchAttempts;
+        nTotalMatchAttempts += pTrigger->regexp->MatchAttempts ();
         }
 
       nTotalMatches += pTrigger->nMatched;
@@ -1137,7 +1137,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       if (pAlias->regexp)
         {
         iTimeTaken += pAlias->regexp->iTimeTaken;
-        nTotalMatchAttempts += pAlias->regexp->m_iMatchAttempts;
+        nTotalMatchAttempts += pAlias->regexp->MatchAttempts ();
         }
 
       nTotalMatches += pAlias->nMatched;
@@ -2212,7 +2212,7 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
                         ((double) App.m_iCounterFrequency));
         }
 
-      DebugShow  (Translate ("Match attempts"), pTrigger->regexp->m_iMatchAttempts);
+      DebugShow  (Translate ("Match attempts"), pTrigger->regexp->MatchAttempts ());
       }
 
     Note ("");
@@ -2280,7 +2280,7 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
         DebugShowD (Translate ("Time to match"), ((double) pAlias->regexp->iTimeTaken) / 
                         ((double) App.m_iCounterFrequency));
         }
-      DebugShow  (Translate ("Match attempts"), pAlias->regexp->m_iMatchAttempts);
+      DebugShow  (Translate ("Match attempts"), pAlias->regexp->MatchAttempts ());
       }
 
     Note ("");

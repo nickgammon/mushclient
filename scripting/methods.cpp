@@ -2300,7 +2300,7 @@ CAlias * alias_item;
 
     case  31:
       if (alias_item->regexp)
-        SetUpVariantLong   (vaResult, alias_item->regexp->m_iMatchAttempts);
+        SetUpVariantLong   (vaResult, alias_item->regexp->MatchAttempts ());
       break;
 
     case 101: SetUpVariantString (vaResult, alias_item->wildcards [1].c_str ()); break;
@@ -2420,7 +2420,7 @@ CTrigger * trigger_item;
 
     case  38:
       if (trigger_item->regexp)
-        SetUpVariantLong   (vaResult, trigger_item->regexp->m_iMatchAttempts);
+        SetUpVariantLong   (vaResult, trigger_item->regexp->MatchAttempts ());
       break;
 
 #ifdef PANE

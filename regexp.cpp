@@ -190,6 +190,11 @@ int t_regexp::MatchedCapturesCount () const
   return this->m_iCount;
 }
 
+long t_regexp::MatchAttempts () const
+{
+  return this->m_iMatchAttempts;
+}
+
 int t_regexp::GetInfo (int info_type, void* out) const
 {
   return pcre_fullinfo(this->m_program, this->m_extra, info_type, out);

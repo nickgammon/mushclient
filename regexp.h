@@ -37,6 +37,7 @@ public:
   bool GetWildcardOffsets (const string& sName, int& iLeft, int& iRight) const;
 
   int MatchedCapturesCount () const;
+  long MatchAttempts () const;
 
   int GetInfo (int info_type, void* out) const;
 
@@ -44,7 +45,6 @@ public:
   static bool CheckPattern (const char* pattern, const int iOptions,
                             const char** error, int* errorOffset);
 
-  long m_iMatchAttempts;
   // the string we match on (to extract wildcards from)
   string m_sTarget;
   // the program itself
@@ -61,6 +61,12 @@ private:
 
   // error code from last execution
   int m_iExecutionError;
+
+  // TODO: Consider moving m_iMatchAttempts out of t_regexp and into a class that uses it,
+  // like CAlias and CTrigger. It's extra bookkeeping that t_regexp itself has no need for.
+
+  // number of times a match has been attempted
+  long m_iMatchAttempts;
 
   // count of matching wildcards
   int m_iCount;
