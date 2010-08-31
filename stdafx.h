@@ -936,3 +936,8 @@ typedef struct
   const char *  sFunction;			// name of function (eg. "WindowShow")
   const char *	sArgs;          // arguments (eg. "(Window, Showflag)")
   } tInternalFunctionsTable;
+
+// flag not in my version of the API
+#ifndef BIF_NEWDIALOGSTYLE
+  #define BIF_NEWDIALOGSTYLE 0x00000040
+#endif 

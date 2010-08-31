@@ -617,9 +617,6 @@ int __stdcall BrowseCallbackProc(
 
 extern CString strStartingDirectory;
 
-// flag not in my version of the API
-#define BIF_NEWDIALOGSTYLE 0x00000040
-
 bool CPlugin::SaveState (const bool bScripted)
   {
 

@@ -8231,6 +8231,9 @@ void CPrefsP23::OnFileDirBrowse()
 		bi.pszDisplayName = pszBuffer;
 		bi.lpszTitle = "Save chat files folder";
 		bi.ulFlags = BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS;
+    // if possible, let them create one
+    if (!bWine)  
+	  	bi.ulFlags |= BIF_NEWDIALOGSTYLE | BIF_EDITBOX;     // requires CoInitialize
 		bi.lpfn = BrowseCallbackProc;
 		bi.lParam = 0;
   	GetDlgItemText(IDC_CHAT_SAVE_DIRECTORY, strStartingDirectory);
