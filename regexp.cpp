@@ -132,6 +132,11 @@ bool t_regexp::Execute(register const char* string, const int start_offset)
   return true; // match
 }
 
+string t_regexp::LastTarget () const
+{
+  return this->m_sTarget;
+}
+
 int t_regexp::LastError () const
 {
   return this->m_iExecutionError;

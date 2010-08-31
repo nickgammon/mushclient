@@ -2268,7 +2268,7 @@ CAlias * alias_item;
 
     case  25: // last matching string
       if (alias_item->regexp)      
-        SetUpVariantString   (vaResult, alias_item->regexp->m_sTarget.c_str ());
+        SetUpVariantString   (vaResult, alias_item->regexp->LastTarget ().c_str ());
       else
         SetUpVariantString   (vaResult, "");
       break;
@@ -2390,7 +2390,7 @@ CTrigger * trigger_item;
 
     case  32: // last matching string
       if (trigger_item->regexp)      
-        SetUpVariantString   (vaResult, trigger_item->regexp->m_sTarget.c_str ());
+        SetUpVariantString   (vaResult, trigger_item->regexp->LastTarget ().c_str ());
       else
         SetUpVariantString   (vaResult, "");
       break;

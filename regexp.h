@@ -26,6 +26,7 @@ public:
   void Compile (const char* pattern, const int flags);
   bool Execute (const char* string, const int start_offset=0);
 
+  string LastTarget () const;
   int LastError () const;
 
   // returns a wildcard by number
@@ -45,8 +46,6 @@ public:
   static bool CheckPattern (const char* pattern, const int iOptions,
                             const char** error, int* errorOffset);
 
-  // the string we match on (to extract wildcards from)
-  string m_sTarget;
   // the program itself
   pcre * m_program;
 
@@ -55,6 +54,9 @@ public:
 private:
   void AcquirePattern(pcre* program, pcre_extra* extra);
   void ReleasePattern();
+
+  // the string we last matched on (to extract wildcards from)
+  string m_sTarget;
 
   // pairs of offsets from match
   vector<int> m_vOffsets;
