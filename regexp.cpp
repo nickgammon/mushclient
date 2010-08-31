@@ -78,10 +78,6 @@ void t_regexp::Compile(const char* pattern, const int flags)
 
 bool t_regexp::Execute(register const char* string, const int start_offset)
 {
-  // exit if no regexp program to process (possibly because of previous error)
-  if (this->m_program == NULL)
-    return false;
-
   // inspired by a suggestion by Twisol (to remove a hard-coded limit on the number of wildcards)
   int capturecount = 0;
   // how many captures did we get?
@@ -157,8 +153,6 @@ string t_regexp::GetWildcard (const string sName) const
 
   if (IsStringNumber (sName))
     iNumber = atoi (sName.c_str ());
-  else if (m_program == NULL)
-    iNumber = PCRE_ERROR_NOSUBSTRING;
   else
     iNumber = njg_get_first_set (m_program, sName.c_str (), &m_vOffsets [0]);
 
@@ -179,9 +173,6 @@ bool t_regexp::GetWildcardOffsets (const int iNumber, int& iLeft, int& iRight) c
 
 bool t_regexp::GetWildcardOffsets (const string& sName, int& iLeft, int& iRight) const
 {
-  if (!this->m_program)
-    return false;
-
   return GetWildcardOffsets (
     njg_get_first_set (this->m_program, sName.c_str (), &m_vOffsets [0]),
     iLeft, iRight);
