@@ -485,7 +485,7 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
         int j = n * 2;
         const unsigned char * name = tabptr + 2;
         // if duplicates were possible then ...
-        if ((regexp->m_program->options & (PCRE_DUPNAMES | PCRE_JCHANGED)) != 0)
+        if (regexp->DupNamesAllowed ())
           {
           // this code is to ensure that we don't find a match (eg. mob = Kobold)
           // and then if duplicates were allowed, replace Kobold with false.

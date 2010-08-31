@@ -2277,7 +2277,7 @@ CAlias * alias_item;
     case  27: SetUpVariantBool   (vaResult, alias_item->dispid != DISPID_UNKNOWN); break;
 
     case  28: 
-      if (alias_item->regexp && alias_item->regexp->m_program == NULL)      
+      if (alias_item->regexp)
         SetUpVariantLong   (vaResult, alias_item->regexp->LastError ());
       else
         SetUpVariantLong   (vaResult, 0);
@@ -2397,7 +2397,7 @@ CTrigger * trigger_item;
     case  33: SetUpVariantBool   (vaResult, trigger_item->bExecutingScript); break;
     case  34: SetUpVariantBool   (vaResult, trigger_item->dispid != DISPID_UNKNOWN); break;
     case  35: 
-      if (trigger_item->regexp && trigger_item->regexp->m_program == NULL)      
+      if (trigger_item->regexp)
         SetUpVariantLong   (vaResult, trigger_item->regexp->LastError ());
       else
         SetUpVariantLong   (vaResult, 0);

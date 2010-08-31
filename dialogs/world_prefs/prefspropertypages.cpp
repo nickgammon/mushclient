@@ -2649,8 +2649,7 @@ void CPrefsP7::LoadDialog (CDialog * pDlg, CObject * pItem)
   dlg->m_pAliasMap = &m_doc->m_AliasMap;
   dlg->m_current_alias = alias_item;
 
-  if (alias_item->regexp && 
-      alias_item->regexp->m_program == NULL && 
+  if (alias_item->regexp &&
       alias_item->regexp->LastError ())
     dlg->m_strRegexpError = 
       TFormat ("Error: %s ", t_regexp::ErrorCodeToString (alias_item->regexp->LastError ()));
@@ -3492,7 +3491,6 @@ void CPrefsP8::LoadDialog (CDialog * pDlg, CObject * pItem)
   dlg->m_iColourChangeType = trigger_item->iColourChangeType;
 
   if (trigger_item->regexp && 
-      trigger_item->regexp->m_program == NULL && 
       trigger_item->regexp->LastError ())
     dlg->m_strRegexpError = 
       TFormat ("Error: %s ", t_regexp::ErrorCodeToString (trigger_item->regexp->LastError ()));

@@ -198,6 +198,21 @@ int t_regexp::GetInfo (int info_type, void* out) const
   return pcre_fullinfo(this->m_program, this->m_extra, info_type, out);
 }
 
+bool t_regexp::DupNamesAllowed () const
+{
+  unsigned long int options = 0;
+  this->GetInfo(PCRE_INFO_OPTIONS, &options);
+  if (options & PCRE_DUPNAMES)
+    return true;
+
+  int jchanged = false;
+  this->GetInfo(PCRE_INFO_JCHANGED, &jchanged);
+  if (jchanged)
+    return true;
+
+  return false;
+}
+
 const char* t_regexp::ErrorCodeToString(const int code)
 {
   const char* error_msg = NULL;

@@ -43,13 +43,11 @@ public:
   LONGLONG TimeTaken () const;
 
   int GetInfo (int info_type, void* out) const;
+  bool DupNamesAllowed () const;
 
   static const char* ErrorCodeToString(const int code);
   static bool CheckPattern (const char* pattern, const int iOptions,
                             const char** error, int* errorOffset);
-
-  // the program itself
-  pcre * m_program;
 
 private:
   void AcquirePattern(pcre* program, pcre_extra* extra);
@@ -78,6 +76,9 @@ private:
 
   // count of matching wildcards
   int m_iCount;
+
+  // the program itself
+  pcre * m_program;
 
   // extra stuff for speed
   pcre_extra * m_extra;
