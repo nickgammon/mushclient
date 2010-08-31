@@ -323,6 +323,9 @@ void CGlobalPrefsP1::OnDefaultDirectory()
 		bi.pszDisplayName = pszBuffer;
 		bi.lpszTitle = "World files folder";
 		bi.ulFlags = BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS;
+    // if possible, let them create one
+    if (!bWine)  
+	  	bi.ulFlags |= BIF_NEWDIALOGSTYLE | BIF_EDITBOX;     // requires CoInitialize
 		bi.lpfn = BrowseCallbackProc;
 		bi.lParam = 0;
   	GetDlgItemText(IDC_DEFAULT_DIRECTORY_NAME, strStartingDirectory);
@@ -621,6 +624,9 @@ void CGlobalPrefsP5::OnDefaultDirectory()
 		bi.pszDisplayName = pszBuffer;
 		bi.lpszTitle = "Log files folder";
 		bi.ulFlags = BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS;
+    // if possible, let them create one
+    if (!bWine)  
+	  	bi.ulFlags |= BIF_NEWDIALOGSTYLE | BIF_EDITBOX;     // requires CoInitialize
 		bi.lpfn = BrowseCallbackProc;
 		bi.lParam = 0;
   	GetDlgItemText(IDC_DEFAULT_DIRECTORY_NAME, strStartingDirectory);
@@ -1559,6 +1565,9 @@ void CGlobalPrefsP12::OnPluginsDirectory()
 		bi.pszDisplayName = pszBuffer;
 		bi.lpszTitle = "Plugins folder";
 		bi.ulFlags = BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS;
+    // if possible, let them create one
+    if (!bWine)  
+	  	bi.ulFlags |= BIF_NEWDIALOGSTYLE | BIF_EDITBOX;     // requires CoInitialize
 		bi.lpfn = BrowseCallbackProc;
 		bi.lParam = 0;
   	GetDlgItemText(IDC_PLUGINS_DIRECTORY_NAME, strStartingDirectory);

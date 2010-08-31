@@ -191,6 +191,8 @@ CString str;
     Frame.SetStatusMessage (str);
   m_pDoc->m_iConnectPhase = eConnectNotConnected;
 
+  m_pDoc->UpdateAllViews  (NULL);     // force window title to be redrawn
+
   } // end of OnClose
 
 void CWorldSocket::OnConnect(int nErrorCode)

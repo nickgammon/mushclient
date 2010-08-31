@@ -808,6 +808,7 @@ CString GetConnectionStatus (const int iStatus)
     case eConnectAwaitingProxyResponse2:strResult = Translate ("Awaiting proxy response (2)"); break; 
     case eConnectAwaitingProxyResponse3:strResult = Translate ("Awaiting proxy response (3)"); break; 
     case eConnectConnectedToMud:        strResult = Translate ("Open"); break; 
+    case eConnectDisconnecting:         strResult = Translate ("Disconnecting"); break;
     } // end of switch
 
   return strResult;
