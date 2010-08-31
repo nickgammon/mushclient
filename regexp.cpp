@@ -192,18 +192,26 @@ const char* t_regexp::ErrorCodeToString(const int code)
   return Translate(error_msg);
 }
 
+bool t_regexp::CheckPattern (const char* pattern, const int iOptions,
+                             const char** error, int* erroroffset)
+{
+  pcre* program = pcre_compile(pattern, iOptions, error, erroroffset, NULL);
+  if (program)
+    {
+    pcre_free(program);
+    return true;
+    }
+  else
+    return false;
+}
+
 // checks a regular expression, raises a dialog if bad
 bool CheckRegularExpression (const CString strRegexp, const int iOptions)
 {
-  const char *error;
+  const char* error;
   int erroroffset;
-
-  pcre* program = pcre_compile(strRegexp, iOptions, &error, &erroroffset, NULL);
-  if (program)
-    {
-    pcre_free (program);
-    return true; // good
-    }
+  if (t_regexp::CheckPattern(strRegexp, iOptions, &error, &erroroffset))
+    return true; // It's valid!
 
   CRegexpProblemDlg dlg;
   dlg.m_strErrorMessage = Translate (error);

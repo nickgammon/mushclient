@@ -32,6 +32,8 @@ public:
   string GetWildcard (const string sName) const;
 
   static const char* ErrorCodeToString(const int code);
+  static bool CheckPattern (const char* pattern, const int iOptions,
+                            const char** error, int* errorOffset);
 
 
   // pairs of offsets from match
