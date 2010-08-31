@@ -24,6 +24,7 @@ public:
   ~t_regexp ();
 
   void Compile(const char* pattern, const int flags);
+  bool Execute(const char* string, const int start_offset=0);
 
   // returns a wildcard by number
   string GetWildcard (const int iNumber) const;
@@ -54,10 +55,6 @@ private:
   void AcquirePattern(pcre* program, pcre_extra* extra);
   void ReleasePattern();
 };
-
-int regexec(register t_regexp *prog,
-            register const char *string,
-            const int start_offset = 0);
 
 bool CheckRegularExpression (const CString strRegexp, const int iOptions);
 

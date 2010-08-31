@@ -385,7 +385,7 @@ int iCount = GetTriggerArray ().GetSize ();    // how many there are
       try
         {
 //        timer t ("Evaluating regular expression");
-        if (!regexec (trigger_item->regexp, strTarget))
+        if (!trigger_item->regexp->Execute (strTarget))
           continue;
         } // end of try
     	catch(CException* e)
@@ -788,7 +788,7 @@ bool CMUSHclientDoc::ProcessOneAliasSequence (const CString strCurrentLine,
   
     try
       {
-      bMatched = regexec (alias_item->regexp, strTarget);
+      bMatched = alias_item->regexp->Execute (strTarget);
       }
     catch(CException* e)
       {

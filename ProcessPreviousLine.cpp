@@ -475,7 +475,7 @@ assemble the full text of the original line.
 
   if (m_bMapping && !m_strMappingFailure.IsEmpty ())
     {
-    if (( m_bMapFailureRegexp && regexec (m_MapFailureRegexp, strCurrentLine)) ||
+    if (( m_bMapFailureRegexp && m_MapFailureRegexp->Execute (strCurrentLine)) ||
         (!m_bMapFailureRegexp && (strCurrentLine == m_strMappingFailure)))
        if (!m_strMapList.IsEmpty ())      // only if we have one
          {
@@ -1369,7 +1369,7 @@ POSITION pos;
           if (iEndCol > strCurrentLine.GetLength ())
             break;
           // re-scan the line
-          if (!regexec (trigger_item->regexp, strCurrentLine, iEndCol))
+          if (!trigger_item->regexp->Execute (strCurrentLine, iEndCol))
             break;  // no more matches
           // calculate new offsets
           iStartCol = trigger_item->regexp->m_vOffsets [0];

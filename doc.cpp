@@ -5383,11 +5383,11 @@ CString strStatus = TFormat ("Recalling: %s", (LPCTSTR) strSearchString);
           
       CString strSearchLine = strLine;
 
-      if (bRegexp )
+      if (bRegexp)
         {
   // if case-insensitive search wanted, force this line to lower case
 
-        if (regexec (regexp, strSearchLine))
+        if (regexp->Execute (strSearchLine))
           {
           if (!strRecallLinePreamble.IsEmpty ())
             {

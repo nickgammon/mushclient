@@ -214,7 +214,7 @@ CString strStatus = TFormat ("Finding: %s", (LPCTSTR) FindInfo.m_strFindStringLi
       if (FindInfo.m_bRegexp )
         {
 
-        if (regexec (FindInfo.m_regexp, strLine))
+        if (FindInfo.m_regexp->Execute (strLine))
           {
           // work out what column it must have been at
           FindInfo.m_iStartColumn = FindInfo.m_regexp->m_vOffsets [0];

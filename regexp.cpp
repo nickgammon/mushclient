@@ -74,61 +74,61 @@ void t_regexp::Compile(const char* pattern, const int flags)
   this->m_iMatchAttempts = 0;
 }
 
-int regexec(register t_regexp *prog,
-            register const char *string,
-            const int start_offset)
+bool t_regexp::Execute(register const char* string, const int start_offset)
 {
   // exit if no regexp program to process (possibly because of previous error)
-  if (prog->m_program == NULL)
+  if (this->m_program == NULL)
     return false;
 
   // inspired by a suggestion by Twisol (to remove a hard-coded limit on the number of wildcards)
   int capturecount = 0;
   // how many captures did we get?
-  pcre_fullinfo(prog->m_program, NULL, PCRE_INFO_CAPTURECOUNT, &capturecount);
+  pcre_fullinfo(this->m_program, NULL, PCRE_INFO_CAPTURECOUNT, &capturecount);
   // allocate enough memory
   vector<int> offsets ((capturecount + 1) * 3);  // we always get offset 0 - the whole match
 
-  LARGE_INTEGER start, finish;
+  LARGE_INTEGER start;
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
 
   int options = App.m_bRegexpMatchEmpty ? 0 : PCRE_NOTEMPTY; // don't match on an empty string
-
   pcre_callout = NULL;
-  int count = pcre_exec(prog->m_program, prog->m_extra, string, strlen (string),
-                        start_offset, options, &offsets [0], offsets.size ());
+  int count = pcre_exec (this->m_program, this->m_extra, string, strlen (string),
+                         start_offset, options, &offsets [0], offsets.size ());
 
   if (App.m_iCounterFrequency)
     {
+    LARGE_INTEGER finish;
     QueryPerformanceCounter (&finish);
-    prog->iTimeTaken += finish.QuadPart - start.QuadPart;
+    this->iTimeTaken += finish.QuadPart - start.QuadPart;
     }
 
-  prog->m_iMatchAttempts += 1; // how many times did we try to match?
+  this->m_iMatchAttempts += 1; // how many times did we try to match?
 
   if (count == PCRE_ERROR_NOMATCH)
     return false; // no match - don't save matching string etc.
-
-  // cotherwise free program as an indicator that we can't keep trying to do this one
-  if (count <= 0)
+  else if (count <= 0)
     {
-    pcre_free (prog->m_program);
-    prog->m_program = NULL;
-    pcre_free (prog->m_extra);
-    prog->m_extra = NULL;
+    this->m_iExecutionError = count; // remember reason
 
-    prog->m_iExecutionError = count; // remember reason
+    // free program as an indicator that we can't keep trying to do this one
+    pcre_free (this->m_program);
+    this->m_program = NULL;
+    pcre_free (this->m_extra);
+    this->m_extra = NULL;
+
     ThrowErrorException (TFormat ("Error executing regular expression: %s",
                                   t_regexp::ErrorCodeToString (count)));
     }
 
   // if, and only if, we match, we will save the matching string, the count
   // and offsets, so we can extract the wildcards later on
-  prog->m_sTarget = string;  // for extracting wildcards
-  prog->m_iCount = count;    // ditto
-  prog->m_vOffsets.clear (); 
-  copy (offsets.begin (), offsets.end (), back_inserter (prog->m_vOffsets));
+  this->m_sTarget = string;  // for extracting wildcards
+  this->m_iCount = count;    // ditto
+
+  // store the offsets
+  this->m_vOffsets.clear (); 
+  copy (offsets.begin (), offsets.end (), back_inserter (this->m_vOffsets));
 
   return true; // match
 }
