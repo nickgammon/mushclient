@@ -106,19 +106,13 @@ bool t_regexp::Execute(register const char* string, const int start_offset)
     }
 
   this->m_iMatchAttempts += 1; // how many times did we try to match?
+  this->m_iExecutionError = 0; // reset error
 
   if (count == PCRE_ERROR_NOMATCH)
     return false; // no match - don't save matching string etc.
   else if (count <= 0)
     {
     this->m_iExecutionError = count; // remember reason
-
-    // free program as an indicator that we can't keep trying to do this one
-    pcre_free (this->m_program);
-    this->m_program = NULL;
-    pcre_free (this->m_extra);
-    this->m_extra = NULL;
-
     ThrowErrorException (TFormat ("Error executing regular expression: %s",
                                   t_regexp::ErrorCodeToString (count)));
     }
