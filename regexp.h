@@ -53,35 +53,20 @@ private:
   void AcquirePattern(pcre* program, pcre_extra* extra);
   void ReleasePattern();
 
-  // the string we last matched on (to extract wildcards from)
-  string m_sTarget;
+  string m_sTarget;       // the string we last matched on (to extract wildcards from)
+  int m_iCount;           // count of matching wildcards
+  vector<int> m_vOffsets; // pairs of offsets from match
 
-  // pairs of offsets from match
-  vector<int> m_vOffsets;
+  int m_iExecutionError; // error code from last execution
 
-  // error code from last execution
-  int m_iExecutionError;
+  // TODO: Consider moving m_iMatchAttempts and m_iTimeTaken out of t_regexp and into a
+  // class that actually uses them, like CAlias and CTrigger. It's just extra bookkeeping
+  // that t_regexp itself has no need for.
+  long m_iMatchAttempts; // number of times a match has been attempted
+  LONGLONG m_iTimeTaken; // total time taken to match
 
-  // TODO: Consider moving m_iMatchAttempts out of t_regexp and into a class that uses it,
-  // like CAlias and CTrigger. It's extra bookkeeping that t_regexp itself has no need for.
-
-  // number of times a match has been attempted
-  long m_iMatchAttempts;
-
-  // TODO: Consider moving m_iTimeTaken out of t_regexp and into a class that uses it.
-  // Just like m_iMatchAttempts, it's extra bookkeeping t_regexp doesn't even need.
-
-  // total time taken to match
-  LONGLONG m_iTimeTaken;
-
-  // count of matching wildcards
-  int m_iCount;
-
-  // the program itself
-  pcre * m_program;
-
-  // extra stuff for speed
-  pcre_extra * m_extra;
+  pcre * m_program;     // the program itself
+  pcre_extra * m_extra; // extra stuff for speed
 };
 
 #endif  // #ifndef __REGEXP_H
