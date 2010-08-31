@@ -3602,7 +3602,13 @@ void CPrefsP8::UnloadDialog (CDialog * pDlg, CObject * pItem)
   else
     strRegexp = ConvertToRegularExpression (trigger_item->trigger);
 
-  trigger_item->regexp->Compile (strRegexp,
+  if (trigger_item->regexp)
+    trigger_item->regexp->Compile (strRegexp,
+                                  (trigger_item->ignore_case  ? PCRE_CASELESS : 0) |
+                                  (trigger_item->bMultiLine  ? PCRE_MULTILINE : 0) |
+                                  (m_doc->m_bUTF_8 ? PCRE_UTF8 : 0));
+  else
+    trigger_item->regexp = new t_regexp (strRegexp,
                                   (trigger_item->ignore_case  ? PCRE_CASELESS : 0) |
                                   (trigger_item->bMultiLine  ? PCRE_MULTILINE : 0) |
                                   (m_doc->m_bUTF_8 ? PCRE_UTF8 : 0));
