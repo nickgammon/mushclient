@@ -81,7 +81,7 @@ bool t_regexp::Execute(register const char* string, const int start_offset)
   // inspired by a suggestion by Twisol (to remove a hard-coded limit on the number of wildcards)
   int capturecount = 0;
   // how many captures did we get?
-  pcre_fullinfo(this->m_program, NULL, PCRE_INFO_CAPTURECOUNT, &capturecount);
+  this->GetInfo (PCRE_INFO_CAPTURECOUNT, &capturecount);
   // allocate enough memory
   vector<int> offsets ((capturecount + 1) * 3);  // we always get offset 0 - the whole match
 
