@@ -31,13 +31,14 @@ public:
   // returns a wildcard by name
   string GetWildcard (const string sName) const;
 
+  bool GetWildcardOffsets (const int iNumber, int& iLeft, int& iRight);
+  bool GetWildcardOffsets (const string& sName, int& iLeft, int& iRight);
+
   static const char* ErrorCodeToString(const int code);
   static bool CheckPattern (const char* pattern, const int iOptions,
                             const char** error, int* errorOffset);
 
 
-  // pairs of offsets from match
-  vector<int> m_vOffsets;
   // count of matching wildcards
   int m_iCount;
   long m_iMatchAttempts;
@@ -56,6 +57,9 @@ public:
 private:
   void AcquirePattern(pcre* program, pcre_extra* extra);
   void ReleasePattern();
+
+  // pairs of offsets from match
+  vector<int> m_vOffsets;
 };
 
 #endif  // #ifndef __REGEXP_H

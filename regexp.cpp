@@ -158,6 +158,28 @@ string t_regexp::GetWildcard (const string sName) const
   return GetWildcard (iNumber);
 }
 
+bool t_regexp::GetWildcardOffsets (const int iNumber, int& iLeft, int& iRight)
+{
+  if (iNumber >= 0 && iNumber < this->m_iCount)
+    {
+    iLeft  = m_vOffsets [iNumber*2];
+    iRight = m_vOffsets [iNumber*2+1];
+    return true;
+    }
+  else
+    return false;
+}
+
+bool t_regexp::GetWildcardOffsets (const string& sName, int& iLeft, int& iRight)
+{
+  if (!this->m_program)
+    return false;
+
+  return GetWildcardOffsets (
+    njg_get_first_set (this->m_program, sName.c_str (), &m_vOffsets [0]),
+    iLeft, iRight);
+}
+
 const char* t_regexp::ErrorCodeToString(const int code)
 {
   const char* error_msg = NULL;

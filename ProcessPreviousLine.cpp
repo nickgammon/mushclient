@@ -1372,9 +1372,7 @@ POSITION pos;
           if (!trigger_item->regexp->Execute (strCurrentLine, iEndCol))
             break;  // no more matches
           // calculate new offsets
-          iStartCol = trigger_item->regexp->m_vOffsets [0];
-          iEndCol   = trigger_item->regexp->m_vOffsets [1];          
-
+          trigger_item->regexp->GetWildcardOffsets (0, iStartCol, iEndCol);
           }  // end of repeating it
         } // end of some sort of colour change wanted
       // set a few flags

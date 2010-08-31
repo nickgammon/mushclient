@@ -395,8 +395,7 @@ int iCount = GetTriggerArray ().GetSize ();    // how many there are
         continue;
         }   // end of catch
 
-      iStartCol = trigger_item->regexp->m_vOffsets [0];
-      iEndCol   = trigger_item->regexp->m_vOffsets [1];
+      trigger_item->regexp->GetWildcardOffsets (0, iStartCol, iEndCol);
 
       trigger_item->wildcards.clear ();
 
