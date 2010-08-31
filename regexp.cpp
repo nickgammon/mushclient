@@ -158,7 +158,7 @@ string t_regexp::GetWildcard (const string sName) const
   return GetWildcard (iNumber);
 }
 
-bool t_regexp::GetWildcardOffsets (const int iNumber, int& iLeft, int& iRight)
+bool t_regexp::GetWildcardOffsets (const int iNumber, int& iLeft, int& iRight) const
 {
   if (iNumber >= 0 && iNumber < this->m_iCount)
     {
@@ -170,7 +170,7 @@ bool t_regexp::GetWildcardOffsets (const int iNumber, int& iLeft, int& iRight)
     return false;
 }
 
-bool t_regexp::GetWildcardOffsets (const string& sName, int& iLeft, int& iRight)
+bool t_regexp::GetWildcardOffsets (const string& sName, int& iLeft, int& iRight) const
 {
   if (!this->m_program)
     return false;

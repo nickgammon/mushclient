@@ -23,16 +23,16 @@ public:
   t_regexp (const char* pattern, const int flags);
   ~t_regexp ();
 
-  void Compile(const char* pattern, const int flags);
-  bool Execute(const char* string, const int start_offset=0);
+  void Compile (const char* pattern, const int flags);
+  bool Execute (const char* string, const int start_offset=0);
 
   // returns a wildcard by number
   string GetWildcard (const int iNumber) const;
   // returns a wildcard by name
   string GetWildcard (const string sName) const;
 
-  bool GetWildcardOffsets (const int iNumber, int& iLeft, int& iRight);
-  bool GetWildcardOffsets (const string& sName, int& iLeft, int& iRight);
+  bool GetWildcardOffsets (const int iNumber, int& iLeft, int& iRight) const;
+  bool GetWildcardOffsets (const string& sName, int& iLeft, int& iRight) const;
 
   static const char* ErrorCodeToString(const int code);
   static bool CheckPattern (const char* pattern, const int iOptions,
