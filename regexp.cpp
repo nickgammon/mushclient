@@ -185,6 +185,11 @@ bool t_regexp::GetWildcardOffsets (const string& sName, int& iLeft, int& iRight)
     iLeft, iRight);
 }
 
+int t_regexp::GetInfo (int info_type, void* out) const
+{
+  return pcre_fullinfo(this->m_program, this->m_extra, info_type, out);
+}
+
 const char* t_regexp::ErrorCodeToString(const int code)
 {
   const char* error_msg = NULL;

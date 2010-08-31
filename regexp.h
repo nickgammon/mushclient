@@ -36,6 +36,8 @@ public:
   bool GetWildcardOffsets (const int iNumber, int& iLeft, int& iRight) const;
   bool GetWildcardOffsets (const string& sName, int& iLeft, int& iRight) const;
 
+  int GetInfo (int info_type, void* out) const;
+
   static const char* ErrorCodeToString(const int code);
   static bool CheckPattern (const char* pattern, const int iOptions,
                             const char** error, int* errorOffset);
@@ -47,10 +49,7 @@ public:
   // the string we match on (to extract wildcards from)
   string m_sTarget;
   // the program itself
-  pcre * m_program;	    
-
-  // extra stuff for speed
-  pcre_extra * m_extra;
+  pcre * m_program;
 
   LONGLONG iTimeTaken;
 
@@ -63,6 +62,9 @@ private:
 
   // error code from last execution
   int m_iExecutionError;
+
+  // extra stuff for speed
+  pcre_extra * m_extra;
 };
 
 #endif  // #ifndef __REGEXP_H
