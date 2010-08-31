@@ -2261,7 +2261,7 @@ CAlias * alias_item;
 
     case  24: // number of matches to regexp
       if (alias_item->regexp)      
-        SetUpVariantLong   (vaResult, alias_item->regexp->m_iCount);
+        SetUpVariantLong   (vaResult, alias_item->regexp->MatchedCapturesCount ());
       else
         SetUpVariantLong   (vaResult, 0);
       break;
@@ -2383,7 +2383,7 @@ CTrigger * trigger_item;
     case  30: SetUpVariantLong   (vaResult, trigger_item->iOtherBackground); break;
     case  31: // number of matches to regexp
       if (trigger_item->regexp)      
-        SetUpVariantLong   (vaResult, trigger_item->regexp->m_iCount);
+        SetUpVariantLong   (vaResult, trigger_item->regexp->MatchedCapturesCount ());
       else
         SetUpVariantLong   (vaResult, 0);
       break;

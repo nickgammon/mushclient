@@ -36,15 +36,14 @@ public:
   bool GetWildcardOffsets (const int iNumber, int& iLeft, int& iRight) const;
   bool GetWildcardOffsets (const string& sName, int& iLeft, int& iRight) const;
 
+  int MatchedCapturesCount () const;
+
   int GetInfo (int info_type, void* out) const;
 
   static const char* ErrorCodeToString(const int code);
   static bool CheckPattern (const char* pattern, const int iOptions,
                             const char** error, int* errorOffset);
 
-
-  // count of matching wildcards
-  int m_iCount;
   long m_iMatchAttempts;
   // the string we match on (to extract wildcards from)
   string m_sTarget;
@@ -62,6 +61,9 @@ private:
 
   // error code from last execution
   int m_iExecutionError;
+
+  // count of matching wildcards
+  int m_iCount;
 
   // extra stuff for speed
   pcre_extra * m_extra;
