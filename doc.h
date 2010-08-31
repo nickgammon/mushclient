@@ -12,6 +12,7 @@
 #include "TimerWnd.h"
 #include "xml\xmlparse.h"
 #include "paneline.h"
+#include "miniwindow.h"
 
 #define COMPRESS_BUFFER_LENGTH 1024   // size of decompression buffer
 
