@@ -40,6 +40,8 @@ public:
   int MatchedCapturesCount () const;
   long MatchAttempts () const;
 
+  LONGLONG TimeTaken () const;
+
   int GetInfo (int info_type, void* out) const;
 
   static const char* ErrorCodeToString(const int code);
@@ -48,8 +50,6 @@ public:
 
   // the program itself
   pcre * m_program;
-
-  LONGLONG iTimeTaken;
 
 private:
   void AcquirePattern(pcre* program, pcre_extra* extra);
@@ -69,6 +69,12 @@ private:
 
   // number of times a match has been attempted
   long m_iMatchAttempts;
+
+  // TODO: Consider moving m_iTimeTaken out of t_regexp and into a class that uses it.
+  // Just like m_iMatchAttempts, it's extra bookkeeping t_regexp doesn't even need.
+
+  // total time taken to match
+  LONGLONG m_iTimeTaken;
 
   // count of matching wildcards
   int m_iCount;

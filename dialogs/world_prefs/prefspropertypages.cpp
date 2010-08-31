@@ -3595,16 +3595,6 @@ void CPrefsP8::UnloadDialog (CDialog * pDlg, CObject * pItem)
     trigger_item->sound_to_play = dlg->m_sound_pathname;
   trigger_item->omit_from_log = dlg->m_omit_from_log;
 
-  LONGLONG iOldTimeTaken = 0;
-
-  // remember time taken to execute them
-
-  if (trigger_item->regexp)
-    iOldTimeTaken = trigger_item->regexp->iTimeTaken;
-
-  delete trigger_item->regexp;    // get rid of earlier regular expression
-  trigger_item->regexp = NULL;
-
 // all triggers are now regular expressions
 
   CString strRegexp; 
@@ -3614,14 +3604,10 @@ void CPrefsP8::UnloadDialog (CDialog * pDlg, CObject * pItem)
   else
     strRegexp = ConvertToRegularExpression (trigger_item->trigger);
 
-  trigger_item->regexp = new t_regexp (strRegexp,
+  trigger_item->regexp->Compile (strRegexp,
                                   (trigger_item->ignore_case  ? PCRE_CASELESS : 0) |
                                   (trigger_item->bMultiLine  ? PCRE_MULTILINE : 0) |
                                   (m_doc->m_bUTF_8 ? PCRE_UTF8 : 0));
-
-  // add back execution time
-  if (trigger_item->regexp)
-    trigger_item->regexp->iTimeTaken += iOldTimeTaken;
   }    // end of  CPrefsP8::UnloadDialog
 
 CString CPrefsP8::GetObjectName (CDialog * pDlg) const

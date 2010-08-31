@@ -17,7 +17,7 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
 int njg_get_first_set (const pcre *code, const char *stringname, const int *ovector);
 
 t_regexp::t_regexp (const char* pattern, const int flags)
-  : m_program(NULL), m_extra(NULL), iTimeTaken(0),
+  : m_program(NULL), m_extra(NULL), m_iTimeTaken(0),
     m_iCount(0), m_iMatchAttempts(0), m_iExecutionError(0)
 {
   this->Compile (pattern, flags);
@@ -69,8 +69,11 @@ void t_regexp::Compile(const char* pattern, const int flags)
 
   this->AcquirePattern (program, extra);
 
+  this->m_vOffsets.clear ();
   this->m_iExecutionError = 0; // no error now
+  this->m_iCount = 0;
   this->m_iMatchAttempts = 0;
+  // Don't affect m_iTimeTaken here. (See TODO in header, too)
 }
 
 bool t_regexp::Execute(register const char* string, const int start_offset)
@@ -99,7 +102,7 @@ bool t_regexp::Execute(register const char* string, const int start_offset)
     {
     LARGE_INTEGER finish;
     QueryPerformanceCounter (&finish);
-    this->iTimeTaken += finish.QuadPart - start.QuadPart;
+    this->m_iTimeTaken += finish.QuadPart - start.QuadPart;
     }
 
   this->m_iMatchAttempts += 1; // how many times did we try to match?
@@ -198,6 +201,11 @@ int t_regexp::MatchedCapturesCount () const
 long t_regexp::MatchAttempts () const
 {
   return this->m_iMatchAttempts;
+}
+
+LONGLONG t_regexp::TimeTaken () const
+{
+  return this->m_iTimeTaken;
 }
 
 int t_regexp::GetInfo (int info_type, void* out) const

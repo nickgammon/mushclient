@@ -453,7 +453,7 @@ void CMUSHclientDoc:: LoadPrefsP15 (CPrefsP15 &page15)
     nTotalTriggers += pTrigger->nMatched;
     // calculate time taken to execute triggers
     if (pTrigger->regexp)
-      iTimeTaken += pTrigger->regexp->iTimeTaken;
+      iTimeTaken += pTrigger->regexp->TimeTaken ();
     }
 
   // count number of aliases matched

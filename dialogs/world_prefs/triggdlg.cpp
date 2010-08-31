@@ -606,7 +606,7 @@ void CTriggerDlg::OnUpdateTimeTaken(CCmdUI* pCmdUI)
     {
     CString strMessage;
     double   elapsed_time;
-    elapsed_time = ((double) m_current_trigger->regexp->iTimeTaken) / 
+    elapsed_time = ((double) m_current_trigger->regexp->TimeTaken ()) / 
                     ((double) App.m_iCounterFrequency);
 
     strMessage.Format ("%12.6f sec.", elapsed_time);

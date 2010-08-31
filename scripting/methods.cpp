@@ -2291,7 +2291,7 @@ CAlias * alias_item;
         double   elapsed_time;
 
 
-        elapsed_time = ((double) alias_item->regexp->iTimeTaken) / 
+        elapsed_time = ((double) alias_item->regexp->TimeTaken ()) / 
                         ((double) App.m_iCounterFrequency);
 
         SetUpVariantDouble (vaResult, elapsed_time);
@@ -2411,7 +2411,7 @@ CTrigger * trigger_item;
         double   elapsed_time;
 
 
-        elapsed_time = ((double) trigger_item->regexp->iTimeTaken) / 
+        elapsed_time = ((double) trigger_item->regexp->TimeTaken ()) / 
                         ((double) App.m_iCounterFrequency);
 
         SetUpVariantDouble (vaResult, elapsed_time);
@@ -4625,7 +4625,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
           GetTriggerMap ().GetNextAssoc (pos, strName, pTrigger);
           // calculate time taken to execute triggers
           if (pTrigger->regexp)
-            iTimeTaken += pTrigger->regexp->iTimeTaken;
+            iTimeTaken += pTrigger->regexp->TimeTaken ();
           }
 
         elapsed_time = ((double) iTimeTaken) / 
@@ -4650,7 +4650,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
           GetAliasMap ().GetNextAssoc (pos, strName, pAlias);
           // calculate time taken to execute triggers
           if (pAlias->regexp)
-            iTimeTaken += pAlias->regexp->iTimeTaken;
+            iTimeTaken += pAlias->regexp->TimeTaken ();
           }
 
         elapsed_time = ((double) iTimeTaken) / 
