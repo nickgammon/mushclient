@@ -363,7 +363,7 @@ int iCount = GetTriggerArray ().GetSize ();    // how many there are
 
         try
           {
-          trigger_item->regexp = regcomp (strRegexp,
+          trigger_item->regexp = new t_regexp (strRegexp,
                                           (trigger_item->ignore_case  ? PCRE_CASELESS : 0) |
                                           (trigger_item->bMultiLine  ? PCRE_MULTILINE : 0) |
                                           (m_bUTF_8 ? PCRE_UTF8 : 0)

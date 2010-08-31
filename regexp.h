@@ -20,8 +20,10 @@ const short MAX_WILDCARDS = 10;
 class t_regexp 
 {
 public:
-  t_regexp ();
+  t_regexp (const char* pattern, const int flags);
   ~t_regexp ();
+
+  void Compile(const char* pattern, const int flags);
 
   // returns a wildcard by number
   string GetWildcard (const int iNumber) const;
@@ -53,7 +55,6 @@ private:
   void ReleasePattern();
 };
 
-t_regexp * regcomp(const char *exp, const int options = 0);
 int regexec(register t_regexp *prog,
             register const char *string,
             const int start_offset = 0);

@@ -15,19 +15,18 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
 // for duplicate named wildcards
-int njg_get_first_set(const pcre *code, const char *stringname, const int *ovector);
+int njg_get_first_set (const pcre *code, const char *stringname, const int *ovector);
 
-t_regexp::t_regexp ()
+t_regexp::t_regexp (const char* pattern, const int flags)
   : m_program(NULL), m_extra(NULL), iTimeTaken(0),
     m_iCount(0), m_iMatchAttempts(0), m_iExecutionError(0)
-{}
+{
+  this->Compile (pattern, flags);
+}
 
 t_regexp::~t_regexp ()
 {
-  if (m_program) 
-    pcre_free (m_program); 
-  if (m_extra) 
-    pcre_free (m_extra); 
+  this->ReleasePattern ();
 }
 
 void t_regexp::AcquirePattern(pcre* program, pcre_extra* extra)
@@ -35,7 +34,7 @@ void t_regexp::AcquirePattern(pcre* program, pcre_extra* extra)
   this->ReleasePattern();
   this->m_program = program;
   this->m_extra = extra;
-  pcre_refcount(program, 1);
+  pcre_refcount (program, 1);
 }
 
 void t_regexp::ReleasePattern()
@@ -43,41 +42,36 @@ void t_regexp::ReleasePattern()
   if (!this->m_program)
     return;
 
-  if (pcre_refcount(this->m_program, -1) != 0)
+  if (pcre_refcount (this->m_program, -1) != 0)
     {
-    pcre_free(this->m_program);
+    pcre_free (this->m_program);
     this->m_program = NULL;
-    pcre_free(this->m_extra);
+    pcre_free (this->m_extra);
     this->m_extra = NULL;
     }
 }
 
-t_regexp * regcomp(const char *exp, const int options)
+void t_regexp::Compile(const char* pattern, const int flags)
 {
   const char *error = NULL;
   int erroroffset;
 
-  pcre* program = pcre_compile(exp, options, &error, &erroroffset, NULL);
+  pcre* program = pcre_compile (pattern, flags, &error, &erroroffset, NULL);
   if (!program)
-    ThrowErrorException("Failed: %s at offset %d", Translate (error), erroroffset);
+    ThrowErrorException ("Failed: %s at offset %d", Translate (error), erroroffset);
 
   // study it for speed purposes
-  pcre_extra* extra = pcre_study(program, 0, &error);
+  pcre_extra* extra = pcre_study (program, 0, &error);
   if (error)
     {
     pcre_free (program);
-    ThrowErrorException("Regexp study failed: %s", error);
+    ThrowErrorException ("Regexp study failed: %s", error);
     }
 
-  // we need to allocate memory for the substring offsets
-  t_regexp* re = new t_regexp;
+  this->AcquirePattern (program, extra);
 
-  // remember program and extra stuff
-  re->m_program = program;
-  re->m_extra = extra;
-  re->m_iExecutionError = 0; // no error now
-
-  return re;
+  this->m_iExecutionError = 0; // no error now
+  this->m_iMatchAttempts = 0;
 }
 
 int regexec(register t_regexp *prog,

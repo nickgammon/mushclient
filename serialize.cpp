@@ -73,7 +73,7 @@ void CMUSHclientDoc::Serialize(CArchive& ar)
     {
     try
       {
-      m_MapFailureRegexp = regcomp (m_strMappingFailure, (m_bUTF_8 ? PCRE_UTF8 : 0));
+      m_MapFailureRegexp = new t_regexp (m_strMappingFailure, (m_bUTF_8 ? PCRE_UTF8 : 0));
       }
     catch (CException* e)
       {

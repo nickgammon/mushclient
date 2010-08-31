@@ -1237,7 +1237,7 @@ CString strVariable;
 
     try
       {
-      t->regexp = regcomp (strRegexp, (t->ignore_case ? PCRE_CASELESS : 0) |
+      t->regexp = new t_regexp (strRegexp, (t->ignore_case ? PCRE_CASELESS : 0) |
                             (t->bMultiLine  ? PCRE_MULTILINE : 0) |
                             (m_bUTF_8 ? PCRE_UTF8 : 0)
         );
@@ -1449,7 +1449,7 @@ CString strVariable;
 
     try
       {
-      a->regexp = regcomp (strRegexp, (a->bIgnoreCase ? PCRE_CASELESS : 0)
+      a->regexp = new t_regexp (strRegexp, (a->bIgnoreCase ? PCRE_CASELESS : 0)
 #if ALIASES_USE_UTF8
                                   | (m_bUTF_8 ? PCRE_UTF8 : 0)
 #endif // ALIASES_USE_UTF8

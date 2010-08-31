@@ -111,7 +111,7 @@ CFindDlg dlg (FindInfo.m_strFindStringList);
 
     // compile regular expression if needed
     if (FindInfo.m_bRegexp )
-      FindInfo.m_regexp = regcomp (FindInfo.m_strFindStringList.GetHead (),
+      FindInfo.m_regexp = new t_regexp (FindInfo.m_strFindStringList.GetHead (),
       (FindInfo.m_bMatchCase ? 0 :  PCRE_CASELESS) | (FindInfo.m_bUTF8 ? PCRE_UTF8 : 0));
 
     }   // end of not repeating the last find

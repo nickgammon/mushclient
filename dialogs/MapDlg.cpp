@@ -219,7 +219,7 @@ CAliasDlg dlg;
   else
     strRegexp = ConvertToRegularExpression (alias_item->name);
 
-  alias_item->regexp = regcomp (strRegexp,
+  alias_item->regexp = new t_regexp (strRegexp,
                                   (alias_item->bIgnoreCase  ? PCRE_CASELESS : 0)
 #if ALIASES_USE_UTF8
                                   | (m_pDoc->m_bUTF_8 ? PCRE_UTF8 : 0)

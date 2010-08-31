@@ -597,7 +597,7 @@ bool bReplace = false;
   // compile regular expression
   try 
     {
-    regexp = regcomp (strRegexp, (Flags & eIgnoreCase ? PCRE_CASELESS : 0) | (m_bUTF_8 ? PCRE_UTF8 : 0));
+    regexp = new t_regexp (strRegexp, (Flags & eIgnoreCase ? PCRE_CASELESS : 0) | (m_bUTF_8 ? PCRE_UTF8 : 0));
     }   // end of try
   catch(CException* e)
     {
@@ -1027,7 +1027,7 @@ bool bReplace = false;
   // compile regular expression
   try 
     {
-    regexp = regcomp (strRegexp, (Flags & eIgnoreAliasCase ? PCRE_CASELESS : 0)
+    regexp = new t_regexp (strRegexp, (Flags & eIgnoreAliasCase ? PCRE_CASELESS : 0)
 #if ALIASES_USE_UTF8
                                   | (m_bUTF_8 ? PCRE_UTF8 : 0)
 #endif // ALIASES_USE_UTF8
@@ -6435,7 +6435,7 @@ bool bChanged;
         // compile regular expression
         try 
           {
-          regexp = regcomp (strRegexp, (trigger_item->ignore_case ? PCRE_CASELESS : 0) |
+          regexp = new t_regexp (strRegexp, (trigger_item->ignore_case ? PCRE_CASELESS : 0) |
                                        (trigger_item->bMultiLine  ? PCRE_MULTILINE : 0) |
                                        (m_bUTF_8 ? PCRE_UTF8 : 0)
                                        );
@@ -6711,7 +6711,7 @@ bool bChanged;
         // compile regular expression
         try 
           {
-          regexp = regcomp (strRegexp, (Alias_item->bIgnoreCase ? PCRE_CASELESS : 0)
+          regexp = new t_regexp (strRegexp, (Alias_item->bIgnoreCase ? PCRE_CASELESS : 0)
 #if ALIASES_USE_UTF8
                              | (m_bUTF_8 ? PCRE_UTF8 : 0)
 #endif // ALIASES_USE_UTF8
