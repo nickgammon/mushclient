@@ -1400,7 +1400,7 @@ static int getfontfamilies (lua_State *L)
 
 Example:
 
-  utils.send_to_front ("Crimson Editor")
+  utils.sendtofront ("Crimson Editor")
 
 */
 
@@ -1412,77 +1412,74 @@ static int send_to_front (lua_State *L)
 
 /* Execute an operating-system command:
 
-  windows_utils.shell_execute (filename, params, defdir, operation, show_command)
+utils.shellexecute (filename, params, defdir, operation, show_command)
 
-  Only the first argument (filename) is required, the rest are optional.
+Only the first argument (filename) is required, the rest are optional.
 
-  filename:  The file to open or print or the folder to open or explore. 
-             The function can open an executable file or a document file. 
-             The function can print a document file. 
+filename:  The file to open or print or the folder to open or explore. 
+  The function can open an executable file or a document file. 
+  The function can print a document file. 
 
-  params:    A string that specifies the parameters to be passed to the application. 
-             If filename specifies a document file, params should be nil or "".
+params:    A string that specifies the parameters to be passed to the application. 
+  If filename specifies a document file, params should be nil or "".
 
-  defdir:    A string that specifies the default directory.
-             
-  operation: The following operation strings are valid: 
-             "open":  The function opens the file specified by the filename parameter. 
-                      The file can be an executable file or a document file. It can also be a folder. 
-             "print": The function prints the file specified by filename. 
-                      The file should be a document file. 
-                      If the file is an executable file, the function opens the file, 
-                      as if "open" had been specified. 
-             "explore":  The function explores the folder specified by filename.  
+defdir:    A string that specifies the default directory.
+   
+operation: The following operation strings are valid: 
+ "open":  The function opens the file specified by the filename parameter. 
+          The file can be an executable file or a document file. It can also be a folder. 
+ "print": The function prints the file specified by filename. 
+          The file should be a document file. 
+          If the file is an executable file, the function opens the file, 
+          as if "open" had been specified. 
+ "explore":  The function explores the folder specified by filename.  
 
-              This parameter can be nil or "". 
-              In that case, the function opens the file specified by filename. 
+  This parameter can be nil or "". 
+  In that case, the function opens the file specified by filename. 
 
-  show_command: If filename specifies an executable file, show_command specifies how the 
-                application is to be shown when it is opened. 
+show_command: If filename specifies an executable file, show_command specifies 
+   how the application is to be shown when it is opened. 
 
-                This parameter can be nil in which case it defaults to 1 - the recommended default.
-
-                This parameter can be one of the following values: 
+  This parameter can be nil in which case it defaults to 1 - the recommended default.
   
-                 0:  Hides the window and activates another window. 
-                 1:  Activates and displays a window. 
-                     If the window is minimized or maximized, Windows restores it to 
-                     its original size and position. 
-                     An application should specify this flag when displaying the window for the first time. 
-                 2:  Activates the window and displays it as a minimized window. 
-                 3:  Activates the window and displays it as a maximized window. 
-                 4:  Displays a window in its most recent size and position. 
-                     The active window remains active. 
-                 5:  Activates the window and displays it in its current size and position.  
-                 6:  Minimizes the specified window and activates the next top-level window in the z-order. 
-                 7:  Displays the window as a minimized window. 
-                     The active window remains active. 
-                 8:  Displays the window in its current state. 
-                     The active window remains active. 
-                 9:  Activates and displays the window. 
-                     If the window is minimized or maximized, Windows restores it to its original 
-                     size and position. 
-                     An application should specify this flag when restoring a minimized window. 
-                10:  Sets the show state based on the SW_ flag specified in the STARTUPINFO structure 
-                     passed to theCreateProcess function by the program that started the application. 
-                     An application should call ShowWindow with this flag to set the initial show 
-                     state of its main window. 
+  This parameter can be one of the following values: 
+  
+   0:  Hides the window and activates another window. 
+   1:  Activates and displays a window. 
+       If the window is minimized or maximized, Windows restores it to 
+       its original size and position. 
+       An application should specify this flag when displaying the window for the first time. 
+   2:  Activates the window and displays it as a minimized window. 
+   3:  Activates the window and displays it as a maximized window. 
+   4:  Displays a window in its most recent size and position. 
+       The active window remains active. 
+   5:  Activates the window and displays it in its current size and position.  
+   6:  Minimizes the specified window and activates the next top-level window in the z-order. 
+   7:  Displays the window as a minimized window. 
+       The active window remains active. 
+   8:  Displays the window in its current state. 
+       The active window remains active. 
+   9:  Activates and displays the window. 
+       If the window is minimized or maximized, Windows restores it to its original 
+       size and position. 
+       An application should specify this flag when restoring a minimized window. 
+  10:  Sets the show state based on the SW_ flag specified in the STARTUPINFO structure 
+       passed to theCreateProcess function by the program that started the application. 
+       An application should call ShowWindow with this flag to set the initial show 
+       state of its main window. 
+  
 
+If sucessful, the function returns true. 
 
-  If sucessful, the function returns true. 
-  If not, it returns nil followed by an error message. You could use "assert" to test for failure.
+If not, it returns nil followed by an error message. You could use "assert" to test for failure.
 
-  Examples:
+Examples:
 
-  assert (windows_utils.shell_execute ("c:\\mushclient\\worlds\\SMAUG.MCL"))  -- document
-                                                                                                            
-  assert (windows_utils.shell_execute ("http://www.gammon.com.au/"))  -- web page
-
-  assert (windows_utils.shell_execute ("mailto:someone@somewhere.com"))  -- open mail client
-
-  assert (windows_utils.shell_execute ("c:\\", nil, nil, "explore"))  -- explore disk
-
-  assert (windows_utils.shell_execute ("c:\\readme.txt", nil, nil, "print"))  -- print a file
+assert (utils.shellexecute ("c:/mushclient/worlds/SMAUG.MCL"))-- document
+assert (utils.shellexecute ("http://www.gammon.com.au/"))     -- web page
+assert (utils.shellexecute ("mailto:someone@somewhere.com"))  -- open mail client
+assert (utils.shellexecute ("c:/", nil, nil, "explore"))      -- explore disk
+assert (utils.shellexecute ("c:/readme.txt", nil, nil, "print"))  -- print a file
 
 */
 
