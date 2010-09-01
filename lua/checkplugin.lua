@@ -1,4 +1,4 @@
--- checkplugin.xml
+-- checkplugin.lua
 
 -- Checks the nominated plugin is installed
 

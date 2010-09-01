@@ -323,6 +323,7 @@ SetOverwrite ifnewer
    File "..\lua\gauge.lua"  
    File "..\lua\ppi.lua"
    File "..\lua\mapper.lua"  
+   File "..\lua\com.lua"  
    
    ; LuaSocket
    
@@ -538,6 +539,7 @@ Section Uninstall
   Delete "$INSTDIR\lua\gauge.lua" 
   Delete "$INSTDIR\lua\ppi.lua"
   Delete "$INSTDIR\lua\mapper.lua"  
+  Delete "$INSTDIR\lua\com.lua"  
 
   Delete "$INSTDIR\lua\socket.lua"
   Delete "$INSTDIR\lua\ltn12.lua"
