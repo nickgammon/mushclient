@@ -747,7 +747,7 @@ const char * Convert_PCRE_Runtime_Error (const int iError);
 lua_State *MakeLuaState (void);
 
 // send a window to the front
-void SendToFront (const char * name);
+bool SendToFront (const char * name);
 
 // 1 = invert, 2 = lighter, 3 = darker, 4 = less colour, 5 = more colour
 

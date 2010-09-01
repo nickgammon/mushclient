@@ -2935,6 +2935,7 @@ int TMessageBox (const char * sText, UINT nType)
   }
 
 
+bool SendToFrontFound;
 
 /* callback function for EnumWindows */
 
@@ -2956,6 +2957,7 @@ static BOOL CALLBACK EnumWindowsProc (HWND hwnd, LPARAM lParam)
  if (memcmp (buf, name, strlen (name)) == 0)
    {
    SetForegroundWindow (hwnd);  /* bring to foreground */
+   SendToFrontFound = true;
    return FALSE;  
    }  /* found match */
  
@@ -2972,10 +2974,12 @@ Example:
 
 */
 
-void SendToFront (const char * name)
+bool SendToFront (const char * name)
   {
+  SendToFrontFound = false;
   EnumWindows (&EnumWindowsProc, (int) name);
-  } /* end of send_to_front */
+  return SendToFrontFound;
+  } /* end of SendToFront */
 
 
 static void user_error_fn(png_structp png_ptr,

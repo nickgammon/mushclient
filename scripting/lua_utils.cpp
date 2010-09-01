@@ -1395,6 +1395,180 @@ static int getfontfamilies (lua_State *L)
 
   }
 
+/* sends the nominated window to the front, based on the 
+   leading characters in its name (first match) 
+
+Example:
+
+  utils.send_to_front ("Crimson Editor")
+
+*/
+
+static int send_to_front (lua_State *L)
+  {
+  lua_pushboolean  (L, SendToFront (luaL_checkstring (L, 1)));    /* send_to_front_found flag */
+  return 1;   /* one result */
+  } /* end of send_to_front */
+
+/* Execute an operating-system command:
+
+  windows_utils.shell_execute (filename, params, defdir, operation, show_command)
+
+  Only the first argument (filename) is required, the rest are optional.
+
+  filename:  The file to open or print or the folder to open or explore. 
+             The function can open an executable file or a document file. 
+             The function can print a document file. 
+
+  params:    A string that specifies the parameters to be passed to the application. 
+             If filename specifies a document file, params should be nil or "".
+
+  defdir:    A string that specifies the default directory.
+             
+  operation: The following operation strings are valid: 
+             "open":  The function opens the file specified by the filename parameter. 
+                      The file can be an executable file or a document file. It can also be a folder. 
+             "print": The function prints the file specified by filename. 
+                      The file should be a document file. 
+                      If the file is an executable file, the function opens the file, 
+                      as if "open" had been specified. 
+             "explore":  The function explores the folder specified by filename.  
+
+              This parameter can be nil or "". 
+              In that case, the function opens the file specified by filename. 
+
+  show_command: If filename specifies an executable file, show_command specifies how the 
+                application is to be shown when it is opened. 
+
+                This parameter can be nil in which case it defaults to 1 - the recommended default.
+
+                This parameter can be one of the following values: 
+  
+                 0:  Hides the window and activates another window. 
+                 1:  Activates and displays a window. 
+                     If the window is minimized or maximized, Windows restores it to 
+                     its original size and position. 
+                     An application should specify this flag when displaying the window for the first time. 
+                 2:  Activates the window and displays it as a minimized window. 
+                 3:  Activates the window and displays it as a maximized window. 
+                 4:  Displays a window in its most recent size and position. 
+                     The active window remains active. 
+                 5:  Activates the window and displays it in its current size and position.  
+                 6:  Minimizes the specified window and activates the next top-level window in the z-order. 
+                 7:  Displays the window as a minimized window. 
+                     The active window remains active. 
+                 8:  Displays the window in its current state. 
+                     The active window remains active. 
+                 9:  Activates and displays the window. 
+                     If the window is minimized or maximized, Windows restores it to its original 
+                     size and position. 
+                     An application should specify this flag when restoring a minimized window. 
+                10:  Sets the show state based on the SW_ flag specified in the STARTUPINFO structure 
+                     passed to theCreateProcess function by the program that started the application. 
+                     An application should call ShowWindow with this flag to set the initial show 
+                     state of its main window. 
+
+
+  If sucessful, the function returns true. 
+  If not, it returns nil followed by an error message. You could use "assert" to test for failure.
+
+  Examples:
+
+  assert (windows_utils.shell_execute ("c:\\mushclient\\worlds\\SMAUG.MCL"))  -- document
+                                                                                                            
+  assert (windows_utils.shell_execute ("http://www.gammon.com.au/"))  -- web page
+
+  assert (windows_utils.shell_execute ("mailto:someone@somewhere.com"))  -- open mail client
+
+  assert (windows_utils.shell_execute ("c:\\", nil, nil, "explore"))  -- explore disk
+
+  assert (windows_utils.shell_execute ("c:\\readme.txt", nil, nil, "print"))  -- print a file
+
+*/
+
+static int shell_execute (lua_State *L)
+  {
+  const char * filename = luaL_checkstring (L, 1);
+  const char * params = luaL_optstring (L, 2, "");
+  const char * defdir = luaL_optstring (L, 3, "");
+  const char * operation = luaL_optstring (L, 4, "open");
+  const int  nShowCmd = (int) luaL_optnumber (L, 5, SW_SHOWNORMAL);
+  const char * err = NULL;
+  char buf [50];  // for unknown error codes
+
+  int result = (int) ShellExecute (NULL, 
+                                  operation, 
+                                  filename, 
+                                  params [0] ? params : NULL ,
+                                  defdir [0] ? defdir : NULL ,
+                                  nShowCmd);
+
+  if (result > 32)
+    {
+    lua_pushboolean  (L, 1);    /* OK flag */
+    return 1;   /* one result */
+    }
+
+  lua_pushnil (L);    /* bad result flag */
+
+  switch (result)
+    {
+    case 0:                     
+      err = "The operating system is out of memory or resources."; 
+      break;
+    case ERROR_FILE_NOT_FOUND : 
+      err = "The specified file was not found."; 
+      break;
+    case ERROR_PATH_NOT_FOUND : 
+      err = "The specified path was not found."; 
+      break;
+    case ERROR_BAD_FORMAT : 
+      err = "The .exe file is invalid (non-Win32® .exe or error in .exe image)."; 
+      break;
+    case SE_ERR_ACCESSDENIED : 
+      err = "The operating system denied access to the specified file."; 
+      break;
+    case SE_ERR_ASSOCINCOMPLETE : 
+      err = "The file name association is incomplete or invalid."; 
+      break;
+    case SE_ERR_DDEBUSY : 
+      err = "The DDE transaction could not be completed because other DDE transactions were being processed."; 
+      break;
+    case SE_ERR_DDEFAIL : 
+      err = "The DDE transaction failed."; 
+      break;
+    case SE_ERR_DDETIMEOUT : 
+      err = "The DDE transaction could not be completed because the request timed out."; 
+      break;
+    case SE_ERR_DLLNOTFOUND : 
+      err = "The specified dynamic-link library was not found."; 
+      break;
+    case SE_ERR_NOASSOC : 
+      err = "There is no application associated with the given file name extension."; 
+      break;
+    case SE_ERR_OOM : 
+      err = "There was not enough memory to complete the operation."; 
+      break;
+    case SE_ERR_SHARE : 
+      err = "A sharing violation occurred."; 
+      break;
+    default:
+      _snprintf (buf, sizeof buf, "Unknown error code: %i returned.", result);
+      buf [sizeof (buf) - 1] = 0;
+      break;
+
+    } /* end of switch on result */
+
+  if (err == NULL) 
+    err = buf;
+
+  lua_pushstring (L, err);
+
+  return 2; /* returning nil and error message  */
+
+  } // end of shell_execute	
+
+
 
 // table of operations
 static const struct luaL_reg xmllib [] = 
@@ -1419,6 +1593,8 @@ static const struct luaL_reg xmllib [] =
   {"msgbox",        msgbox},       // msgbox - not Unicode
   {"multilistbox",  multilistbox},
   {"showdebugstatus", showdebugstatus},
+  {"sendtofront",   send_to_front},
+  {"shellexecute",  shell_execute},
   {"spellcheckdialog", spellcheckdialog},
   {"umsgbox",       umsgbox},      // msgbox - UTF8
   {"utf8decode",    utf8decode}, 
@@ -1426,6 +1602,7 @@ static const struct luaL_reg xmllib [] =
   {"utf8sub",       utf8sub},
   {"utf8valid",     utf8valid},
   {"xmlread",       xmlread},
+
 
   {NULL, NULL}
   };
