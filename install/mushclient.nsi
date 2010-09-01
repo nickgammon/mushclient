@@ -251,6 +251,7 @@ Section "Documentation"
   File "..\docs\Lua Colors LICENSE.txt"
   File "..\docs\JSON License.txt"
   File "..\docs\LuaJSON.txt"
+  File "..\docs\luacom-1.3-doc.pdf"
   
 SectionEnd
 
@@ -607,6 +608,8 @@ Section Uninstall
   Delete "$INSTDIR\docs\Lua Colors LICENSE.txt"
   Delete "$INSTDIR\docs\JSON License.txt"
   Delete "$INSTDIR\docs\LuaJSON.txt"
+  Delete "$INSTDIR\docs\luacom-1.3-doc.pdf"
+
   
   RMDir  "$INSTDIR\docs"
 
