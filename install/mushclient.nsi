@@ -323,9 +323,32 @@ SetOverwrite ifnewer
    File "..\lua\gauge.lua"  
    File "..\lua\ppi.lua"
    File "..\lua\mapper.lua"  
+   
+   ; LuaSocket
+   
+   File "..\lua\socket.lua"
+   File "..\lua\ltn12.lua"
+   File "..\lua\mime.lua"
 
+  CreateDirectory "$INSTDIR\mime"
+  SetOutPath $INSTDIR\mime
+
+   File "..\lua\mime\core.dll"
+ 
+  CreateDirectory "$INSTDIR\socket"
+  SetOutPath $INSTDIR\socket
+
+   File "..\lua\socket\core.dll"
+   File "..\lua\socket\ftp.lua"
+   File "..\lua\socket\http.lua"
+   File "..\lua\socket\smtp.lua"
+   File "..\lua\socket\tp.lua"
+   File "..\lua\socket\url.lua"
+        
    ; JSON stuff from http://luaforge.net/projects/luajson/ 
    ; version 1.1
+   
+  SetOutPath $INSTDIR\lua
    
    File "..\lua\json.lua"
 
@@ -515,7 +538,21 @@ Section Uninstall
   Delete "$INSTDIR\lua\gauge.lua" 
   Delete "$INSTDIR\lua\ppi.lua"
   Delete "$INSTDIR\lua\mapper.lua"  
-  
+
+  Delete "$INSTDIR\lua\socket.lua"
+  Delete "$INSTDIR\lua\ltn12.lua"
+  Delete "$INSTDIR\lua\mime.lua"
+  Delete "$INSTDIR\mime\core.dll"
+  Delete "$INSTDIR\socket\core.dll"
+  Delete "$INSTDIR\socket\ftp.lua"
+  Delete "$INSTDIR\socket\http.lua"
+  Delete "$INSTDIR\socket\smtp.lua"
+  Delete "$INSTDIR\socket\tp.lua"
+  Delete "$INSTDIR\socket\url.lua"
+
+  RMDir  "$INSTDIR\mime"
+  RMDir  "$INSTDIR\socket"
+    
   Delete "$INSTDIR\lua\json.lua"
   Delete "$INSTDIR\lua\json\encode.lua"
   Delete "$INSTDIR\lua\json\decode.lua"
