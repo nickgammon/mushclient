@@ -102,7 +102,7 @@ function OnPluginInstall ()
   talk = assert (luacom.CreateObject ("SAPI.SpVoice"), "cannot open SAPI")
   
   -- Method call
-  talk:Speak ("SAPI Plugin installed and is ready.", 1)
+  talk:Speak ("SAPI Plug-in installed and is ready.", 1)
 
   speak = true
   EnableGroup ("speech", true)
