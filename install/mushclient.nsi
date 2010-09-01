@@ -96,6 +96,7 @@ Section "-MUSHclient program (required)"
   File "..\names.txt"
   File /oname=license.txt "..\docs\agreement.txt"
   File "..\Dina.fon"
+  File "..\install\luacom.dll"
 
   ; Write the installation path into the registry
   WriteRegStr HKCU "Software\Gammon Software Solutions\MUSHclient\General Options" "InstallDir" $INSTDIR
@@ -474,6 +475,10 @@ Section Uninstall
 
   ; and Dina font
   Delete "$INSTDIR\Dina.fon"
+  
+  ; and LuaCOM dll
+  
+  Delete "$INSTDIR\luacom.dll"
   
   ; scripting stuff
   Delete "$INSTDIR\scripts\MUSHclient.tlb"
