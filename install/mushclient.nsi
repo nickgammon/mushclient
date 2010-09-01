@@ -252,7 +252,28 @@ Section "Documentation"
   File "..\docs\JSON License.txt"
   File "..\docs\LuaJSON.txt"
   File "..\docs\luacom-1.3-doc.pdf"
+  File "..\docs\LuaSocket_license.txt"
   
+  CreateDirectory "$INSTDIR\docs\LuaSocket_documentation"
+  SetOutPath $INSTDIR\docs\LuaSocket_documentation
+
+  File "..\docs\LuaSocket_documentation\dns.html"
+  File "..\docs\LuaSocket_documentation\ftp.html"
+  File "..\docs\LuaSocket_documentation\http.html"
+  File "..\docs\LuaSocket_documentation\index.html"
+  File "..\docs\LuaSocket_documentation\installation.html"
+  File "..\docs\LuaSocket_documentation\introduction.html"
+  File "..\docs\LuaSocket_documentation\ltn12.html"
+  File "..\docs\LuaSocket_documentation\luasocket.png"
+  File "..\docs\LuaSocket_documentation\mime.html"
+  File "..\docs\LuaSocket_documentation\reference.css"
+  File "..\docs\LuaSocket_documentation\reference.html"
+  File "..\docs\LuaSocket_documentation\smtp.html"
+  File "..\docs\LuaSocket_documentation\socket.html"
+  File "..\docs\LuaSocket_documentation\tcp.html"
+  File "..\docs\LuaSocket_documentation\udp.html"
+  File "..\docs\LuaSocket_documentation\url.html"
+   
 SectionEnd
 
 Section "Fonts"
@@ -610,7 +631,26 @@ Section Uninstall
   Delete "$INSTDIR\docs\LuaJSON.txt"
   Delete "$INSTDIR\docs\luacom-1.3-doc.pdf"
 
-  
+  Delete "$INSTDIR\docs\LuaSocket_license.txt"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\dns.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\ftp.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\http.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\index.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\installation.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\introduction.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\ltn12.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\luasocket.png"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\mime.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\reference.css"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\reference.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\smtp.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\socket.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\tcp.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\udp.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\url.html"
+
+  RMDir  "$INSTDIR\docs\LuaSocket_documentation"
+      
   RMDir  "$INSTDIR\docs"
 
   ; fonts
