@@ -226,22 +226,22 @@ void CScriptEngine::OpenLuaDelayed ()
 
 
   // add luacom to package.preload
-  lua_getglobal (L, LUA_LOADLIBNAME);  /* "package" */
+  lua_getglobal (L, LUA_LOADLIBNAME);  // package table
 
-  if (lua_istable (L, -1))
+  if (lua_istable (L, -1))    // if it exists and is a table
     {
-    lua_getfield (L, -1, "preload");
+    lua_getfield (L, -1, "preload");  // get preload table inside it
 
-    if (lua_istable (L, -1))
+    if (lua_istable (L, -1))   // preload table exists
       {
-      lua_pushcfunction(L, luacom_open_glue);
-      lua_setfield(L, -2, "luacom");
-      lua_pop (L, 1);   // get rid of preload table from stack
+      lua_pushcfunction(L, luacom_open_glue);   // luacom open
+      lua_setfield(L, -2, "luacom");          
       } // have package.preload table
 
-    lua_pop (L, 1);   // get rid of package table from stack
+    lua_pop (L, 1);   // get rid of preload table from stack
     } // have package table
 
+  lua_pop (L, 1);   // get rid of package table from stack
 
   lua_settop(L, 0);   // clear stack
 
