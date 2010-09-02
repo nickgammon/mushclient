@@ -250,7 +250,29 @@ Section "Documentation"
   File "..\docs\Lua Colors LICENSE.txt"
   File "..\docs\JSON License.txt"
   File "..\docs\LuaJSON.txt"
+  File "..\docs\luacom-1.3-doc.pdf"
+  File "..\docs\LuaSocket_license.txt"
   
+  CreateDirectory "$INSTDIR\docs\LuaSocket_documentation"
+  SetOutPath $INSTDIR\docs\LuaSocket_documentation
+
+  File "..\docs\LuaSocket_documentation\dns.html"
+  File "..\docs\LuaSocket_documentation\ftp.html"
+  File "..\docs\LuaSocket_documentation\http.html"
+  File "..\docs\LuaSocket_documentation\index.html"
+  File "..\docs\LuaSocket_documentation\installation.html"
+  File "..\docs\LuaSocket_documentation\introduction.html"
+  File "..\docs\LuaSocket_documentation\ltn12.html"
+  File "..\docs\LuaSocket_documentation\luasocket.png"
+  File "..\docs\LuaSocket_documentation\mime.html"
+  File "..\docs\LuaSocket_documentation\reference.css"
+  File "..\docs\LuaSocket_documentation\reference.html"
+  File "..\docs\LuaSocket_documentation\smtp.html"
+  File "..\docs\LuaSocket_documentation\socket.html"
+  File "..\docs\LuaSocket_documentation\tcp.html"
+  File "..\docs\LuaSocket_documentation\udp.html"
+  File "..\docs\LuaSocket_documentation\url.html"
+   
 SectionEnd
 
 Section "Fonts"
@@ -322,9 +344,33 @@ SetOverwrite ifnewer
    File "..\lua\gauge.lua"  
    File "..\lua\ppi.lua"
    File "..\lua\mapper.lua"  
+   File "..\luacom\luacom5.lua"  
+   
+   ; LuaSocket
+   
+   File "..\lua\socket.lua"
+   File "..\lua\ltn12.lua"
+   File "..\lua\mime.lua"
 
+  CreateDirectory "$INSTDIR\mime"
+  SetOutPath $INSTDIR\mime
+
+   File "..\lua\mime\core.dll"
+ 
+  CreateDirectory "$INSTDIR\socket"
+  SetOutPath $INSTDIR\socket
+
+   File "..\lua\socket\core.dll"
+   File "..\lua\socket\ftp.lua"
+   File "..\lua\socket\http.lua"
+   File "..\lua\socket\smtp.lua"
+   File "..\lua\socket\tp.lua"
+   File "..\lua\socket\url.lua"
+        
    ; JSON stuff from http://luaforge.net/projects/luajson/ 
    ; version 1.1
+   
+  SetOutPath $INSTDIR\lua
    
    File "..\lua\json.lua"
 
@@ -421,6 +467,8 @@ Section "Plugins"
   File "..\plugins\ATCP_Mapper.xml"
   File "..\plugins\Messages_Window.xml"
   File "..\plugins\Calculator.xml"
+  File "..\plugins\Lua_Sapi.xml"
+
 
 SectionEnd
 
@@ -472,7 +520,7 @@ Section Uninstall
 
   ; and Dina font
   Delete "$INSTDIR\Dina.fon"
-  
+ 
   ; scripting stuff
   Delete "$INSTDIR\scripts\MUSHclient.tlb"
   Delete "$INSTDIR\scripts\exampscript.vbs"
@@ -508,7 +556,22 @@ Section Uninstall
   Delete "$INSTDIR\lua\gauge.lua" 
   Delete "$INSTDIR\lua\ppi.lua"
   Delete "$INSTDIR\lua\mapper.lua"  
-  
+  Delete "$INSTDIR\lua\luacom5.lua"  
+
+  Delete "$INSTDIR\lua\socket.lua"
+  Delete "$INSTDIR\lua\ltn12.lua"
+  Delete "$INSTDIR\lua\mime.lua"
+  Delete "$INSTDIR\mime\core.dll"
+  Delete "$INSTDIR\socket\core.dll"
+  Delete "$INSTDIR\socket\ftp.lua"
+  Delete "$INSTDIR\socket\http.lua"
+  Delete "$INSTDIR\socket\smtp.lua"
+  Delete "$INSTDIR\socket\tp.lua"
+  Delete "$INSTDIR\socket\url.lua"
+
+  RMDir  "$INSTDIR\mime"
+  RMDir  "$INSTDIR\socket"
+    
   Delete "$INSTDIR\lua\json.lua"
   Delete "$INSTDIR\lua\json\encode.lua"
   Delete "$INSTDIR\lua\json\decode.lua"
@@ -561,7 +624,28 @@ Section Uninstall
   Delete "$INSTDIR\docs\Lua Colors LICENSE.txt"
   Delete "$INSTDIR\docs\JSON License.txt"
   Delete "$INSTDIR\docs\LuaJSON.txt"
-  
+  Delete "$INSTDIR\docs\luacom-1.3-doc.pdf"
+
+  Delete "$INSTDIR\docs\LuaSocket_license.txt"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\dns.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\ftp.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\http.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\index.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\installation.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\introduction.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\ltn12.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\luasocket.png"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\mime.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\reference.css"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\reference.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\smtp.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\socket.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\tcp.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\udp.html"
+  Delete "$INSTDIR\docs\LuaSocket_documentation\url.html"
+
+  RMDir  "$INSTDIR\docs\LuaSocket_documentation"
+      
   RMDir  "$INSTDIR\docs"
 
   ; fonts
@@ -610,6 +694,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\ATCP_Mapper.xml"  
   Delete "$INSTDIR\worlds\plugins\Messages_Window.xml"
   Delete "$INSTDIR\worlds\plugins\Calculator.xml"
+  Delete "$INSTDIR\worlds\plugins\Lua_Sapi.xml"
   
   ; locale stuff
   

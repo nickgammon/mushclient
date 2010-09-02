@@ -190,6 +190,46 @@ function colourtext (win, font_id, Text, Left, Top, Right, Bottom, Capitalize, u
 
 end -- colourtext
 
+-- converts text with colour styles in it into style runs
+
+function ColoursToStyles (Text)
+
+ if Text:match ("@") then
+
+    astyles = {}
+
+    Text = Text:gsub ("@%-", "~")    -- fix tildes
+    Text = Text:gsub ("@@", "\0")  -- change @@ to 0x00
+
+    -- make sure we start with @ or gsub doesn't work properly
+    if Text:sub (1, 1) ~= "@" then
+       Text = DEFAULT_COLOUR .. Text
+    end -- if
+
+    for colour, text in Text:gmatch ("@(%a)([^@]+)") do
+
+       text = text:gsub ("%z", "@") -- put any @ characters back
+
+       if #text > 0 then
+          table.insert (astyles, { text = text, 
+                                   length = #text, 
+                                   textcolour = colour_conversion [colour] or GetNormalColour (WHITE),
+                                   backcolour = GetNormalColour (BLACK) })
+       end -- if some text
+    end -- for each colour run.
+
+    return astyles
+
+ end -- if any colour codes at all
+
+ -- No colour codes, create a single style.
+ return { { text = Text, 
+            length = #Text, 
+            textcolour = GetNormalColour (WHITE),
+            backcolour = GetNormalColour (BLACK) } }
+
+end  -- function ColoursToStyles
+
 -- take a string, and remove colour codes from it (eg. "@Ghello" becomes "hello"
 function strip_colours (s)
   s = s:gsub ("@%-", "~")    -- fix tildes
