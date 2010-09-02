@@ -7,6 +7,7 @@
 #include <fcntl.h>  // for popen
 #include "..\pcre\config.h"
 #include "..\pcre\pcre_internal.h"
+#include "..\luacom\luacom.h"
 
 set<string> LuaFunctionsSet;
 set<string> LuaTablesSet;
@@ -24,8 +25,6 @@ extern "C"
 //LUALIB_API int luaopen_trie(lua_State *L);
 
 LUALIB_API int luaopen_progress_dialog(lua_State *L);
-
-
 
 static void BuildOneLuaFunction (lua_State * L, const char * sTableName)
   {
@@ -162,8 +161,14 @@ static void BuildLuaTables (lua_State * L)
 
   } // end of BuildLuaTables
 
-// I need this extra function to avoid:
+// sigh - luacom_open returns void
+int luacom_open_glue (lua_State *L)
+  {
+  luacom_open (L);
+  return 0;
+  }
 
+// I need this extra function to avoid:
 // Compiler Error C2712
 // cannot use __try in functions that require object unwinding
 
@@ -218,6 +223,25 @@ void CScriptEngine::OpenLuaDelayed ()
   "Check function");
 
   m_pDoc->m_iCurrentActionSource = eUnknownActionSource;
+
+
+  // add luacom to package.preload
+  lua_getglobal (L, LUA_LOADLIBNAME);  /* "package" */
+
+  if (lua_istable (L, -1))
+    {
+    lua_getfield (L, -1, "preload");
+
+    if (lua_istable (L, -1))
+      {
+      lua_pushcfunction(L, luacom_open_glue);
+      lua_setfield(L, -2, "luacom");
+      lua_pop (L, 1);   // get rid of preload table from stack
+      } // have package.preload table
+
+    lua_pop (L, 1);   // get rid of package table from stack
+    } // have package table
+
 
   lua_settop(L, 0);   // clear stack
 

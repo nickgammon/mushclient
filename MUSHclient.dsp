@@ -51,7 +51,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386
 # SUBTRACT BASE LINK32 /pdb:none
-# ADD LINK32 dsound.lib /nologo /subsystem:windows /debug /machine:I386
+# ADD LINK32 dsound.lib Shlwapi.lib /nologo /subsystem:windows /debug /machine:I386
 # SUBTRACT LINK32 /profile
 
 !ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
@@ -77,7 +77,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
 # SUBTRACT BASE LINK32 /pdb:none
-# ADD LINK32 dsound.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 dsound.lib Shlwapi.lib /nologo /subsystem:windows /machine:I386
 # SUBTRACT LINK32 /pdb:none /debug
 
 !ENDIF 
@@ -266,6 +266,158 @@ SOURCE=.\worldsock.cpp
 # Begin Source File
 
 SOURCE=.\dialogs\global_prefs\GlobalPrefsSheet.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\LuaAux.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\LuaAux.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\luabeans.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\luabeans.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\luacom_internal.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\luacom_internal.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\LuaCompat.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\LuaCompat.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tCOMUtil.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tCOMUtil.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaCOM.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOM.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaCOMClassFactory.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOMClassFactory.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaCOMConnPoints.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOMConnPoints.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaCOMEnumerator.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOMEnumerator.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaCOMException.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOMException.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaCOMTypeHandler.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOMTypeHandler.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaControl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaControl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaDispatch.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaDispatch.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaObject.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaObject.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaObjList.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaObjList.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaTLB.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaTLB.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tLuaVector.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaVector.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tStringBuffer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tStringBuffer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\src\library\tUtil.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tUtil.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -1154,6 +1306,106 @@ SOURCE=.\lsqlite\lsqlite3.c
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # End Group
+# Begin Group "luacom"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\luacom\LuaAux.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\luabeans.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\luacom.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\LuaCompat.c
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tCOMUtil.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOM.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOMClassFactory.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOMConnPoints.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOMEnumerator.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOMException.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaCOMTypeHandler.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaControl.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaDispatch.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaObject.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaObjList.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaTLB.cpp
+# ADD CPP /GR
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tLuaVector.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tStringBuffer.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\luacom\tUtil.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\.gitignore
@@ -1170,6 +1422,19 @@ SOURCE=.\install\readme.txt
 # End Project
 # Section MUSHclient : {00000000-0001-0000-0000-000000000000}
 # 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
+# End Section
+# Section MUSHclient : {F3B1306C-16CC-11D0-B7D0-00A0247B3BFD}
+# 	0:8:Splash.h:D:\SOURCE\MUSHclient\Splash.h
+# 	0:10:Splash.cpp:D:\SOURCE\MUSHclient\Splash.cpp
+# 	1:10:IDB_SPLASH:102
+# 	2:10:ResHdrName:resource.h
+# 	2:11:ProjHdrName:stdafx.h
+# 	2:10:WrapperDef:_SPLASH_SCRN_
+# 	2:12:SplClassName:CSplashWnd
+# 	2:21:SplashScreenInsertKey:4.0
+# 	2:10:HeaderName:Splash.h
+# 	2:10:ImplemName:Splash.cpp
+# 	2:7:BmpID16:IDB_SPLASH
 # End Section
 # Section MUSHclient : {F3B13065-16CC-11D0-B7D0-00A0247B3BFD}
 # 	0:8:TipDlg.h:D:\SOURCE\MUSHclient\TipDlg.h
@@ -1195,19 +1460,6 @@ SOURCE=.\install\readme.txt
 # 	2:13:IDB_LIGHTBULB:IDB_LIGHTBULB
 # 	2:18:CG_IDS_FILE_ABSENT:CG_IDS_FILE_ABSENT
 # 	2:10:TipDlg.cpp:TipDlg.cpp
-# End Section
-# Section MUSHclient : {F3B1306C-16CC-11D0-B7D0-00A0247B3BFD}
-# 	0:8:Splash.h:D:\SOURCE\MUSHclient\Splash.h
-# 	0:10:Splash.cpp:D:\SOURCE\MUSHclient\Splash.cpp
-# 	1:10:IDB_SPLASH:102
-# 	2:10:ResHdrName:resource.h
-# 	2:11:ProjHdrName:stdafx.h
-# 	2:10:WrapperDef:_SPLASH_SCRN_
-# 	2:12:SplClassName:CSplashWnd
-# 	2:21:SplashScreenInsertKey:4.0
-# 	2:10:HeaderName:Splash.h
-# 	2:10:ImplemName:Splash.cpp
-# 	2:7:BmpID16:IDB_SPLASH
 # End Section
 # Section MUSHclient : {00000000-0000-0000-0000-000000000000}
 # 	1:22:CG_IDR_POPUP_SEND_VIEW:124

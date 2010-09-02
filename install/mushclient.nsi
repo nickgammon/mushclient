@@ -96,7 +96,6 @@ Section "-MUSHclient program (required)"
   File "..\names.txt"
   File /oname=license.txt "..\docs\agreement.txt"
   File "..\Dina.fon"
-  File "..\install\luacom.dll"
 
   ; Write the installation path into the registry
   WriteRegStr HKCU "Software\Gammon Software Solutions\MUSHclient\General Options" "InstallDir" $INSTDIR
@@ -345,7 +344,7 @@ SetOverwrite ifnewer
    File "..\lua\gauge.lua"  
    File "..\lua\ppi.lua"
    File "..\lua\mapper.lua"  
-   File "..\lua\com.lua"  
+   File "..\luacom\luacom5.lua"  
    
    ; LuaSocket
    
@@ -521,11 +520,7 @@ Section Uninstall
 
   ; and Dina font
   Delete "$INSTDIR\Dina.fon"
-  
-  ; and LuaCOM dll
-  
-  Delete "$INSTDIR\luacom.dll"
-  
+ 
   ; scripting stuff
   Delete "$INSTDIR\scripts\MUSHclient.tlb"
   Delete "$INSTDIR\scripts\exampscript.vbs"
@@ -561,7 +556,7 @@ Section Uninstall
   Delete "$INSTDIR\lua\gauge.lua" 
   Delete "$INSTDIR\lua\ppi.lua"
   Delete "$INSTDIR\lua\mapper.lua"  
-  Delete "$INSTDIR\lua\com.lua"  
+  Delete "$INSTDIR\lua\luacom5.lua"  
 
   Delete "$INSTDIR\lua\socket.lua"
   Delete "$INSTDIR\lua\ltn12.lua"
