@@ -209,22 +209,6 @@ void CScriptEngine::OpenLuaDelayed ()
   // unless they explicitly enable it, remove ability to load DLLs
   DisableDLLs (L);
 
-  m_pDoc->m_iCurrentActionSource = eLuaSandbox;
-
-  // preliminary sand-box stuff
-  ParseLua (App.m_strLuaScript, "Sandbox");
-
-  // this is so useful I am adding it in (see check.lua)
-  ParseLua ( \
-  "function check (result)  \
-    if result ~= error_code.eOK then\
-      error (error_desc [result] or \
-             string.format (\"Unknown error code: %i\", result), 2) end; end", 
-  "Check function");
-
-  m_pDoc->m_iCurrentActionSource = eUnknownActionSource;
-
-
   // add luacom to package.preload
   lua_getglobal (L, LUA_LOADLIBNAME);  // package table
 
@@ -242,6 +226,20 @@ void CScriptEngine::OpenLuaDelayed ()
     } // have package table
 
   lua_pop (L, 1);   // get rid of package table from stack
+
+  // this is so useful I am adding it in (see check.lua)
+  ParseLua ( \
+  "function check (result)  \
+    if result ~= error_code.eOK then\
+      error (error_desc [result] or \
+             string.format (\"Unknown error code: %i\", result), 2) end; end", 
+  "Check function");
+
+  // preliminary sand-box stuff
+  m_pDoc->m_iCurrentActionSource = eLuaSandbox;
+  ParseLua (App.m_strLuaScript, "Sandbox");
+
+  m_pDoc->m_iCurrentActionSource = eUnknownActionSource;
 
   lua_settop(L, 0);   // clear stack
 
