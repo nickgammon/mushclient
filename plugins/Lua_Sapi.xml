@@ -9,8 +9,8 @@
    language="Lua"
    purpose="Speaks incoming text using SAPI."
    date_written="2010-09-01"
-   requires="3.45"
-   version="1.0"
+   requires="4.60"
+   version="1.1"
    >
    
 <description trim="y">
@@ -96,7 +96,7 @@ end -- function speak_skip
 function OnPluginInstall ()
 
   -- load Lua COM
-  assert (package.loadlib ("luacom.dll", "luacom_open")) ()
+  require "luacom"
   
   -- Instantiate a SAPI voice obejct
   talk = assert (luacom.CreateObject ("SAPI.SpVoice"), "cannot open SAPI")
