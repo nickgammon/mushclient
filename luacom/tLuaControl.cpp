@@ -737,7 +737,7 @@ STDMETHODIMP tLuaControl::GetClipboardData(DWORD dwReserved, IDataObject** ppDat
 STDMETHODIMP tLuaControl::DoVerb(LONG lVerb, LPMSG pMsg, IOleClientSite *pActiveSite,
     LONG lIndex, HWND hwndParent, LPCRECT prcPosRect)
 {
-    HRESULT hr = 0;   // NJG - to stop warning
+    HRESULT hr = OLEOBJ_S_INVALIDVERB;   // NJG - see: http://lua-users.org/lists/lua-l/2006-09/msg00030.html
 
     switch (lVerb) {
       case OLEIVERB_SHOW:
@@ -755,11 +755,6 @@ STDMETHODIMP tLuaControl::DoVerb(LONG lVerb, LPMSG pMsg, IOleClientSite *pActive
         // if it's a derived-control defined verb, pass it on to them
         //
         if (lVerb > 0) {
-
-            // FIX-TODO!!! hr is undefined here.
-            // http://lua-users.org/lists/lua-l/2006-09/msg00030.html
-            FAIL("FIX - luacom bug lua-l/2006-09/msg00030.html");
-
             if (hr == OLEOBJ_S_INVALIDVERB) {
                 // unrecognised verb -- just do the primary verb and
                 // activate the sucker.
