@@ -19,7 +19,7 @@
 extern "C"
 {
 #include "..\lua.h"
-#include "..\lauxlib.h"
+#include "..\lualib.h"
 #include "LuaCompat.h"
 }
 
@@ -36,6 +36,7 @@ const OLEVERB verbs[] = {
     { OLEIVERB_PRIMARY,         0, 0, 0},
     { OLEIVERB_UIACTIVATE,      0, 0, 0}
 };
+//unused: OLEIVERB_PRIMARY, OLEIVERB_OPEN, OLEIVERB_DISCARDUNDOSTATE
 
 #define MIDL_DEFINE_GUID(type,name,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) \
         const type name = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
@@ -742,46 +743,32 @@ STDMETHODIMP tLuaControl::GetClipboardData(DWORD dwReserved, IDataObject** ppDat
 STDMETHODIMP tLuaControl::DoVerb(LONG lVerb, LPMSG pMsg, IOleClientSite *pActiveSite,
     LONG lIndex, HWND hwndParent, LPCRECT prcPosRect)
 {
-    HRESULT hr = OLEOBJ_S_INVALIDVERB;   // See Lua mailing list (NJG)
+    HRESULT hr;
 
     switch (lVerb) {
       case OLEIVERB_SHOW:
       case OLEIVERB_INPLACEACTIVATE:
       case OLEIVERB_UIACTIVATE:
-        hr = InPlaceActivate(lVerb==OLEIVERB_UIACTIVATE);
-        return (hr);
-
+        hr = InPlaceActivate(lVerb == OLEIVERB_UIACTIVATE);
+        return hr;
+        //FIX: handle cases for in-place activatable v.s. nonactivatable objects?
+        // e.g. for OLEIVERB_UIACTIVATE, "If the object does not support in-place
+        // activation, it should return E_NOTIMPL" (msdn)
       case OLEIVERB_HIDE:
         UIDeactivate();
         if (m_fInPlaceVisible) SetInPlaceVisible(FALSE);
         return S_OK;
-
       default:
-        // if it's a derived-control defined verb, pass it on to them
-        //
-        if (lVerb > 0) {
-
-            // FIX-TODO!!! hr is undefined here.
-            // http://lua-users.org/lists/lua-l/2006-09/msg00030.html
-//            #pragma message("FIX - luacom bug http://lua-users.org/lists/lua-l/2006-09/msg00030.html")
-//            FAIL("FIX - luacom bug lua-l/2006-09/msg00030.html");
-
-            if (hr == OLEOBJ_S_INVALIDVERB) {
-                // unrecognised verb -- just do the primary verb and
-                // activate the sucker.
-                //
-                hr = InPlaceActivate(0);
-                return (FAILED(hr)) ? hr : OLEOBJ_S_INVALIDVERB;
-            } else
-                return hr;
-        } else {
-            FAIL("Unrecognized Negative verb in DoVerb().  bad.");
+        if (lVerb > 0) { // derived control defined verb
+            // treat unrecognized verb as OLEIVERB_PRIMARY (i.e. just activate in some way)
+            hr = InPlaceActivate(0);
+            return FAILED(hr) ? hr : OLEOBJ_S_INVALIDVERB;
+        } else { // unrecognized negative verb
             return E_NOTIMPL;
         }
         break;
     }
 
-    // dead code
     FAIL("this should be dead code!");
 }
 
