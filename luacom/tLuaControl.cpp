@@ -7,6 +7,15 @@
 #include <oleidl.h>
 #include <ocidl.h>
 
+// for MINGW and/or Wine
+#include <olectl.h>
+#ifndef VIEWSTATUS_OPAQUE
+#define VIEWSTATUS_OPAQUE 1
+#endif
+#ifndef POINTERINACTIVE_ACTIVATEONENTRY
+#define POINTERINACTIVE_ACTIVATEONENTRY 1
+#endif
+
 extern "C"
 {
 #include "..\lua.h"
@@ -17,8 +26,6 @@ extern "C"
 #include "luacom_internal.h"
 #include "tLuaDispatch.h"
 #include "tLuaControl.h"
-
-#pragma warning(disable: 4244 4101) 
 
 const float  HIMETRIC_PER_PIXEL(26.4583333333f);
 
@@ -41,7 +48,7 @@ const OLEVERB verbs[] = {
     }
 
 #define FAIL(szMsg)                                         \
-        { static char szMsgCode[] = szMsg;                    \
+        { static const char szMsgCode[] = szMsg;                    \
         DisplayAssert(szMsgCode, "FAIL", __FILE__, __LINE__); }
 
 // macro that checks a pointer for validity on input
@@ -71,7 +78,7 @@ static const char szTitle[]  = _SERVERNAME_ " Assertion  (Abort = UAE, Retry = I
 //=--------------------------------------------------------------------------=
 // Local functions
 //=--------------------------------------------------------------------------=
-int NEAR _IdMsgBox(LPSTR pszText, LPCSTR pszTitle, UINT mbFlags);
+int NEAR _IdMsgBox(LPCSTR pszText, LPCSTR pszTitle, UINT mbFlags);
 
 //=--------------------------------------------------------------------------=
 // DisplayAssert
@@ -83,16 +90,14 @@ int NEAR _IdMsgBox(LPSTR pszText, LPCSTR pszTitle, UINT mbFlags);
 //
 VOID DisplayAssert
 (
-    LPSTR	 pszMsg,
-    LPSTR	 pszAssert,
-    LPSTR	 pszFile,
-    UINT	 line
+    LPCSTR pszMsg,
+    LPCSTR pszAssert,
+    LPCSTR pszFile,
+    UINT   line
 )
 {
-    char	szMsg[250];
-    LPSTR	lpszText;
-
-    lpszText = pszMsg;		// Assume no file & line # info
+    char   szMsg[250];
+    LPCSTR lpszText = pszMsg; // Assume no file & line # info
 
     // If C file assert, where you've got a file name and a line #
     //
@@ -128,9 +133,9 @@ VOID DisplayAssert
 //
 int NEAR _IdMsgBox
 (
-    LPSTR	pszText,
-    LPCSTR	pszTitle,
-    UINT	mbFlags
+    LPCSTR  pszText,
+    LPCSTR pszTitle,
+    UINT   mbFlags
 )
 {
     HWND hwndActive;
@@ -144,17 +149,17 @@ int NEAR _IdMsgBox
 }
 
 void PixelToHimetric(const SIZEL* pixelSize, SIZEL* himetricSize) {
-	SIZEL ret;
-	ret.cx = static_cast<long>(pixelSize->cx * HIMETRIC_PER_PIXEL + 0.5);
-	ret.cy = static_cast<long>(pixelSize->cy * HIMETRIC_PER_PIXEL + 0.5);
-	*himetricSize = ret;
+  SIZEL ret;
+  ret.cx = static_cast<long>(pixelSize->cx * HIMETRIC_PER_PIXEL + 0.5);
+  ret.cy = static_cast<long>(pixelSize->cy * HIMETRIC_PER_PIXEL + 0.5);
+  *himetricSize = ret;
 }
 
 void HimetricToPixel(const SIZEL* himetricSize, SIZEL* pixelSize) {
-	SIZEL ret;
-	ret.cx = static_cast<long>(himetricSize->cx / HIMETRIC_PER_PIXEL + 0.5);
-	ret.cy = static_cast<long>(himetricSize->cy / HIMETRIC_PER_PIXEL + 0.5);
-	*pixelSize = ret;
+  SIZEL ret;
+  ret.cx = static_cast<long>(himetricSize->cx / HIMETRIC_PER_PIXEL + 0.5);
+  ret.cy = static_cast<long>(himetricSize->cy / HIMETRIC_PER_PIXEL + 0.5);
+  *pixelSize = ret;
 }
 
 //=--------------------------------------------------------------------------=
@@ -210,18 +215,18 @@ tLuaControl::tLuaControl(lua_State* L, ITypeInfo *pTypeinfo, int ref) : tLuaDisp
     // our initial size to 100,50 [so it's at least sort of visible on the screen]
     //
     lua_getref(L, table_ref);
-	lua_pushstring(L, "InitialSize");
-	lua_gettable(L, -2);
-	lua_pushvalue(L, -2);
-	lua_remove(L, -3);
-	const char * err;
-	if(!luaCompat_call(L, 1, 2, &err)) {
-		m_Size.cx = lua_tonumber(L,-2);
-		m_Size.cy = lua_tonumber(L,-1);
-	} else {
-		m_Size.cx = 50;
-		m_Size.cy = 20;
-	}
+    lua_pushstring(L, "InitialSize");
+    lua_gettable(L, -2);
+    lua_pushvalue(L, -2);
+    lua_remove(L, -3);
+    const char * err;
+    if(!luaCompat_call(L, 1, 2, &err)) {
+      m_Size.cx = (LONG)lua_tointeger(L,-2);
+      m_Size.cy = (LONG)lua_tointeger(L,-1);
+    } else {
+      m_Size.cx = 50;
+      m_Size.cy = 20;
+    }
     memset(&m_rcLocation, 0, sizeof(m_rcLocation));
 
     m_hRgn = NULL;
@@ -256,7 +261,7 @@ tLuaControl::~tLuaControl() {
 
     // clean up all the pointers we're holding around.
     //
-	QUICK_RELEASE(m_pClientSite);
+    QUICK_RELEASE(m_pClientSite);
     QUICK_RELEASE(m_pControlSite);
     QUICK_RELEASE(m_pInPlaceSite);
     QUICK_RELEASE(m_pInPlaceFrame);
@@ -269,11 +274,11 @@ tLuaControl::~tLuaControl() {
 
 void tLuaControl::DestroyWindow() {
     lua_getref(L, table_ref);
-	lua_pushstring(L, "DestroyWindow");
-	lua_gettable(L, -2);
-	lua_pushvalue(L, -2);
-	lua_remove(L, -3);
-	luaCompat_call(L, 1, 0, NULL);
+    lua_pushstring(L, "DestroyWindow");
+    lua_gettable(L, -2);
+    lua_pushvalue(L, -2);
+    lua_remove(L, -3);
+    luaCompat_call(L, 1, 0, NULL);
 }
 
 STDMETHODIMP tLuaControl::QueryInterface(REFIID riid, void FAR* FAR* ppv)
@@ -282,7 +287,7 @@ STDMETHODIMP tLuaControl::QueryInterface(REFIID riid, void FAR* FAR* ppv)
        IsEqualIID(riid, IID_IDispatch) ||
        IsEqualIID(riid, interface_iid)) {
       *ppv = (IDispatch*)this;
-	  this->AddRef();
+      this->AddRef();
       return NOERROR;       
     }
 
@@ -377,13 +382,13 @@ STDMETHODIMP tLuaControl::QueryInterface(REFIID riid, void FAR* FAR* ppv)
     return ResultFromScode(E_NOINTERFACE);
 }
 
-STDMETHODIMP_(unsigned long) tLuaControl::AddRef()
+STDMETHODIMP_(ULONG) tLuaControl::AddRef()
 {
-	return ++m_refs;
+  return ++m_refs;
 }
 
 
-STDMETHODIMP_(unsigned long) tLuaControl::Release()
+STDMETHODIMP_(ULONG) tLuaControl::Release()
 {
   assert(m_refs > 0);
   if(--m_refs == 0)
@@ -446,7 +451,7 @@ STDMETHODIMP tLuaControl::GetControlInfo(CONTROLINFO *pControlInfo)
     // return accelerator information in their control.
     //
     pControlInfo->hAccel = NULL;
-    pControlInfo->cAccel = NULL;
+    pControlInfo->cAccel = 0;
 
     return S_OK;
 }
@@ -582,7 +587,7 @@ STDMETHODIMP tLuaControl::GetClientSite(IOleClientSite **ppClientSite)
 //    - we don't care about this
 //
 STDMETHODIMP tLuaControl::SetHostNames(LPCOLESTR szContainerApp, LPCOLESTR szContainerObj) {
-	return S_OK;
+  return S_OK;
 }
 
 //=--------------------------------------------------------------------------=
@@ -632,7 +637,7 @@ STDMETHODIMP tLuaControl::Close(DWORD dwSaveOption)
 //    - we don't support monikers.
 //
 STDMETHODIMP tLuaControl::SetMoniker(DWORD dwWitchMoniker, IMoniker* pmk) {
-	return E_NOTIMPL;
+  return E_NOTIMPL;
 }
 
 //=--------------------------------------------------------------------------=
@@ -653,7 +658,7 @@ STDMETHODIMP tLuaControl::SetMoniker(DWORD dwWitchMoniker, IMoniker* pmk) {
 //    - we don't support monikers
 //
 STDMETHODIMP tLuaControl::GetMoniker(DWORD dwAssign, DWORD dwWitchMoniker, IMoniker** ppMoniker) {
-	return E_NOTIMPL;
+  return E_NOTIMPL;
 }
 
 //=--------------------------------------------------------------------------=
@@ -674,7 +679,7 @@ STDMETHODIMP tLuaControl::GetMoniker(DWORD dwAssign, DWORD dwWitchMoniker, IMoni
 //    - we don't have data object support
 //
 STDMETHODIMP tLuaControl::InitFromData(IDataObject* pDataObject, BOOL fCreation, DWORD dwReserved) {
-	return E_NOTIMPL;
+  return E_NOTIMPL;
 }
 
 //=--------------------------------------------------------------------------=
@@ -688,7 +693,7 @@ STDMETHODIMP tLuaControl::InitFromData(IDataObject* pDataObject, BOOL fCreation,
 // Notes:
 //
 STDMETHODIMP tLuaControl::IsUpToDate() {
-	return S_OK;
+  return S_OK;
 }
 
 //=--------------------------------------------------------------------------=
@@ -708,8 +713,8 @@ STDMETHODIMP tLuaControl::IsUpToDate() {
 // Notes:
 //
 STDMETHODIMP tLuaControl::GetClipboardData(DWORD dwReserved, IDataObject** ppDataObject) {
-	*ppDataObject = NULL;
-	return E_NOTIMPL;
+  *ppDataObject = NULL;
+  return E_NOTIMPL;
 }
 
 //=--------------------------------------------------------------------------=
@@ -737,7 +742,7 @@ STDMETHODIMP tLuaControl::GetClipboardData(DWORD dwReserved, IDataObject** ppDat
 STDMETHODIMP tLuaControl::DoVerb(LONG lVerb, LPMSG pMsg, IOleClientSite *pActiveSite,
     LONG lIndex, HWND hwndParent, LPCRECT prcPosRect)
 {
-    HRESULT hr = OLEOBJ_S_INVALIDVERB;   // NJG - see: http://lua-users.org/lists/lua-l/2006-09/msg00030.html
+    HRESULT hr = OLEOBJ_S_INVALIDVERB;   // See Lua mailing list (NJG)
 
     switch (lVerb) {
       case OLEIVERB_SHOW:
@@ -755,6 +760,12 @@ STDMETHODIMP tLuaControl::DoVerb(LONG lVerb, LPMSG pMsg, IOleClientSite *pActive
         // if it's a derived-control defined verb, pass it on to them
         //
         if (lVerb > 0) {
+
+            // FIX-TODO!!! hr is undefined here.
+            // http://lua-users.org/lists/lua-l/2006-09/msg00030.html
+//            #pragma message("FIX - luacom bug http://lua-users.org/lists/lua-l/2006-09/msg00030.html")
+//            FAIL("FIX - luacom bug lua-l/2006-09/msg00030.html");
+
             if (hr == OLEOBJ_S_INVALIDVERB) {
                 // unrecognised verb -- just do the primary verb and
                 // activate the sucker.
@@ -802,7 +813,7 @@ STDMETHODIMP tLuaControl::EnumVerbs(IEnumOLEVERB** ppEnumVerbs) {
 // Notes:
 //
 STDMETHODIMP tLuaControl::Update() {
-	return S_OK; 
+  return S_OK;
 }
 
 //=--------------------------------------------------------------------------=
@@ -820,15 +831,15 @@ STDMETHODIMP tLuaControl::Update() {
 // Notes:
 //
 STDMETHODIMP tLuaControl::GetUserClassID(CLSID* pClsid) {
-	if(!pClsid) return E_POINTER;
+  if(!pClsid) return E_POINTER;
     lua_getref(L, table_ref);
-	lua_pushstring(L, "GetClass");
-	lua_gettable(L, -2);
-	lua_pushvalue(L, -2);
-	lua_remove(L, -3);
-	if(luaCompat_call(L, 1, 1, NULL)) return E_FAIL;
-	const char * classID = lua_tostring(L, -1);
-	return CLSIDFromString(tUtil::string2bstr(classID),pClsid);
+  lua_pushstring(L, "GetClass");
+  lua_gettable(L, -2);
+  lua_pushvalue(L, -2);
+  lua_remove(L, -3);
+  if(luaCompat_call(L, 1, 1, NULL)) return E_FAIL;
+  const char * classID = lua_tostring(L, -1);
+  return CLSIDFromString(tUtil::string2bstr(classID),pClsid);
 }
 
 //=--------------------------------------------------------------------------=
@@ -847,9 +858,9 @@ STDMETHODIMP tLuaControl::GetUserClassID(CLSID* pClsid) {
 // Notes:
 //
 STDMETHODIMP tLuaControl::GetUserType(DWORD dwFormOfType, LPOLESTR* pszUserType) {
-	CLSID clsid;
-	this->GetUserClassID(&clsid);
-	return OleRegGetUserType(clsid, dwFormOfType, pszUserType);
+  CLSID clsid;
+  this->GetUserClassID(&clsid);
+  return OleRegGetUserType(clsid, dwFormOfType, pszUserType);
 }
 
 //=--------------------------------------------------------------------------=
@@ -880,17 +891,17 @@ STDMETHODIMP tLuaControl::SetExtent(DWORD  dwDrawAspect, SIZEL *psizel)
         // first call the user version.  if they return FALSE, they want
         // to keep their current size
         //
-	    lua_getref(L, table_ref);
-		lua_pushstring(L, "SetExtent");
-		lua_gettable(L, -2);
-		lua_pushvalue(L, -2);
-		lua_remove(L, -3);
-		lua_pushnumber(L, sl.cx);
-		lua_pushnumber(L, sl.cy);
-	    if(luaCompat_call(L, 3, 1, NULL)) return E_FAIL;
-        
-		if(luaCompat_toCBool(L,-1))
-            HimetricToPixel(psizel, &m_Size);
+        lua_getref(L, table_ref);
+        lua_pushstring(L, "SetExtent");
+        lua_gettable(L, -2);
+        lua_pushvalue(L, -2);
+        lua_remove(L, -3);
+        lua_pushnumber(L, sl.cx);
+        lua_pushnumber(L, sl.cy);
+        if(luaCompat_call(L, 3, 1, NULL)) return E_FAIL;
+
+        if(luaCompat_toCBool(L,-1))
+        HimetricToPixel(psizel, &m_Size);
 
         // set things up with our HWND
         //
@@ -1051,11 +1062,11 @@ STDMETHODIMP tLuaControl::EnumAdvise(IEnumSTATDATA **ppEnumOut)
 // Notes:
 //
 STDMETHODIMP tLuaControl::GetMiscStatus(DWORD dwAspect, DWORD* pdwStatus) {
-	if(!pdwStatus) return E_POINTER;
-	if(dwAspect != DVASPECT_CONTENT) return *pdwStatus = 0, E_FAIL;
-	*pdwStatus = OLEMISC_RECOMPOSEONRESIZE | OLEMISC_INSIDEOUT | OLEMISC_ACTIVATEWHENVISIBLE
-		| OLEMISC_ALWAYSRUN;
-	return S_OK;
+  if(!pdwStatus) return E_POINTER;
+  if(dwAspect != DVASPECT_CONTENT) return *pdwStatus = 0, E_FAIL;
+  *pdwStatus = OLEMISC_RECOMPOSEONRESIZE | OLEMISC_INSIDEOUT | OLEMISC_ACTIVATEWHENVISIBLE
+    | OLEMISC_ALWAYSRUN;
+  return S_OK;
 }
 
 //=--------------------------------------------------------------------------=
@@ -1074,7 +1085,7 @@ STDMETHODIMP tLuaControl::GetMiscStatus(DWORD dwAspect, DWORD* pdwStatus) {
 //    - we don't care.
 //
 STDMETHODIMP tLuaControl::SetColorScheme(LOGPALETTE* pLogpal) {
-	return E_NOTIMPL;
+  return E_NOTIMPL;
 }
 
 //=--------------------------------------------------------------------------=
@@ -1113,7 +1124,7 @@ STDMETHODIMP tLuaControl::GetWindow(HWND* phwnd) {
 // Notes:
 //
 STDMETHODIMP tLuaControl::ContextSensitiveHelp(BOOL fEnterMode) {
-	return E_NOTIMPL;
+  return E_NOTIMPL;
 }
 
 //=--------------------------------------------------------------------------=
@@ -1496,9 +1507,9 @@ STDMETHODIMP tLuaControl::OnDocWindowActivate
 // Notes:
 //
 STDMETHODIMP tLuaControl::ResizeBorder(LPCRECT prcBorder,
-										IOleInPlaceUIWindow *pUIWindow,
-										BOOL fFrameWindow) {
-	return S_OK;
+     IOleInPlaceUIWindow *pUIWindow,
+     BOOL fFrameWindow) {
+  return S_OK;
 }
 
 //=--------------------------------------------------------------------------=
@@ -1516,7 +1527,7 @@ STDMETHODIMP tLuaControl::ResizeBorder(LPCRECT prcBorder,
 // Notes:
 //
 STDMETHODIMP tLuaControl::EnableModeless(BOOL fEnable) {
-	return S_OK;
+  return S_OK;
 }
 
 //=--------------------------------------------------------------------------=
@@ -1547,8 +1558,9 @@ STDMETHODIMP tLuaControl::EnableModeless(BOOL fEnable) {
 //
 STDMETHODIMP tLuaControl::Draw(DWORD dwDrawAspect, LONG lIndex, void *pvAspect,
     DVTARGETDEVICE *ptd, HDC hicTargetDevice, HDC hdcDraw, LPCRECTL prcBounds,
-    LPCRECTL prcWBounds, BOOL (__stdcall *pfnContinue)(DWORD dwContinue), DWORD dwContinue)
+    LPCRECTL prcWBounds, BOOL (__stdcall *pfnContinue)(ULONG_PTR dwContinue), ULONG_PTR dwContinue)
 {
+    //unused: HWND hwnd;
     RECT rcClient;
     int  iMapMode;
     POINT ptWOrg, ptVOrg;
@@ -1564,7 +1576,7 @@ STDMETHODIMP tLuaControl::Draw(DWORD dwDrawAspect, LONG lIndex, void *pvAspect,
     }
 
     if (hicTargetDevice)
-		return E_NOTIMPL;
+        return E_NOTIMPL;
 
     if (!m_hwnd)
         return E_FAIL;
@@ -1593,11 +1605,11 @@ STDMETHODIMP tLuaControl::Draw(DWORD dwDrawAspect, LONG lIndex, void *pvAspect,
     SetWindowOrgEx(hdcDraw, 0, 0, &ptWOrg);
     SetViewportOrgEx(hdcDraw, prcBounds->left, prcBounds->top, &ptVOrg);
 
-//	SendMessage(WindowFromDC(hdcDraw), WM_PAINT, NULL, NULL);
+//  SendMessage(WindowFromDC(hdcDraw), WM_PAINT, NULL, NULL);
 
-	LRESULT wndProc = GetWindowLong(m_hwnd, GWL_WNDPROC);
-	if(!wndProc)
-		wndProc = GetWindowLong(m_hwnd, DWL_DLGPROC);
+    LRESULT wndProc = GetWindowLong(m_hwnd, GWL_WNDPROC);
+    if(!wndProc)
+        wndProc = GetWindowLong(m_hwnd, DWL_DLGPROC);
     CallWindowProc((WNDPROC)wndProc, m_hwnd, WM_PAINT, (WPARAM)hdcDraw, 0);
 
     return S_OK;
@@ -1630,7 +1642,7 @@ STDMETHODIMP tLuaControl::GetColorSet(DWORD dwDrawAspect, LONG lindex,
     if (dwDrawAspect != DVASPECT_CONTENT)
         return DV_E_DVASPECT;
 
-	return E_NOTIMPL;
+    return E_NOTIMPL;
 }
 
 //=--------------------------------------------------------------------------=
@@ -1827,7 +1839,7 @@ HWND tLuaControl::CreateInPlaceWindow(int x, int y, BOOL fNoRedraw)
 {
     BOOL    fVisible;
 
-	// if we've already got a window, do nothing.
+    // if we've already got a window, do nothing.
     //
     if (m_hwnd)
         return m_hwnd;
@@ -1848,21 +1860,21 @@ HWND tLuaControl::CreateInPlaceWindow(int x, int y, BOOL fNoRedraw)
     m_fCreatingWindow = TRUE;
 
     lua_getref(L, table_ref);
-	lua_pushstring(L, "CreateWindow");
-	lua_gettable(L, -2);
-	lua_pushvalue(L, -2);
-	lua_remove(L, -3);
-	luaCompat_pushPointer(L, m_hwndParent);
-	lua_pushnumber(L, x);
-	lua_pushnumber(L, y);
-	lua_pushnumber(L, m_Size.cx);
-	lua_pushnumber(L, m_Size.cy);
-	const char *err;
-	int res = luaCompat_call(L, 6, 1, &err);
+    lua_pushstring(L, "CreateWindow");
+    lua_gettable(L, -2);
+    lua_pushvalue(L, -2);
+    lua_remove(L, -3);
+    luaCompat_pushPointer(L, m_hwndParent);
+    lua_pushnumber(L, x);
+    lua_pushnumber(L, y);
+    lua_pushnumber(L, m_Size.cx);
+    lua_pushnumber(L, m_Size.cy);
+    const char *err;
+    int res = luaCompat_call(L, 6, 1, &err);
     if(res) return NULL;
 
-	m_hwnd = (HWND)luaCompat_getPointer(L, -1);
-	lua_pop(L, 1);
+    m_hwnd = (HWND)luaCompat_getPointer(L, -1);
+    lua_pop(L, 1);
 
     // clean up some variables, and leave the critical section
     //
@@ -1871,12 +1883,12 @@ HWND tLuaControl::CreateInPlaceWindow(int x, int y, BOOL fNoRedraw)
     if (m_hwnd) {
         // if we didn't create the window visible, show it now.
         //
-		
+
         if (fVisible)
-		{
-			SetWindowPos(m_hwnd, m_hwndParent, x, y, m_Size.cx, m_Size.cy,
-						 SWP_NOZORDER | SWP_SHOWWINDOW | ((fNoRedraw) ? SWP_NOREDRAW : 0));
-		}
+        {
+            SetWindowPos(m_hwnd, m_hwndParent, x, y, m_Size.cx, m_Size.cy,
+                SWP_NOZORDER | SWP_SHOWWINDOW | ((fNoRedraw) ? SWP_NOREDRAW : 0));
+        }
     }
 
     // finally, tell the host of this
@@ -1902,7 +1914,7 @@ HWND tLuaControl::CreateInPlaceWindow(int x, int y, BOOL fNoRedraw)
 //
 STDMETHODIMP tLuaControl::GetClassID(CLSID *pclsid)
 {
-	return GetUserClassID(pclsid);
+    return GetUserClassID(pclsid);
 }
 
 
@@ -1968,7 +1980,7 @@ STDMETHODIMP tLuaControl::GetSizeMax(ULARGE_INTEGER *pulMaxSize)
 //
 STDMETHODIMP tLuaControl::Load(IStream *pStream)
 {
-	return S_OK;
+    return S_OK;
 }
 
 //=--------------------------------------------------------------------------=
@@ -2023,7 +2035,7 @@ STDMETHODIMP tLuaControl::InitNew(IStorage *pStorage)
 //
 STDMETHODIMP tLuaControl::Load(IStorage *pStorage)
 {
-	return S_OK;
+  return S_OK;
 }
 
 //=--------------------------------------------------------------------------=
@@ -2042,7 +2054,7 @@ STDMETHODIMP tLuaControl::Load(IStorage *pStorage)
 //
 STDMETHODIMP tLuaControl::Save(IStorage *pStorage, BOOL fSameAsLoad)
 {
-	return S_OK;
+  return S_OK;
 }
 
 //=--------------------------------------------------------------------------=
@@ -2129,9 +2141,9 @@ STDMETHODIMP tLuaControl::QuickActivate(QACONTAINER *pContainer, QACONTROL *pCon
     // then the event sink.
     //
     if (pContainer->pUnkEventSink) {
-  	    tLuaCOMConnPointContainer* cpc = GetConnPointContainer();
+        tLuaCOMConnPointContainer* cpc = GetConnPointContainer();
         IConnectionPoint *connection_point;
-		hr = cpc->FindConnectionPoint(IID_IUnknown, &connection_point);
+        hr = cpc->FindConnectionPoint(IID_IUnknown, &connection_point);
         if (FAILED(hr)) {
             pContainer->pUnkEventSink->Release();
             return hr;
@@ -2149,7 +2161,7 @@ STDMETHODIMP tLuaControl::QuickActivate(QACONTAINER *pContainer, QACONTROL *pCon
         // don't need to pass the cookie back since there can only be one
         // person advising at a time.
         //
-        hr = Advise(pContainer->pAdviseSink, &dw);
+        hr = Advise((IAdviseSink*)pContainer->pAdviseSink, &dw);
         RETURN_ON_FAILURE(hr);
     }
 

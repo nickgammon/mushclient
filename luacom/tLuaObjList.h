@@ -21,7 +21,7 @@ protected:
   long num_params;
 
 public:
-	long getNumParams(void);
+  long getNumParams(void);
 
   tLuaObjList(stkIndex first_param_pos, long num_params_p);
   tLuaObjList(void);

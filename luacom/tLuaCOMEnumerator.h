@@ -20,16 +20,16 @@ extern "C"
 class tLuaCOMEnumerator  
 {
 public:
-	static void registerLuaType(lua_State* L, const char* module);
-	void push(lua_State* L);
-	tLuaCOMEnumerator(IEnumVARIANT* pEV_param);
-	virtual ~tLuaCOMEnumerator();
+  static void registerLuaType(lua_State* L, const char* module);
+  void push(lua_State* L);
+  tLuaCOMEnumerator(IEnumVARIANT* pEV_param);
+  virtual ~tLuaCOMEnumerator();
 
 protected:
-	int callCOMmethod(lua_State* L, const char* name, int first_param, int last_param);
-	static int call_method(lua_State* L);
-	static int garbagecollect(lua_State* L);
-	static int index(lua_State* L);
+  int callCOMmethod(lua_State* L, const char* name, int first_param, int last_param);
+  static int call_method(lua_State* L);
+  static int garbagecollect(lua_State* L);
+  static int index(lua_State* L);
 
   static const char* type_name;
   static const char* module_name;

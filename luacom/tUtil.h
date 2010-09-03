@@ -11,23 +11,24 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include "tStringBuffer.h"	// Added by ClassView
+#include "tStringBuffer.h"  // Added by ClassView
 
 class tUtil  
 {
 public:
-	static void ShowHelp(const char* filename, unsigned long context);
-	static char * strdup(const char *string);
-	static void log(const char *who, const char *what,...);
-	static void log_verbose(const char *who, const char *what,...);
-	static void CloseLogFile(void);
-	static bool OpenLogFile(const char *name);
-	static BSTR string2bstr(const char *string);
-	static const char * bstr2string(BSTR bstr);
-	static const char *GetErrorMessage(DWORD errorcode);
-	static bool IsValidString(LPCTSTR string);
+  static void ShowHelp(const char* filename, unsigned long context);
+  static char * strdup(const char *string);
+  static void log(const char *who, const char *what,...);
+  static void log_verbose(const char *who, const char *what,...);
+  static void CloseLogFile(void);
+  static bool OpenLogFile(const char *name);
+  static BSTR string2bstr(const char *string, size_t len = -1);
+  static const char * bstr2string(BSTR bstr);
+  static const char * bstr2string(BSTR bstr, size_t& computedSize);
+  static const char *GetErrorMessage(DWORD errorcode);
+  static bool IsValidString(LPCTSTR string);
 
-	static tStringBuffer string_buffer;
+  static tStringBuffer string_buffer;
   static FILE* log_file;
 };
 

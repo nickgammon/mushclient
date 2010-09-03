@@ -9,21 +9,24 @@
  */
 
 // RCS Info
-static char *rcsid = "$Id: luacom.cpp,v 1.61 2005/01/06 18:41:49 fqueiroz Exp $";
-static char *rcsname = "$Name:  $";
-static char *g_version = "1.2b";
+static char const * const rcsid = "$Id: luacom.cpp,v 1.5 2008/05/16 15:26:43 mascarenhas Exp $";
+static char const * const rcsname = "$Name:  $";
+static char const * const g_version = "1.4";
+
+#define NO_HTMLHELP // NJG
 
 #include <string.h>
 #include <stdlib.h>
 
 #include <ole2.h>
 #include <ocidl.h>
+#ifndef NO_HTMLHELP
+#include <htmlhelp.h> // HtmlHelp
+#endif
 
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
-
-#pragma warning(disable: 4800) 
 
 extern "C"
 {
@@ -51,10 +54,8 @@ extern "C"
 #include "tLuaCOMEnumerator.h"
 #include "tLuaTLB.h"
 
+#include <wchar.h> // for MINGW/Wine
 
-#define luaL_check_lstr luaL_checklstring
-#define luaL_opt_lstr luaL_optlstring
-#define luaL_check_number 
 // some string constants
 
 #define GET_PREFIX "get"
@@ -137,7 +138,7 @@ static void luacom_err(lua_State* L, const char* message, bool is_API_function)
 
   if(luaCompat_toCBool(L, -1))
   {
-    luaCompat_error(L, message);
+    luaL_error(L, "%s", message);
   }
 
   lua_pop(L, 1);
@@ -178,7 +179,7 @@ static void luacom_APIerror(lua_State* L, const char* message)
 static int luacom_ShowHelp(lua_State *L)
 {
   char *pHelpFile = NULL; 
-  unsigned long context = 0;
+  DWORD context = 0;
 
   tLuaCOM* luacom = (tLuaCOM *) LuaBeans::check_tag(L, 1);
 
@@ -186,10 +187,26 @@ static int luacom_ShowHelp(lua_State *L)
 
   if(pHelpFile != NULL)
   {
-    if(context != 0)
-      WinHelp(NULL, pHelpFile, HELP_CONTEXT, context);
+    size_t len = strlen(pHelpFile);
+    if (len >= 4 && _stricmp(pHelpFile + len - 4, ".chm") == 0)
+    {
+#ifdef NO_HTMLHELP
+      ::MessageBox(NULL, "Error: HtmlHelp support not included",
+        "LuaCOM", MB_ICONEXCLAMATION);
+#else
+      if(context != 0)
+        HtmlHelp(NULL, pHelpFile, HH_HELP_CONTEXT, context);
+      else
+        HtmlHelp(NULL, pHelpFile, HH_DISPLAY_TOC, 0);
+#endif
+    }
     else
-      WinHelp(NULL, pHelpFile, HELP_FINDER, 0);
+    {
+      if(context != 0)
+        WinHelp(NULL, pHelpFile, HELP_CONTEXT, context);
+      else
+        WinHelp(NULL, pHelpFile, HELP_FINDER, 0);
+    }
   }
 
   return 0;
@@ -354,8 +371,8 @@ static int luacom_ImplInterfaceFromTypelib(lua_State *L)
 {
   tLuaCOM *lcom = luacom_ImplInterfaceFromTypelibHelper(L);
   if(lcom) {
-	LuaBeans::push(L, lcom); 
-	return 1;
+    LuaBeans::push(L, lcom);
+    return 1;
   } else return 0;
 }
 
@@ -433,8 +450,8 @@ static int luacom_ImplInterface(lua_State *L)
   tLuaCOM* lcom = luacom_ImplInterfaceHelper(L);
   
   if(lcom) {
-	LuaBeans::push(L, lcom); 
-	return 1;
+    LuaBeans::push(L, lcom);
+    return 1;
   } else return 0;
 }
 
@@ -547,7 +564,7 @@ static int luacom_CreateObject(lua_State *L)
 
   const char *progId = luaL_check_lstr(L, 1, NULL);
   const char *creation_mode = lua_tostring(L, 2);
-  const bool untyped = lua_toboolean(L, 3);
+  const bool untyped = lua_toboolean(L, 3) != 0;
 
   if(creation_mode != NULL)
   {
@@ -629,16 +646,16 @@ static int luacom_GetObject(lua_State *L)
     }
     else  // tests whether the user passed in a DisplayName of a moniker
     {
-	  BSTR bstr = NULL;
+      BSTR bstr = NULL;
       ULONG chEaten = 0;
       
       hr = CreateBindCtx(0, &pbc);
       CHK_COM_CODE(hr);
 
-	  bstr = tUtil::string2bstr(progId);
+      bstr = tUtil::string2bstr(progId);
       hr = MkParseDisplayName(pbc, bstr, &chEaten, &pmk);
-	  SysFreeString(bstr);
-	  CHK_COM_CODE(hr);
+      SysFreeString(bstr);
+      CHK_COM_CODE(hr);
 
       hr = pmk->BindToObject(pbc, NULL, IID_IUnknown, (void **) &punk);
       CHK_COM_CODE(hr);
@@ -685,7 +702,7 @@ static int luacom_addConnection(lua_State *L)
 
   DWORD cookie = client->addConnection(server);
 
-  if(cookie == NULL)
+  if(cookie == 0)
   {
     luacom_APIerror(L, "Could not establish connection");
     return 0;
@@ -792,7 +809,7 @@ static int luacom_NewObjectOrControl(lua_State *L, int type)
     CHK_COM_CODE(hr);
 
     typelib = tCOMUtil::LoadTypeLibFromCLSID(clsid);
-    CHK_LCOM_ERR((long)typelib, "Could not load type library.");
+    CHK_LCOM_ERR(typelib, "Could not load type library.");
     
 
     // gets coclass typeinfo
@@ -810,10 +827,10 @@ static int luacom_NewObjectOrControl(lua_State *L, int type)
 
 
     // Creates IDispatch implementation
-	if(type) // Control
+    if(type) // Control
       iluacom = 
         (tLuaDispatch*)tLuaControl::CreateLuaControl(L, interface_typeinfo, ref);
-	else // Object
+    else // Object
       iluacom = 
         tLuaDispatch::CreateLuaDispatch(L, interface_typeinfo, ref);
 
@@ -876,11 +893,11 @@ static int luacom_NewObjectOrControl(lua_State *L, int type)
 }
 
 static int luacom_NewObject(lua_State *L) {
-	return luacom_NewObjectOrControl(L, 0);
+  return luacom_NewObjectOrControl(L, 0);
 }
 
 static int luacom_NewControl(lua_State *L) {
-	return luacom_NewObjectOrControl(L, 1);
+  return luacom_NewObjectOrControl(L, 1);
 }
 
 
@@ -903,7 +920,7 @@ static int luacom_NewControl(lua_State *L) {
 static int luacom_ExposeObject(lua_State *L)
 {
   tLuaCOMClassFactory* luacom_cf = NULL;
-  DWORD cookie = -1;
+  DWORD cookie = (DWORD)-1;
 
   // check parameters
   tLuaCOM* luacom = (tLuaCOM *) LuaBeans::check_tag(L, 1);
@@ -914,13 +931,13 @@ static int luacom_ExposeObject(lua_State *L)
     HRESULT hr = S_OK;
 
     if(luacom_runningInprocess(L)) {
-	  // Inprocess "registration": stores object in the Lua registry
-  	  lua_getregistry(L);
-	  lua_pushstring(L,"object");
-	  luaCompat_pushPointer(L,(void*)luacom->GetIDispatch());
-	  lua_settable(L,-3);
-	  lua_pop(L,1);
-	} else {
+      // Inprocess "registration": stores object in the Lua registry
+      lua_getregistry(L);
+      lua_pushstring(L,"object");
+      luaCompat_pushPointer(L,(void*)luacom->GetIDispatch());
+      lua_settable(L,-3);
+      lua_pop(L,1);
+    } else {
       luacom_cf = 
           new tLuaCOMClassFactory(luacom->GetIDispatch());
       luacom_cf->AddRef();
@@ -937,7 +954,7 @@ static int luacom_ExposeObject(lua_State *L)
         &cookie);
 
       CHK_COM_CODE(hr);
-	}
+    }
   }
   catch(class tLuaCOMException& e)
   {
@@ -1028,8 +1045,8 @@ static int luacom_RegisterObject(lua_State *L)
   {
 
     lua_pushstring(L, "Control");
-	lua_gettable(L, 1);
-	bool control = luaCompat_toCBool(L, -1);
+    lua_gettable(L, 1);
+    bool control = luaCompat_toCBool(L, -1) != 0;
 
     // gets the registration information from the registration table
     lua_pushstring(L, "VersionIndependentProgID");
@@ -1143,11 +1160,11 @@ static int luacom_RegisterObject(lua_State *L)
       ModulePath,
       sizeof(ModulePath));
 
-	if(scriptFile)
-	{
+    if(scriptFile)
+    {
       strcat(ModulePath, " ");
       strcat(ModulePath, scriptFile);
-	}
+    }
 
     if(arguments)
     {
@@ -1208,45 +1225,44 @@ static int luacom_RegisterObject(lua_State *L)
       ModulePath);
 
 #if 0       // NJG
-	if(scriptFile) {
-		tCOMUtil::SetRegKeyValue(
-			CLSID,
-			"InprocServer32",
-			LUACOM_DLL);
-		tCOMUtil::SetRegKeyValue(
-			CLSID,
-			"ScriptFile",
-			scriptFile);
-	}
+    if(scriptFile) {
+      tCOMUtil::SetRegKeyValue(
+      CLSID,
+      "InprocServer32",
+      LUACOM_DLL);
+    tCOMUtil::SetRegKeyValue(
+      CLSID,
+      "ScriptFile",
+      scriptFile);
+    }
+#endif // NJG
 
-#endif 
-
-	if(control) {
-	    tCOMUtil::SetRegKeyValue(
-		  CLSID,
-		  "Implemented Categories\\{0DE86A53-2BAA-11CF-A229-00AA003D7352}",
-		  NULL);
-	    tCOMUtil::SetRegKeyValue(
-		  CLSID,
-		  "Implemented Categories\\{0DE86A57-2BAA-11CF-A229-00AA003D7352}",
-		  NULL);
-	    tCOMUtil::SetRegKeyValue(
-		  CLSID,
-		  "Implemented Categories\\{40FC6ED4-2438-11CF-A3DB-080036F12502}",
-		  NULL);
-	    tCOMUtil::SetRegKeyValue(
-		  CLSID,
-		  "Implemented Categories\\{40FC6ED5-2438-11CF-A3DB-080036F12502}",
-		  NULL);
-	    tCOMUtil::SetRegKeyValue(
-		  CLSID,
-		  "Implemented Categories\\{7DD95801-9882-11CF-9FA9-00AA006C42C4}",
-		  NULL);
-	    tCOMUtil::SetRegKeyValue(
-		  CLSID,
-		  "Implemented Categories\\{7DD95802-9882-11CF-9FA9-00AA006C42C4}",
-		  NULL);
-	}
+    if(control) {
+      tCOMUtil::SetRegKeyValue(
+        CLSID,
+        "Implemented Categories\\{0DE86A53-2BAA-11CF-A229-00AA003D7352}",
+        NULL);
+      tCOMUtil::SetRegKeyValue(
+        CLSID,
+        "Implemented Categories\\{0DE86A57-2BAA-11CF-A229-00AA003D7352}",
+        NULL);
+      tCOMUtil::SetRegKeyValue(
+        CLSID,
+        "Implemented Categories\\{40FC6ED4-2438-11CF-A3DB-080036F12502}",
+        NULL);
+      tCOMUtil::SetRegKeyValue(
+        CLSID,
+        "Implemented Categories\\{40FC6ED5-2438-11CF-A3DB-080036F12502}",
+        NULL);
+      tCOMUtil::SetRegKeyValue(
+        CLSID,
+        "Implemented Categories\\{7DD95801-9882-11CF-9FA9-00AA006C42C4}",
+        NULL);
+      tCOMUtil::SetRegKeyValue(
+        CLSID,
+        "Implemented Categories\\{7DD95802-9882-11CF-9FA9-00AA006C42C4}",
+        NULL);
+    }
 
     tCOMUtil::SetRegKeyValue(
       CLSID,
@@ -1353,8 +1369,8 @@ static int luacom_UnRegisterObject(lua_State *L)
 
       typelib->GetLibAttr(&plibattr);
 
-	  UnRegisterTypeLib(plibattr->guid, plibattr->wMajorVerNum, plibattr->wMinorVerNum,
-		  plibattr->lcid, plibattr->syskind);
+      UnRegisterTypeLib(plibattr->guid, plibattr->wMajorVerNum, plibattr->wMinorVerNum,
+      plibattr->lcid, plibattr->syskind);
 
       typelib->ReleaseTLibAttr(plibattr);
     }
@@ -1664,27 +1680,27 @@ int luacom_CreateLuaCOM(lua_State* L)
 
 int luacom_StartMessageLoop(lua_State *L)
 {
-	MSG msg; 
-	if(lua_gettop(L) > 0) {
-		const char *err;
-		if(luaCompat_call(L, lua_gettop(L)-1, 0, &err)) {
+  MSG msg;
+  if(lua_gettop(L) > 0) {
+    const char *err;
+    if(luaCompat_call(L, lua_gettop(L)-1, 0, &err)) {
           luacom_APIerror(L, err);
-		  return 0;
-		}
-	}
-	while (GetMessage(&msg, NULL, 0, 0)) 
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-		if(lua_gettop(L) > 0) {
-			const char *err;
-			if(luaCompat_call(L, lua_gettop(L)-1, 0, &err)) {
+      return 0;
+    }
+  }
+  while (GetMessage(&msg, NULL, 0, 0))
+  {
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+    if(lua_gettop(L) > 0) {
+      const char *err;
+      if(luaCompat_call(L, lua_gettop(L)-1, 0, &err)) {
               luacom_APIerror(L, err);
-			  return 0;
-			}
-		}
-	}
-	return 0;
+        return 0;
+      }
+    }
+  }
+  return 0;
 }
 
 /*
@@ -1694,67 +1710,67 @@ int luacom_StartMessageLoop(lua_State *L)
 
 int luacom_LuaDetectAutomation(lua_State* L)
 {
-	lua_getglobal(L,"arg");
-	if(lua_istable(L,-1))
-	{
-		// Running out-of-process	
-		lua_pushnumber(L,1);
-		lua_gettable(L,-2);
-		const char* cmdSwitch = lua_tostring(L,-1);
-		lua_pop(L,2);
-		if(cmdSwitch != NULL) {
-			const char* errMsg;
-			if(_stricmp("/Register",cmdSwitch) == 0) {
-				lua_pushstring(L,"Register");
-				lua_gettable(L,-2);
-				lua_pushvalue(L,-2);
-				if(luaCompat_call(L,1,0,&errMsg)) {
-					lua_pushnil(L);
-					lua_pushstring(L,errMsg);
-					return 2;
-				} else {
-					return 1;
-				}
-			} else if(_stricmp("/UnRegister",cmdSwitch) == 0) {
-				lua_pushstring(L,"UnRegister");
-				lua_gettable(L,-2);
-				lua_pushvalue(L,-2);
-				if(luaCompat_call(L,1,0,&errMsg)) {
-					lua_pushnil(L);
-					lua_pushstring(L,errMsg);
-					return 2;
-				} else {
-					return 1;
-				}
-			} else if(_stricmp("/Automation",cmdSwitch) == 0) {
-				lua_pushstring(L,"StartAutomation");
-				lua_gettable(L,-2);
-				lua_pushvalue(L,-2);
-				if(luaCompat_call(L,1,0,&errMsg)) {
-					lua_pushnil(L);
-					lua_pushstring(L,errMsg);
-					return 2;
-				} else {
-					lua_settop(L, 0);
-					luacom_StartMessageLoop(L);
-					return 0;
-				}
-			}
-			lua_pushnil(L);
-			lua_pushstring(L,"no valid command-line switch");
-			return 2;
-		} else {
-			lua_pushnil(L);
-			lua_pushstring(L,"no valid command-line switch");
-			return 2;
-		}
-	}
-	else
-	{
-		// Running in-process
-		lua_pop(L,1);
-		return 1;
-	}
+  lua_getglobal(L,"arg");
+  if(lua_istable(L,-1))
+  {
+    // Running out-of-process
+    lua_pushnumber(L,1);
+    lua_gettable(L,-2);
+    const char* cmdSwitch = lua_tostring(L,-1);
+    lua_pop(L,2);
+    if(cmdSwitch != NULL) {
+      const char* errMsg;
+      if(_stricmp("/Register",cmdSwitch) == 0) {
+        lua_pushstring(L,"Register");
+        lua_gettable(L,-2);
+        lua_pushvalue(L,-2);
+        if(luaCompat_call(L,1,0,&errMsg)) {
+          lua_pushnil(L);
+          lua_pushstring(L,errMsg);
+          return 2;
+        } else {
+          return 1;
+        }
+      } else if(_stricmp("/UnRegister",cmdSwitch) == 0) {
+        lua_pushstring(L,"UnRegister");
+        lua_gettable(L,-2);
+        lua_pushvalue(L,-2);
+        if(luaCompat_call(L,1,0,&errMsg)) {
+          lua_pushnil(L);
+          lua_pushstring(L,errMsg);
+          return 2;
+        } else {
+          return 1;
+        }
+      } else if(_stricmp("/Automation",cmdSwitch) == 0) {
+        lua_pushstring(L,"StartAutomation");
+        lua_gettable(L,-2);
+        lua_pushvalue(L,-2);
+        if(luaCompat_call(L,1,0,&errMsg)) {
+          lua_pushnil(L);
+          lua_pushstring(L,errMsg);
+          return 2;
+        } else {
+          lua_settop(L, 0);
+          luacom_StartMessageLoop(L);
+          return 0;
+        }
+      }
+      lua_pushnil(L);
+      lua_pushstring(L,"no valid command-line switch");
+      return 2;
+    } else {
+      lua_pushnil(L);
+      lua_pushstring(L,"no valid command-line switch");
+      return 2;
+    }
+  }
+  else
+  {
+    // Running in-process
+    lua_pop(L,1);
+    return 1;
+  }
 }
 
 /*
@@ -1796,16 +1812,16 @@ int luacom_ImportIUnknown(lua_State* L)
 // Returns current directory
 int luacom_GetCurrentDirectory(lua_State* L)
 {
-	static char buffer[1025];
-	
-	DWORD size = GetCurrentDirectory(1024, buffer);
-	
-	if(!size || size > 1023)
-		return 0;
-		
-	lua_pushstring(L, buffer);
-	
-	return 1;
+  static char buffer[1025];
+
+  DWORD size = GetCurrentDirectory(1024, buffer);
+
+  if(!size || size > 1023)
+    return 0;
+
+  lua_pushstring(L, buffer);
+
+  return 1;
 }
 
 
@@ -1867,7 +1883,7 @@ static int tagmeth_gc(lua_State *L)
   assert(lcom);
 
   if(lcom != NULL) {
-	  lcom->Unlock();
+    lcom->Unlock();
   }
 
   return 0;
@@ -2014,7 +2030,7 @@ try
     CHECK(lcom, INTERNAL_ERROR);
 
       // sets the parameter list excluding the 'self' param
-    tLuaObjList& params = tLuaObjList(first_param, num_params);
+    tLuaObjList params = tLuaObjList(first_param, num_params);
 
     num_return_values = lcom->call(L, dispid, invkind, pfuncdesc, params);
 
@@ -2380,12 +2396,12 @@ static int tagmeth_index(lua_State *L)
 }
 
 static bool luacom_runningInprocess(lua_State* L) {
-	lua_getregistry(L);
-	lua_pushstring(L,"inproc");
-	lua_gettable(L,-2);
-	bool inproc = lua_toboolean(L,-1);
-	lua_pop(L,2);
-	return inproc;
+  lua_getregistry(L);
+  lua_pushstring(L,"inproc");
+  lua_gettable(L,-2);
+  bool inproc = lua_toboolean(L,-1) != 0;
+  lua_pop(L,2);
+  return inproc;
 }
 
 
@@ -2433,13 +2449,13 @@ static int call_event(lua_State *L)
 
 
 static int luacom_RoundTrip(lua_State *L) {
-	VARIANTARG v;
-	
-	tLuaCOMTypeHandler *handler = new tLuaCOMTypeHandler(NULL);
-	handler->lua2com(L, 1, v);
-	handler->com2lua(L, v);
-	delete handler;
-	return 1;
+  VARIANTARG v;
+
+  tLuaCOMTypeHandler *handler = new tLuaCOMTypeHandler(NULL);
+  handler->lua2com(L, 1, v);
+  handler->com2lua(L, v);
+  delete handler;
+  return 1;
 }
 
 /////////////////////////////////////////////
@@ -2604,6 +2620,18 @@ LUACOM_API void luacom_open(lua_State *L)
   luaCompat_pushBool(L, 0);
   luaCompat_moduleSet(L, MODULENAME, LUACOM_SHOULD_ABORT_API);
 
+  /*  NJG
+  // loads the lua code that implements the remaining
+  // features of LuaCOM
+#ifdef LUA5
+#ifdef LUA_DEBUGGING
+  lua_dofile(L, "luacom5.lua");
+#else
+#include "luacom5.loh"
+#endif
+#endif
+  */
+
 
   idxDispatch = (void*)&luacom_runningInprocess;
 
@@ -2672,3 +2700,13 @@ LUACOM_API int luacom_detectAutomation(lua_State *L, int argc, char *argv[])
 
   return automation_result;
 }
+
+
+// preprocessor warnings
+#ifdef NO_HTMLHTML
+#ifdef _MSC_VER
+#pragma message("htmlhelp.h disabled")
+#else
+#warning(htmlhtlp.h disabled)
+#endif
+#endif

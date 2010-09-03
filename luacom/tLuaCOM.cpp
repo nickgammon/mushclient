@@ -8,8 +8,8 @@
  */
 
 // RCS Info
-static char *rcsid = "$Id: tLuaCOM.cpp,v 1.39 2005/01/06 18:41:55 fqueiroz Exp $";
-static char *rcsname = "$Name:  $";
+static char const * const rcsid = "$Id: tLuaCOM.cpp,v 1.4 2008/05/16 15:15:49 mascarenhas Exp $";
+static char const * const rcsname = "$Name:  $";
 
 #include "tLuaCOM.h"
 #include "tLuaDispatch.h"
@@ -19,6 +19,11 @@ static char *rcsname = "$Name:  $";
 #include "tCOMUtil.h"
 
 #include "LuaCompat.h"
+
+#if defined(__CYGWIN__) || defined(__MINGW32__)
+#include <initguid.h>
+DEFINE_GUID(IID_IProxyManager, 0x00000008, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46);
+#endif
 
 long tLuaCOM::NEXT_ID = 0;
 
@@ -312,7 +317,7 @@ int tLuaCOM::call(lua_State* L,
                   DISPID dispid,
                   int invkind,
                   FUNCDESC *pfuncdesc,
-                  tLuaObjList& params)
+                  tLuaObjList params)
 { 
   tUtil::log_verbose("tLuaCOM.call", "about to call DISPID 0x%.8x", dispid);
 
@@ -366,7 +371,7 @@ int tLuaCOM::call(lua_State* L,
 
        // pushes out values
        if(invkind & INVOKE_FUNC)
-         num_retvals += typehandler->pushOutValues(L, dispparams);
+         num_retvals += typehandler->pushOutValues(L, dispparams, pfuncdesc);
      }
      catch(class tLuaCOMException& e)
      {
@@ -423,7 +428,7 @@ DWORD tLuaCOM::addConnection(tLuaCOM *server)
 
   if(FAILED(hr))
   {
-    return NULL;
+    return 0;
   }
 
   {
@@ -439,7 +444,7 @@ DWORD tLuaCOM::addConnection(tLuaCOM *server)
 
   if(FAILED(hr))
   {
-    return NULL;
+    return 0;
   }
 
   DWORD connection_point_cookie;
@@ -454,11 +459,11 @@ DWORD tLuaCOM::addConnection(tLuaCOM *server)
     connection_point->Release();
     connection_point = NULL;
 
-    return NULL;
+    return 0;
   }
 
   if(conn_point!=NULL)
-	  conn_point->Release();
+    conn_point->Release();
   conn_point = connection_point;
   conn_cookie = connection_point_cookie;
 
@@ -487,7 +492,7 @@ void tLuaCOM::releaseConnection(tLuaCOM* server, DWORD cookie)
 
   if(FAILED(hr))
   {
-	  LUACOM_ERROR("Object does not accept connections!");
+    LUACOM_ERROR("Object does not accept connections!");
   }
 
   {
@@ -512,54 +517,54 @@ void tLuaCOM::releaseConnection(tLuaCOM* server, DWORD cookie)
 }
 
 void tLuaCOM::releaseConnections() {
-	if(conn_point==NULL)
-		return;
-	
-	conn_point->Release();
-	IConnectionPointContainer *pcpc;
+  if(conn_point==NULL)
+    return;
 
-    HRESULT hr = pdisp->QueryInterface(IID_IConnectionPointContainer, (void **) &pcpc);
+  conn_point->Release();
+  IConnectionPointContainer *pcpc;
 
-    if(FAILED(hr))
-    {
-	    return;
+  HRESULT hr = pdisp->QueryInterface(IID_IConnectionPointContainer, (void **) &pcpc);
+
+  if(FAILED(hr))
+  {
+    return;
+  }
+
+  IEnumConnectionPoints *pecp;
+
+  hr = pcpc->EnumConnectionPoints(&pecp);
+  pcpc->Release();
+
+  if(FAILED(hr))
+  {
+    return;
+  }
+
+  pecp->Reset();
+
+  IConnectionPoint *pcp;
+  ULONG fetched = 0;
+
+  hr = pecp->Next(1, &pcp, &fetched);
+  while(SUCCEEDED(hr) && fetched) {
+    IEnumConnections *pec;
+    hr = pcp->EnumConnections(&pec);
+    if(SUCCEEDED(hr)) {
+      pec->Reset();
+      CONNECTDATA conn;
+      ULONG conn_fetched = 0;
+      hr = pec->Next(1, &conn, &conn_fetched);
+      while(SUCCEEDED(hr) && conn_fetched) {
+        pcp->Unadvise(conn.dwCookie);
+        hr = pec->Next(1, &conn, &conn_fetched);
+      }
+      pec->Release();
     }
+    pcp->Release();
+    pecp->Next(1, &pcp, &fetched);
+  }
 
-	IEnumConnectionPoints *pecp;
-
-	hr = pcpc->EnumConnectionPoints(&pecp);
-	pcpc->Release();
-
-    if(FAILED(hr))
-    {
-	    return;
-    }
-
-	pecp->Reset();
-
-	IConnectionPoint *pcp;
-	ULONG fetched = 0;
-
-	hr = pecp->Next(1, &pcp, &fetched);
-	while(SUCCEEDED(hr) && fetched) {
-		IEnumConnections *pec;
-		hr = pcp->EnumConnections(&pec);
-		if(SUCCEEDED(hr)) {
-			pec->Reset();
-			CONNECTDATA conn;
-			ULONG conn_fetched = 0;
-			hr = pec->Next(1, &conn, &conn_fetched);
-			while(SUCCEEDED(hr) && conn_fetched) {
-				pcp->Unadvise(conn.dwCookie);
-				hr = pec->Next(1, &conn, &conn_fetched);
-			}
-			pec->Release();
-		}
-        pcp->Release();
-  	    pecp->Next(1, &pcp, &fetched);
-	}
-	
-	pecp->Release();
+  pecp->Release();
 }
 
 //
@@ -594,7 +599,7 @@ bool tLuaCOM::isMember(const char * name)
 }
 
 
-void tLuaCOM::getHelpInfo(char **ppHelpFile, unsigned long *pHelpContext)
+void tLuaCOM::getHelpInfo(char **ppHelpFile, DWORD *pHelpContext)
 {
   if(!hasTypeInfo())
   {
@@ -620,7 +625,7 @@ void tLuaCOM::getHelpInfo(char **ppHelpFile, unsigned long *pHelpContext)
   if(*pHelpContext == 0)
   {
     unsigned int dumb_index = 0;
-    unsigned long typelib_help_context = 0;
+    DWORD typelib_help_context = 0;
     BSTR helpfile_typelib;
 
     hr = ptinfo->GetContainingTypeLib(&typelib, &dumb_index);

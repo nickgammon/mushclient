@@ -9,7 +9,7 @@
 #include "tLuaCOMException.h"
 #include "tUtil.h"
 
-char *tLuaCOMException::messages[] =  
+char const * const tLuaCOMException::messages[] =  
      {
        "Internal Error",
        "Parameter(s) out of range",
@@ -27,7 +27,7 @@ char *tLuaCOMException::messages[] =
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-tLuaCOMException::tLuaCOMException(Errors p_code, char *p_file, int p_line,
+tLuaCOMException::tLuaCOMException(Errors p_code, const char *p_file, int p_line,
                                    const char *p_usermessage)
 {
   code = p_code;

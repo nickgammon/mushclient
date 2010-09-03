@@ -20,7 +20,7 @@ public:
     }
   };
 
-	 //lua_State* getLuaState(void);
+  //lua_State* getLuaState(void);
 
    static void createBeans(
      lua_State *L,

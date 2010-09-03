@@ -26,7 +26,7 @@ extern "C"
 
 class ILuaDispatch : public IUnknown {
 public:
-	STDMETHOD(PushIfSameState)(lua_State *L)=0;
+  STDMETHOD(PushIfSameState)(lua_State *L)=0;
 };
 
 
@@ -39,23 +39,23 @@ static void *idxDispatch;
 class tLuaDispatch : public IDispatch, public ILuaDispatch
 {
 public:
-	tLuaCOMConnPointContainer* GetConnPointContainer(void);
-	void BeConnectable(void);
-	void SetCoClassinfo(ITypeInfo* coclassinfo);
-	void FillExceptionInfo(EXCEPINFO *pexcepinfo, const char* text);
-	static tLuaDispatch * CreateLuaDispatch(
+  tLuaCOMConnPointContainer* GetConnPointContainer(void);
+  void BeConnectable(void);
+  void SetCoClassinfo(ITypeInfo* coclassinfo);
+  void FillExceptionInfo(EXCEPINFO *pexcepinfo, const char* text);
+  static tLuaDispatch * CreateLuaDispatch(
     lua_State* L,
     ITypeInfo* typeinfo,
     int ref
     );
 
   tLuaDispatch(lua_State* L, ITypeInfo *pTypeinfo, int ref);
-  tLuaDispatch::~tLuaDispatch();
+  ~tLuaDispatch();
 
   /* IUnknown methods */
   STDMETHOD(QueryInterface)(REFIID riid, void FAR* FAR* ppvObj);
-  STDMETHOD_(unsigned long, AddRef)(void);
-  STDMETHOD_(unsigned long, Release)(void);
+  STDMETHOD_(ULONG, AddRef)(void);
+  STDMETHOD_(ULONG, Release)(void);
 
   /* IDispatch methods */
   STDMETHOD(GetTypeInfoCount)(unsigned int FAR* pcTypeInfo);
@@ -87,8 +87,8 @@ public:
   ITypeInfo *typeinfo;
 
 protected:
-	tLuaCOMConnPointContainer* cpc;
-	HRESULT propertyget(
+  tLuaCOMConnPointContainer* cpc;
+  HRESULT propertyget(
     const char* name, 
     FUNCDESC* funcdesc,
     DISPPARAMS* pdispparams,
@@ -111,9 +111,9 @@ protected:
     EXCEPINFO *pexcepinfo,
     unsigned int *puArgErr);
 
-	lua_State* L;
-	IID interface_iid;
-	tLuaCOMTypeHandler * typehandler;
+  lua_State* L;
+  IID interface_iid;
+  tLuaCOMTypeHandler * typehandler;
   static int tag;
 
   unsigned long m_refs;
@@ -128,9 +128,10 @@ protected:
   {
   public:
     ProvideClassInfo2(ITypeInfo* p_coclassinfo, IUnknown* p_pUnk);
+    ~ProvideClassInfo2();
 
-    STDMETHODIMP_(unsigned long) AddRef(void);
-    STDMETHODIMP_(unsigned long) Release(void);
+    STDMETHODIMP_(ULONG) AddRef(void);
+    STDMETHODIMP_(ULONG) Release(void);
     STDMETHOD(QueryInterface)(REFIID riid, void FAR* FAR* ppvObj);
     STDMETHOD(GetClassInfo)(ITypeInfo** ppTypeInfo);
     STDMETHOD(GetGUID)(DWORD dwGuidKind, GUID * pGUID);

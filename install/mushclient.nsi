@@ -250,7 +250,7 @@ Section "Documentation"
   File "..\docs\Lua Colors LICENSE.txt"
   File "..\docs\JSON License.txt"
   File "..\docs\LuaJSON.txt"
-  File "..\docs\luacom-1.3-doc.pdf"
+  File "..\docs\luacom.pdf"
   File "..\docs\LuaSocket_license.txt"
   
   CreateDirectory "$INSTDIR\docs\LuaSocket_documentation"
@@ -624,7 +624,7 @@ Section Uninstall
   Delete "$INSTDIR\docs\Lua Colors LICENSE.txt"
   Delete "$INSTDIR\docs\JSON License.txt"
   Delete "$INSTDIR\docs\LuaJSON.txt"
-  Delete "$INSTDIR\docs\luacom-1.3-doc.pdf"
+  Delete "$INSTDIR\docs\luacom.pdf"
 
   Delete "$INSTDIR\docs\LuaSocket_license.txt"
   Delete "$INSTDIR\docs\LuaSocket_documentation\dns.html"

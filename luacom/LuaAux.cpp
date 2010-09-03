@@ -15,8 +15,8 @@ extern "C"
 
 
 // RCS Info
-static char *rcsid = "$Id: LuaAux.cpp,v 1.13 2004/11/25 13:40:00 fqueiroz Exp $";
-static char *rcsname = "$Name:  $";
+static char const * const rcsid = "$Id: LuaAux.cpp,v 1.2 2007/12/20 06:51:15 dmanura Exp $";
+static char const * const rcsname = "$Name:  $";
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -54,12 +54,12 @@ void LuaAux::printLuaStack(lua_State *L)
       break;
 
     case LUA_TTABLE:
-      printf("%d: table, tag = %d", i, luaCompat_getType2(L, i));
+      printf("%d: table, tag = %p", i, luaCompat_getType2(L, i));
       break;
 
     case LUA_TUSERDATA:
-      printf("%d: userdata = %p, tag = %d", i,
-        (long) luaCompat_getPointer(L, i), luaCompat_getType2(L, i));
+      printf("%d: userdata = %p, tag = %p", i,
+        luaCompat_getPointer(L, i), luaCompat_getType2(L, i));
       break;
 
     case LUA_TNIL:

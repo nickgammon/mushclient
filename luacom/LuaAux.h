@@ -19,12 +19,12 @@ typedef int stkIndex;
 class LuaAux  
 {
 public:
-	static void printLuaTable(lua_State *L, stkIndex index);
-	static void printLuaStack(lua_State *L);
-	static void printPreDump(int expected);
+  static void printLuaTable(lua_State *L, stkIndex index);
+  static void printLuaStack(lua_State *L);
+  static void printPreDump(int expected);
   static const char* makeLuaErrorMessage(int return_value, const char* msg);
-	LuaAux();
-	virtual ~LuaAux();
+  LuaAux();
+  virtual ~LuaAux();
 
 };
 
