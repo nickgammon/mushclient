@@ -1,6 +1,8 @@
--- MUSHclient sandbox (taken from versions 4.11 to 4.57)
+-- sandbox.lua
 
 --[[ 
+
+MUSHclient sandbox (taken from versions 4.11 to 4.57)
 
 To enable the sandbox for all Lua scripting add to:
 
