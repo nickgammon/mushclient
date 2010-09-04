@@ -346,6 +346,7 @@ tInternalFunctionsTable InternalFunctionsTable [] = {
 { "SetNotes" ,                   "( Message )" } ,
 { "SetOption" ,                  "( OptionName , Value )" } ,
 { "SetOutputFont" ,              "( FontName , PointSize )" } ,
+{ "SetScroll",                   "( Position ,  Visible )" }, 
 { "SetStatus" ,                  "( Message )" } ,
 { "SetTimerOption" ,             "( TimerName , OptionName , Value )" } ,
 { "SetToolBarPosition" ,         "( Which , Float , Side , Top , Left )" } ,

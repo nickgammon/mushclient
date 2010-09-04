@@ -70,14 +70,14 @@ library MUSHclient
 			[id(44)] long SetCommand(BSTR Message);
 			[id(45)] BSTR GetNotes();
 			[id(46)] void SetNotes(BSTR Message);
-			[id(403), propget] long NormalColour(short WhichColour);
-			[id(403), propput] void NormalColour(short WhichColour, long nNewValue);
-			[id(404), propget] long BoldColour(short WhichColour);
-			[id(404), propput] void BoldColour(short WhichColour, long nNewValue);
-			[id(405), propget] long CustomColourText(short WhichColour);
-			[id(405), propput] void CustomColourText(short WhichColour, long nNewValue);
-			[id(406), propget] long CustomColourBackground(short WhichColour);
-			[id(406), propput] void CustomColourBackground(short WhichColour, long nNewValue);
+			[id(404), propget] long NormalColour(short WhichColour);
+			[id(404), propput] void NormalColour(short WhichColour, long nNewValue);
+			[id(405), propget] long BoldColour(short WhichColour);
+			[id(405), propput] void BoldColour(short WhichColour, long nNewValue);
+			[id(406), propget] long CustomColourText(short WhichColour);
+			[id(406), propput] void CustomColourText(short WhichColour, long nNewValue);
+			[id(407), propget] long CustomColourBackground(short WhichColour);
+			[id(407), propput] void CustomColourBackground(short WhichColour, long nNewValue);
 			[id(47)] void Redraw();
 			[id(48)] long ResetTimer(BSTR TimerName);
 			[id(49)] void SetOutputFont(BSTR FontName, short PointSize);
@@ -434,6 +434,7 @@ library MUSHclient
 			[id(400)] long WindowResize(BSTR Name, long Width, long Height, long BackgroundColour);
 			[id(401)] long WindowMoveHotspot(BSTR Name, BSTR HotspotId, long Left, long Top, long Right, long Bottom);
 			[id(402)] long WindowTransformImage(BSTR Name, BSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy);
+			[id(403)] long SetScroll(long Position, BOOL Visible);
 			//}}AFX_ODL_METHOD
 
 	};

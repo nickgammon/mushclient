@@ -3053,6 +3053,8 @@ if (wp.showCmd != SW_MINIMIZE &&
 
     }   // end of auto-wrap wanted
   pDoc->SendWindowSizes (pDoc->m_nWrapColumn);
+  EnableScrollBarCtrl (SB_VERT, pDoc->m_bScrollBarWanted);
+
 }
 
 void CMUSHView::OnDisplayFreezeoutput() 
@@ -4401,7 +4403,7 @@ int iDeltaY = m_scroll_position.y - pt.y;
         // update scroll bar
         GetScrollInfo (SB_VERT, &ScrollInfo, SIF_POS);
         ScrollInfo.nPos = m_scroll_position.y;
-        SetScrollInfo (SB_VERT, &ScrollInfo, SIF_POS);
+        SetScrollInfo (SB_VERT, &ScrollInfo, pDoc->m_bScrollBarWanted);
         ScrollWindow (0, iSmoothDelta);
         UpdateWindow ();
         }
@@ -4436,11 +4438,11 @@ int iDeltaY = m_scroll_position.y - pt.y;
   // update scroll bar
   GetScrollInfo (SB_VERT, &ScrollInfo, SIF_POS);
   ScrollInfo.nPos = pt.y;
-  SetScrollInfo (SB_VERT, &ScrollInfo, SIF_POS);
+  SetScrollInfo (SB_VERT, &ScrollInfo, pDoc->m_bScrollBarWanted);
 
 //  GetScrollInfo (SB_HORZ, &ScrollInfo, SIF_POS);
 //  ScrollInfo.nPos = pt.x;
-//  SetScrollInfo (SB_HORZ, &ScrollInfo, SIF_POS);
+//  SetScrollInfo (SB_HORZ, &ScrollInfo, pDoc->m_bScrollBarWanted);
   
   if (pDoc->m_bAutoFreeze)
     m_freeze = GetScrollPos (SB_VERT) < GetScrollLimit(SB_VERT);
@@ -4451,7 +4453,9 @@ void CMUSHView::SetScrollSizes (SIZE sizeTotal,
                      const SIZE& sizePage, 
                      const SIZE& sizeLine)
   {
-  SCROLLINFO ScrollInfo;
+CMUSHclientDoc* pDoc = GetDocument();
+ASSERT_VALID(pDoc);
+SCROLLINFO ScrollInfo;
 
   m_scroll_limit = sizeTotal;
 
@@ -4459,14 +4463,14 @@ void CMUSHView::SetScrollSizes (SIZE sizeTotal,
   ScrollInfo.nMin = 0;
   ScrollInfo.nMax = sizeTotal.cy - 1;
   ScrollInfo.nPage = sizePage.cy;
-  SetScrollInfo (SB_VERT, &ScrollInfo, SIF_ALL);
+  SetScrollInfo (SB_VERT, &ScrollInfo, pDoc->m_bScrollBarWanted);
 
   /*
   GetScrollInfo (SB_HORZ, &ScrollInfo, SIF_ALL);
   ScrollInfo.nMin = 0;
   ScrollInfo.nMax = sizeTotal.cx - 1;
   ScrollInfo.nPage = sizePage.cx;
-  SetScrollInfo (SB_HORZ, &ScrollInfo, SIF_ALL);
+  SetScrollInfo (SB_HORZ, &ScrollInfo, pDoc->m_bScrollBarWanted);
 */
 
   } // end of CMUSHView::SetScrollSizes

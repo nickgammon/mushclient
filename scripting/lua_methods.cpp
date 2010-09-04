@@ -5195,6 +5195,18 @@ static int L_SetOutputFont (lua_State *L)
   return 0;  // number of result fields
   } // end of L_SetOutputFont
 
+//----------------------------------------
+//  world.SetScroll
+//----------------------------------------
+static int L_SetScroll (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  lua_pushnumber (L, pDoc->SetScroll (
+      my_checknumber (L, 1),    // position
+      optboolean (L, 2, 1)      // enabled flag, defaults to true
+      ));
+  return 1;  // number of result fields
+  } // end of L_SetScroll
 
 //----------------------------------------
 //  world.SetStatus
@@ -6738,6 +6750,7 @@ static const struct luaL_reg worldlib [] =
   {"SetNotes", L_SetNotes},
   {"SetOption", L_SetOption},
   {"SetOutputFont", L_SetOutputFont},
+  {"SetScroll", L_SetScroll},
   {"SetStatus", L_SetStatus},
   {"SetTimerOption", L_SetTimerOption},
   {"SetToolBarPosition", L_SetToolBarPosition},

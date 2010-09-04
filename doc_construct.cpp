@@ -122,6 +122,7 @@ int i;
   m_strSpamMessage = "look";
   m_iSpamLineCount = 20;
   m_iLastOutgoingChatPort = DEFAULT_CHAT_PORT;
+  m_bScrollBarWanted = TRUE;
 
   m_iSocksProcessing = 0;   // no socks processing wanted
   m_iProxyServerPort = 1080; // default socks port

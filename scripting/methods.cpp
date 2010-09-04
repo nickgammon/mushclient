@@ -4203,6 +4203,7 @@ tInfoTypeMapping InfoTypes [] =
 { 115, "Localization active" },
 { 118, "Variables have changed" },
 { 119, "Script engine active" },
+{ 120, "Scroll bar visible" },
 
 
 // (numbers (longs) - calculated at runtime)
@@ -4302,6 +4303,7 @@ tInfoTypeMapping InfoTypes [] =
 { 293, "Actual text rectangle - bottom" },
 { 294, "State of keyboard modifiers" },
 { 295, "Times output window redrawn" },
+{ 296, "Output window scroll bar position" },
    
 
 // (dates - calculated at runtime)
@@ -4553,6 +4555,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case  115: SetUpVariantBool (vaResult, App.m_Translator_Lua != NULL); break;
     case  118: SetUpVariantBool (vaResult, m_bVariablesChanged); break;
     case  119: SetUpVariantBool (vaResult, m_ScriptEngine != NULL); break;
+    case  120: SetUpVariantBool (vaResult, m_bScrollBarWanted); break;
 
 
     case  201: SetUpVariantLong (vaResult, m_total_lines); break;
@@ -5022,6 +5025,18 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case 295:
       SetUpVariantLong (vaResult, m_iOutputWindowRedrawCount); 
       break; // state of virtual keys    
+
+    case 296:
+      {
+      CMUSHView* pmyView = GetFirstOutputWindow ();
+      if (pmyView) 
+        {
+        CPoint pt = pmyView->GetScrollPosition ();
+        SetUpVariantLong (vaResult, pt.y);
+        break;
+        }
+      }
+      break;
 
     case  301: 
       if (m_tConnectTime.GetTime ())     // only if non-zero, otherwise return empty
@@ -14901,6 +14916,47 @@ long CMUSHclientDoc::WindowTransformImage(LPCTSTR Name, LPCTSTR ImageId, float L
   return it->second->TransformImage (ImageId, Left, Top, Mode, Mxx, Mxy, Myx, Myy);
 }
 
+
+
+long CMUSHclientDoc::SetScroll(long Position, BOOL Visible) 
+{
+
+CPoint pt (0, 0);
+int lastline = GetLastLine ();
+m_bScrollBarWanted = Visible;
+
+  for(POSITION pos = GetFirstViewPosition(); pos != NULL; )
+	  {
+	  CView* pView = GetNextView(pos);
+	  
+	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+  	  {
+		  CMUSHView* pmyView = (CMUSHView*)pView;
+
+      int highest = (lastline * m_FontHeight) - pmyView->GetOutputWindowHeight ();
+
+      // -1 goes to the end
+      if (Position == -1)
+        pt.y = highest; 
+      else
+        pt.y = Position;
+
+      if (pt.y < 0)
+        pt.y = 0;
+      if (pt.y > highest)
+        pt.y = highest;
+
+      pmyView->EnableScrollBarCtrl (SB_VERT, Visible);
+      if (Position != -2)      // if -2, do not change position
+        pmyView->ScrollToPosition (pt, false);
+      pmyView->Invalidate ();
+
+	    }	  // end of being a CMUSHView
+    }   // end of loop through views
+
+
+	return eOK;
+}
 
 
 /*

@@ -488,6 +488,7 @@
 3 SetOption=FNC_SetOption 
 3 SetOutputFont=FNC_SetOutputFont 
 3 SetStatus=FNC_SetStatus 
+3 SetScroll=FNC_SetScroll
 3 SetTimerOption=FNC_SetTimerOption 
 3 SetToolBarPosition=FNC_SetToolBarPosition
 3 SetTriggerOption=FNC_SetTriggerOption 

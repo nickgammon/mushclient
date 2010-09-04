@@ -1288,6 +1288,7 @@ public:
   map<COLORREF, COLORREF> m_ColourTranslationMap;
 
   list<CPaneStyle> m_OutstandingLines;
+  BOOL m_bScrollBarWanted;      // true if we want to see scroll bars
 
   long m_nCount_IAC_DO;         // count of IAC DO we got
   long m_nCount_IAC_DONT;       // count of IAC DONT we got
@@ -2672,6 +2673,7 @@ public:
 	afx_msg long WindowResize(LPCTSTR Name, long Width, long Height, long BackgroundColour);
 	afx_msg long WindowMoveHotspot(LPCTSTR Name, LPCTSTR HotspotId, long Left, long Top, long Right, long Bottom);
 	afx_msg long WindowTransformImage(LPCTSTR Name, LPCTSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy);
+	afx_msg long SetScroll(long Position, BOOL Visible);
 	afx_msg long GetNormalColour(short WhichColour);
 	afx_msg void SetNormalColour(short WhichColour, long nNewValue);
 	afx_msg long GetBoldColour(short WhichColour);
