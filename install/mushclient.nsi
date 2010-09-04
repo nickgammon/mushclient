@@ -345,6 +345,7 @@ SetOverwrite ifnewer
    File "..\lua\ppi.lua"
    File "..\lua\mapper.lua"  
    File "..\luacom\luacom5.lua"  
+   File "..\lua\sandbox.lua"  
    
    ; LuaSocket
    
@@ -557,6 +558,7 @@ Section Uninstall
   Delete "$INSTDIR\lua\ppi.lua"
   Delete "$INSTDIR\lua\mapper.lua"  
   Delete "$INSTDIR\lua\luacom5.lua"  
+  Delete "$INSTDIR\lua\sandbox.lua"  
 
   Delete "$INSTDIR\lua\socket.lua"
   Delete "$INSTDIR\lua\ltn12.lua"
