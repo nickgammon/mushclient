@@ -605,6 +605,7 @@ BEGIN_DISPATCH_MAP(CMUSHclientDoc, CDocument)
 	DISP_FUNCTION(CMUSHclientDoc, "WindowResize", WindowResize, VT_I4, VTS_BSTR VTS_I4 VTS_I4 VTS_I4)
 	DISP_FUNCTION(CMUSHclientDoc, "WindowMoveHotspot", WindowMoveHotspot, VT_I4, VTS_BSTR VTS_BSTR VTS_I4 VTS_I4 VTS_I4 VTS_I4)
 	DISP_FUNCTION(CMUSHclientDoc, "WindowTransformImage", WindowTransformImage, VT_I4, VTS_BSTR VTS_BSTR VTS_R4 VTS_R4 VTS_I2 VTS_R4 VTS_R4 VTS_R4 VTS_R4)
+	DISP_FUNCTION(CMUSHclientDoc, "SetScroll", SetScroll, VT_I4, VTS_I4 VTS_BOOL)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "NormalColour", GetNormalColour, SetNormalColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "BoldColour", GetBoldColour, SetBoldColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "CustomColourText", GetCustomColourText, SetCustomColourText, VT_I4, VTS_I2)
@@ -4886,54 +4887,44 @@ CString str;
 // we do our own DoSave, because the default one stops at the first space
 BOOL CMUSHclientDoc::DoSave(LPCTSTR lpszPathName, BOOL bReplace)
   {
-	CString newName = lpszPathName;
+	CString strNewName;
 
   // empty name - possibly caused by "save as"
-  if (newName.IsEmpty ())
+  if (lpszPathName == NULL || lpszPathName [0] == 0)
     {
 
-    // if we know the path name, suggest that, otherwise take the mush name
-	  newName = m_strPathName;
-	  if (bReplace && newName.IsEmpty())
+    // if we know the path name, suggest that, otherwise take the MUD name
+	  strNewName = m_strPathName;
+	  if (bReplace && strNewName.IsEmpty())
 	   {
     
-      newName = m_mush_name;
+      strNewName = m_mush_name;
 
       // fix up name to remove characters that are invalid
 
       int i;
-      while ((i = newName.FindOneOf ("<>\"|?:#%;/\\")) != -1)
-        newName = newName.Left (i) + newName.Mid (i + 1);
+      while ((i = strNewName.FindOneOf ("<>\"|?:#%;/\\")) != -1)
+        strNewName = strNewName.Left (i) + strNewName.Mid (i + 1);
 
+      CString strFixedName = Make_Absolute_Path (App.m_strDefaultWorldFileDirectory);
+      strFixedName += strNewName;
+
+      strNewName = strFixedName;
       }   // end of no path name known
 
 	  CDocTemplate* pTemplate = GetDocTemplate();
 	  ASSERT(pTemplate != NULL);
 
-    // save in default world directory
-    int iCount;
-    CString strDirectory;
-
-    // find length of current directory
-    iCount = GetCurrentDirectory (0, NULL);	
-    // get current directory
-    GetCurrentDirectory (iCount, strDirectory.GetBuffer (iCount));
-    strDirectory.ReleaseBuffer (-1);
-    // change to world directory
-    SetCurrentDirectory (Make_Absolute_Path (App.m_strDefaultWorldFileDirectory));
-    // save world details
-
-    BOOL bResult = AfxGetApp()->DoPromptFileName(newName,
+    BOOL bResult = AfxGetApp()->DoPromptFileName(strNewName,
 		    AFX_IDS_SAVEFILE,
 		    OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, FALSE, pTemplate);
-
-    // change back to current directory
-    SetCurrentDirectory (strDirectory);
 
     if (!bResult)
 		    return FALSE;       // don't even attempt to save
 
     }     // end of no path name supplied
+  else
+    strNewName = lpszPathName;
 
  // execute "save" script
   if (m_ScriptEngine)
@@ -4974,7 +4965,7 @@ BOOL CMUSHclientDoc::DoSave(LPCTSTR lpszPathName, BOOL bReplace)
   m_CurrentPlugin = pSavedPlugin;
 
 
-  BOOL bSuccess = CDocument::DoSave (newName, bReplace);
+  BOOL bSuccess = CDocument::DoSave (strNewName, bReplace);
 
   if (bSuccess)
     m_bVariablesChanged = false;

@@ -41,8 +41,8 @@ typedef enum
 class tLuaObject
 {
 public:
-	static void cacheObject(lua_State* L, void* pointer);
-	static bool pushCachedObject(lua_State* L, void* pointer);
+  static void cacheObject(lua_State* L, void* pointer);
+  static bool pushCachedObject(lua_State* L, void* pointer);
 
   class MethodTable
   {
@@ -72,9 +72,9 @@ public:
   } method_table;
 
 protected:
-	static int closure(lua_State* L);
-	virtual int newindex(lua_State* L);
-	virtual int index(lua_State* L);
+  static int closure(lua_State* L);
+  virtual int newindex(lua_State* L);
+  virtual int index(lua_State* L);
 
   static void RegisterType(lua_State* L,
                            const char* type_name,
@@ -90,9 +90,9 @@ protected:
   static tLuaObject* getObject(lua_State* L, int pos);
 
 private:
-	static int garbagecollect(lua_State* L);
-	static int generic_index(lua_State* L);
-	static int generic_newindex(lua_State* L);
+  static int garbagecollect(lua_State* L);
+  static int generic_index(lua_State* L);
+  static int generic_newindex(lua_State* L);
 };
 
 

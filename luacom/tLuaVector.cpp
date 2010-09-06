@@ -23,9 +23,11 @@ extern "C"
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-tLuaVector::tLuaVector()
+tLuaVector::tLuaVector() :
+  initialized(false),
+  vectors(NULL),
+  luavals(NULL)
 {
-  initialized = false;
 }
 
 tLuaVector::~tLuaVector()
@@ -62,7 +64,7 @@ stkIndex tLuaVector::getindex(long * indices,
 {
   CHECKPARAM(indices != NULL && size != 0);
 
-  const long index = indices[size - 1] - bounds[size - 1].lLbound;
+  const long index = indices[0] - bounds[0].lLbound;
 
   CHECKPARAM(index < (long)length);
 
@@ -70,7 +72,7 @@ stkIndex tLuaVector::getindex(long * indices,
   {
     CHECKPRECOND(elem_type == VECTOR);
 
-    return vectors[index]->getindex(indices, size - 1, bounds);
+    return vectors[index]->getindex(&indices[1], size - 1, bounds);
   }
   else
   {
@@ -208,7 +210,7 @@ void tLuaVector::setindex(lua_State* L,
 {
   CHECKPARAM(indices != NULL && size != 0);
 
-  const long index = indices[size - 1] - bounds[size - 1].lLbound;
+  const long index = indices[0] - bounds[0].lLbound;
 
   CHECKPARAM(index < (long)length);
 
@@ -217,7 +219,7 @@ void tLuaVector::setindex(lua_State* L,
     if(elem_type != VECTOR)
       TYPECONV_ERROR("Cannot convert table to safearray");
 
-    vectors[index]->setindex(L, luaval, indices, size - 1, bounds);
+    vectors[index]->setindex(L, luaval, &indices[1], size - 1, &bounds[1]);
 
     if(array_type == NOTYPE)
       array_type = vectors[index]->getType();

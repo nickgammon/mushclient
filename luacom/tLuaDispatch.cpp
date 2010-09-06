@@ -5,8 +5,8 @@
  */
 
 // RCS Info
-static char *rcsid = "$Id: tLuaDispatch.cpp,v 1.30 2004/11/25 13:40:01 fqueiroz Exp $";
-static char *rcsname = "$Name:  $";
+static char const * const rcsid = "$Id: tLuaDispatch.cpp,v 1.9 2008/01/06 04:57:48 dmanura Exp $";
+static char const * const rcsname = "$Name:  $";
 
 
 #include "tLuaDispatch.h"
@@ -21,13 +21,24 @@ extern "C"
 #include "LuaCompat.h"
 }
 
+// hacks for certain compilers
+#if defined(__MINGW32__) || defined(__CYGWIN__)
+#define GUIDKIND_DEFAULT_SOURCE_DISP_IID 1
+#endif
+
 long tLuaDispatch::NEXT_ID = 0;
 
 tLuaDispatch::ProvideClassInfo2::ProvideClassInfo2(ITypeInfo* p_coclassinfo,
                                                    IUnknown* p_pUnk)
 {
   coclassinfo = p_coclassinfo;
+  coclassinfo->AddRef();
   pUnk = p_pUnk;
+}
+
+tLuaDispatch::ProvideClassInfo2::~ProvideClassInfo2()
+{
+  coclassinfo->Release();
 }
 
 STDMETHODIMP tLuaDispatch::ProvideClassInfo2::QueryInterface(
@@ -37,12 +48,12 @@ STDMETHODIMP tLuaDispatch::ProvideClassInfo2::QueryInterface(
   return pUnk->QueryInterface(riid, ppvObj);
 }
 
-STDMETHODIMP_(unsigned long) tLuaDispatch::ProvideClassInfo2::AddRef(void)
+STDMETHODIMP_(ULONG) tLuaDispatch::ProvideClassInfo2::AddRef(void)
 {
   return pUnk->AddRef();
 }
 
-STDMETHODIMP_(unsigned long) tLuaDispatch::ProvideClassInfo2::Release(void)
+STDMETHODIMP_(ULONG) tLuaDispatch::ProvideClassInfo2::Release(void)
 {
   return pUnk->Release();
 }
@@ -137,20 +148,20 @@ tLuaDispatch::QueryInterface(REFIID riid, void FAR* FAR* ppv)
       AddRef();
       return NOERROR;
     }
-	       
+
     *ppv = NULL;
     return ResultFromScode(E_NOINTERFACE);
 }
 
 
-STDMETHODIMP_(unsigned long)
+STDMETHODIMP_(ULONG)
 tLuaDispatch::AddRef()
 {
     return ++m_refs;
 }
 
 
-STDMETHODIMP_(unsigned long)
+STDMETHODIMP_(ULONG)
 tLuaDispatch::Release()
 {
   assert(m_refs > 0);
@@ -250,6 +261,7 @@ tLuaDispatch::Invoke(
   stkIndex member         = -1;
   int current_arg         = 0;
   HRESULT retval          = NOERROR;
+  const stkIndex baseidx = lua_gettop(L); // stack index on entry
   stkIndex return_value_pos = 0;
 
   if(wFlags & ~(DISPATCH_METHOD | DISPATCH_PROPERTYGET | DISPATCH_PROPERTYPUT |
@@ -312,6 +324,7 @@ tLuaDispatch::Invoke(
 
         if(ret != S_OK)
         {
+          lua_settop(L, implementation_table); // reset before next call
           retval = propertyget(
             funcinfo[index].name,
             funcinfo[index].funcdesc,
@@ -361,9 +374,6 @@ tLuaDispatch::Invoke(
     FillExceptionInfo(pexcepinfo, e.getMessage());
   }
 
-  // removes implementation table
-  lua_remove(L, implementation_table);
-
   if(retval == DISP_E_MEMBERNOTFOUND)
   {
     tUtil::log_verbose("tLuaDispatch", "Member '%s' not found (0x%.8x)",
@@ -375,20 +385,15 @@ tLuaDispatch::Invoke(
       funcinfo[index].name, dispidMember);
   }
 
+  lua_settop(L, baseidx); // reset on exit
   return retval;
 }
 
 STDMETHODIMP tLuaDispatch::PushIfSameState(lua_State *p_L) {
-#ifdef LUA4
-  if(L == p_L) {
-    lua_getref(L, table_ref);
-    return S_OK;
-  } else return E_FAIL;
-#else
   lua_getref(p_L, table_ref);
   if(lua_isnil(p_L, -1)) {
-	lua_pop(p_L,1);
-	return E_FAIL;
+    lua_pop(p_L,1);
+    return E_FAIL;
   }
   const void *p1 = lua_topointer(p_L, -1);
   lua_getref(L, table_ref);
@@ -399,9 +404,8 @@ STDMETHODIMP tLuaDispatch::PushIfSameState(lua_State *p_L) {
   } else {
     lua_pop(L, 1);
     lua_pop(p_L, 1);
-	return E_FAIL;
+    return E_FAIL;
   }
-#endif
 }
 
 tLuaDispatch::tLuaDispatch(lua_State* p_L, ITypeInfo * pTypeinfo, int ref)
@@ -460,12 +464,14 @@ tLuaDispatch::tLuaDispatch(lua_State* p_L, ITypeInfo * pTypeinfo, int ref)
 
       BSTR names[1];
       unsigned int dumb; 
-      typeinfo->GetNames(funcdesc->memid, names, 1, &dumb); 
+      hr = typeinfo->GetNames(funcdesc->memid, names, 1, &dumb); 
+      CHECK(SUCCEEDED(hr), INTERNAL_ERROR);
 
       const int str_size = SysStringLen(names[0]);
 
       funcinfo[num_methods].name = new char[str_size + 1];
       wcstombs(funcinfo[num_methods].name, names[0], str_size+1);
+      SysFreeString(names[0]);
 
       num_methods++;
     }
@@ -527,7 +533,7 @@ void tLuaDispatch::FillExceptionInfo(EXCEPINFO *pexcepinfo, const char *text)
 }
 
 
-
+// note: does not restore Lua stack
 HRESULT tLuaDispatch::propertyget(const char* name,
                                   FUNCDESC* funcdesc,
                                   DISPPARAMS *pdispparams,
@@ -543,7 +549,6 @@ HRESULT tLuaDispatch::propertyget(const char* name,
 
   if(lua_isnil(L, member))
   {
-    lua_remove(L, member);
     return DISP_E_MEMBERNOTFOUND;
   }
 
@@ -593,7 +598,7 @@ HRESULT tLuaDispatch::propertyget(const char* name,
   return S_OK;
 }
 
-
+// note: does not restore Lua stack
 HRESULT tLuaDispatch::propertyput(const char* name,
                                   DISPPARAMS *pdispparams,
                                   VARIANT *pvarResult,
@@ -675,6 +680,7 @@ HRESULT tLuaDispatch::propertyput(const char* name,
 }
 
 
+// note: does not restore Lua stack
 HRESULT tLuaDispatch::method(const char* name,
                              FUNCDESC* funcdesc,
                              DISPPARAMS *pdispparams,
@@ -682,68 +688,61 @@ HRESULT tLuaDispatch::method(const char* name,
                              EXCEPINFO *pexcepinfo,
                              unsigned int *puArgErr)
 {
-  // gets lua function from implementation table
+  // push Lua function (member) from implementation table
   lua_pushstring(L, name);
   lua_gettable(L, -2);
-
-  // stores position of the member function
-  stkIndex member = lua_gettop(L);
+  const stkIndex memberidx = lua_gettop(L);  // and stack index
       
-  // tests whether it's really a function
-
-  if(!lua_isfunction(L, member))
+  // test whether it's really a function
+  if(!lua_isfunction(L, memberidx))
   {
-    lua_remove(L, member);
     return DISP_E_MEMBERNOTFOUND;
   }
 
   /* converte parametros e empilha */
 
-  // parametro self
+  // push self argument
   lua_getref(L, table_ref);
   
-  // Parametros passados via COM
+  // push COM arguments
   typehandler->pushLuaArgs(
     L,
     pdispparams,
     funcdesc->lprgelemdescParam);
 
-  // chama funcao lua
+  // chama funcao Lua
   const char* errmsg = NULL;
   int result = 0;
 
-  result = luaCompat_call(L, lua_gettop(L) - member, LUA_MULTRET, &errmsg);
-
+  // call function
+  result = luaCompat_call(L, lua_gettop(L) - memberidx, LUA_MULTRET, &errmsg);
   if(result)
   {
     FillExceptionInfo(pexcepinfo, LuaAux::makeLuaErrorMessage(result, errmsg));
-
     return DISP_E_EXCEPTION;
   }
-  
+  // note: only return values are left above baseidx
+  stkIndex returnidx = memberidx; // start index of return values
 
-  // return values will be put in the place of the function
-  // and beyond
-  stkIndex return_value_pos = member;
-
-  if(lua_type(L, return_value_pos) != LUA_TNONE)
+  // set COM return value
+  if(lua_type(L, returnidx) != LUA_TNONE)
   {
     if(pvarResult != NULL && funcdesc->elemdescFunc.tdesc.vt != VT_VOID)
     {
       VARIANTARG result;
       VariantInit(&result);
 
-	  typehandler->lua2com(L, return_value_pos, result, funcdesc->elemdescFunc.tdesc.vt);
+      typehandler->lua2com(L, returnidx, result, funcdesc->elemdescFunc.tdesc.vt);
 
       *pvarResult = result;
 
-      return_value_pos++;
+      returnidx++; // consume
     }
   }
 
-  // sets out values
-  if(lua_type(L, return_value_pos) != LUA_TNONE)
-    typehandler->setOutValues(L, funcdesc, pdispparams, return_value_pos);
+  // set COM out arguments
+  if(lua_type(L, returnidx) != LUA_TNONE)
+    typehandler->setOutValues(L, funcdesc, pdispparams, returnidx);
 
   return S_OK;
 }

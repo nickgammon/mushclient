@@ -14,7 +14,7 @@
 
 extern "C"
 {
-#include "luacompat.h"
+#include "LuaCompat.h"
 }
 
 
@@ -192,13 +192,14 @@ int tLuaCOMEnumerator::call_method(lua_State *L)
 
 int tLuaCOMEnumerator::callCOMmethod(lua_State* L, const char *name, int first_param, int num_params)
 {
-  HRESULT hr = S_OK;
+    HRESULT hr = S_OK;
 
   // Next method
   if(strcmp(name, "Next") == 0)
   {
     VARIANT* pVar = NULL;
-    unsigned long num_elements = 1, counter = 0, fetched = 0;
+    unsigned long num_elements = 1, counter = 0;
+    ULONG fetched = 0;
 
 
     if(num_params > 0)
@@ -221,11 +222,11 @@ int tLuaCOMEnumerator::callCOMmethod(lua_State* L, const char *name, int first_p
     }
 
     for(counter = 0; counter <  num_elements; counter++)
-	  VariantClear(&pVar[counter]);
+      VariantClear(&pVar[counter]);
 
     delete[] pVar;
 
-	pVar = NULL;
+    pVar = NULL;
 
     return fetched;
   }

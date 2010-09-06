@@ -250,7 +250,7 @@ Section "Documentation"
   File "..\docs\Lua Colors LICENSE.txt"
   File "..\docs\JSON License.txt"
   File "..\docs\LuaJSON.txt"
-  File "..\docs\luacom-1.3-doc.pdf"
+  File "..\docs\luacom.pdf"
   File "..\docs\LuaSocket_license.txt"
   
   CreateDirectory "$INSTDIR\docs\LuaSocket_documentation"
@@ -345,7 +345,9 @@ SetOverwrite ifnewer
    File "..\lua\ppi.lua"
    File "..\lua\mapper.lua"  
    File "..\luacom\luacom5.lua"  
-   
+   File "..\lua\sandbox.lua"  
+   File "..\lua\show_loaded.lua"  
+      
    ; LuaSocket
    
    File "..\lua\socket.lua"
@@ -557,7 +559,9 @@ Section Uninstall
   Delete "$INSTDIR\lua\ppi.lua"
   Delete "$INSTDIR\lua\mapper.lua"  
   Delete "$INSTDIR\lua\luacom5.lua"  
-
+  Delete "$INSTDIR\lua\sandbox.lua"  
+  Delete "$INSTDIR\lua\show_loaded.lua"  
+     
   Delete "$INSTDIR\lua\socket.lua"
   Delete "$INSTDIR\lua\ltn12.lua"
   Delete "$INSTDIR\lua\mime.lua"
@@ -624,7 +628,7 @@ Section Uninstall
   Delete "$INSTDIR\docs\Lua Colors LICENSE.txt"
   Delete "$INSTDIR\docs\JSON License.txt"
   Delete "$INSTDIR\docs\LuaJSON.txt"
-  Delete "$INSTDIR\docs\luacom-1.3-doc.pdf"
+  Delete "$INSTDIR\docs\luacom.pdf"
 
   Delete "$INSTDIR\docs\LuaSocket_license.txt"
   Delete "$INSTDIR\docs\LuaSocket_documentation\dns.html"

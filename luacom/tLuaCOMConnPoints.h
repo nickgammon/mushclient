@@ -107,8 +107,8 @@ O---O---O---O---O---O---O---O---O---O---O---O---O---O---O---O---O---O---O-O*/
 class tLuaCOMConnPoint : public IConnectionPoint
 {
   public:
-	  static int tagmeth_index(lua_State* L);
-	  void push(void);
+    static int tagmeth_index(lua_State* L);
+    void push(void);
     // Main Object Constructor & Destructor.
     tLuaCOMConnPoint(lua_State* L, IUnknown* pHostObj);
     ~tLuaCOMConnPoint(void);
@@ -160,8 +160,8 @@ class tLuaCOMConnPoint : public IConnectionPoint
     // holds LuaCOM objects for each sink
     tLuaCOM* sinks[ALLOC_CONNECTIONS];
 protected:
-	static int call_sinks(lua_State *L);
-	ITypeInfo* source_typeinfo;
+  static int call_sinks(lua_State *L);
+  ITypeInfo* source_typeinfo;
   lua_State* L;
 };
 
@@ -233,7 +233,7 @@ typedef tLuaCOMEnumConnections* PtLuaCOMEnumConnections;
 class tLuaCOMConnPointContainer : public IConnectionPointContainer
 {
   public:
-	  tLuaCOMConnPoint* GetDefault(void);
+    tLuaCOMConnPoint* GetDefault(void);
     tLuaCOMConnPointContainer(lua_State *p_L, IUnknown* p_pUnkOuter);
 
     // Interface Implementation Constructor & Destructor.
@@ -252,10 +252,10 @@ class tLuaCOMConnPointContainer : public IConnectionPointContainer
     // Data private to this interface implementation.
     IUnknown*     pUnkOuter;    // Outer unknown for Delegation.
 protected:
-	long num_connection_points;
-	long max_connection_points;
-	tLuaCOMConnPoint* default_connection;
-	tLuaCOMConnPoint** connection_points;
+  long num_connection_points;
+  long max_connection_points;
+  tLuaCOMConnPoint* default_connection;
+  tLuaCOMConnPoint** connection_points;
   lua_State* L;
 };
 

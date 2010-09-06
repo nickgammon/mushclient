@@ -19,8 +19,6 @@ char* LuaBeans::udtag_name        = NULL;
 LuaBeans::Events* LuaBeans::pEvents         = NULL;
 const char* LuaBeans::module_name = NULL;
 
-#define luaL_arg_check  luaL_argcheck
-
 void LuaBeans::createBeans(lua_State *L,
                            const char* p_module_name,
                            const char* name)

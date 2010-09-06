@@ -16,16 +16,16 @@ class tCOMUtil
 {
 public:
   static HRESULT GUID2String(GUID& Guid, char** ppGuid);
-	static const char* getPrintableTypeKind(const TYPEKIND tkind);
+  static const char* getPrintableTypeKind(const TYPEKIND tkind);
   static const char* getPrintableInvokeKind(const INVOKEKIND invkind);
   static const char* getPrintableTypeDesc(const TYPEDESC& tdesc);
-	static void DumpTypeInfo(ITypeInfo* typeinfo);
-    static bool tCOMUtil::GetRegKeyValue(const char* key, char** pValue);
-	static bool SetRegKeyValue(const char* key, const char* subkey, const char* value);
+  static void DumpTypeInfo(ITypeInfo* typeinfo);
+    static bool GetRegKeyValue(const char* key, char** pValue);
+  static bool SetRegKeyValue(const char* key, const char* subkey, const char* value);
     static bool DelRegKey(const char *key, const char *subkey);
-	static CLSID GetCLSID(ITypeInfo* coclassinfo);
-	static HRESULT ProgID2CLSID(CLSID* pClsid, const char* ProgID);
-	static ITypeLib* LoadTypeLibFromCLSID(
+  static CLSID GetCLSID(ITypeInfo* coclassinfo);
+  static HRESULT ProgID2CLSID(CLSID* pClsid, const char* ProgID);
+  static ITypeLib* LoadTypeLibFromCLSID(
     CLSID clsid,
     unsigned short major_version=0);
 
@@ -49,11 +49,11 @@ public:
                                          const char *interface_name);
   static ITypeInfo* GetDispatchTypeInfo(IDispatch* pdisp);
 
-	tCOMUtil();
-	virtual ~tCOMUtil();
+  tCOMUtil();
+  virtual ~tCOMUtil();
 
 protected:
-	static bool GetDefaultTypeLibVersion(
+  static bool GetDefaultTypeLibVersion(
     const char* libid,
     int* version_major,
     int* version_minor);

@@ -14,11 +14,11 @@
 class tLuaTLB : public tLuaObject  
 {
 public:
-	static int pushNew(lua_State* L, ITypeLib* p_typelib);
+  static int pushNew(lua_State* L, ITypeLib* p_typelib);
   static void Init(lua_State* L);
 
 protected:
-	int index(lua_State* L);
+  int index(lua_State* L);
   ITypeLib* typelib;
 
   static const char type_name[];
@@ -31,8 +31,8 @@ protected:
   static int ExportConstants(tLuaObject* lua_obj, lua_State* L);
   static int ExportEnumerations(tLuaObject* lua_obj, lua_State* L);
 
-	tLuaTLB(lua_State* L, ITypeLib *p_typelib);
-	virtual ~tLuaTLB();
+  tLuaTLB(lua_State* L, ITypeLib *p_typelib);
+  virtual ~tLuaTLB();
 public:
   int GetDocumentation(void);
 };
@@ -50,11 +50,11 @@ public:
   static void Init(lua_State* L);
 
 protected:
-	static int GetTypeLib(tLuaObject* lua_obj, lua_State* L);
-	static int GetFuncDesc(tLuaObject* lua_obj, lua_State* L);
+  static int GetTypeLib(tLuaObject* lua_obj, lua_State* L);
+  static int GetFuncDesc(tLuaObject* lua_obj, lua_State* L);
   static int GetVarDesc(tLuaObject* lua_obj, lua_State* L);
-	static int GetDocumentation(tLuaObject* lua_obj, lua_State* L);
-	static int GetTypeAttr(tLuaObject* lua_obj, lua_State* L);
+  static int GetDocumentation(tLuaObject* lua_obj, lua_State* L);
+  static int GetTypeAttr(tLuaObject* lua_obj, lua_State* L);
   static int GetImplType(tLuaObject* lua_obj, lua_State* L);
   static int GetImplTypeFlags(tLuaObject* lua_obj, lua_State* L);
 
@@ -64,11 +64,11 @@ protected:
   static const char type_name[];
   static const char pointer_type_name[];
 
-	tLuaTypeInfo(lua_State* L,
+  tLuaTypeInfo(lua_State* L,
                ITypeInfo *p_typeinfo
                );
 
-	virtual ~tLuaTypeInfo();
+  virtual ~tLuaTypeInfo();
 };
 
 #endif // _TLUATLB_H

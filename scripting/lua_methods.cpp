@@ -56,6 +56,7 @@ LUALIB_API void *isudata (lua_State *L, int ud, const char *tname) {
 // checks user data is mushclient.doc, and returns pointer to world
 static CMUSHclientDoc *doc (lua_State *L) 
   { 
+// mushclient_typename is "mushclient.world"
 CMUSHclientDoc **ud = (CMUSHclientDoc **) isudata (L, 1, mushclient_typename);
 
   // if first argument is a world userdatum, take that as our world
@@ -79,15 +80,12 @@ CMUSHclientDoc **ud = (CMUSHclientDoc **) isudata (L, 1, mushclient_typename);
     luaL_error (L, "world is no longer available");
     }
 
- // retrieve our state
-  CMUSHclientDoc * pDoc;
+  // retrieve our state (world pointer)
   
-  /* retrieve the document */
-  lua_pushstring(L, DOCUMENT_STATE);  /* push address */
-  lua_gettable(L, LUA_ENVIRONINDEX);  /* retrieve value */
-
-  pDoc = (CMUSHclientDoc *) lua_touserdata(L, -1);  /* convert to data */
-  lua_pop(L, 1);  /* pop result */
+  // retrieve the document pointer from the environment table
+  lua_getfield (L, LUA_ENVIRONINDEX, DOCUMENT_STATE);  // get "mushclient.document" value
+  CMUSHclientDoc * pDoc = (CMUSHclientDoc *) lua_touserdata (L, -1);  // convert to world pointer
+  lua_pop (L, 1);  // pop document pointer
 
   return pDoc;
   }
@@ -5195,6 +5193,18 @@ static int L_SetOutputFont (lua_State *L)
   return 0;  // number of result fields
   } // end of L_SetOutputFont
 
+//----------------------------------------
+//  world.SetScroll
+//----------------------------------------
+static int L_SetScroll (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  lua_pushnumber (L, pDoc->SetScroll (
+      my_checknumber (L, 1),    // position
+      optboolean (L, 2, 1)      // enabled flag, defaults to true
+      ));
+  return 1;  // number of result fields
+  } // end of L_SetScroll
 
 //----------------------------------------
 //  world.SetStatus
@@ -6738,6 +6748,7 @@ static const struct luaL_reg worldlib [] =
   {"SetNotes", L_SetNotes},
   {"SetOption", L_SetOption},
   {"SetOutputFont", L_SetOutputFont},
+  {"SetScroll", L_SetScroll},
   {"SetStatus", L_SetStatus},
   {"SetTimerOption", L_SetTimerOption},
   {"SetToolBarPosition", L_SetToolBarPosition},
@@ -7452,74 +7463,53 @@ static flags_pair miniwindow_flags [] =
 
 extern const struct luaL_reg *ptr_xmllib;
 
-/*
-static int l_errorhandler (lua_State *L) 
-  {
 
-  ::TMessageBox ("errorhandler");
-
-  return 0;
-} // end of l_errorhandler
-
-*/
-
-
-// int win_io_popen (lua_State *L);
-// int win_io_pclose (lua_State *L);
+// Note stack contains: 1: "mushclient.document"   (DOCUMENT_STATE)
+//                      2: pointer to document     (CMUSHclientDoc)
 
 int RegisterLuaRoutines (lua_State *L)
   {
 
-  lua_newtable (L);  // environment
-  lua_replace (L, LUA_ENVIRONINDEX);
+  lua_newtable (L);                    // make a new table
+  lua_replace (L, LUA_ENVIRONINDEX);   // global environment is now this empty table
 
+  // this line is doing: global_environment ["mushclient.document"] = world_pointer  (CMUSHclientDoc)
   lua_settable(L, LUA_ENVIRONINDEX);
 
-  // we want the global table so we can put a metatable on it
-//  lua_getglobal (L, "_G");
-
-  lua_pushvalue (L, LUA_GLOBALSINDEX);
-
-  // load the "world" library
-  luaL_register (L, WORLD_LIBRARY, worldlib);
+  // we want the global table so we can put a metatable on it  (ie. _G)
+  lua_pushvalue (L, LUA_GLOBALSINDEX);   // for setting the metatable later
 
   // add the __index metamethod to the world library
-  lua_pushliteral(L, "__index");
-  lua_pushvalue(L, -2);         // push metatable 
-  lua_rawset(L, -3);            // metatable.__index = metatable 
+  lua_newtable (L);                     // make a new table (the metatable)
+
+  // register the "world" library - leaves world library on stack
+  luaL_register (L, WORLD_LIBRARY, worldlib);
+
+  // make our new metatable.__index entry point to the world table
+  lua_setfield  (L, -2, "__index");   // metatable __index function       
 
   // we do this so you can just say "Note 'hello'" rather than
   // world.Note 'hello'
 
-  // set the world library as the metatable for the global library
+  // set the new table as the metatable for the global library
   lua_setmetatable (L, -2);
 
-
-  // print function for debugging
-  lua_pushcfunction(L, l_print);
+  // our print function
+  lua_pushcfunction (L, l_print);
   lua_setglobal(L, "print");
-
         
-  /*
-
-  // don't know why I had this ... debugging maybe?
-
-  // error handler
-  lua_pushcfunction(L, l_errorhandler);
-  lua_setglobal(L, "errorhandler");
-
-  */
-
-  // see manual, 28.2, to see why we do this
+  // see manual, 28.2, to see why we do this bit:
 
   // we make a metatable for the world in case they do a world.GetWorld ("name")
 
-  luaL_newmetatable(L, mushclient_typename);
-  luaL_register (L, NULL, worldlib_meta);
+  luaL_newmetatable (L, mushclient_typename);  // ie. "mushclient.world"
+  luaL_register (L, NULL, worldlib_meta);      // gives us a __tostring function
 
-  lua_pushliteral(L, "__index");
-  lua_getglobal (L, WORLD_LIBRARY);
-  lua_rawset(L, -3);            // metatable.__index = world 
+  // Note: this index is not for the main world document, but for getting a metadata
+  // world. That is something like:  w = GetWorld ("myworld"); w:Note ("hello")
+  //  -- in this case the __index entry makes Note available inside w
+  lua_getglobal (L, WORLD_LIBRARY);         // ie the "world" table
+  lua_setfield  (L, -2, "__index");   // metatable __index function       
 
   lua_settop(L, 0);             // pop everything
 
@@ -7708,12 +7698,12 @@ static int our_lua_debug_function (lua_State *L)
   return 0;
   } // end of our_lua_debug_function
 
-int our_exit_function (lua_State *L)
+static int our_exit_function (lua_State *L)
   {
   return luaL_error(L, LUA_QL("os.exit") " not implemented in MUSHclient");	
   }  // end of our_exit_function
 
-int our_popen_function (lua_State *L)
+static int our_popen_function (lua_State *L)
   {
   return luaL_error(L, LUA_QL("io.popen") " not implemented in MUSHclient");	
   } // end of our_popen_function
@@ -7723,17 +7713,15 @@ int DisableDLLs (lua_State * L)
   if (!App.m_bEnablePackageLibrary)
     {
     // grab package library
-    lua_pushliteral (L, LUA_LOADLIBNAME);     // "package"    
-    lua_rawget      (L, LUA_GLOBALSINDEX);    // get package library   
+    lua_getglobal (L, LUA_LOADLIBNAME);  // package table
 
     // remove package.loadlib
-    lua_pushliteral (L, "loadlib");           // package.loadlib
     lua_pushnil     (L);
-    lua_rawset      (L, -3);                  //  package.loadlib = nil   
+    lua_setfield    (L, -2, "loadlib");   // package.loadlib = nil       
+    
 
     // grab package.loaders table
-    lua_pushliteral (L, "loaders");           // package.loaders
-    lua_rawget      (L, -2);                  // get package.loaders table
+    lua_getfield (L, -1, "loaders");  // get package.loaders table
     if (!lua_istable(L, -1))
       luaL_error(L, LUA_QL("package.loaders") " must be a table");
 
@@ -7751,46 +7739,36 @@ int DisableDLLs (lua_State * L)
 
   // change debug.debug to ours
 
-  lua_pushstring(L, LUA_DBLIBNAME);  /* "debug" */
-  lua_rawget    (L, LUA_GLOBALSINDEX);    // get debug library   
+  lua_getglobal (L, LUA_DBLIBNAME);  // package table
 
   if (lua_istable(L, -1))
     {
-    lua_pushstring(L, "debug");  /* debug.debug */
     lua_pushcfunction(L, our_lua_debug_function);
-    lua_rawset    (L, -3);    // set debug.debug to our function   
-
-    lua_pop(L, 1);  // pop debug table
+    lua_setfield    (L, -2, "debug");   // set debug.debug to our function       
     }  // debug library was there
+  lua_pop(L, 1);  // pop debug table or whatever
 
   // get rid of os.exit
 
-  lua_pushstring(L, LUA_OSLIBNAME);  /* "os" */
-  lua_rawget    (L, LUA_GLOBALSINDEX);    // get os library   
+  lua_getglobal (L, LUA_OSLIBNAME);  // os table
 
   if (lua_istable(L, -1))
     {
-    lua_pushstring(L, "exit");  /* os.exit */
     lua_pushcfunction(L, our_exit_function);
-    lua_rawset    (L, -3);    // set os.exit to our function   
-    
-    lua_pop(L, 1);  // pop os table
-
+    lua_setfield    (L, -2, "exit");   // set os.exit to our function       
     }  // os library was there
+  lua_pop(L, 1);  // pop os table or whatever
 
   // get rid of io.popen 
 
-  lua_pushstring(L, LUA_IOLIBNAME);  /* "io" */
-  lua_rawget    (L, LUA_GLOBALSINDEX);    // get io library   
+  lua_getglobal (L, LUA_IOLIBNAME);  // io table
 
   if (lua_istable(L, -1))
     {
-    lua_pushstring(L, "popen");  /* io.popen */
     lua_pushcfunction(L, our_popen_function);
-    lua_rawset    (L, -3);    // set io.popen to our function     
-
-    lua_pop(L, 1);  // pop io table
+    lua_setfield    (L, -2, "popen");   // set io.poen to our function       
     }  // io library was there
+  lua_pop(L, 1);  // pop io table  or whatever
 
   lua_settop(L, 0);   // clear stack
   return 0;

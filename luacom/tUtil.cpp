@@ -3,12 +3,14 @@
 //////////////////////////////////////////////////////////////////////
 
 // RCS Info
-static char *rcsid = "$Id: tUtil.cpp,v 1.14 2005/01/06 18:42:06 fqueiroz Exp $";
-static char *rcsname = "$Name:  $";
+static char const * const rcsid = "$Id: tUtil.cpp,v 1.4 2008/01/10 17:44:55 ignacio Exp $";
+static char const * const rcsname = "$Name:  $";
 
 
 #include <assert.h>
+#if !defined(__WINE__) || defined(__MSVCRT__)
 #include <process.h>
+#endif
 
 #include "tUtil.h"
 #include "tLuaCOMException.h"
@@ -129,36 +131,107 @@ const char * tUtil::bstr2string(BSTR bstr)
   return tUtil::string_buffer.getBuffer();
 }
 
-BSTR tUtil::string2bstr(const char * string)
+const char * tUtil::bstr2string(BSTR bstr, size_t& computedSize)
 {
-  if(!string)
-    return NULL;
+  char* str = NULL;
+  long size = 0;
+  int result = 0;
 
-  BSTR bstr;
-
-  long length = 
-    MultiByteToWideChar(CP_UTF8, 0, string, -1, NULL, 0);
+  computedSize = 0;
 
   try
   {
-    if(length == 0)
-      LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
+    if(bstr != NULL)
+    {
+      computedSize = SysStringLen(bstr);
+      if(!computedSize) {
+        return "";
+      }
+
+      // gets the size of the buffer
+      size = WideCharToMultiByte(
+        CP_UTF8,            // code page
+        0,            // performance and mapping flags
+        bstr,    // wide-character string
+        computedSize,  // number of chars in string
+        str,     // buffer for new string
+        0,          // size of buffer
+        NULL,     // default for unmappable chars
+        NULL  // set when default char used
+      );
+
+      if(!size)
+        LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
+
+      str = new char[size];
+
+      result = WideCharToMultiByte(
+        CP_UTF8,            // code page
+        0,            // performance and mapping flags
+        bstr,    // wide-character string
+        computedSize,  // number of chars in string
+        str,     // buffer for new string
+        size,          // size of buffer
+        NULL,     // default for unmappable chars
+        NULL  // set when default char used
+      );
+
+      if(!result)
+        LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
+      
+      computedSize = size;	// Now holds the actual length of the string
+    }
+    else
+    {
+      str = new char[1];
+      str[0] = '\0';
+    }
   }
   catch(class tLuaCOMException& e)
   {
     UNUSED(e);
 
-    return NULL;
+    if(str)
+      delete[] str;
+
+    str = new char[1];
+    str[0] = '\0';
   }
 
-  wchar_t *widestr = new wchar_t[length];
+  tUtil::string_buffer.copyToBuffer(str, computedSize);
 
-  MultiByteToWideChar(CP_UTF8, 0, string, -1, widestr, length);
+  delete[] str;
 
-  bstr = SysAllocString(widestr);
+  return tUtil::string_buffer.getBuffer();
+}
 
-  delete[] widestr;
-  widestr = NULL;
+BSTR tUtil::string2bstr(const char * string, size_t len)
+{
+  if(!string)
+    return NULL;
+
+  BSTR bstr;
+  if(len == 0)
+  {
+    bstr = SysAllocStringLen(NULL, 0);
+  }
+  else
+  {
+    long wclength =
+      MultiByteToWideChar(CP_UTF8, 0, string, len, NULL, 0);
+    try
+    {
+      if(wclength == 0)
+        LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
+    }
+    catch(class tLuaCOMException& e)
+    {
+      UNUSED(e);
+      return NULL;
+    }
+    bstr = SysAllocStringLen(NULL, wclength);
+    MultiByteToWideChar(CP_UTF8, 0, string, len, bstr, wclength);
+  }
 
   return bstr;
 }
@@ -276,8 +349,12 @@ void tUtil::ShowHelp(const char *filename, unsigned long context)
       sprintf(context_param, "-mapid %d", context);
     else
       context_param[0] = '\0';
-  
+#if !defined(__WINE__) && !defined(__CYGWIN__)
     _spawnlp(_P_NOWAIT, "hh.exe", "hh.exe", context_param, filename, NULL);
+#else
+    MessageBox(NULL, "FIX - not implemented - _spawnlp", "LuaCOM", MB_ICONEXCLAMATION);
+    #warning FIX - not implemented - _spawnlp
+#endif
   }
   else if(_stricmp(extension, ".hlp") == 0)
   {

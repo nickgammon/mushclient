@@ -18,8 +18,13 @@ extern "C"
 #include "LuaCompat.h"
 }
 
-#pragma warning(disable: 4018 4244) 
-
+// dynamic_cast if RTTI enabled.
+// static_cast  if RTTI disabled.
+#ifdef _CPPRTTI   // MSVC RTTI
+#define DYNAMIC_CAST dynamic_cast
+#else
+#define DYNAMIC_CAST static_cast
+#endif
 
 const char tLuaTLB::type_name[] = "ITypeLib";
 const char tLuaTLB::pointer_type_name[] = "ITypeLib_pointer";
@@ -77,7 +82,7 @@ int tLuaTLB::pushNew(lua_State *L, ITypeLib *p_typelib)
 
 int tLuaTLB::GetTypeInfoCount(tLuaObject* lua_obj, lua_State* L)
 {
-	tLuaTLB* lua_tlb = dynamic_cast<tLuaTLB*>(lua_obj);
+  tLuaTLB* lua_tlb = DYNAMIC_CAST<tLuaTLB*>(lua_obj);
   
   CHECKPRECOND(lua_tlb);
 
@@ -90,10 +95,10 @@ int tLuaTLB::GetTypeInfoCount(tLuaObject* lua_obj, lua_State* L)
 
 int tLuaTLB::GetTypeInfo(tLuaObject* lua_obj, lua_State* L)
 {
-	tLuaTLB* lua_tlb = dynamic_cast<tLuaTLB*>(lua_obj);
+  tLuaTLB* lua_tlb = DYNAMIC_CAST<tLuaTLB*>(lua_obj);
   CHECKPRECOND(lua_tlb);
 
-  int typeinfo_pos = (int)lua_tonumber(L, 2);
+  UINT typeinfo_pos = (UINT)lua_tointeger(L, 2);
 
   ITypeInfo* typeinfo = NULL;
   HRESULT hr = lua_tlb->typelib->GetTypeInfo(typeinfo_pos , &typeinfo);
@@ -108,7 +113,7 @@ int tLuaTLB::GetTypeInfo(tLuaObject* lua_obj, lua_State* L)
 
 int tLuaTLB::GetDocumentation(tLuaObject* lua_obj, lua_State* L)
 {
-	tLuaTLB* lua_tlb = dynamic_cast<tLuaTLB*>(lua_obj);
+  tLuaTLB* lua_tlb = DYNAMIC_CAST<tLuaTLB*>(lua_obj);
   
   CHECKPRECOND(lua_tlb);
 
@@ -150,8 +155,7 @@ int tLuaTLB::GetDocumentation(tLuaObject* lua_obj, lua_State* L)
 
 int tLuaTLB::ShowHelp(tLuaObject* lua_obj, lua_State* L)
 {
-	tLuaTLB* lua_tlb =
-    dynamic_cast<tLuaTLB*>(lua_obj);
+  tLuaTLB* lua_tlb = DYNAMIC_CAST<tLuaTLB*>(lua_obj);
   
   CHECKPRECOND(lua_tlb);
 
@@ -173,7 +177,7 @@ int tLuaTLB::ShowHelp(tLuaObject* lua_obj, lua_State* L)
 
 int tLuaTLB::ExportConstants(tLuaObject* lua_obj, lua_State* L)
 {
-	tLuaTLB* lua_tlb = dynamic_cast<tLuaTLB*>(lua_obj);
+  tLuaTLB* lua_tlb = DYNAMIC_CAST<tLuaTLB*>(lua_obj);
   CHECKPRECOND(lua_tlb);
   CHECKPARAM(lua_type(L, -1) == LUA_TTABLE);
 
@@ -236,10 +240,10 @@ int tLuaTLB::ExportConstants(tLuaObject* lua_obj, lua_State* L)
 
 int tLuaTLB::ExportEnumerations(tLuaObject* lua_obj, lua_State* L)
 {
-	tLuaTLB* lua_tlb = dynamic_cast<tLuaTLB*>(lua_obj);
+  tLuaTLB* lua_tlb = DYNAMIC_CAST<tLuaTLB*>(lua_obj);
   CHECKPRECOND(lua_tlb);
   if(lua_gettop(L) == 0)
-	  lua_newtable(L);
+    lua_newtable(L);
   else CHECKPARAM(lua_type(L, -1) == LUA_TTABLE);
 
   TYPEKIND tkind;
@@ -259,14 +263,14 @@ int tLuaTLB::ExportEnumerations(tLuaObject* lua_obj, lua_State* L)
     if(tkind == TKIND_ENUM)
     {
 
-	  hr = lua_tlb->typelib->GetTypeInfo(count, &ptypeinfo);
+      hr = lua_tlb->typelib->GetTypeInfo(count, &ptypeinfo);
       CHK_COM_CODE(hr);
 
-	  hr = lua_tlb->typelib->GetDocumentation(count, &name, NULL, NULL, NULL);	
+      hr = lua_tlb->typelib->GetDocumentation(count, &name, NULL, NULL, NULL);
       CHK_COM_CODE(hr);
       lua_pushstring(L, tUtil::bstr2string(name));
       SysFreeString(name);
-	  lua_newtable(L);
+      lua_newtable(L);
 
       typehandler = new tLuaCOMTypeHandler(ptypeinfo);
 
@@ -297,7 +301,7 @@ int tLuaTLB::ExportEnumerations(tLuaObject* lua_obj, lua_State* L)
         pvardesc = NULL;
       }
 
-	  lua_settable(L, -3);
+      lua_settable(L, -3);
 
       SAFEDELETE(typehandler);
       COM_RELEASE(ptypeinfo);
@@ -370,7 +374,7 @@ int tLuaTypeInfo::GetFuncDesc(tLuaObject* lua_obj, lua_State* L)
 
   HRESULT hr = S_OK;
 
-	tLuaTypeInfo* lua_typeinfo = dynamic_cast<tLuaTypeInfo*>(lua_obj);
+  tLuaTypeInfo* lua_typeinfo = DYNAMIC_CAST<tLuaTypeInfo*>(lua_obj);
   CHECKPRECOND(lua_typeinfo);
 
   // we just deal with oleautomation-compatible interfaces
@@ -393,7 +397,7 @@ int tLuaTypeInfo::GetFuncDesc(tLuaObject* lua_obj, lua_State* L)
 
   FUNCDESC* pfuncdesc = NULL;
   {
-    int i = lua_tonumber(L, 2);
+    UINT i = (UINT)lua_tointeger(L, 2);
 
     hr = lua_typeinfo->typeinfo->GetFuncDesc(i, &pfuncdesc);
     CHK_COM_CODE(hr);
@@ -473,7 +477,7 @@ int tLuaTypeInfo::GetFuncDesc(tLuaObject* lua_obj, lua_State* L)
   lua_pushvalue(L, -2);
   lua_settable(L, -4);
 
-  int i = 0;
+  SHORT i = 0;
 
   while(i < pfuncdesc->cParams)
   {
@@ -485,7 +489,7 @@ int tLuaTypeInfo::GetFuncDesc(tLuaObject* lua_obj, lua_State* L)
     // gets the name
     lua_pushstring(L, "name");
 
-    if((i+1) < found)
+    if((i+1) < (SHORT)found)
     {
       lua_pushstring(L, tUtil::bstr2string(names[i+1]));
       SysFreeString(names[i+1]);
@@ -521,25 +525,25 @@ int tLuaTypeInfo::GetFuncDesc(tLuaObject* lua_obj, lua_State* L)
       lua_settable(L, -3);
     }
 
-	USHORT paramFlags = pfuncdesc->lprgelemdescParam[i].paramdesc.wParamFlags;
+    USHORT paramFlags = pfuncdesc->lprgelemdescParam[i].paramdesc.wParamFlags;
 
     lua_pushstring(L, "in");
-	luaCompat_pushBool(L,paramFlags & PARAMFLAG_FIN);
-	lua_settable(L, -3);
+    luaCompat_pushBool(L,paramFlags & PARAMFLAG_FIN);
+    lua_settable(L, -3);
 
     lua_pushstring(L, "out");
-	luaCompat_pushBool(L,paramFlags & PARAMFLAG_FOUT);
-	lua_settable(L, -3);
+    luaCompat_pushBool(L,paramFlags & PARAMFLAG_FOUT);
+    lua_settable(L, -3);
 
     lua_pushstring(L, "opt");
-	luaCompat_pushBool(L,paramFlags & PARAMFLAG_FOPT);
-	lua_settable(L, -3);
+    luaCompat_pushBool(L,paramFlags & PARAMFLAG_FOPT);
+    lua_settable(L, -3);
 
-	lua_pushstring(L, "default");
-	if(paramFlags & PARAMFLAG_FHASDEFAULT) {
-		lua_typeinfo->typehandler->com2lua(L,pfuncdesc->lprgelemdescParam[i].paramdesc.pparamdescex->varDefaultValue);
-	} else lua_pushnil(L);
-	lua_settable(L, -3);
+    lua_pushstring(L, "default");
+    if(paramFlags & PARAMFLAG_FHASDEFAULT) {
+      lua_typeinfo->typehandler->com2lua(L,pfuncdesc->lprgelemdescParam[i].paramdesc.pparamdescex->varDefaultValue);
+    } else lua_pushnil(L);
+    lua_settable(L, -3);
 
     // removes copy of the table
     lua_pop(L, 1);
@@ -588,14 +592,14 @@ int tLuaTypeInfo::GetVarDesc(tLuaObject* lua_obj, lua_State* L)
 
   HRESULT hr = S_OK;
 
-	tLuaTypeInfo* lua_typeinfo = dynamic_cast<tLuaTypeInfo*>(lua_obj);
+  tLuaTypeInfo* lua_typeinfo = DYNAMIC_CAST<tLuaTypeInfo*>(lua_obj);
   CHECKPRECOND(lua_typeinfo);
 
   // gets vardesc
 
   VARDESC* pvardesc = NULL;
   {
-    int i = lua_tonumber(L, 2);
+    UINT i = (UINT)lua_tointeger(L, 2);
 
     hr = lua_typeinfo->typeinfo->GetVarDesc(i, &pvardesc);
     CHK_COM_CODE(hr);
@@ -641,14 +645,14 @@ int tLuaTypeInfo::GetImplType(tLuaObject* lua_obj, lua_State* L)
 
   HRESULT hr = S_OK;
 
-	tLuaTypeInfo* lua_typeinfo = dynamic_cast<tLuaTypeInfo*>(lua_obj);
+  tLuaTypeInfo* lua_typeinfo = DYNAMIC_CAST<tLuaTypeInfo*>(lua_obj);
   CHECKPRECOND(lua_typeinfo);
 
   // gets implemented type
 
   ITypeInfo* ptinfo = NULL;
   {
-    int i = lua_tonumber(L, 2);
+    UINT i = (UINT)lua_tointeger(L, 2);
 
     HREFTYPE hreftype;
     hr = lua_typeinfo->typeinfo->GetRefTypeOfImplType(i, &hreftype);
@@ -672,11 +676,11 @@ int tLuaTypeInfo::GetImplTypeFlags(tLuaObject* lua_obj, lua_State* L)
 
   HRESULT hr = S_OK;
 
-	tLuaTypeInfo* lua_typeinfo = dynamic_cast<tLuaTypeInfo*>(lua_obj);
+  tLuaTypeInfo* lua_typeinfo = DYNAMIC_CAST<tLuaTypeInfo*>(lua_obj);
   CHECKPRECOND(lua_typeinfo);
 
   int typeflags = 0;
-  int i = lua_tonumber(L, 2);
+  UINT i = (UINT)lua_tointeger(L, 2);
 
   hr = lua_typeinfo->typeinfo->GetImplTypeFlags(i, &typeflags);
   CHK_COM_CODE(hr);
@@ -708,7 +712,7 @@ int tLuaTypeInfo::GetImplTypeFlags(tLuaObject* lua_obj, lua_State* L)
 
 int tLuaTypeInfo::GetDocumentation(tLuaObject* lua_obj, lua_State* L)
 {
-	tLuaTypeInfo* lua_typeinfo = dynamic_cast<tLuaTypeInfo*>(lua_obj);
+  tLuaTypeInfo* lua_typeinfo = DYNAMIC_CAST<tLuaTypeInfo*>(lua_obj);
   
   CHECKPRECOND(lua_typeinfo);
 
@@ -750,7 +754,7 @@ int tLuaTypeInfo::GetDocumentation(tLuaObject* lua_obj, lua_State* L)
 
 int tLuaTypeInfo::GetTypeAttr(tLuaObject* lua_obj, lua_State* L)
 {
-	tLuaTypeInfo* lua_typeinfo = dynamic_cast<tLuaTypeInfo*>(lua_obj);
+  tLuaTypeInfo* lua_typeinfo = DYNAMIC_CAST<tLuaTypeInfo*>(lua_obj);
   CHECKPRECOND(lua_typeinfo);
 
   TYPEATTR* ptypeattr = NULL;
@@ -836,7 +840,7 @@ int tLuaTypeInfo::GetTypeLib(tLuaObject* lua_obj, lua_State* L)
 {
   LUASTACK_SET(L);
 
-	tLuaTypeInfo* lua_typeinfo = dynamic_cast<tLuaTypeInfo*>(lua_obj);
+  tLuaTypeInfo* lua_typeinfo = DYNAMIC_CAST<tLuaTypeInfo*>(lua_obj);
   
   CHECKPRECOND(lua_typeinfo);
 

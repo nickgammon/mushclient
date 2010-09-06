@@ -29,15 +29,15 @@ public:
                               void** ppv);
   STDMETHOD(LockServer)(BOOL fLock);    
 
-	tLuaCOMClassFactory(IDispatch* object);
-	tLuaCOMClassFactory(lua_State* L);
-	virtual ~tLuaCOMClassFactory();
+  tLuaCOMClassFactory(IDispatch* object);
+  tLuaCOMClassFactory(lua_State* L);
+  virtual ~tLuaCOMClassFactory();
 
 private:
   ULONG m_cRef;
   lua_State* L_inproc;
 protected:
-	IDispatch* object;
+  IDispatch* object;
 };
 
 #endif // !defined(AFX_TLUACOMCLASSFACTORY_H__B2C2D8B2_FE51_4745_8C21_FFC29FE81F86__INCLUDED_)
