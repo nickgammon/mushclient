@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="Automatic_Backup"
+   author="Nick Gammon"
+   id="bb6a05ed7534b5db1ed40511"
+   language="Lua"
+   purpose="Backs up the world file to a new name each day"
+   date_written="2010-09-08 09:38:17"
+   requires="4.40"
+   version="1.0"
+   >
+<description trim="y">
+<![CDATA[
+Install to backup your world file to a file of the same name with the day/month/year added to it.
+]]>
+</description>
+
+</plugin>
+
+<script>
+<![CDATA[
+
+function do_backup ()
+  -- find name of world file
+  local world_file_name = GetInfo (54) 
+  
+  -- if found (ie. not just newly created) back it up
+  if world_file_name and world_file_name ~= "" then
+    -- strip out .MCL (or .mcl), add the date, and put .MCL back
+    world_file_with_date = string.gsub (world_file_name, "%.[Mm][Cc][Ll]$", "") .. 
+                           os.date ("-backup-%d-%b-%Y.MCL")
+                           
+    -- save if possible                           
+    if (Save (world_file_with_date, true) == false) then
+      ColourNote ("orange","", "World file backed up as " .. world_file_with_date)
+    else
+      ColourNote ("red", "", "Could not back up world file.")
+    end -- if
+  
+  end -- if world file name known
+
+end -- do_backup
+
+-- back when first connecting
+function OnPluginConnect ()
+  do_backup ()
+end  -- OnPluginConnect
+
+-- back up when disconnecting (eg. after improving it)
+function OnPluginDisconnect ()
+  do_backup ()
+end -- OnPluginDisconnect
+
+]]>
+</script> 
+
+</muclient>

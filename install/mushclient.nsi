@@ -347,6 +347,7 @@ SetOverwrite ifnewer
    File "..\luacom\luacom5.lua"  
    File "..\lua\sandbox.lua"  
    File "..\lua\show_loaded.lua"  
+   File "..\lua\Automatic_Backup.xml"
       
    ; LuaSocket
    
@@ -561,6 +562,7 @@ Section Uninstall
   Delete "$INSTDIR\lua\luacom5.lua"  
   Delete "$INSTDIR\lua\sandbox.lua"  
   Delete "$INSTDIR\lua\show_loaded.lua"  
+  Delete "$INSTDIR\lua\Automatic_Backup.xml"
      
   Delete "$INSTDIR\lua\socket.lua"
   Delete "$INSTDIR\lua\ltn12.lua"
