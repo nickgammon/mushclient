@@ -25,6 +25,8 @@ int i;
   // each document will have a unique number
   m_iUniqueDocumentNumber = App.GetUniqueNumber ();
 
+  m_whenWorldStarted = CTime::GetCurrentTime();
+
   AllocateConfigurationArrays ();
 
   m_bTrace = false;   // not tracing yet
