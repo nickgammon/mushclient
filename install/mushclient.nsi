@@ -665,6 +665,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\constants.pys"
   Delete "$INSTDIR\worlds\plugins\constants.lua"
   Delete "$INSTDIR\worlds\plugins\plugin_list.xml"
+  Delete "$INSTDIR\worlds\plugins\plugin_summary.xml"
   Delete "$INSTDIR\worlds\plugins\random_socials.xml"
   Delete "$INSTDIR\worlds\plugins\sample_plugin.xml"
   Delete "$INSTDIR\worlds\plugins\scan.xml"
