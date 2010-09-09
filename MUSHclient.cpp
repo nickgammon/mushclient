@@ -218,6 +218,8 @@ static const CLSID clsid =
 BOOL CMUSHclientApp::InitInstance()
 {
 
+  m_whenClientStarted = CTime::GetCurrentTime();
+
   char fullfilename [MAX_PATH];
 
   if (GetModuleFileName (NULL, fullfilename, sizeof (fullfilename)))

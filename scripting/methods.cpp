@@ -4312,6 +4312,7 @@ tInfoTypeMapping InfoTypes [] =
 { 302, "Time log file was last flushed to disk" },
 { 303, "When script file was last modified" },
 { 304, "Time now" },
+{ 305, "When client started executing" },
 
 
  { 0, "" }, // end of table marker
@@ -5054,6 +5055,11 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case  304: 
       SetUpVariantDate (vaResult, COleDateTime (CTime::GetCurrentTime().GetTime ())); 
       break;      
+
+    case  305:
+      SetUpVariantDate (vaResult, COleDateTime (App.m_whenClientStarted.GetTime ())); 
+      break;
+
 
     default:
       vaResult.vt = VT_NULL;
