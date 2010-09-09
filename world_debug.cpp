@@ -1367,8 +1367,8 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     CString strStatus = GetConnectionStatus (m_iConnectPhase);
 
-    Note (TFormat ("Connect phase: %i (%s)", 
-          m_iConnectPhase, (LPCTSTR) strStatus));
+    Note (TFormat ("Connect phase: %i (%s). NAWS wanted: %s", 
+          m_iConnectPhase, (LPCTSTR) strStatus, SHOW_TRUE (m_bNAWS)));
 
     __int64 nInK = m_nBytesIn / (__int64) 1024;
     __int64 nOutK = m_nBytesOut / (__int64) 1024;
