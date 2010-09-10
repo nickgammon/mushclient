@@ -2287,12 +2287,8 @@ CAlias * alias_item;
     case  30:
       if (alias_item->regexp && App.m_iCounterFrequency)
         {
-        LONGLONG iTimeTaken = 0;
-        double   elapsed_time;
-
-
-        elapsed_time = ((double) alias_item->regexp->iTimeTaken) / 
-                        ((double) App.m_iCounterFrequency);
+        double elapsed_time = ((double) alias_item->regexp->iTimeTaken) / 
+                              ((double) App.m_iCounterFrequency);
 
         SetUpVariantDouble (vaResult, elapsed_time);
         }

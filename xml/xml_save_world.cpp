@@ -384,7 +384,7 @@ void CMUSHclientDoc::Save_One_Trigger_XML (CArchive& ar, CTrigger * t)
   Save_XML_number  (ar, "back_colour",       (t->iMatch >> 8) & 0x0F);
   Save_XML_boolean (ar, "bold",              t->iMatch & HILITE);
   Save_XML_number  (ar, "clipboard_arg",     t->iClipboardArg);
-  if (t->colour != SAMECOLOUR)   // don't write 65535 to world file
+  if (t->colour != SAMECOLOUR)   // don't write 65536 to world file
    Save_XML_number  (ar, "custom_colour",     t->colour + 1); // + 1, to match custom colours
   Save_XML_number  (ar, "colour_change_type",t->iColourChangeType);
   Save_XML_boolean (ar, "enabled",           t->bEnabled);

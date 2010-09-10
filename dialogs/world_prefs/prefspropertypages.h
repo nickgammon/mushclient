@@ -606,6 +606,7 @@ public:
 
   virtual bool GetFilterFlag ();            // is filtering enabled?
   virtual CString GetFilterScript ();       // get the filter script
+  virtual void GetFilterInfo (CObject * pItem, lua_State * L);  // stuff for filter function
 
   // ================== end of virtual functions =======================
 
@@ -728,6 +729,7 @@ public:
 
   virtual bool GetFilterFlag ();            // is filtering enabled?
   virtual CString GetFilterScript ();       // get the filter script
+  virtual void GetFilterInfo (CObject * pItem, lua_State * L);  // stuff for filter function
 
   // ================== end of virtual functions =======================
 
@@ -1314,6 +1316,7 @@ public:
 
   virtual bool GetFilterFlag ();            // is filtering enabled?
   virtual CString GetFilterScript ();       // get the filter script
+  virtual void GetFilterInfo (CObject * pItem, lua_State * L);  // stuff for filter function
 
   // ================== end of virtual functions =======================
 
@@ -1523,6 +1526,7 @@ public:
 
   virtual bool GetFilterFlag ();            // is filtering enabled?
   virtual CString GetFilterScript ();       // get the filter script
+  virtual void GetFilterInfo (CObject * pItem, lua_State * L);  // stuff for filter function
 
   // ================== end of virtual functions =======================
 

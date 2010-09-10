@@ -133,6 +133,8 @@ void CGenPropertyPage::SetUpPage (CString strObjectType,
 
   virtual bool GetFilterFlag () = 0;            // is filtering enabled?
   virtual CString GetFilterScript () = 0;       // get the filter script
+  virtual void GetFilterInfo (CObject * pItem, lua_State * L) = 0;  // stuff for filter function
+
   virtual bool CheckIfTemporary (CObject * pItem) = 0;    // is this a temporary item?
 
   // ================== end of virtual functions =======================
