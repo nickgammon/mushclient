@@ -7661,7 +7661,6 @@ void CPrefsP18::GetFilterInfo (CObject * pItem, lua_State * L)
   // the table of stuff
   lua_newtable(L);                                                            
 
-  MakeTableItem     (L, "name",         variable->strLabel);
   MakeTableItem     (L, "contents",     variable->strContents);
 
   }  // end of CPrefsP18::GetFilterInfo 
