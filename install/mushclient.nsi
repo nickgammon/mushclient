@@ -227,7 +227,7 @@ Section "Spell checker"
   SetOutPath $INSTDIR
 
   ; New spell checker
-  File "..\WinRel\spellchecker.lua"
+  File "..\scripting\spellchecker.lua"
 
 SectionEnd
 
