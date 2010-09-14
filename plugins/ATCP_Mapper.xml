@@ -721,6 +721,7 @@ function create_tables ()
   dbcheck (db:execute[[
   
   PRAGMA foreign_keys = ON;
+  PRAGMA journal_mode = WAL;
   
   CREATE TABLE IF NOT EXISTS areas (
       areaid      INTEGER PRIMARY KEY AUTOINCREMENT,
