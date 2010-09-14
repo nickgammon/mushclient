@@ -330,6 +330,9 @@ local function init ()
     end -- if
   end
   
+  -- enable WAL (Write-Ahead Logging)
+  assert (db:execute "PRAGMA journal_mode=WAL;")
+  
   -- if no words table, make one
   if not words_table then
       -- create a table to hold the words
