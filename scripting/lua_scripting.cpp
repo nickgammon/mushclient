@@ -710,30 +710,32 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,          // dispatch ID, will b
   } // end of CScriptEngine::ExecuteLua 
 
 
+// bugfix thanks to Twisol (previous version didn't handle bad debug table properly)
 void GetTracebackFunction (lua_State *L)
   {
-  lua_pushliteral (L, LUA_DBLIBNAME);     // "debug"    
-  lua_rawget      (L, LUA_GLOBALSINDEX);    // get debug library   
+  // get debug table
+  lua_getfield (L, LUA_GLOBALSINDEX, LUA_DBLIBNAME);
 
-  if (!lua_istable (L, -1))
+  // if it is a table then find traceback function
+  if (lua_istable (L, -1))
     {
-    lua_pop (L, 2);   // pop result and debug table
-    lua_pushnil (L);
-    return;
+    lua_getfield (L, -1, "traceback");
+    
+    // remove debug table, leave traceback function
+    lua_remove (L, -2);
+
+    // if it is indeed a function, well and good
+    if (lua_isfunction (L, -1))
+      return; 
     }
 
-  // get debug.traceback
-  lua_pushstring(L, "traceback");  
-  lua_rawget    (L, -2);               // get getinfo function
-  
-  if (!lua_isfunction (L, -1))
-    {
-    lua_pop (L, 2);   // pop result and debug table
-    lua_pushnil (L);
-    return;
-    }
+  // not a table, or debug.traceback not a function, get rid of it
+  lua_pop (L, 1);
 
-  lua_remove (L, -2);   // remove debug table, leave traceback function
+  // return nil to caller
+  lua_pushnil (L);
+  return; 
+
   }
 
 int CallLuaWithTraceBack (lua_State *L, const int iArguments, const int iReturn)
