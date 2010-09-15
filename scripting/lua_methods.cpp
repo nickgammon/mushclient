@@ -131,7 +131,7 @@ int pushVariant (lua_State *L, VARIANT & v)
       dt.GetAsSystemTime (sysTime);  // now get as SYSTEMTIME
       CTime tm (sysTime);         // import into CTime
 
-      lua_pushnumber (L, tm.GetTime ());  // return as Lua-style system time
+      lua_pushnumber (L, (lua_Number) tm.GetTime ());  // return as Lua-style system time
 
       break;
       }
@@ -3353,7 +3353,7 @@ static int L_GetQueue (lua_State *L)
 //----------------------------------------
 static int L_GetReceivedBytes (lua_State *L)
   {
-  lua_pushnumber (L, doc (L)->m_nBytesIn);
+  lua_pushnumber (L, (lua_Number) (doc (L)->m_nBytesIn) );
   return 1;  // number of result fields
   } // end of L_GetReceivedBytes
 
@@ -3424,7 +3424,7 @@ static int L_GetSelectionStartLine (lua_State *L)
 //----------------------------------------
 static int L_GetSentBytes (lua_State *L)
   {
-  lua_pushnumber (L, doc (L)->m_nBytesOut);
+  lua_pushnumber (L, (lua_Number) (doc (L)->m_nBytesOut) );
   return 1;  // number of result fields
   } // end of L_GetSentBytes
 
