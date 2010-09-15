@@ -5171,7 +5171,7 @@ static int L_SetInputFont (lua_State *L)
       my_checkstring (L, 1),          // FontName
       (short) my_checknumber (L, 2),  // PointSize
       (short) my_checknumber (L, 3),  // Weight
-      my_optnumber (L, 4, 0)          // Italic
+      (BOOL) my_optnumber (L, 4, 0)   // Italic
       );
   return 0;  // number of result fields
   } // end of L_SetInputFont
