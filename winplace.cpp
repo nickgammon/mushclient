@@ -13,6 +13,7 @@
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
+#define COMPILE_MULTIMON_STUBS
 #include <MULTIMON.H>
 
 CWindowPlacement::CWindowPlacement()
