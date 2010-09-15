@@ -1645,7 +1645,7 @@ static int L_GetCustomColourBackground (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->GetCustomColourBackground (
-	              (long) my_checknumber (L, 1)
+	              (short) my_checknumber (L, 1)
 				  ));
   return 1;  // number of result fields
   } // end of L_GetCustomColourBackground
@@ -1671,7 +1671,7 @@ static int L_GetCustomColourText (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->GetCustomColourText (
-	              (long) my_checknumber (L, 1)
+	              (short) my_checknumber (L, 1)
 				  ));
   return 1;  // number of result fields
   } // end of L_GetCustomColourText
@@ -6251,8 +6251,8 @@ static int L_WindowRectOp (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowRectOp (
-            my_checkstring (L, 1),  // Name
-            (long) my_checknumber (L, 2),  // Action
+            my_checkstring (L, 1),         // Name
+            (short) my_checknumber (L, 2), // Action
             (long) my_checknumber (L, 3),  // Left
             (long) my_checknumber (L, 4),  // Top
             (long) my_checknumber (L, 5),  // Right
