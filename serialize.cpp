@@ -49,6 +49,8 @@ void CMUSHclientDoc::Serialize(CArchive& ar)
 
   Frame.SetStatusMessageNow (strMsg);
 
+  SetPathName((LPCTSTR) ar.GetFile ()->GetFilePath ());  // see: http://www.gammon.com.au/forum/?id=10596
+
   if (IsArchiveXML (ar))
     Serialize_World_XML (ar);
   else
