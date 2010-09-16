@@ -746,7 +746,7 @@ assemble the full text of the original line.
     if (!m_LineList.IsEmpty ())
       {
       m_pCurrentLine = m_LineList.GetTail ();
-      if ((m_pCurrentLine->flags & COMMENT == 0) ||
+      if (((m_pCurrentLine->flags & COMMENT) == 0) ||
           m_pCurrentLine->hard_return)
           m_pCurrentLine = NULL;
       }
