@@ -1293,7 +1293,7 @@ long CMiniWindow::WritePng (LPCTSTR FileName, const BITMAPINFO * bmi, unsigned c
 
   long bpl = BytesPerLine (bmi->bmiHeader.biWidth, 24);
 
-  long row;
+  unsigned long row;
   unsigned char * p = pData;
 
   // have to reverse row order
