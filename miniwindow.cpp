@@ -618,7 +618,7 @@ long CMiniWindow::Font (LPCTSTR FontId,        // eg. "inventory"
 
   CFont * pFont = new CFont;
 
-  int lfHeight = -MulDiv(Size ? Size : 10.0, dc.GetDeviceCaps(LOGPIXELSY), 72);
+  int lfHeight = -MulDiv(Size ? (int) Size : 10, dc.GetDeviceCaps(LOGPIXELSY), 72);
 
   if (pFont->CreateFont (lfHeight, 
 				                  0, // int nWidth, 
@@ -1925,7 +1925,7 @@ long CMiniWindow::ImageOp(short Action,
 
   }   // end of  CMiniWindow::ImageOp
 
-long CMiniWindow::CreateImage(LPCTSTR ImageId, long Row1, long Row2, long Row3, long Row4, long Row5, long Row6, long Row7, long Row8)
+long CMiniWindow::CreateImage(LPCTSTR ImageId, WORD Row1, WORD Row2, WORD Row3, WORD Row4, WORD Row5, WORD Row6, WORD Row7, WORD Row8)
   {
 
   ImageMapIterator it = m_Images.find (ImageId);
@@ -2679,12 +2679,12 @@ static void MakeTexture (const COLORREF Multiplier,
                          const long iHeight)
   {
 
-  long   rval = GetRValue (Multiplier),
+  ULONG  rval = GetRValue (Multiplier),
          gval = GetGValue (Multiplier),
          bval = GetBValue (Multiplier);
 
-  long row, col;
-  long c;
+  ULONG row, col;
+  ULONG c;
 
   int increment =  BytesPerLine (iWidth, 24);
 
@@ -2695,9 +2695,9 @@ static void MakeTexture (const COLORREF Multiplier,
      for (row = 0; row < iHeight; row++)
        {
        c = col ^ row;
-       p [0] = c * bval;
-       p [1] = c * gval;
-       p [2] = c * rval;
+       p [0] = (unsigned char) (c * bval);
+       p [1] = (unsigned char) (c * gval);
+       p [2] = (unsigned char) (c * rval);
        p += increment;
        }  // end of each row
      }  // end of each column
@@ -2969,7 +2969,7 @@ static void Noise (unsigned char * inbuf, long iWidth, long iHeight, long iPerLi
   for (i = 0; i < count; i++)
     {
     c = *pi;
-    c += (128 - genrand () * 256) * threshold;
+    c += (long) ((128 - genrand () * 256) * threshold);
     *pi++  = CLAMP (c);
     }
 
