@@ -385,7 +385,7 @@ float fLuminance = clr.GetLuminance ();
   m_ctlGreen.SetWindowText  (CFormat ("%i", iGreen));
   m_ctlBlue.SetWindowText   (CFormat ("%i", iBlue));
 
-  m_ctlHue.SetWindowText    (CFormat ("Hue: %5.1f", fHue));
+  m_ctlHue.SetWindowText    (TFormat ("Hue: %5.1f", fHue));
   m_ctlSaturation.SetWindowText  (TFormat ("Saturation: %5.3f", fSaturation));
   m_ctlLuminance.SetWindowText   (TFormat ("Luminance: %5.3f", fLuminance));
 
