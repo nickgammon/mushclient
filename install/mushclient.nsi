@@ -347,7 +347,6 @@ SetOverwrite ifnewer
    File "..\luacom\luacom5.lua"  
    File "..\lua\sandbox.lua"  
    File "..\lua\show_loaded.lua"  
-   File "..\lua\Automatic_Backup.xml"
       
    ; LuaSocket
    
@@ -471,6 +470,7 @@ Section "Plugins"
   File "..\plugins\Messages_Window.xml"
   File "..\plugins\Calculator.xml"
   File "..\plugins\Lua_Sapi.xml"
+  File "..\plugins\Automatic_Backup.xml"
 
 
 SectionEnd
@@ -562,7 +562,6 @@ Section Uninstall
   Delete "$INSTDIR\lua\luacom5.lua"  
   Delete "$INSTDIR\lua\sandbox.lua"  
   Delete "$INSTDIR\lua\show_loaded.lua"  
-  Delete "$INSTDIR\lua\Automatic_Backup.xml"
      
   Delete "$INSTDIR\lua\socket.lua"
   Delete "$INSTDIR\lua\ltn12.lua"
@@ -702,6 +701,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\Messages_Window.xml"
   Delete "$INSTDIR\worlds\plugins\Calculator.xml"
   Delete "$INSTDIR\worlds\plugins\Lua_Sapi.xml"
+  Delete "$INSTDIR\worlds\plugins\Automatic_Backup.xml"
   
   ; locale stuff
   
