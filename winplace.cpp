@@ -13,7 +13,13 @@
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
+// Version 10 of the MFC framework removed functions we need.
+// Which means we need to force generation of stubs in that case.
+// See: http://cppdepend.wordpress.com/2010/08/29/visual-c-2010-what’s-new-for-mfc-library/
+#if _MFC_VER >= 0x0A00
 #define COMPILE_MULTIMON_STUBS
+#endif
+
 #include <MULTIMON.H>
 
 CWindowPlacement::CWindowPlacement()
