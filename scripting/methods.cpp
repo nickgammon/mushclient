@@ -10684,7 +10684,7 @@ set<string> errors;
 
     if (lua_isnumber (App.m_SpellChecker_Lua, -1))
       {
-      SetUpVariantLong (vaResult, lua_tonumber (App.m_SpellChecker_Lua, -1));        // no errors
+      SetUpVariantLong (vaResult, (long) lua_tonumber (App.m_SpellChecker_Lua, -1));        // no errors
   	  return vaResult;
       }
 
@@ -11797,7 +11797,7 @@ POSITION pos;
   if (!m_LineList.IsEmpty ())
     {
     m_pCurrentLine = m_LineList.GetTail ();
-    if ((m_pCurrentLine->flags & COMMENT == 0) ||
+    if (((m_pCurrentLine->flags & COMMENT) == 0) ||
         m_pCurrentLine->hard_return)
         m_pCurrentLine = NULL;
     }
@@ -11933,7 +11933,7 @@ BOOL CMUSHclientDoc::Transparency(long Key, short Amount)
   else if (Amount > MWT_MAX_FACTOR)
     Amount = MWT_MAX_FACTOR;
 
-  return MakeWindowTransparent (App.m_pMainWnd->m_hWnd, Key, Amount);
+  return MakeWindowTransparent (App.m_pMainWnd->m_hWnd, Key, (unsigned char) Amount);
 }
 
 
