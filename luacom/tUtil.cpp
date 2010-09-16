@@ -1,3 +1,5 @@
+#pragma warning( disable : 4100)  // unreferenced formal parameter
+
 // tUtil.cpp: implementation of the tUtil class.
 //
 //////////////////////////////////////////////////////////////////////

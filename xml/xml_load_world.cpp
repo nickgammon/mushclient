@@ -825,6 +825,8 @@ bool bPlugin;
 
   } // end of  CMUSHclientDoc::Load_One_Include_XML
 
+#pragma warning(push)
+#pragma warning(disable : 4189)     // warning C4189: 'iVersion' : local variable is initialized but not referenced
 void CMUSHclientDoc::Load_General_XML (CXMLelement & parent, 
                                        const unsigned long iFlags)
   {
@@ -867,6 +869,7 @@ void CMUSHclientDoc::Load_General_XML (CXMLelement & parent,
   END_LOAD_LOOP;
 
   } // end of CMUSHclientDoc::Load_General_XML
+#pragma warning(pop)
 
 void CMUSHclientDoc::Load_World_Numeric_Options_XML (CXMLelement & parent,
                                                     bool bUseDefault,
@@ -1740,7 +1743,7 @@ CString strName,
   if (i >= NUMITEMS (strMacroDescriptions))
     ThrowErrorException ("Macro named \"%s\" not recognised", (LPCTSTR) strName);
 
-  unsigned short iType;
+  unsigned short iType = REPLACE_COMMAND;
 
   if (strType == "replace")
     iType = REPLACE_COMMAND;
@@ -2176,6 +2179,8 @@ long iSequence;
   } // end of CMUSHclientDoc::Load_One_Print_Colour_XML
 
 
+#pragma warning(push)
+#pragma warning(disable : 4189)     // warning C4189: 'iVersion' : local variable is initialized but not referenced
 void CMUSHclientDoc::Load_Comments_XML (CXMLelement & parent)
   {
 CString strComment;
@@ -2208,7 +2213,7 @@ int iFlags = 0; // for use by GET_VERSION_AND_DEFAULTS macro
   ActivateNotepad (strTitle);
 
   } // end of CMUSHclientDoc::Load_Comments_XML
-
+#pragma warning(pop)
 
 void CMUSHclientDoc::Load_Plugin_XML (CXMLelement & parent)
   {

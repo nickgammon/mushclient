@@ -2978,8 +2978,6 @@ static void Noise (unsigned char * inbuf, long iWidth, long iHeight, long iPerLi
 static void MonoNoise (unsigned char * inbuf, long iWidth, long iHeight, long iPerLine, double Options)
   {
 
-  unsigned char * pi = inbuf;
-  long count = iPerLine * iHeight / 3;
   long i, j, c, row;
   double threshold = Options / 100.0;
 
@@ -3197,8 +3195,6 @@ static void ColourGamma (unsigned char * inbuf, long iWidth, long iHeight,
 static void MakeGreyscale (unsigned char * inbuf, long iWidth, long iHeight, long iPerLine, double Options, const bool bLinear)
   {
 
-  unsigned char * pi = inbuf;
-  long count = iPerLine * iHeight / 3;
   long i, row;
   double c;
 
@@ -3990,7 +3986,6 @@ long CMiniWindow::DrawImageAlpha(LPCTSTR ImageId,
 
 
   long count = bmi.bmiHeader.biSizeImage;
-  long perline = BytesPerLine (iWidth, 24);
 
   long i;
 
@@ -4122,7 +4117,6 @@ long CMiniWindow::GetImageAlpha(LPCTSTR ImageId,
 
 
   long count = bmi.bmiHeader.biSizeImage;
-  long perline = BytesPerLine (iWidth, 24);
 
   long i;
 

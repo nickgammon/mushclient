@@ -1,4 +1,5 @@
-#pragma warning( disable: 4244)
+#pragma warning( disable : 4244)  // conversion from 'int ' to 'short ', possible loss of data
+#pragma warning( disable : 4505)  // unreferenced local function has been removed
 
 /*
 ** $Id: lpeg.c,v 1.2 2009-02-23 03:13:05 nick Exp $

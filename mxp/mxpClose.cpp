@@ -21,12 +21,12 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
 void CMUSHclientDoc::MXP_CloseTag (CString strTag, const bool bOpen)
   {
 
-  POSITION linepos, 
+  POSITION linepos = 0, 
            stylepos, 
-           oldstylepos,
-           oldlinepos;
-  CStyle * pStyle;
-  CLine * pLine;
+           oldstylepos = 0,
+           oldlinepos = 0;
+  CStyle * pStyle = NULL;
+  CLine * pLine = NULL;
   bool bFoundit = false;
   CString strFoundVariable;
 

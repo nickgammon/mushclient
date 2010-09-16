@@ -604,7 +604,7 @@ PURPOSE:	Hides the default property sheet buttons
 --------------------------------------------------------------------*/
 bool		CTreePropertySheet::HidePpgButtons()
 {
-	int		nControls=m_acControlPos.GetSize();
+	m_acControlPos.GetSize();
 
 	CRect	rcTemp,rcWindow;
 	GetDlgItem(IDOK)->GetWindowRect(&rcTemp);
@@ -956,7 +956,6 @@ void		CTreePropertySheet::AssignFillerSpace(
 {
 	int		i,nSize=m_acControlPos.GetSize();
 	int		nFillers=CountFillers(nVertArrange,nRow);
-	int		nCount=0;
 
 	if(nFillers==0)
 		return;
@@ -1047,7 +1046,6 @@ CTreePropertySheet::cControlPos* CTreePropertySheet::GetControl(
 				int nCol)
 {
 	int		i,nSize=m_acControlPos.GetSize();
-	int		nCount=0;
 
 	for(i=0;i<nSize;i++) {
 		cControlPos&	cur=m_acControlPos[i];

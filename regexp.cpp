@@ -70,6 +70,11 @@ int count;
 
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
+  else
+    {
+    start.QuadPart = 0;
+    finish.QuadPart = 0;
+    }
 
   pcre_callout = NULL;
   count = pcre_exec(prog->m_program, prog->m_extra, string, strlen (string),

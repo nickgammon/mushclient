@@ -74,7 +74,6 @@ size_t xmlLength;
 const char * xml = luaL_checklstring (L, 1, &xmlLength);
 
 CXMLparser parser;
-CXMLelement * pMuClientElement = NULL;
 
   try
     {

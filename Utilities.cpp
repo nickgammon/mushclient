@@ -184,8 +184,10 @@ char * pNew = p;
 char c;
 int i;
 
-  for ( ; c = *p; p++)
+  for ( ; *p; p++)
     {
+    c = *p;
+
     // look for escape sequences ...
     if (c == '\\')
       {
@@ -441,7 +443,6 @@ bool GetClipboardColour (COLORREF & colour)
   {
 CString strColour; 
 int i;
-bool bEnable = true;
 bool bReverse;
 CColours * colour_item;
 
@@ -534,7 +535,7 @@ static char base64code[64]=
 int getBase64Value(char code){
 
     int val= (int)code;
-    int result;
+    int result = 0;
 
     if (val >= 'A' && val <= 'Z')
         result= val - 65;

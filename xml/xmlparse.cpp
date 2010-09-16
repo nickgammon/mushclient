@@ -955,7 +955,8 @@ long length;
         ThrowErrorException ("No closing \";\" in XML entity argument \"&%s\"", 
                   (LPCTSTR) CString (pEntity, p - pEntity)); 
 
-      strFixedValue += Get_XML_Entity (CString (pEntity, p - pEntity));    // add to list
+      CString s (pEntity, p - pEntity);
+      strFixedValue += Get_XML_Entity (s);    // add to list
   
       pStart = p + 1;   // move on past the entity
 

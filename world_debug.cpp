@@ -151,9 +151,7 @@ static void ShowAnsiColour (CMUSHclientDoc * pDoc,
   CString strTextColour = "black";
 
    // if colour is dark, use white, otherwise use black
-   if (((GetRValue (iColour) & 0xFF) +
-       (GetGValue (iColour) & 0xFF) +
-       (GetBValue (iColour) & 0xFF) ) < (128 * 3))
+   if (((iRed & 0xFF) + (iGreen & 0xFF) + (iBlue & 0xFF) ) < (128 * 3))
      strTextColour = "white";
 
   pDoc->ColourTell (strTextColour, ColourToName (iColour), strName);
@@ -791,7 +789,6 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
          it != GetArrayMap ().end ();
          it++, iCount++)
            {
-           tStringToStringMap * m = it->second;
            Note (CFormat ("Array: \"%s\"", it->first.c_str ()));
 
           // now show key/value pairs

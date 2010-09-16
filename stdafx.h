@@ -3,14 +3,30 @@
 //      are changed infrequently
 //
 
-#ifdef WIN32
-// disable warnings about long STL-generated names
-  #pragma warning( disable : 4503 4786 4800)
-#endif
+// disable some warnings (especially at warning level 4)
+
+#pragma warning (disable : 4018)  // '<' : signed/unsigned mismatch
+#pragma warning (disable : 4100)  // unreferenced formal parameter
+#pragma warning (disable : 4127)  // conditional expression is constant
+#pragma warning (disable : 4201)  // nonstandard extension used : nameless struct/union
+#pragma warning (disable : 4244)  // conversion from 'int ' to 'char ', possible loss of data
+#pragma warning (disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
+#pragma warning (disable : 4503)  // decorated name length exceeded, name was truncated
+#pragma warning (disable : 4505)  // unreferenced local function has been removed
+#pragma warning (disable : 4511)  // copy constructor could not be generated
+#pragma warning (disable : 4512)  // assignment operator could not be generated
+#pragma warning (disable : 4514)  // unreferenced inline function has been removed
+#pragma warning (disable : 4611)  // interaction between '_setjmp' and C++ object destruction is non-portable
+#pragma warning (disable : 4663)  // C++ language change: to explicitly specialize class template yadda yadda
+#pragma warning (disable : 4706)  // assignment within conditional expression
+#pragma warning (disable : 4786)  // identifier was truncated to 'number' characters in the debug information
+#pragma warning (disable : 4800)  // forcing value to bool 'true' or 'false' (performance warning)
+
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #define HAVE_CONFIG_H   // for PCRE
       
+#pragma warning( push, 3)
 #include <afx.h>
 
 #ifdef _DEBUG
@@ -51,6 +67,7 @@
 #include <activscp.h>
 #include <afxmt.h>
 #include <afxpriv.h>
+
 #include "format.h"
 #include "exceptions.h"
 
@@ -66,6 +83,7 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#pragma warning (pop)
 
 extern "C"
   {

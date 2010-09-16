@@ -267,7 +267,6 @@ CSendView::CSendView()
 
 CSendView::~CSendView()
 {
-CMUSHclientDoc* pDoc = GetDocument();
 delete m_backbr;
 }
 
@@ -2725,16 +2724,10 @@ void CSendView::OnEditSelecttomatchingbrace()
 
 void CSendView::OnInitMenu(CMenu* pMenu)
   {
-
-  int i = 1;
-
   }
 
 void CSendView::OnInitMenuPopup(CMenu* pMenu, UINT nIndex, BOOL bSysMenu)
   {
-
-  int i = 1;
-
   }
 
 void CSendView::OnDisplayHighlightphrase() 

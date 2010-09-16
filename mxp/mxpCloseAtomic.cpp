@@ -142,7 +142,6 @@ void CMUSHclientDoc::MXP_CloseAtomicTag (const int iAction,
 
       case MXP_ACTION_VAR: 
         {
-        int i = 0;
         }
         break;
     } // end of switch on action type

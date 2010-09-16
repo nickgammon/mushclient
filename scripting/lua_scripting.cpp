@@ -52,7 +52,7 @@ static void BuildOneLuaFunction (lua_State * L, const char * sTableName)
         string sFullName;
 
         // global table will not have _G prefix
-        if (sTableName != "_G")
+        if (strcmp (sTableName, "_G") != 0)
           {
           sFullName= sTableName;
           sFullName += ".";
@@ -274,6 +274,11 @@ bool CScriptEngine::ParseLua (const CString & strCode, const CString & strWhat)
 
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
+  else
+    {
+    start.QuadPart = 0;
+    finish.QuadPart = 0;
+    }
 
 
   // note - an error here is a *compile* error
@@ -444,6 +449,11 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
 
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
+  else
+    {
+    start.QuadPart = 0;
+    finish.QuadPart = 0;
+    }
              
   unsigned short iOldStyle = m_pDoc->m_iNoteStyle;
   m_pDoc->m_iNoteStyle = NORMAL;    // back to default style
@@ -504,7 +514,6 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
       for (i = 0; i < namecount; i++, tabptr += name_entry_size) 
         {
         int n = (tabptr[0] << 8) | tabptr[1];
-        int j = n * 2;
         const unsigned char * name = tabptr + 2;
         // if duplicates were possible then ...
         if ((regexp->m_program->options & (PCRE_DUPNAMES | PCRE_JCHANGED)) != 0)
@@ -609,8 +618,6 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
     {
     *result = true;
 
-    int i = lua_toboolean (L, paramCount + 1);
-
     // if a boolean result wanted, return it
 
     if (lua_gettop (L) > 0)
@@ -656,6 +663,11 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,          // dispatch ID, will b
 
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
+  else
+    {
+    start.QuadPart = 0;
+    finish.QuadPart = 0;
+    }
              
   unsigned short iOldStyle = m_pDoc->m_iNoteStyle;
   m_pDoc->m_iNoteStyle = NORMAL;    // back to default style

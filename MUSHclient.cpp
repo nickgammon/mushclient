@@ -263,7 +263,6 @@ BOOL CMUSHclientApp::InitInstance()
 
   // open SQLite database for preferences
 
-  char *zErrMsg = 0;
   int rc;
   CFileStatus	status;
 

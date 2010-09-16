@@ -58,8 +58,6 @@ void CKeyNameDlg::OnUpdateKeyName(CCmdUI* pCmdUI)
 
   m_ctlHotkeyValue.GetHotKey (wVirtualKeyCode, wModifiers);
 
-  DWORD test = m_ctlHotkeyValue.GetHotKey ();
-
   BYTE fVirt = 0;
 
   if (wModifiers & HOTKEYF_ALT)
@@ -71,5 +69,5 @@ void CKeyNameDlg::OnUpdateKeyName(CCmdUI* pCmdUI)
 
   pCmdUI->SetText (KeyCodeToString (fVirt, wVirtualKeyCode));
   
-  } // end of CTriggerDlg::OnUpdateInvocationCount
+  } // end of CKeyNameDlg::OnUpdateKeyName
 

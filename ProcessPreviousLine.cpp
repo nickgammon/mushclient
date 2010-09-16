@@ -38,7 +38,7 @@ return CFormat ("%c[%dm", ESC, Code);
 
 void CMUSHclientDoc::LogLineInHTMLcolour (POSITION startpos)
   {
-   COLORREF prevcolour = -1;
+   COLORREF prevcolour = NO_COLOUR;
    bool bInSpan = false;
    COLORREF lastforecolour = 0;
    COLORREF lastbackcolour = 0;
@@ -324,8 +324,8 @@ assemble the full text of the original line.
                bUnderline = false,
                bBlink = false,
                bInverse = false;
-          unsigned int  iForeground = -1;
-          unsigned int  iBackground = -1;
+          unsigned int  iForeground = NO_COLOUR;
+          unsigned int  iBackground = NO_COLOUR;
           CString str;
           CString strRun;
 
@@ -952,11 +952,12 @@ POSITION pos;
 
   for (iItem = 0; iItem < GetTriggerArray ().GetSize (); iItem++)
     {
-    if (trigger_item = EvaluateTrigger (strCurrentLine, 
+    trigger_item = EvaluateTrigger (strCurrentLine, 
                                         strResponse,
                                         iItem,
                                         iStartCol,
-                                        iEndCol))
+                                        iEndCol);
+    if (trigger_item)
       {  
 
 
@@ -969,9 +970,9 @@ POSITION pos;
 
       if (trigger_item->iMatch && !trigger_item->bMultiLine)
         {
-        int iFlags;
-        COLORREF iForeColour; 
-        COLORREF iBackColour; 
+        int iFlags = 0;
+        COLORREF iForeColour = NO_COLOUR; 
+        COLORREF iBackColour = NO_COLOUR; 
         int iCurrentCol = 0;
         for (pos = prevpos; pos; )  // scan to end of buffer
          {
@@ -983,7 +984,7 @@ POSITION pos;
            if (i < 0)
              i = 0;
 
-           CStyle * pStyle;
+           CStyle * pStyle = NULL;
            int iStyleCol = 0;
      
            // find style run
@@ -994,10 +995,13 @@ POSITION pos;
              if (iStyleCol > i)   // we are at the column
                break;
              }   // end of finding style item
-     
-           iFlags = pStyle->iFlags & STYLE_BITS;  // get style
-           iForeColour = pStyle->iForeColour;
-           iBackColour = pStyle->iBackColour;
+                  
+           if (pStyle)
+             {
+             iFlags = pStyle->iFlags & STYLE_BITS;  // get style
+             iForeColour = pStyle->iForeColour;
+             iBackColour = pStyle->iBackColour;
+             }
            break;                      // done
            }
          iCurrentCol += pLine->len;   // next line starts where this left off

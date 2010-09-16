@@ -26,7 +26,7 @@ void CMUSHclientDoc::Serialize_World_XML (CArchive& ar)
       if (m_strWorldID.IsEmpty ())
         m_strWorldID = GetUniqueID ();
 
-      Save_World_XML (ar, ~0);    // save all options
+      Save_World_XML (ar, (unsigned long) ~0);    // save all options
 
       // ensure all plugins save their state right now :)
       for (POSITION pos = m_PluginList.GetHeadPosition (); pos; )
@@ -44,7 +44,7 @@ void CMUSHclientDoc::Serialize_World_XML (CArchive& ar)
     }
   else
     { // loaidng
-    Load_World_XML (ar, ~(XML_PLUGINS | XML_NO_PLUGINS));    // load all options, except plugins
+    Load_World_XML (ar, (unsigned long) ~(XML_PLUGINS | XML_NO_PLUGINS));    // load all options, except plugins
     m_bLoaded = true;   // this world has been loaded from disk
     }
 

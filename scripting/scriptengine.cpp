@@ -99,6 +99,11 @@ bool CScriptEngine::Execute (DISPID & dispid,  // dispatch ID, will be set to DI
 
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
+  else
+    {
+    start.QuadPart = 0;
+    finish.QuadPart = 0;
+    }
 
   if (iReason != eDontChangeAction)
     m_pDoc->m_iCurrentActionSource = iReason;
@@ -439,6 +444,11 @@ SCRIPTSTATE ss;
 
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
+  else
+    {
+    start.QuadPart = 0;
+    finish.QuadPart = 0;
+    }
 
   hr = m_IActiveScriptParse->ParseScriptText
                                (bstrCode, 0, 0, 0, 0, 0, 

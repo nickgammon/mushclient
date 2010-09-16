@@ -328,10 +328,7 @@ void CPluginsDlg::OnAddPlugin()
 
 
   if (nResult != IDOK)
-    {
-    DWORD reason = CommDlgExtendedError();
     return;    // cancelled dialog
-    }
   
   bool bChanged = false;
 

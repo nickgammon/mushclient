@@ -1395,7 +1395,7 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
       m_iConnectPhase == eConnectAwaitingProxyResponse2 ||
       m_iConnectPhase == eConnectAwaitingProxyResponse3)
     {
-    int iBytesToMove;
+    int iBytesToMove = 0;
 
     switch (m_iConnectPhase)
       {
@@ -1481,6 +1481,11 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
 
     if (App.m_iCounterFrequency)
       QueryPerformanceCounter (&start);
+    else
+      {
+      start.QuadPart = 0;
+      finish.QuadPart = 0;
+      }
 
     // decompress it
     int iCompressResult = inflate (&m_zCompress, Z_SYNC_FLUSH);
@@ -1574,9 +1579,9 @@ int saved_count;
 //  if (flags == 0)
 //    m_strCurrentLine += lpszText;
 
-  for (p = lpszText; c = *p; p++)
+  for (p = lpszText; *p; p++)
     {
-
+    c = *p;
     int iLineLength = m_pCurrentLine->len;
 
     // for Unicode the width of the line is characters, not stored bytes
@@ -2698,8 +2703,6 @@ void CMUSHclientDoc::ExecuteHotspotScript (DISPID & dispid,  // dispatch ID, wil
     return;
     }   // end of Lua
 
-long i = 1;
-
   // prepare for the arguments:
   //   1. Flags
   //   2. Hotspot ID
@@ -2754,7 +2757,7 @@ void CMUSHclientDoc::OnFileLogsession()
 
 BOOL bAppendToLogFile = false;
 int iLines = 0;  
-BOOL bWriteWorldName;
+BOOL bWriteWorldName = m_bWriteWorldNameToLog;
 CString strPreamble;
 
 if (!m_bLogRaw)
@@ -4471,12 +4474,6 @@ CString strTimerName;
 CmcDateTime tNow = CmcDateTime::GetTimeNow();
 CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
 
-// TRACE1 ("Time now = %10.8f\n", tNow.m_dt);
-
-double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
-
-//  TRACE1 ("Seconds = %10.3f\n", t);
-
 // check for deleted chat sessions
 
   for (POSITION chatpos = m_ChatList.GetHeadPosition (); chatpos; )
@@ -4575,7 +4572,6 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
 // send timer message, if this timer list is "active"
 
     CString strExtraOutput;
-    bool bNoLog = false;
 
     timer_item->bExecutingScript = true;     // cannot be deleted now
     m_iCurrentActionSource = eTimerFired;
@@ -4619,7 +4615,7 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
         list<string> sparams;
         sparams.push_back (pLabel);
         timer_item->bExecutingScript = true;     // cannot be deleted now
-        bool bResult = GetScriptEngine ()->ExecuteLua (timer_item->dispid, 
+        GetScriptEngine ()->ExecuteLua (timer_item->dispid, 
                                        timer_item->strProcedure, 
                                        eTimerFired,
                                        strType, 
@@ -4628,10 +4624,6 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
                                        sparams, 
                                        timer_item->nInvocationCount);
         timer_item->bExecutingScript = false;     // can be deleted now
-        /*  version 4.28 -- removed this   - one-shot timers weren't being deleted
-        if (bResult)
-           return;   // error in script, bail out                                       
-        */
         }   // end of Lua
       else
         {
@@ -4651,7 +4643,7 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
   //      args [eTimerName] = strTimerName;
         args [eTimerName] = pLabel;
         timer_item->bExecutingScript = true;     // cannot be deleted now
-        bool bResult = ExecuteScript (timer_item->dispid,  
+        ExecuteScript (timer_item->dispid,  
                        timer_item->strProcedure,
                        eTimerFired,
                        strType, 
@@ -4660,10 +4652,6 @@ double t =  (tNow.m_dt - ((int) tNow.m_dt) ) * 86400.0;
                        timer_item->nInvocationCount);
         timer_item->bExecutingScript = false;     // can be deleted now
 
-        /*  version 4.28 -- removed this   - one-shot timers weren't being deleted
-        if (bResult)
-          return;   // error in script, bail out  
-        */
         } // not Lua
       }     // end of having a dispatch ID
 
@@ -5262,7 +5250,7 @@ CString CMUSHclientDoc::RecallText (const CString strSearchString,   // what to 
                                     const CString strRecallLinePreamble)
     {
 CString strMessage;
-t_regexp * regexp;          // compiled regular expression
+t_regexp * regexp = NULL;          // compiled regular expression
 int iCurrentLine;
 
   // compile regular expression if needed
@@ -5330,7 +5318,7 @@ CString strStatus = TFormat ("Recalling: %s", (LPCTSTR) strSearchString);
     {
     int iMilestone = 0;
     CString strLine;
-    int iFlags;
+    int iFlags = 0;
 
     do
       {
@@ -6520,7 +6508,6 @@ POSITION pos;
 void  CMUSHclientDoc::SortTimers (void)
   {
 
-int iCount = GetTimerMap ().GetCount ();
 int i;
 CString strTimerName;
 CTimer * pTimer;

@@ -18,7 +18,7 @@ Copyright (C) 2000 Nick Gammon.
 #include "dialogs\GoToLineDlg.h"
 #include "dialogs\LuaGsubDlg.h"
 
-#pragma warning (disable:4100)
+#pragma warning( disable : 4100)  // unreferenced formal parameter
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
@@ -1186,7 +1186,6 @@ void CTextView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
       !m_bInsertMode	&&
        nStartChar == nEndChar)
     {
-    bool bEndLine = false;
     CString strText;
     GetEditCtrl().GetWindowText (strText);
 

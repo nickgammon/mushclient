@@ -24,7 +24,7 @@ line, when required.
 
 */
 
-#pragma warning( disable : 4800 )   // never mind those "bool" warnings
+#pragma warning (disable : 4800)  // forcing value to bool 'true' or 'false' (performance warning)
 
 
 static void WrapUpFind (CFindInfo & FindInfo)

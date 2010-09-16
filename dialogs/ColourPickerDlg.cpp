@@ -402,7 +402,6 @@ OnSelectColour ();
 
 void CColourPickerDlg::OnItemchangedColourlist(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 
 int iSel = m_ctlColourList.GetNextItem(-1, LVNI_SELECTED);
 

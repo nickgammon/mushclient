@@ -10,7 +10,9 @@
 /* Reuben Thomas   nov00-09jan04 */
 
 
-#pragma warning( disable: 4244)
+#pragma warning( disable: 4057)  // 'const unsigned char *' differs in indirection to slightly different base types from 'const char *'
+#pragma warning( disable: 4244)  // conversion from '__int64 ' to 'double ', possible loss of data
+#pragma warning( disable: 4706)  // assignment within conditional expression
 
 typedef __int64 Integer;
 typedef unsigned __int64 UInteger;

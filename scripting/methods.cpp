@@ -2403,12 +2403,10 @@ CTrigger * trigger_item;
     case  37:
       if (trigger_item->regexp && App.m_iCounterFrequency)
         {
-        LONGLONG iTimeTaken = 0;
         double   elapsed_time;
 
-
         elapsed_time = ((double) trigger_item->regexp->iTimeTaken) / 
-                        ((double) App.m_iCounterFrequency);
+                       ((double) App.m_iCounterFrequency);
 
         SetUpVariantDouble (vaResult, elapsed_time);
         }
@@ -3174,7 +3172,6 @@ void CMUSHclientDoc::ShowQueuedCommands (void)
     }
 
   CString strQueued = "Queued: ";
-  int i = 0;
   const int MAX_SHOWN = 50;
 
   CString str;
@@ -3582,7 +3579,7 @@ CLine * pLine = m_LineList.GetAt (GetLinePosition (LineNumber - 1));
   if (StyleNumber <= 0 || StyleNumber > pLine->styleList.GetCount ())
     return vaResult;
 
-CStyle * pStyle;
+CStyle * pStyle = NULL;
 POSITION pos;
 int iCol = 0;
 int iCount = 1;
@@ -3603,7 +3600,7 @@ int iCount = 1;
     } // end of looping looking for it
 
 CString strAction, strHint, strVariable;
-CAction * pAction = pStyle->pAction;
+CAction * pAction = pStyle ? pStyle->pAction : NULL;
 
 COLORREF colour1,
          colour2;
@@ -4003,7 +4000,8 @@ long iCount;
       CString strLine = m_QueuedCommandsList.GetNext (pos);
 
       // the array must be a bloody array of variants, or VBscript kicks up
-      COleVariant v (strLine.Mid (1));  // drop echo flag
+      CString s = strLine.Mid (1);
+      COleVariant v (s);  // drop echo flag
       sa.PutElement (&iCount, &v);
       iCount++;
       }      // end of looping through each command
@@ -4339,6 +4337,11 @@ static void GetWindowWidth (CWnd * pWnd, VARIANT & vaResult, const bool client =
 static void GetWindowHeight (CWnd * pWnd, VARIANT & vaResult, const bool client = false )
   {
   RECT rect;
+  rect.left = 0;
+  rect.top = 0;
+  rect.right = 0;
+  rect.bottom = 0;
+
   if (pWnd->m_hWnd)
     {
     if (client)
@@ -9013,7 +9016,7 @@ long iCount = 0;
       // do it
       Load_World_XML (ar, 
                       // don't load plugins or general world config here  (note, this sets XML_OVERWRITE)
-                      ~(XML_PLUGINS | XML_NO_PLUGINS | XML_GENERAL), 
+                      (unsigned long) ~(XML_PLUGINS | XML_NO_PLUGINS | XML_GENERAL), 
                       0,          // load flags
                       &iTriggers,  
                       &iAliases,   
@@ -10598,9 +10601,10 @@ VARIANT CMUSHclientDoc::AcceleratorList()
       if (m_CommandToSendToMap [it->second] == eSendToExecute)
         strSendTo = "";
       // the array must be a bloody array of variants, or VBscript kicks up
-      COleVariant v (CFormat ("%s = %s%s", (LPCTSTR) key, 
-                      command.c_str (), 
-                      (LPCTSTR) strSendTo));
+      CString s = CFormat ("%s = %s%s", (LPCTSTR) key, 
+                          command.c_str (), 
+                          (LPCTSTR) strSendTo);
+      COleVariant v (s);
       sa.PutElement (&iCount, &v);
       }      // end of looping through each accelerator
     } // end of having at least one
@@ -10638,9 +10642,10 @@ VARIANT CMUSHclientDoc::MapColourList()
          it != m_ColourTranslationMap.end (); it++, iCount++)
       {
       // the array must be a bloody array of variants, or VBscript kicks up
-      COleVariant v (CFormat ("%s = %s", 
-                    (LPCTSTR) ColourToName (it->first), 
-                    (LPCTSTR) ColourToName (it->second)));
+      CString s = CFormat ("%s = %s", 
+                          (LPCTSTR) ColourToName (it->first), 
+                          (LPCTSTR) ColourToName (it->second));
+      COleVariant v (s);
       sa.PutElement (&iCount, &v);
       }      // end of looping through each colour
     } // end of having at least one
@@ -12598,7 +12603,7 @@ CMyToolBar * pToolBar = NULL;
     }
   else
     {
-    UINT nDockBarID;
+    UINT nDockBarID = AFX_IDW_DOCKBAR_TOP;
     CRect rect (Left, Top, Left + rectBar.right - rectBar.left, Top + rectBar.bottom - rectBar.top);
     Frame.ClientToScreen (rect);
     switch (Side)

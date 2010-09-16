@@ -11,6 +11,7 @@
 #include "..\lauxlib.h"
 
 #define LREXLIB_PCRE      // NJG
+#pragma warning( disable: 4057)  // 'const unsigned char *' differs in indirection to slightly different base types from 'const char *'
 
 /* Sanity check */
 #if !defined(LREXLIB_POSIX) && !defined(LREXLIB_PCRE)

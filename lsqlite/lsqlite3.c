@@ -1,6 +1,7 @@
 // These first few lines added by NJG
 // version 0.7-devel
-#  pragma warning(disable: 4244)
+#  pragma warning(disable : 4244)  // conversion from 'int ' to 'char ', possible loss of data
+#  pragma warning(disable : 4701)  // local variable 'xxx' may be used without having been initialized
 // Warning - in db_last_insert_rowid change %ll to %I64d
 /************************************************************************
 * lsqlite3                                                              *

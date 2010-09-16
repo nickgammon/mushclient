@@ -1503,8 +1503,6 @@ void CGlobalPrefsP11::OnChooseIconFile()
 
   CheckRadioButton (IDC_MUSHCLIENT_ICON, IDC_CUSTOM_ICON, IDC_CUSTOM_ICON);
 
-  DWORD i = GetLastError ();
-
 }
 /////////////////////////////////////////////////////////////////////////////
 // CGlobalPrefsP12 property page

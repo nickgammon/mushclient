@@ -1,3 +1,8 @@
+// pragmas added by Nick Gammon
+#pragma warning( disable : 4131)  // uses old-style declarator
+#pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
+#pragma warning( disable : 4100)  // unreferenced formal parameter
+
 /* number.c: Implements arbitrary precision numbers. */
 /*
     Copyright (C) 1991, 1992, 1993, 1994, 1997, 2000 Free Software Foundation, Inc.

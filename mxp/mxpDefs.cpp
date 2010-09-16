@@ -439,7 +439,8 @@ void CMUSHclientDoc::MXP_Entity (CString strName, CString strTag)
           return;
           }
 
-        strFixedValue += MXP_GetEntity (CString (pStart, p - pStart));    // add to list
+        CString s (pStart, p - pStart);
+        strFixedValue += MXP_GetEntity (s);    // add to list
       
         } // end of having an ampersand 
       else

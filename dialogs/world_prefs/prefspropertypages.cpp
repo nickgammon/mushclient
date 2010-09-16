@@ -36,7 +36,7 @@
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
-#pragma warning( disable: 4800)
+#pragma warning (disable : 4800)  // forcing value to bool 'true' or 'false' (performance warning)
 bool NotFound (CFindInfo & FindInfo);
 
 #define NL "\r\n"
@@ -3069,7 +3069,7 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    int nNewItem = add_item (pItem, pstrObjectName, nItem, FALSE);
+    add_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
@@ -3153,7 +3153,7 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    int nNewItem = add_item (pItem, pstrObjectName, nItem, FALSE);
+    add_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
@@ -4108,7 +4108,7 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    int nNewItem = add_item (pItem, pstrObjectName, nItem, FALSE);
+    add_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
@@ -4192,7 +4192,7 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    int nNewItem = add_item (pItem, pstrObjectName, nItem, FALSE);
+    add_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
@@ -6263,7 +6263,7 @@ CTimer * timer1 = (CTimer *) item1,
   ASSERT_VALID (timer2);
   ASSERT( timer2->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
 
-int iResult;
+int iResult = 0;
 CmcDateTimeSpan ts1,
                 ts2;
 
@@ -8693,7 +8693,7 @@ void CPrefsP15::CalculateMemoryUsage ()
     // count styles and work out how much memory they take too
     for (POSITION pos2 = pLine->styleList.GetHeadPosition(); pos2; iStyles++)
       {
-      CStyle * pStyle = pLine->styleList.GetNext (pos2);
+      pLine->styleList.GetNext (pos2);
       nMemory += sizeof CStyle;   // length of style class
       nMemory += sizeof (void *) * 3;   // and the list item
       }

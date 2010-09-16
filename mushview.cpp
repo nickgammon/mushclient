@@ -469,7 +469,7 @@ POSITION foundpos;
       }
 
 
-int iUnicodeCharacters;
+int iUnicodeCharacters = 0;
 
 // unicode conversion from UTF-8
 
@@ -1653,7 +1653,6 @@ CPoint point (pt);
 int lastline;
 long lastx = 0;
 bool bOutside = true;
-int oldstyle = 0;
 long pixel;
 
   dc.SelectObject(pDoc->m_font [0]);
@@ -1974,8 +1973,6 @@ int line,
           // However an action in the form !!pluginID:script(arg)
           // eg. !!753ba7e011f3c8943a885f18:mysub(1234)   
           // will be passed the nominted sub in the nominated plugin
-
-          CPlugin * pPlugin = NULL;
 
           // rather elaborate test ...
 
@@ -2316,8 +2313,6 @@ int line,
 
   // end of tooltips stuff
 
-CLine * pLine = pDoc->m_LineList.GetAt (pDoc->GetLinePosition (line));
-
   // only if the user is currently drawing a new stroke by dragging
   // the captured mouse.
 
@@ -2469,7 +2464,6 @@ long start_textsize,
       end_textsize;
 
 long right;
-int oldstyle = 0;
 
 GetTextRect (&r);
 right = r.right;
@@ -3689,7 +3683,7 @@ t_print_control_block pcb;
       (line == m_selend_line))
       endcol = m_selend_col;
 
-    CStyle * pStyle;
+    CStyle * pStyle = NULL;
     int i = 0;
     POSITION stylepos;
 
@@ -3709,6 +3703,8 @@ t_print_control_block pcb;
 
     for (thiscol = startcol; thiscol < endcol; )
       {
+      if (!pStyle)
+        break;
 
       // don't overshoot
       thislen = MIN (cols_to_go, thislen);
@@ -4671,7 +4667,7 @@ CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
 POSITION startpos, pos;
-CLine * pLine,
+CLine * pLine = NULL,
       * pInitialLine;
 int nNewLine = m_selstart_line,
     nInitialLine;
@@ -5554,7 +5550,8 @@ ASSERT_VALID(pDoc);
             sa.CreateOneDim (VT_VARIANT, MAX_WILDCARDS, NULL, 1);
             for (long i = 1; i <= MAX_WILDCARDS; i++)
               {
-              COleVariant v (CString ("")); // no wildcards are relevant
+              CString s ("");
+              COleVariant v (s); // no wildcards are relevant
               sa.PutElement (&i, &v);
               }
             args [eWildcards] = sa;
@@ -5572,7 +5569,6 @@ ASSERT_VALID(pDoc);
 
     // send the message
 
-      bool bOmitFromLog = false;
       CString strExtraOutput;
 
       pDoc->m_iCurrentActionSource = eUserMenuAction;

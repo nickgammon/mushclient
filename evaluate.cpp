@@ -8,8 +8,6 @@
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
-//#pragma warning (disable:4800)
-
 
 BOOL CMUSHclientDoc::EvaluateCommand (const CString & full_input, 
                                             const bool bCountThem,
@@ -261,7 +259,7 @@ CTrigger * CMUSHclientDoc::EvaluateTrigger (const CString & input,
 //  timer t ("EvaluateTrigger");
 
 bool matched = false;
-CTrigger * trigger_item;
+CTrigger * trigger_item = NULL;
 int iCount = GetTriggerArray ().GetSize ();    // how many there are
 
   output.Empty ();
