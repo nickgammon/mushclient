@@ -131,7 +131,7 @@ int pushVariant (lua_State *L, VARIANT & v)
       dt.GetAsSystemTime (sysTime);  // now get as SYSTEMTIME
       CTime tm (sysTime);         // import into CTime
 
-      lua_pushnumber (L, (lua_Number) tm.GetTime ());  // return as Lua-style system time
+      lua_pushnumber (L, tm.GetTime ());  // return as Lua-style system time
 
       break;
       }
@@ -341,7 +341,7 @@ static int L_AcceleratorTo (lua_State *L)
   lua_pushnumber (L, pDoc->AcceleratorTo (
         my_checkstring (L, 1),       // Key
         my_checkstring (L, 2),       // Send
-        (short) my_checknumber (L, 3)        // SendTo
+        my_checknumber (L, 3)        // SendTo
         ));
   return 1;  // number of result fields
   } // end of L_AcceleratorTo
@@ -395,7 +395,7 @@ static int L_AddAlias (lua_State *L)
                   my_checkstring (L, 1),  // AliasName
                   my_checkstring (L, 2),  // MatchText  
                   my_checkstring (L, 3),  // ResponseText
-                  (long) my_checknumber (L, 4),  // Flags
+                  my_checknumber (L, 4),  // Flags
                   my_optstring (L, 5, "")   // ScriptName - optional
                   ));
   return 1;  // number of result fields
@@ -446,11 +446,11 @@ static int L_AddTimer (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->AddTimer (
                   my_checkstring (L, 1),  // TimerName
-                  (short) my_checknumber (L, 2),  // Hour
-                  (short) my_checknumber (L, 3),  // Minute
+                  my_checknumber (L, 2),  // Hour
+                  my_checknumber (L, 3),  // Minute
                   my_checknumber (L, 4),  // Second
                   my_checkstring (L, 5),  // ResponseText  
-                  (long) my_checknumber (L, 6),  // Flags
+                  my_checknumber (L, 6),  // Flags
                   my_optstring (L, 7, "")   // ScriptName - optional
                   ));
   return 1;  // number of result fields
@@ -481,9 +481,9 @@ static int L_AddTrigger (lua_State *L)
                   my_checkstring (L, 1),  // TriggerName
                   my_checkstring (L, 2),  // MatchText
                   my_checkstring (L, 3),  // ResponseText
-                  (long) my_checknumber (L, 4),  // Flags  
-                  (short) my_checknumber (L, 5),  // Colour
-                  (short) my_checknumber (L, 6),  // Wildcard
+                  my_checknumber (L, 4),  // Flags  
+                  my_checknumber (L, 5),  // Colour
+                  my_checknumber (L, 6),  // Wildcard
                   my_checkstring (L, 7),  // SoundFileName  
                   my_optstring (L, 8, "")   // ScriptName - optional
                   ));
@@ -501,13 +501,13 @@ static int L_AddTriggerEx (lua_State *L)
                   my_checkstring (L, 1),  // TriggerName
                   my_checkstring (L, 2),  // MatchText
                   my_checkstring (L, 3),  // ResponseText
-                  (long) my_checknumber (L, 4),  // Flags  
-                  (short) my_checknumber (L, 5),  // Colour
-                  (short) my_checknumber (L, 6),  // Wildcard
+                  my_checknumber (L, 4),  // Flags  
+                  my_checknumber (L, 5),  // Colour
+                  my_checknumber (L, 6),  // Wildcard
                   my_checkstring (L, 7),  // SoundFileName  
                   my_checkstring (L, 8),  // ScriptName
-                  (short) my_checknumber (L, 9),  // SendTo  
-                  (short) my_optnumber (L, 10, DEFAULT_TRIGGER_SEQUENCE)   // Sequence  - optional
+                  my_checknumber (L, 9),  // SendTo  
+                  my_optnumber (L, 10, DEFAULT_TRIGGER_SEQUENCE)   // Sequence  - optional
                   ));
   return 1;  // number of result fields
   } // end of L_AddTriggerEx
@@ -520,8 +520,8 @@ static int L_AdjustColour (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->AdjustColour (
-                  (long) my_checknumber (L, 1),    // Colour
-                  (short) my_checknumber (L, 2)     // Method
+                  my_checknumber (L, 1),    // Colour
+                  my_checknumber (L, 2)     // Method
                   ));
   return 1;  // number of result fields
   } // end of L_AdjustColour
@@ -912,9 +912,9 @@ static int L_BlendPixel (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->BlendPixel (
-            (long) my_checknumber (L, 1),    // Blend
-            (long) my_checknumber (L, 2),    // Base
-            (short) my_checknumber (L, 3),    // Mode
+            my_checknumber (L, 1),    // Blend
+            my_checknumber (L, 2),    // Base
+            my_checknumber (L, 3),    // Mode
             my_optnumber (L, 4, 1)    // Opacity
             ));
   return 1;  // number of result fields
@@ -926,9 +926,7 @@ static int L_BlendPixel (lua_State *L)
 static int L_GetBoldColour (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->GetBoldColour (
-	        (short) my_checknumber (L, 1)
-			));
+  lua_pushnumber (L, pDoc->GetBoldColour (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of GetBoldColour
 
@@ -939,8 +937,8 @@ static int L_SetBoldColour (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->SetBoldColour (
-      (short) my_checknumber (L, 1),  // WhichColour
-      (long) my_checknumber (L, 2)   // nNewValue
+      my_checknumber (L, 1),  // WhichColour
+      my_checknumber (L, 2)   // nNewValue
       );
   return 0;  // number of result fields
   } // end of SetBoldColour
@@ -953,7 +951,7 @@ static int L_BroadcastPlugin (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->BroadcastPlugin (
-                  (long) my_checknumber (L, 1),  // PluginID
+                  my_checknumber (L, 1),  // PluginID
                   my_optstring   (L, 2, "")   // Argument - optional
                   ));
   return 1;  // number of result fields
@@ -1258,9 +1256,7 @@ static int L_ChangeDir (lua_State *L)
 static int L_ChatAcceptCalls (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->ChatAcceptCalls (
-	              (short) my_optnumber (L, 1, DEFAULT_CHAT_PORT)
-				  ));
+  lua_pushnumber (L, pDoc->ChatAcceptCalls (my_optnumber (L, 1, DEFAULT_CHAT_PORT)));
   return 1;  // number of result fields
   } // end of L_ChatAcceptCalls
 
@@ -1273,7 +1269,7 @@ static int L_ChatCall (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->ChatCall (
                   my_checkstring (L, 1),  // Server
-                  (long) my_optnumber (L, 2, DEFAULT_CHAT_PORT)
+                  my_optnumber (L, 2, DEFAULT_CHAT_PORT)
                   ));
   return 1;  // number of result fields
   } // end of L_ChatCall
@@ -1287,7 +1283,7 @@ static int L_ChatCallzChat (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->ChatCallzChat (
                   my_checkstring (L, 1),  // Server
-                  (long) my_optnumber (L, 2, DEFAULT_CHAT_PORT)
+                  my_optnumber (L, 2, DEFAULT_CHAT_PORT)
                   ));
   return 1;  // number of result fields
   } // end of L_ChatCallzChat
@@ -1299,9 +1295,7 @@ static int L_ChatCallzChat (lua_State *L)
 static int L_ChatDisconnect (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->ChatDisconnect (
-	              (long) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->ChatDisconnect (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_ChatDisconnect
 
@@ -1364,7 +1358,7 @@ static int L_ChatID (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->ChatID (
-                  (long)my_checknumber (L, 1),  // ID
+                  my_checknumber (L, 1),  // ID
                   my_checkstring (L, 2),  // Message
                   optboolean (L, 3, 0)  // Emote
                   ));
@@ -1379,8 +1373,8 @@ static int L_ChatMessage (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->ChatMessage (
-                  (long) my_checknumber (L, 1),  // ID
-                  (short) my_checknumber (L, 2),  // Message code
+                  my_checknumber (L, 1),  // ID
+                  my_checknumber (L, 2),  // Message code
                   my_optstring (L, 3, "")  // Text - optional
                   ));
   return 1;  // number of result fields
@@ -1405,7 +1399,7 @@ static int L_ChatNote (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->ChatNote (
-          (short) my_checknumber (L, 1),  // NoteType
+          my_checknumber (L, 1),  // NoteType
           my_optstring (L, 2, "")   // Message - optional
           );
   return 0;  // number of result fields
@@ -1428,9 +1422,7 @@ static int L_ChatPasteEverybody (lua_State *L)
 static int L_ChatPasteText (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->ChatPasteText (
-	              (long) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->ChatPasteText (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_ChatPasteText
 
@@ -1441,9 +1433,7 @@ static int L_ChatPasteText (lua_State *L)
 static int L_ChatPeekConnections (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->ChatPeekConnections (
-	              (long) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->ChatPeekConnections (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_ChatPeekConnections
 
@@ -1469,9 +1459,7 @@ static int L_ChatPersonal (lua_State *L)
 static int L_ChatPing (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->ChatPing (
-	              (long) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->ChatPing (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_ChatPing
 
@@ -1482,8 +1470,7 @@ static int L_ChatPing (lua_State *L)
 static int L_ChatRequestConnections (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->ChatRequestConnections (
-	              (long) my_checknumber (L, 1)));
+  lua_pushnumber (L, pDoc->ChatRequestConnections (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_ChatRequestConnections
 
@@ -1495,7 +1482,7 @@ static int L_ChatSendFile (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->ChatSendFile (
-                  (long) my_checknumber (L, 1),  // ID
+                  my_checknumber (L, 1),  // ID
                   my_optstring (L, 2, "")   // FileName
                   ));
   return 1;  // number of result fields
@@ -1518,9 +1505,7 @@ static int L_ChatStopAcceptingCalls (lua_State *L)
 static int L_ChatStopFileTransfer (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->ChatStopFileTransfer (
-	              (long) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->ChatStopFileTransfer (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_ChatStopFileTransfer
 
@@ -1633,7 +1618,7 @@ static int L_SetCursor (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SetCursor (
-            (long) my_optnumber (L, 1, 0)    // Cursor
+            my_optnumber (L, 1, 0)    // Cursor
             ));
   return 1;  // number of result fields
   } // end of L_SetCursor
@@ -1644,9 +1629,7 @@ static int L_SetCursor (lua_State *L)
 static int L_GetCustomColourBackground (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->GetCustomColourBackground (
-	              (short) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->GetCustomColourBackground (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_GetCustomColourBackground
 
@@ -1657,8 +1640,8 @@ static int L_SetCustomColourBackground (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->SetCustomColourBackground (
-      (short) my_checknumber (L, 1),  // WhichColour
-      (long) my_checknumber (L, 2)   // nNewValue
+      my_checknumber (L, 1),  // WhichColour
+      my_checknumber (L, 2)   // nNewValue
       );
   return 0;  // number of result fields
   } // end of L_SetCustomColourBackground
@@ -1670,9 +1653,7 @@ static int L_SetCustomColourBackground (lua_State *L)
 static int L_GetCustomColourText (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->GetCustomColourText (
-	              (short) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->GetCustomColourText (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_GetCustomColourText
 
@@ -1683,8 +1664,8 @@ static int L_SetCustomColourText (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->SetCustomColourText (
-      (short) my_checknumber (L, 1),  // WhichColour
-      (long) my_checknumber (L, 2)    // nNewValue
+      my_checknumber (L, 1),  // WhichColour
+      my_checknumber (L, 2)   // nNewValue
       );
   return 0;  // number of result fields
   } // end of L_SetCustomColourText
@@ -1699,7 +1680,7 @@ static int L_DatabaseOpen (lua_State *L)
   lua_pushnumber (L, pDoc->DatabaseOpen (
       my_checkstring (L, 1),  // Name
       my_checkstring (L, 2),  // FileName
-      (long) my_optnumber (L, 3, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE)  // Flags
+      my_optnumber (L, 3, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE)  // Flags
       ));
   return 1;  // number of result fields
   } // end of L_DatabaseOpen
@@ -1794,8 +1775,8 @@ static int L_DatabaseColumnName (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   BSTR str = pDoc->DatabaseColumnName (
-      my_checkstring (L, 1),         // Name
-      (long) my_checknumber (L, 2)   // Column
+      my_checkstring (L, 1),  // Name
+      my_checknumber (L, 2)   // Column
       );
   return pushBstr (L, str);  // number of result fields
   } // end of L_DatabaseColumnName
@@ -1807,8 +1788,8 @@ static int L_DatabaseColumnText (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   BSTR str = pDoc->DatabaseColumnText (
-      my_checkstring (L, 1),         // Name
-      (long) my_checknumber (L, 2)   // Column
+      my_checkstring (L, 1),  // Name
+      my_checknumber (L, 2)   // Column
       );
   return pushBstr (L, str);  // number of result fields
   } // end of L_DatabaseColumnText
@@ -1820,8 +1801,8 @@ static int L_DatabaseColumnValue (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->DatabaseColumnValue (
-      my_checkstring (L, 1),         // Name
-      (long) my_checknumber (L, 2)   // Column
+      my_checkstring (L, 1),  // Name
+      my_checknumber (L, 2)   // Column
       );
   return pushVariant (L, v);  // number of result fields
   } // end of L_DatabaseColumnValue
@@ -1833,8 +1814,8 @@ static int L_DatabaseColumnType (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->DatabaseColumnType (
-      my_checkstring (L, 1),         // Name
-      (long) my_checknumber (L, 2)   // Column
+      my_checkstring (L, 1),  // Name
+      my_checknumber (L, 2)   // Column
       ));
   return 1;  // number of result fields
   } // end of L_DatabaseColumnType
@@ -1892,8 +1873,8 @@ static int L_DatabaseInfo (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->DatabaseInfo (
-      my_checkstring (L, 1),           // Name
-      (long) my_checknumber (L, 2)     // InfoType
+      my_checkstring (L, 1),    // Name
+      my_checknumber (L, 2)     // InfoType
     );
 
   return pushVariant (L, v);
@@ -2010,7 +1991,7 @@ static int L_DeleteLastMapItem (lua_State *L)
 static int L_DeleteLines (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  pDoc->DeleteLines ((long) my_checknumber (L, 1));
+  pDoc->DeleteLines (my_checknumber (L, 1));
   return 0;  // number of result fields
   } // end of L_DeleteLines
 
@@ -2166,7 +2147,7 @@ static int L_DoAfterSpecial (lua_State *L)
   lua_pushnumber (L, pDoc->DoAfterSpecial (
                   my_checknumber (L, 1),  // Seconds
                   my_checkstring (L, 2),  // NoteText
-                  (short) my_checknumber (L, 3)   // SendTo
+                  my_checknumber (L, 3)   // SendTo
                   ));
   return 1;  // number of result fields
   } // end of L_DoAfterSpecial
@@ -2359,7 +2340,7 @@ static int L_EnableTriggerGroup (lua_State *L)
 static int L_ErrorDesc (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  BSTR str = pDoc->ErrorDesc ((long) my_checknumber (L, 1));
+  BSTR str = pDoc->ErrorDesc (my_checknumber (L, 1));
   return pushBstr (L, str);  // number of result fields
   } // end of L_ErrorDesc
 
@@ -2393,8 +2374,8 @@ static int L_ExportXML (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   BSTR str = pDoc->ExportXML (
-                  (short) my_checknumber (L, 1), // Type
-                  my_checkstring (L, 2)          // Name
+                  my_checknumber (L, 1), // Type
+                  my_checkstring (L, 2)  // Name
                   );
   return pushBstr (L, str);  // number of result fields
   } // end of L_ExportXML
@@ -2407,9 +2388,9 @@ static int L_FilterPixel (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->FilterPixel (
-            (long) my_checknumber (L, 1),     // Pixel
-            (short) my_checknumber (L, 2),    // Operation
-            my_checknumber (L, 3)             // Options
+            my_checknumber (L, 1),    // Pixel
+            my_checknumber (L, 2),    // Operation
+            my_checknumber (L, 3)     // Options
             ));
   return 1;  // number of result fields
   } // end of L_FilterPixel
@@ -2508,8 +2489,8 @@ static int L_GetAliasInfo (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->GetAliasInfo (
-      my_checkstring (L, 1),          // Name
-      (short) my_checknumber (L, 2)   // Type
+      my_checkstring (L, 1),    // Name
+      my_checknumber (L, 2)     // Type
     );
   return pushVariant (L, v);  // number of result fields
   } // end of L_GetAliasInfo
@@ -2584,8 +2565,8 @@ static int L_GetChatInfo (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->GetChatInfo (
-      (long) my_checknumber (L, 1),     // ChatID 
-      (short) my_checknumber (L, 2)     // InfoType
+      my_checknumber (L, 1),    // ChatID 
+      my_checknumber (L, 2)     // InfoType
     );
   return pushVariant (L, v);  // number of result fields
   } // end of L_GetChatInfo
@@ -2608,8 +2589,8 @@ static int L_GetChatOption (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->GetChatOption (
-      (long) my_checknumber (L, 1),    // ChatID 
-      my_checkstring (L, 2)            // OptionName
+      my_checknumber (L, 1),    // ChatID 
+      my_checkstring (L, 2)     // OptionName
     );
   return pushVariant (L, v);  // number of result fields
   } // end of L_GetChatOption
@@ -2642,7 +2623,7 @@ static int L_GetCommandList (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->GetCommandList (
-      (long) my_checknumber (L, 1) // Count
+      my_checknumber (L, 1) // Count
     );
   return pushVariant (L, v);  // number of result fields
   } // end of L_GetCommandList
@@ -2679,7 +2660,7 @@ static int L_GetCustomColourName (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
 
   BSTR str = pDoc->GetCustomColourName (
-      (short) my_checknumber (L, 1)  // WhichColour
+      my_checknumber (L, 1)  // WhichColour
       );
   return pushBstr (L, str);  // number of result fields
   } // end of L_GetCustomColourName
@@ -2702,7 +2683,7 @@ static int L_GetDefaultValue (lua_State *L)
 static int L_GetDeviceCaps (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->GetDeviceCaps ((long) my_checknumber (L, 1)));
+  lua_pushnumber (L, pDoc->GetDeviceCaps (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_GetDeviceCaps
 
@@ -2785,7 +2766,7 @@ static int L_GetInfo (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->GetInfo (
-            (long) my_checknumber (L, 1)   // InfoType
+            my_checknumber (L, 1)   // InfoType
             );
   return pushVariant (L, v);
   } // end of L_GetInfo
@@ -2818,8 +2799,8 @@ static int L_GetLineCount (lua_State *L)
 static int L_GetLineInfo (lua_State *L)
   {
   CMUSHclientDoc * pDoc = doc (L);  // must do this first
-  int iLine = (int) my_checknumber (L, 1);
-  int iType = (int) my_optnumber (L, 2, 0);
+  int iLine = my_checknumber (L, 1);
+  int iType = my_optnumber (L, 2, 0);
   
   if (iType == 0)
     {
@@ -2943,7 +2924,7 @@ static int L_GetNotepadWindowPosition (lua_State *L)
 static int L_GetWorldWindowPosition (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  int which = (int) my_optnumber (L, 1, 1);  // Which
+  int which = my_optnumber (L, 1, 1);  // Which
   bool screen = optboolean (L, 2, 0);  // client or screen
   int count = 0;
 
@@ -2996,9 +2977,7 @@ static int L_MakeRegularExpression (lua_State *L)
 static int L_GetMapColour (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->GetMapColour (
-	              (long) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->GetMapColour (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_GetMapColour
 
@@ -3019,7 +2998,7 @@ static int L_GetMappingItem (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->GetMappingItem (
-            (long) my_checknumber (L, 1)   // Item
+            my_checknumber (L, 1)   // Item
             );
   return pushVariant (L, v);
   } // end of L_GetMappingItem
@@ -3110,9 +3089,7 @@ static int L_GetOptionList (lua_State *L)
 static int L_PickColour (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->PickColour (
-	              (long) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->PickColour (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_PickColour
 
@@ -3126,7 +3103,7 @@ static int L_GetPluginAliasInfo (lua_State *L)
   VARIANT v = pDoc->GetPluginAliasInfo (
       my_checkstring (L, 1),    // PluginID
       my_checkstring (L, 2),    // Name
-      (short) my_checknumber (L, 3)     // Type
+      my_checknumber (L, 3)     // Type
     );
   return pushVariant (L, v);  // number of result fields
   } // end of L_GetPluginAliasInfo
@@ -3178,8 +3155,8 @@ static int L_GetPluginInfo (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->GetPluginInfo (
-      my_checkstring (L, 1),            // PluginID
-      (short) my_checknumber (L, 2)     // Type
+      my_checkstring (L, 1),    // PluginID
+      my_checknumber (L, 2)     // Type
     );
   return pushVariant (L, v);  // number of result fields
   } // end of L_GetPluginInfo
@@ -3212,9 +3189,9 @@ static int L_GetPluginTimerInfo (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->GetPluginTimerInfo (
-      my_checkstring (L, 1),            // PluginID
-      my_checkstring (L, 2),            // Name
-      (short) my_checknumber (L, 3)     // Type
+      my_checkstring (L, 1),    // PluginID
+      my_checkstring (L, 2),    // Name
+      my_checknumber (L, 3)     // Type
     );
   return pushVariant (L, v);  // number of result fields
   } // end of L_GetPluginTimerInfo
@@ -3255,9 +3232,9 @@ static int L_GetPluginTriggerInfo (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->GetPluginTriggerInfo (
-      my_checkstring (L, 1),            // PluginID
-      my_checkstring (L, 2),            // Name
-      (short) my_checknumber (L, 3)     // Type
+      my_checkstring (L, 1),    // PluginID
+      my_checkstring (L, 2),    // Name
+      my_checknumber (L, 3)     // Type
     );
   return pushVariant (L, v);  // number of result fields
   } // end of L_GetPluginTriggerInfo
@@ -3353,7 +3330,7 @@ static int L_GetQueue (lua_State *L)
 //----------------------------------------
 static int L_GetReceivedBytes (lua_State *L)
   {
-  lua_pushnumber (L, (lua_Number) (doc (L)->m_nBytesIn) );
+  lua_pushnumber (L, doc (L)->m_nBytesIn);
   return 1;  // number of result fields
   } // end of L_GetReceivedBytes
 
@@ -3364,7 +3341,7 @@ static int L_GetReceivedBytes (lua_State *L)
 static int L_GetRecentLines (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  BSTR str = pDoc->GetRecentLines ((long) my_checknumber (L, 1));
+  BSTR str = pDoc->GetRecentLines (my_checknumber (L, 1));
   return pushBstr (L, str);  // number of result fields
   } // end of L_GetRecentLines
 
@@ -3424,7 +3401,7 @@ static int L_GetSelectionStartLine (lua_State *L)
 //----------------------------------------
 static int L_GetSentBytes (lua_State *L)
   {
-  lua_pushnumber (L, (lua_Number) (doc (L)->m_nBytesOut) );
+  lua_pushnumber (L, doc (L)->m_nBytesOut);
   return 1;  // number of result fields
   } // end of L_GetSentBytes
 
@@ -3434,9 +3411,7 @@ static int L_GetSentBytes (lua_State *L)
 //----------------------------------------
 static int L_GetSoundStatus (lua_State *L)
   {
-  lua_pushnumber (L, doc (L)->GetSoundStatus (
-	              (short) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, doc (L)->GetSoundStatus (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_GetSoundStatus
 
@@ -3533,9 +3508,9 @@ static int L_GetStyleInfo (lua_State *L)
   {
 
   CMUSHclientDoc * pDoc = doc (L);  // must do this first
-  int iLine = (int) my_checknumber (L, 1);            // LineNumber  
-  int iStyleNumber = (int) my_optnumber (L, 2, 0);    // StyleNumber 
-  int iType = (int) my_optnumber (L, 3, 0);           // InfoType    
+  int iLine = my_checknumber (L, 1);            // LineNumber  
+  int iStyleNumber = my_optnumber (L, 2, 0);    // StyleNumber 
+  int iType = my_optnumber (L, 3, 0);           // InfoType    
 
   CLine * pLine = NULL;
   CString strText;
@@ -3591,9 +3566,7 @@ static int L_GetStyleInfo (lua_State *L)
 static int L_GetSysColor (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->GetSysColor (
-	              (long) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->GetSysColor (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_GetSysColor
 
@@ -3603,9 +3576,7 @@ static int L_GetSysColor (lua_State *L)
 static int L_GetSystemMetrics (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->GetSystemMetrics (
-	              (long) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->GetSystemMetrics (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_GetSystemMetrics
 
@@ -3650,8 +3621,8 @@ static int L_GetTimerInfo (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->GetTimerInfo (
-      my_checkstring (L, 1),            // TimerName
-      (short) my_checknumber (L, 2)     // Type
+      my_checkstring (L, 1),    // TimerName
+      my_checknumber (L, 2)     // Type
     );
   return pushVariant (L, v);  // number of result fields
   } // end of L_GetTimerInfo
@@ -3725,8 +3696,8 @@ static int L_GetTriggerInfo (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->GetTriggerInfo (
-      my_checkstring (L, 1),            // TriggerName
-      (short) my_checknumber (L, 2)     // Type
+      my_checkstring (L, 1),    // TriggerName
+      my_checknumber (L, 2)     // Type
     );
   return pushVariant (L, v);  // number of result fields
   } // end of L_GetTriggerInfo
@@ -3777,8 +3748,8 @@ static int L_GetUdpPort (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->GetUdpPort (
-      (long) my_checknumber (L, 1),    // First
-      (long) my_checknumber (L, 2)     // Last
+      my_checknumber (L, 1),    // First
+      my_checknumber (L, 2)     // Last
     ));
   return 1;  // number of result fields
   } // end of L_GetUdpPort
@@ -4015,8 +3986,8 @@ static int L_InfoFont (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->InfoFont (
                     my_checkstring (L, 1),    // FontName
-                    (short) my_checknumber (L, 2),    // Size
-                    (short) my_checknumber (L, 3)     // Style
+                    my_checknumber (L, 2),    // Size
+                    my_checknumber (L, 3)     // Style
                     );
   return 0;  // number of result fields
   } // end of L_InfoFont
@@ -4177,8 +4148,8 @@ static int L_MapColour (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->MapColour (
-      (long) my_checknumber (L, 1),  // Original
-      (long) my_checknumber (L, 2)   // Replacement
+      my_checknumber (L, 1),  // Original
+      my_checknumber (L, 2)   // Replacement
       );
   return 0;  // number of result fields
   } // end of L_MapColour
@@ -4230,7 +4201,7 @@ static int L_Metaphone (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   BSTR str = pDoc->Metaphone (my_checkstring (L, 1),
-                              (short) my_optnumber (L, 2, 4));
+                              my_optnumber (L, 2, 4));
   return pushBstr (L, str);
   } // end of L_Metaphone
 
@@ -4240,9 +4211,7 @@ static int L_Metaphone (lua_State *L)
 static int L_GetNormalColour (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->GetNormalColour (
-	              (short) my_checknumber (L, 1)
-				  ));
+  lua_pushnumber (L, pDoc->GetNormalColour (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of GetNormalColour
 
@@ -4253,8 +4222,8 @@ static int L_SetNormalColour (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->SetNormalColour (
-      (short) my_checknumber (L, 1),  // WhichColour
-      (long) my_checknumber (L, 2)    // nNewValue
+      my_checknumber (L, 1),  // WhichColour
+      my_checknumber (L, 2)   // nNewValue
       );
   return 0;  // number of result fields
   } // end of SetNormalColour
@@ -4266,10 +4235,10 @@ static int L_MoveMainWindow (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->MoveMainWindow (
-      (long) my_checknumber (L, 1),  // Left
-      (long) my_checknumber (L, 2),  // Top
-      (long) my_checknumber (L, 3),  // Width
-      (long) my_checknumber (L, 4)   // Height
+      my_checknumber (L, 1),  // Left
+      my_checknumber (L, 2),  // Top
+      my_checknumber (L, 3),  // Width
+      my_checknumber (L, 4)   // Height
       );
   return 0;  // number of result fields
   } // end of L_MoveMainWindow
@@ -4281,11 +4250,11 @@ static int L_MoveWorldWindow (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->MoveWorldWindowX (
-      (long) my_checknumber (L, 1),  // Left
-      (long) my_checknumber (L, 2),  // Top
-      (long) my_checknumber (L, 3),  // Width
-      (long) my_checknumber (L, 4),   // Height
-      (short) my_optnumber (L, 5, 1)  // Which
+      my_checknumber (L, 1),  // Left
+      my_checknumber (L, 2),  // Top
+      my_checknumber (L, 3),  // Width
+      my_checknumber (L, 4),   // Height
+      my_optnumber (L, 5, 1)  // Which
       );
   return 0;  // number of result fields
   } // end of L_MoveWorldWindow
@@ -4298,10 +4267,10 @@ static int L_MoveNotepadWindow (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushboolean (L, pDoc->MoveNotepadWindow (
       my_checkstring (L, 1),  // title
-      (long) my_checknumber (L, 2),  // Left
-      (long) my_checknumber (L, 3),  // Top
-      (long) my_checknumber (L, 4),  // Width
-      (long) my_checknumber (L, 5)   // Height
+      my_checknumber (L, 2),  // Left
+      my_checknumber (L, 3),  // Top
+      my_checknumber (L, 4),  // Width
+      my_checknumber (L, 5)   // Height
       ));
   return 1;  // number of result fields
   } // end of L_MoveNotepadWindow
@@ -4327,7 +4296,7 @@ static int L_MtSrand (lua_State *L)
       if (!lua_isnumber (L, -1))
         luaL_error (L, "MtSrand table must consist of numbers");
 
-      v.push_back ((unsigned long) lua_tonumber (L, -1));
+      v.push_back (lua_tonumber (L, -1));
       } // end of extracting vector of keys
 
     if (v.size () == 0)
@@ -4336,7 +4305,7 @@ static int L_MtSrand (lua_State *L)
     init_by_array (&v [0], v.size ());
     }
   else
-    pDoc->MtSrand ((long) my_checknumber (L, 1));
+    pDoc->MtSrand (my_checknumber (L, 1));
   return 0;  // number of result fields
   } // end of L_MtSrand
 
@@ -4391,7 +4360,7 @@ static int L_SetNoteColour (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->SetNoteColour (
-      (short) my_checknumber (L, 1)   // nNewValue
+      my_checknumber (L, 1)   // nNewValue
       );
   return 0;  // number of result fields
   } // end of SetNoteColour
@@ -4413,7 +4382,7 @@ static int L_SetNoteColourBack (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->SetNoteColourBack (
-      (long) my_checknumber (L, 1)   // nNewValue
+      my_checknumber (L, 1)   // nNewValue
       );
   return 0;  // number of result fields
   } // end of SetNoteColourBack
@@ -4435,7 +4404,7 @@ static int L_SetNoteColourFore (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->SetNoteColourFore (
-      (long) my_checknumber (L, 1)   // nNewValue
+      my_checknumber (L, 1)   // nNewValue
       );
   return 0;  // number of result fields
   } // end of SetNoteColourFore
@@ -4462,8 +4431,8 @@ static int L_NoteColourRGB (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->NoteColourRGB (
-      (long) my_checknumber (L, 1),    // Foreground
-      (long) my_checknumber (L, 2)     // Background
+      my_checknumber (L, 1),    // Foreground
+      my_checknumber (L, 2)     // Background
       );
   return 0;  // number of result fields
   } // end of L_NoteColourRGB
@@ -4489,11 +4458,11 @@ static int L_NotepadFont (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->NotepadFont (
-        my_checkstring (L, 1),           // Title
-        my_checkstring (L, 2),           // FontName
-        (short) my_checknumber (L, 3),   // Size
-        (short) my_checknumber (L, 4),   // Style
-        (short) my_optnumber (L, 5, 0)   // Charset
+        my_checkstring (L, 1),   // Title
+        my_checkstring (L, 2),   // FontName
+        my_checknumber (L, 3),   // Size
+        my_checknumber (L, 4),   // Style
+        my_optnumber (L, 5, 0)   // Charset
                       ));
   return 1;  // number of result fields
   } // end of L_NotepadFont
@@ -4520,8 +4489,8 @@ static int L_NotepadSaveMethod (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->NotepadSaveMethod (
-        my_checkstring (L, 1),           // Title
-        (short) my_checknumber (L, 2)    // Method (0-2)
+        my_checkstring (L, 1),   // Title
+        my_checknumber (L, 2)    // Method (0-2)
                       ));
   return 1;  // number of result fields
   } // end of L_NotepadSaveMethod
@@ -4533,7 +4502,7 @@ static int L_NoteStyle (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->NoteStyle (
-      (short) my_checknumber (L, 1)    // Style
+      my_checknumber (L, 1)    // Style
       );
   return 0;  // number of result fields
   } // end of L_NoteStyle
@@ -4606,7 +4575,7 @@ static int L_PlaySound (lua_State *L)
   {
   CMUSHclientDoc * pDoc = doc (L);  // must do this first
   lua_pushnumber (L, pDoc->PlaySound (
-                  (short) my_checknumber (L, 1),  // Buffer
+                  my_checknumber (L, 1),  // Buffer
                   my_optstring (L, 2, ""),   // Filename
                   optboolean (L, 3, 0),    // Repeat
                   my_optnumber (L, 4, 0),  // Volume
@@ -4625,7 +4594,7 @@ static int L_PlaySoundMemory (lua_State *L)
   size_t  iBufferLength;
   sBuffer = luaL_checklstring (L, 2, &iBufferLength);
   lua_pushnumber (L, pDoc->PlaySoundHelper (
-                  (short) my_checknumber (L, 1),  // Buffer
+                  my_checknumber (L, 1),  // Buffer
                   NULL,                   // Filename
                   optboolean (L, 3, 0),   // Repeat
                   my_optnumber (L, 4, 0), // Volume
@@ -4851,7 +4820,7 @@ static int L_ReverseSpeedwalk (lua_State *L)
 static int L_RGBColourToName (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  BSTR str = pDoc->RGBColourToName ((long) my_checknumber (L, 1));
+  BSTR str = pDoc->RGBColourToName (my_checknumber (L, 1));
   return pushBstr (L, str);
   } // end of L_RGBColourToName
 
@@ -5038,7 +5007,7 @@ static int L_SetBackgroundColour (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SetBackgroundColour (
-      (long) my_checknumber (L, 1)     // RGB colour
+      my_checknumber (L, 1)     // RGB colour
       ));
   return 1;  // number of result fields
   } // end of L_SetBackgroundColour
@@ -5051,7 +5020,7 @@ static int L_SetBackgroundImage (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SetBackgroundImage (
       my_checkstring (L, 1),    // FileName
-      (short) my_checknumber (L, 2)     // mode
+      my_checknumber (L, 2)     // mode
       ));
   return 1;  // number of result fields
   } // end of L_SetBackgroundImage
@@ -5063,9 +5032,9 @@ static int L_SetChatOption (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SetChatOption (
-      (long) my_checknumber (L, 1),  // Chat ID
-      my_checkstring (L, 2),         // OptionName
-      get_option_value (L, 3)        // Value
+      my_checknumber (L, 1),    // Chat ID
+      my_checkstring (L, 2),    // OptionName
+      get_option_value (L, 3)   // Value
       ));
   return 1;  // number of result fields
   } // end of L_SetChatOption
@@ -5108,8 +5077,8 @@ static int L_SetCommandSelection (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SetCommandSelection (
-                    (long) my_checknumber (L, 1),   // First
-                    (long) my_checknumber (L, 2))); // Last
+                    my_checknumber (L, 1),   // First
+                    my_checknumber (L, 2))); // Last
   return 1;  // number of result fields
   } // end of L_SetCommandSelection
 
@@ -5119,8 +5088,7 @@ static int L_SetCommandSelection (lua_State *L)
 static int L_SetCommandWindowHeight (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  lua_pushnumber (L, pDoc->SetCommandWindowHeight (
-	              (short) my_checknumber (L, 1)));
+  lua_pushnumber (L, pDoc->SetCommandWindowHeight (my_checknumber (L, 1)));
   return 1;  // number of result fields
   } // end of L_SetCommandWindowHeight
 
@@ -5131,8 +5099,8 @@ static int L_SetCustomColourName (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber(L, pDoc->SetCustomColourName (
-      (short) my_checknumber (L, 1),  // WhichColour
-      my_checkstring (L, 2)           // Name
+      my_checknumber (L, 1),  // WhichColour
+      my_checkstring (L, 2)   // Name
       ));
   return 1;  // number of result fields
   } // end of L_SetCustomColourName
@@ -5155,8 +5123,8 @@ static int L_SetForegroundImage (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SetForegroundImage (
-      my_checkstring (L, 1),            // FileName
-      (short) my_checknumber (L, 2)     // mode
+      my_checkstring (L, 1),    // FileName
+      my_checknumber (L, 2)     // mode
       ));
   return 1;  // number of result fields
   } // end of L_SetForegroundImage
@@ -5169,10 +5137,10 @@ static int L_SetInputFont (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->SetInputFont (
-      my_checkstring (L, 1),          // FontName
-      (short) my_checknumber (L, 2),  // PointSize
-      (short) my_checknumber (L, 3),  // Weight
-      (BOOL) my_optnumber (L, 4, 0)   // Italic
+      my_checkstring (L, 1),  // FontName
+      my_checknumber (L, 2),  // PointSize
+      my_checknumber (L, 3),  // Weight
+      my_optnumber (L, 4, 0)  // Italic
       );
   return 0;  // number of result fields
   } // end of L_SetInputFont
@@ -5207,7 +5175,7 @@ static int L_SetOption (lua_State *L)
 
   lua_pushnumber (L, pDoc->SetOption (
       my_checkstring (L, 1),    // OptionName
-      (long) option             // Value
+      option                    // Value
       ));
   return 1;  // number of result fields
   } // end of L_SetOption
@@ -5220,8 +5188,8 @@ static int L_SetOutputFont (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->SetOutputFont (
-      my_checkstring (L, 1),          // FontName
-      (short) my_checknumber (L, 2)   // PointSize
+      my_checkstring (L, 1),  // FontName
+      my_checknumber (L, 2)   // PointSize
       );
   return 0;  // number of result fields
   } // end of L_SetOutputFont
@@ -5233,7 +5201,7 @@ static int L_SetScroll (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SetScroll (
-      (long) my_checknumber (L, 1),    // position
+      my_checknumber (L, 1),    // position
       optboolean (L, 2, 1)      // enabled flag, defaults to true
       ));
   return 1;  // number of result fields
@@ -5271,11 +5239,11 @@ static int L_SetToolBarPosition (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SetToolBarPosition (
-      (short) my_checknumber (L, 1),   // Which
-      optboolean (L, 2, 0),            // Float
-      (short) my_checknumber (L, 3),   // Side
-      (long) my_checknumber (L, 4),    // Top
-      (long) my_checknumber (L, 5)     // Left
+      my_checknumber (L, 1),    // Which
+      optboolean (L, 2, 0),     // Float
+      my_checknumber (L, 3),    // Side
+      my_checknumber (L, 4),    // Top
+      my_checknumber (L, 5)     // Left
       ));
   return 1;  // number of result fields
   } // end of L_SetToolBarPosition
@@ -5314,7 +5282,7 @@ static int L_SetVariable (lua_State *L)
 static int L_SetWorldWindowStatus (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  pDoc->SetWorldWindowStatus ((short) my_checknumber (L, 1));
+  pDoc->SetWorldWindowStatus (my_checknumber (L, 1));
   return 0;  // number of result fields
   } // end of L_SetWorldWindowStatus
 
@@ -5378,7 +5346,7 @@ static int L_SetSpeedWalkDelay (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   pDoc->SetSpeedWalkDelay (
-      (short) my_checknumber (L, 1)   // nNewValue
+      my_checknumber (L, 1)   // nNewValue
       );
   return 0;  // number of result fields
   } // end of SetSpeedWalkDelay
@@ -5400,8 +5368,8 @@ static int L_SpellCheckCommand (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->SpellCheckCommand (
-            (long) my_optnumber (L, 1, -1),  // Start column
-            (long) my_optnumber (L, 2, -1)   // End column
+            my_optnumber (L, 1, -1),  // Start column
+            my_optnumber (L, 2, -1)   // End column
             ));
   return 1;  // number of result fields
   } // end of SpellCheckCommand
@@ -5435,8 +5403,7 @@ static int L_StripANSI (lua_State *L)
 static int L_StopSound (lua_State *L)
   {
   CMUSHclientDoc * pDoc = doc (L);  // must do this first
-  lua_pushnumber (L, pDoc->StopSound (
-	              (short) my_optnumber (L, 1, 0)));   // Buffer
+  lua_pushnumber (L, pDoc->StopSound (my_optnumber (L, 1, 0)));   // Buffer
   return 1;  // number of result fields
   } // end of L_StopSound
 
@@ -5458,15 +5425,15 @@ static int L_TextRectangle (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->TextRectangle (
-            (long) my_checknumber (L, 1),    // Left
-            (long) my_checknumber (L, 2),    // Top
-            (long) my_checknumber (L, 3),    // Right
-            (long) my_checknumber (L, 4),    // Bottom
-            (long) my_checknumber (L, 5),    // BorderOffset
-            (long) my_checknumber (L, 6),    // BorderColour
-            (long) my_checknumber (L, 7),    // BorderWidth
-            (long) my_checknumber (L, 8),    // OutsideFillColour
-            (long) my_checknumber (L, 9)     // OutsideFillStyle
+            my_checknumber (L, 1),    // Left
+            my_checknumber (L, 2),    // Top
+            my_checknumber (L, 3),    // Right
+            my_checknumber (L, 4),    // Bottom
+            my_checknumber (L, 5),    // BorderOffset
+            my_checknumber (L, 6),    // BorderColour
+            my_checknumber (L, 7),    // BorderWidth
+            my_checknumber (L, 8),    // OutsideFillColour
+            my_checknumber (L, 9)     // OutsideFillStyle
             ));
   return 1;  // number of result fields
   } // end of L_TextRectangle
@@ -5533,8 +5500,8 @@ static int L_Transparency (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushboolean (L, pDoc->Transparency (
-          (long) my_checknumber (L, 1),    // Key
-          (short) my_checknumber (L, 2)    // Amount
+          my_checknumber (L, 1),    // Key
+          my_checknumber (L, 2)    // Amount
       ));
   return 1;  // number of result fields
   } // end of L_Transparency
@@ -5558,9 +5525,9 @@ static int L_UdpListen (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->UdpListen (
-            my_checkstring (L, 1),          // IP
-            (short) my_checknumber (L, 2),  // Port
-            my_checkstring (L, 3)           // Script
+            my_checkstring (L, 1),  // IP
+            my_checknumber (L, 2),  // Port
+            my_checkstring (L, 3)   // Script
             ));
   return 1;  // number of result fields
   } // end of L_UdpListen
@@ -5583,7 +5550,7 @@ static int L_UdpSend (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->UdpSend (
             my_checkstring (L, 1),  // IP
-            (short) my_checknumber (L, 2),  // Port
+            my_checknumber (L, 2),  // Port
             my_checkstring (L, 3)   // Text
             ));
   return 1;  // number of result fields
@@ -5607,18 +5574,18 @@ static int L_WindowAddHotspot (lua_State *L)
   lua_pushnumber (L, pDoc->WindowAddHotspot (
             my_checkstring (L, 1),  // Name
             my_checkstring (L, 2),  // HotspotId
-            (long) my_checknumber (L, 3),  // Left
-            (long) my_checknumber (L, 4),  // Top
-            (long) my_checknumber (L, 5),  // Right
-            (long) my_checknumber (L, 6),  // Bottom
+            my_checknumber (L, 3),  // Left
+            my_checknumber (L, 4),  // Top
+            my_checknumber (L, 5),  // Right
+            my_checknumber (L, 6),  // Bottom
             my_optstring (L, 7, ""),  // MouseOver
             my_optstring (L, 8, ""),  // CancelMouseOver
             my_optstring (L, 9, ""),  // MouseDown
             my_optstring (L, 10, ""), // CancelMouseDown
             my_optstring (L, 11, ""), // MouseUp
             my_optstring (L, 12, ""), // TooltipText
-            (long) my_optnumber (L, 13, 0),  // Cursor
-            (long) my_optnumber (L, 14, 0)   // Flags
+            my_optnumber (L, 13, 0),  // Cursor
+            my_optnumber (L, 14, 0)   // Flags
 
             ));
   return 1;  // number of result fields
@@ -5632,17 +5599,17 @@ static int L_WindowArc (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowArc (
             my_checkstring (L, 1),  // Name
-            (long) my_checknumber (L, 2),  // Left
-            (long) my_checknumber (L, 3),  // Top
-            (long) my_checknumber (L, 4),  // Right
-            (long) my_checknumber (L, 5),  // Bottom
-            (long) my_checknumber (L, 6),  // x1
-            (long) my_checknumber (L, 7),  // y2
-            (long) my_checknumber (L, 8),  // x1
-            (long) my_checknumber (L, 9),  // y2
-            (long) my_checknumber (L, 10),  // PenColour
-            (long) my_checknumber (L, 11),  // PenStyle
-            (long) my_checknumber (L, 12)   // PenWidth
+            my_checknumber (L, 2),  // Left
+            my_checknumber (L, 3),  // Top
+            my_checknumber (L, 4),  // Right
+            my_checknumber (L, 5),  // Bottom
+            my_checknumber (L, 6),  // x1
+            my_checknumber (L, 7),  // y2
+            my_checknumber (L, 8),  // x1
+            my_checknumber (L, 9),  // y2
+            my_checknumber (L, 10),  // PenColour
+            my_checknumber (L, 11),  // PenStyle
+            my_checknumber (L, 12)   // PenWidth
             ));
   return 1;  // number of result fields
   } // end of L_WindowArc
@@ -5656,9 +5623,9 @@ static int L_WindowBezier (lua_State *L)
   lua_pushnumber (L, pDoc->WindowBezier (
             my_checkstring (L, 1),  // Name
             my_checkstring (L, 2),  // Points
-            (long) my_checknumber (L, 3),  // PenColour
-            (long) my_checknumber (L, 4),  // PenStyle
-            (long) my_checknumber (L, 5)   // PenWidth
+            my_checknumber (L, 3),  // PenColour
+            my_checknumber (L, 4),  // PenStyle
+            my_checknumber (L, 5)   // PenWidth
             ));
   return 1;  // number of result fields
   } // end of L_WindowBezier
@@ -5672,16 +5639,16 @@ static int L_WindowBlendImage (lua_State *L)
   lua_pushnumber (L, pDoc->WindowBlendImage (
             my_checkstring (L, 1),    // Name
             my_checkstring (L, 2),    // ImageId
-            (long) my_checknumber (L, 3),    // Left
-            (long) my_checknumber (L, 4),    // Top
-            (long) my_checknumber (L, 5),    // Right
-            (long) my_checknumber (L, 6),    // Bottom
-            (short) my_checknumber (L, 7),   // Mode
+            my_checknumber (L, 3),    // Left
+            my_checknumber (L, 4),    // Top
+            my_checknumber (L, 5),    // Right
+            my_checknumber (L, 6),    // Bottom
+            my_checknumber (L, 7),    // Mode
             my_optnumber (L, 8, 1),   // Opacity
-            (long) my_optnumber (L, 9, 0),   // SrcLeft
-            (long) my_optnumber (L, 10, 0),  // SrcTop
-            (long) my_optnumber (L, 11, 0),  // SrcRight
-            (long) my_optnumber (L, 12, 0)   // SrcBottom
+            my_optnumber (L, 9, 0),   // SrcLeft
+            my_optnumber (L, 10, 0),  // SrcTop
+            my_optnumber (L, 11, 0),  // SrcRight
+            my_optnumber (L, 12, 0)   // SrcBottom
             ));
   return 1;  // number of result fields
   } // end of L_WindowBlendImage
@@ -5694,20 +5661,20 @@ static int L_WindowCircleOp (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowCircleOp (
             my_checkstring (L, 1),    // Name
-            (short) my_checknumber (L, 2),   // Action
-            (long) my_checknumber (L, 3),    // Left
-            (long) my_checknumber (L, 4),    // Top
-            (long) my_checknumber (L, 5),    // Right
-            (long) my_checknumber (L, 6),    // Bottom
-            (long) my_checknumber (L, 7),    // PenColour
-            (long) my_checknumber (L, 8),    // PenStyle
-            (long) my_checknumber (L, 9),    // PenWidth
-            (long) my_checknumber (L, 10),   // BrushColour
-            (long) my_optnumber (L, 11, 0),  // BrushStyle
-            (long) my_optnumber (L, 12, 0),  // Extra1
-            (long) my_optnumber (L, 13, 0),  // Extra2
-            (long) my_optnumber (L, 14, 0),  // Extra3
-            (long) my_optnumber (L, 15, 0)   // Extra4
+            my_checknumber (L, 2),    // Action
+            my_checknumber (L, 3),    // Left
+            my_checknumber (L, 4),    // Top
+            my_checknumber (L, 5),    // Right
+            my_checknumber (L, 6),    // Bottom
+            my_checknumber (L, 7),    // PenColour
+            my_checknumber (L, 8),    // PenStyle
+            my_checknumber (L, 9),    // PenWidth
+            my_checknumber (L, 10),   // BrushColour
+            my_optnumber (L, 11, 0),  // BrushStyle
+            my_optnumber (L, 12, 0),  // Extra1
+            my_optnumber (L, 13, 0),  // Extra2
+            my_optnumber (L, 14, 0),  // Extra3
+            my_optnumber (L, 15, 0)   // Extra4
             ));
   return 1;  // number of result fields
   } // end of L_WindowCircleOp
@@ -5720,13 +5687,13 @@ static int L_WindowCreate (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowCreate (
       my_checkstring (L, 1),    // Name
-      (long) my_checknumber (L, 2),    // Left
-      (long) my_checknumber (L, 3),    // Top
-      (long) my_checknumber (L, 4),    // Width
-      (long) my_checknumber (L, 5),    // Height
-      (short) my_checknumber (L, 6),   // Position
-      (long) my_checknumber (L, 7),    // Flags
-      (long) my_checknumber (L, 8)     // Background Colour
+      my_checknumber (L, 2),    // Left
+      my_checknumber (L, 3),    // Top
+      my_checknumber (L, 4),    // Width
+      my_checknumber (L, 5),    // Height
+      my_checknumber (L, 6),    // Position
+      my_checknumber (L, 7),    // Flags
+      my_checknumber (L, 8)     // Background Colour
     ));
 
   return 1;  // number of result fields
@@ -5741,14 +5708,14 @@ static int L_WindowCreateImage (lua_State *L)
   lua_pushnumber (L, pDoc->WindowCreateImage (
       my_checkstring (L, 1),    // Name
       my_checkstring (L, 2),    // ImageId
-      (long) my_checknumber (L, 3),    // Row1
-      (long) my_checknumber (L, 4),    // Row2
-      (long) my_checknumber (L, 5),    // Row3
-      (long) my_checknumber (L, 6),    // Row4
-      (long) my_checknumber (L, 7),    // Row5
-      (long) my_checknumber (L, 8),    // Row6
-      (long) my_checknumber (L, 9),    // Row7
-      (long) my_checknumber (L, 10)    // Row8
+      my_checknumber (L, 3),    // Row1
+      my_checknumber (L, 4),    // Row2
+      my_checknumber (L, 5),    // Row3
+      my_checknumber (L, 6),    // Row4
+      my_checknumber (L, 7),    // Row5
+      my_checknumber (L, 8),    // Row6
+      my_checknumber (L, 9),    // Row7
+      my_checknumber (L, 10)    // Row8
     ));
 
   return 1;  // number of result fields
@@ -5802,7 +5769,7 @@ static int L_WindowDragHandler (lua_State *L)
             my_checkstring (L, 2),    // HotspotId
             my_optstring (L, 3, ""),  // MoveCallback
             my_optstring (L, 4, ""),  // ReleaseCallback
-            (long) my_optnumber (L, 5, 0)    // Flags
+            my_optnumber (L, 5, 0)    // Flags
             ));
   return 1;  // number of result fields
   } // end of L_WindowDragHandler
@@ -5816,15 +5783,15 @@ static int L_WindowDrawImage (lua_State *L)
   lua_pushnumber (L, pDoc->WindowDrawImage (
             my_checkstring (L, 1),    // Name
             my_checkstring (L, 2),    // ImageId
-            (long) my_checknumber (L, 3),    // Left
-            (long) my_checknumber (L, 4),    // Top
-            (long) my_checknumber (L, 5),    // Right
-            (long) my_checknumber (L, 6),    // Bottom
-            (short) my_optnumber (L, 7, 1),  // Mode
-            (long) my_optnumber (L, 8, 0),   // SrcLeft
-            (long) my_optnumber (L, 9, 0),   // SrcTop
-            (long) my_optnumber (L, 10, 0),  // SrcRight
-            (long) my_optnumber (L, 11, 0)   // SrcBottom
+            my_checknumber (L, 3),    // Left
+            my_checknumber (L, 4),    // Top
+            my_checknumber (L, 5),    // Right
+            my_checknumber (L, 6),    // Bottom
+            my_optnumber (L, 7, 1),   // Mode
+            my_optnumber (L, 8, 0),   // SrcLeft
+            my_optnumber (L, 9, 0),   // SrcTop
+            my_optnumber (L, 10, 0),  // SrcRight
+            my_optnumber (L, 11, 0)   // SrcBottom
             ));
   return 1;  // number of result fields
   } // end of L_WindowDrawImage
@@ -5838,13 +5805,13 @@ static int L_WindowDrawImageAlpha (lua_State *L)
   lua_pushnumber (L, pDoc->WindowDrawImageAlpha (
             my_checkstring (L, 1),    // Name
             my_checkstring (L, 2),    // ImageId
-            (long) my_checknumber (L, 3),    // Left
-            (long) my_checknumber (L, 4),    // Top
-            (long) my_checknumber (L, 5),    // Right
-            (long) my_checknumber (L, 6),    // Bottom
+            my_checknumber (L, 3),    // Left
+            my_checknumber (L, 4),    // Top
+            my_checknumber (L, 5),    // Right
+            my_checknumber (L, 6),    // Bottom
             my_optnumber (L, 7, 1),   // Opacity
-            (long) my_optnumber (L, 8, 0),   // SrcLeft
-            (long) my_optnumber (L, 9, 0)    // SrcTop
+            my_optnumber (L, 8, 0),   // SrcLeft
+            my_optnumber (L, 9, 0)    // SrcTop
             ));
   return 1;  // number of result fields
   } // end of L_WindowDrawImageAlpha
@@ -5857,11 +5824,11 @@ static int L_WindowFilter (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowFilter (
             my_checkstring (L, 1),    // Name
-            (long) my_checknumber (L, 2),    // Left
-            (long) my_checknumber (L, 3),    // Top
-            (long) my_checknumber (L, 4),    // Right
-            (long) my_checknumber (L, 5),    // Bottom
-            (short) my_checknumber (L, 6),   // Operation
+            my_checknumber (L, 2),    // Left
+            my_checknumber (L, 3),    // Top
+            my_checknumber (L, 4),    // Right
+            my_checknumber (L, 5),    // Bottom
+            my_checknumber (L, 6),    // Operation
             my_checknumber (L, 7)     // Options
             ));
   return 1;  // number of result fields
@@ -5882,8 +5849,8 @@ static int L_WindowFont (lua_State *L)
       optboolean (L, 6, 0),    // Italic
       optboolean (L, 7, 0),    // Underline
       optboolean (L, 8, 0),    // Strikeout
-      (short) my_optnumber (L, 9, DEFAULT_CHARSET),  // Charset
-      (short) my_optnumber (L, 10, FF_DONTCARE)  // PitchAndFamily
+      my_optnumber (L, 9, DEFAULT_CHARSET),  // Charset
+      my_optnumber (L, 10, FF_DONTCARE)  // PitchAndFamily
     ));
 
   return 1;  // number of result fields
@@ -5898,7 +5865,7 @@ static int L_WindowFontInfo (lua_State *L)
   VARIANT v = pDoc->WindowFontInfo (
       my_checkstring (L, 1),    // Name
       my_checkstring (L, 2),    // FontId
-      (long) my_checknumber (L, 3)     // InfoType
+      my_checknumber (L, 3)     // InfoType
     );
 
   return pushVariant (L, v);
@@ -5923,12 +5890,12 @@ static int L_WindowGetImageAlpha (lua_State *L)
   lua_pushnumber (L, pDoc->WindowGetImageAlpha (
             my_checkstring (L, 1),    // Name
             my_checkstring (L, 2),    // ImageId
-            (long) my_checknumber (L, 3),    // Left
-            (long) my_checknumber (L, 4),    // Top
-            (long) my_checknumber (L, 5),    // Right
-            (long) my_checknumber (L, 6),    // Bottom
-            (long) my_optnumber (L, 7, 0),   // SrcLeft
-            (long) my_optnumber (L, 8, 0)    // SrcTop
+            my_checknumber (L, 3),    // Left
+            my_checknumber (L, 4),    // Top
+            my_checknumber (L, 5),    // Right
+            my_checknumber (L, 6),    // Bottom
+            my_optnumber (L, 7, 0),   // SrcLeft
+            my_optnumber (L, 8, 0)    // SrcTop
             ));
   return 1;  // number of result fields
   } // end of L_WindowGetImageAlpha
@@ -5941,8 +5908,8 @@ static int L_WindowGetPixel (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowGetPixel (
             my_checkstring (L, 1),  // Name
-            (long) my_checknumber (L, 2),  // x
-            (long) my_checknumber (L, 3)   // y
+            my_checknumber (L, 2),  // x
+            my_checknumber (L, 3)   // y
             ));
   return 1;  // number of result fields
   } // end of L_WindowGetPixel
@@ -5954,14 +5921,14 @@ static int L_WindowGradient (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowGradient (
-            my_checkstring (L, 1),           // Name
-            (long) my_checknumber (L, 2),    // Left
-            (long) my_checknumber (L, 3),    // Top
-            (long) my_checknumber (L, 4),    // Right
-            (long) my_checknumber (L, 5),    // Bottom
-            (long) my_checknumber (L, 6),    // StartColour
-            (long) my_checknumber (L, 7),    // EndColour
-            (short) my_checknumber (L, 8)    // Mode
+            my_checkstring (L, 1),    // Name
+            my_checknumber (L, 2),    // Left
+            my_checknumber (L, 3),    // Top
+            my_checknumber (L, 4),    // Right
+            my_checknumber (L, 5),    // Bottom
+            my_checknumber (L, 6),    // StartColour
+            my_checknumber (L, 7),    // EndColour
+            my_checknumber (L, 8)     // Mode
             ));
   return 1;  // number of result fields
   } // end of L_WindowGradient
@@ -5975,7 +5942,7 @@ static int L_WindowHotspotInfo (lua_State *L)
   VARIANT v = pDoc->WindowHotspotInfo (
       my_checkstring (L, 1),    // Name
       my_checkstring (L, 2),    // HotspotId
-      (long) my_checknumber (L, 3)     // InfoType
+      my_checknumber (L, 3)     // InfoType
     );
 
   return pushVariant (L, v);
@@ -6030,7 +5997,7 @@ static int L_WindowImageInfo (lua_State *L)
   VARIANT v = pDoc->WindowImageInfo (
       my_checkstring (L, 1),    // Name
       my_checkstring (L, 2),    // ImageId
-      (long) my_checknumber (L, 3)     // InfoType
+      my_checknumber (L, 3)     // InfoType
     );
 
   return pushVariant (L, v);
@@ -6053,19 +6020,19 @@ static int L_WindowImageOp (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowImageOp (
-            my_checkstring (L, 1),           // Name
-            (short) my_checknumber (L, 2),   // Action
-            (long) my_checknumber (L, 3),    // Left
-            (long) my_checknumber (L, 4),    // Top
-            (long) my_checknumber (L, 5),    // Right
-            (long) my_checknumber (L, 6),    // Bottom
-            (long) my_checknumber (L, 7),    // PenColour
-            (long) my_checknumber (L, 8),    // PenStyle
-            (long) my_checknumber (L, 9),    // PenWidth
-            (long) my_checknumber (L, 10),   // BrushColour
-            my_checkstring (L, 11),          // ImageId
-            (long) my_optnumber (L, 12, 0),  // EllipseWidth
-            (long) my_optnumber (L, 13, 0)   // EllipseHeight
+            my_checkstring (L, 1),    // Name
+            my_checknumber (L, 2),    // Action
+            my_checknumber (L, 3),    // Left
+            my_checknumber (L, 4),    // Top
+            my_checknumber (L, 5),    // Right
+            my_checknumber (L, 6),    // Bottom
+            my_checknumber (L, 7),    // PenColour
+            my_checknumber (L, 8),    // PenStyle
+            my_checknumber (L, 9),    // PenWidth
+            my_checknumber (L, 10),   // BrushColour
+            my_checkstring (L, 11),   // ImageId
+            my_optnumber (L, 12, 0),  // EllipseWidth
+            my_optnumber (L, 13, 0)   // EllipseHeight
             ));
   return 1;  // number of result fields
   } // end of L_WindowImageOp
@@ -6077,8 +6044,8 @@ static int L_WindowInfo (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   VARIANT v = pDoc->WindowInfo (
-      my_checkstring (L, 1),           // Name
-      (long) my_checknumber (L, 2)     // InfoType
+      my_checkstring (L, 1),    // Name
+      my_checknumber (L, 2)     // InfoType
     );
 
   return pushVariant (L, v);
@@ -6092,13 +6059,13 @@ static int L_WindowLine (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowLine (
             my_checkstring (L, 1),  // Name
-            (long) my_checknumber (L, 2),  // x1
-            (long) my_checknumber (L, 3),  // y2
-            (long) my_checknumber (L, 4),  // x1
-            (long) my_checknumber (L, 5),  // y2
-            (long) my_checknumber (L, 6),  // PenColour
-            (long) my_checknumber (L, 7),  // PenStyle
-            (long) my_checknumber (L, 8)   // PenWidth
+            my_checknumber (L, 2),  // x1
+            my_checknumber (L, 3),  // y2
+            my_checknumber (L, 4),  // x1
+            my_checknumber (L, 5),  // y2
+            my_checknumber (L, 6),  // PenColour
+            my_checknumber (L, 7),  // PenStyle
+            my_checknumber (L, 8)   // PenWidth
             ));
   return 1;  // number of result fields
   } // end of L_WindowLine
@@ -6158,8 +6125,8 @@ static int L_WindowMenu (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   str = pDoc->WindowMenu (
       my_checkstring (L, 1),    // Name
-      (long) my_checknumber (L, 2),    // Left
-      (long) my_checknumber (L, 3),    // Top
+      my_checknumber (L, 2),    // Left
+      my_checknumber (L, 3),    // Top
       my_checkstring (L, 4)     // Items
      );
 
@@ -6176,16 +6143,16 @@ static int L_WindowMergeImageAlpha (lua_State *L)
             my_checkstring (L, 1),    // Name
             my_checkstring (L, 2),    // ImageId
             my_checkstring (L, 3),    // MaskId
-            (long) my_checknumber (L, 4),    // Left
-            (long) my_checknumber (L, 5),    // Top
-            (long) my_checknumber (L, 6),    // Right
-            (long) my_checknumber (L, 7),    // Bottom
-            (short) my_checknumber (L, 8),   // Mode
+            my_checknumber (L, 4),    // Left
+            my_checknumber (L, 5),    // Top
+            my_checknumber (L, 6),    // Right
+            my_checknumber (L, 7),    // Bottom
+            my_checknumber (L, 8),    // Mode
             my_optnumber (L, 9, 1),   // Opacity
-            (long) my_optnumber (L, 10, 0),  // SrcLeft
-            (long) my_optnumber (L, 11, 0),  // SrcTop
-            (long) my_optnumber (L, 12, 0),  // SrcRight
-            (long) my_optnumber (L, 13, 0)   // SrcBottom
+            my_optnumber (L, 10, 0),  // SrcLeft
+            my_optnumber (L, 11, 0),  // SrcTop
+            my_optnumber (L, 12, 0),  // SrcRight
+            my_optnumber (L, 13, 0)   // SrcBottom
             ));
   return 1;  // number of result fields
   } // end of L_WindowMergeImageAlpha
@@ -6200,10 +6167,10 @@ static int L_WindowMoveHotspot (lua_State *L)
   lua_pushnumber (L, pDoc->WindowMoveHotspot (
             my_checkstring (L, 1),  // Name
             my_checkstring (L, 2),  // HotspotId
-            (long) my_checknumber (L, 3),  // Left
-            (long) my_checknumber (L, 4),  // Top
-            (long) my_checknumber (L, 5),  // Right
-            (long) my_checknumber (L, 6)   // Bottom
+            my_checknumber (L, 3),  // Left
+            my_checknumber (L, 4),  // Top
+            my_checknumber (L, 5),  // Right
+            my_checknumber (L, 6)   // Bottom
             ));
   return 1;  // number of result fields
   } // end of L_WindowMoveHotspot
@@ -6217,11 +6184,11 @@ static int L_WindowPolygon (lua_State *L)
   lua_pushnumber (L, pDoc->WindowPolygon (
             my_checkstring (L, 1),  // Name
             my_checkstring (L, 2),  // Points
-            (long) my_checknumber (L, 3),  // PenColour
-            (long) my_checknumber (L, 4),  // PenStyle
-            (long) my_checknumber (L, 5),  // PenWidth
-            (long) my_checknumber (L, 6),  // BrushColour
-            (long) my_optnumber (L, 7, 0), // BrushStyle
+            my_checknumber (L, 3),  // PenColour
+            my_checknumber (L, 4),  // PenStyle
+            my_checknumber (L, 5),  // PenWidth
+            my_checknumber (L, 6),  // BrushColour
+            my_optnumber (L, 7, 0), // BrushStyle
             optboolean (L, 8, 0),   // Close
             optboolean (L, 9, 0)    // Winding
             ));
@@ -6236,10 +6203,10 @@ static int L_WindowPosition (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowPosition (
       my_checkstring (L, 1),    // Name
-      (long) my_checknumber (L, 2),    // Left
-      (long) my_checknumber (L, 3),    // Top
-      (short) my_checknumber (L, 4),   // Position
-      (long) my_checknumber (L, 5)     // Flags
+      my_checknumber (L, 2),    // Left
+      my_checknumber (L, 3),    // Top
+      my_checknumber (L, 4),    // Position
+      my_checknumber (L, 5)     // Flags
     ));
 
   return 1;  // number of result fields
@@ -6252,14 +6219,14 @@ static int L_WindowRectOp (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowRectOp (
-            my_checkstring (L, 1),         // Name
-            (short) my_checknumber (L, 2), // Action
-            (long) my_checknumber (L, 3),  // Left
-            (long) my_checknumber (L, 4),  // Top
-            (long) my_checknumber (L, 5),  // Right
-            (long) my_checknumber (L, 6),  // Bottom
-            (long) my_checknumber (L, 7),  // Colour1
-            (long) my_optnumber (L, 8, 0)  // Colour2
+            my_checkstring (L, 1),  // Name
+            my_checknumber (L, 2),  // Action
+            my_checknumber (L, 3),  // Left
+            my_checknumber (L, 4),  // Top
+            my_checknumber (L, 5),  // Right
+            my_checknumber (L, 6),  // Bottom
+            my_checknumber (L, 7),  // Colour1
+            my_optnumber (L, 8, 0)  // Colour2
             ));
   return 1;  // number of result fields
   } // end of L_WindowRectOp
@@ -6273,9 +6240,9 @@ static int L_WindowResize (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowResize (
       my_checkstring (L, 1),    // Name
-      (long) my_checknumber (L, 2),    // Width
-      (long) my_checknumber (L, 3),    // Height
-      (long) my_checknumber (L, 4)     // Background Colour
+      my_checknumber (L, 2),    // Width
+      my_checknumber (L, 3),    // Height
+      my_checknumber (L, 4)     // Background Colour
     ));
 
   return 1;  // number of result fields
@@ -6303,9 +6270,9 @@ static int L_WindowSetPixel (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowSetPixel (
             my_checkstring (L, 1),  // Name
-            (long) my_checknumber (L, 2),  // x
-            (long) my_checknumber (L, 3),  // y
-            (long) my_checknumber (L, 4)   // Colour
+            my_checknumber (L, 2),  // x
+            my_checknumber (L, 3),  // y
+            my_checknumber (L, 4)   // Colour
             ));
   return 1;  // number of result fields
   } // end of L_WindowSetPixel
@@ -6332,11 +6299,11 @@ static int L_WindowText (lua_State *L)
         my_checkstring (L, 1),    // Name
         my_checkstring (L, 2),    // Font
         my_checkstring (L, 3),    // Text
-        (long) my_checknumber (L, 4),    // Left
-        (long) my_checknumber (L, 5),    // Top
-        (long) my_checknumber (L, 6),    // Right
-        (long) my_checknumber (L, 7),    // Bottom
-        (long) my_checknumber (L, 8),    // Colour
+        my_checknumber (L, 4),    // Left
+        my_checknumber (L, 5),    // Top
+        my_checknumber (L, 6),    // Right
+        my_checknumber (L, 7),    // Bottom
+        my_checknumber (L, 8),    // Colour
         optboolean (L, 9, 0)     // Unicode
         ));
 
@@ -6366,15 +6333,15 @@ static int L_WindowTransformImage (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
   lua_pushnumber (L, pDoc->WindowTransformImage (
-            my_checkstring (L, 1),            // Name
-            my_checkstring (L, 2),            // ImageId
-            (float) my_checknumber (L, 3),    // Left
-            (float) my_checknumber (L, 4),    // Top
-            (short) my_checknumber (L, 5),    // Mode
-            (float) my_checknumber (L, 6),    // Mxx
-            (float) my_checknumber (L, 7),    // Mxy
-            (float) my_checknumber (L, 8),    // Myx
-            (float) my_checknumber (L, 9)     // Myy
+            my_checkstring (L, 1),    // Name
+            my_checkstring (L, 2),    // ImageId
+            my_checknumber (L, 3),    // Left
+            my_checknumber (L, 4),    // Top
+            my_checknumber (L, 5),    // Mode
+            my_checknumber (L, 6),    // Mxx
+            my_checknumber (L, 7),    // Mxy
+            my_checknumber (L, 8),    // Myx
+            my_checknumber (L, 9)     // Myy
             ));
   return 1;  // number of result fields
   } // end of L_WindowTransformImage

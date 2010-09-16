@@ -13499,8 +13499,7 @@ long CMUSHclientDoc::WindowCreateImage(LPCTSTR Name, LPCTSTR ImageId,
   if (it == m_MiniWindows.end ())
     return eNoSuchWindow;
 
-  return it->second->CreateImage (ImageId, (WORD) Row1, (WORD) Row2, (WORD) Row3,
-	                   (WORD) Row4, (WORD) Row5, (WORD) Row6, (WORD) Row7, (WORD) Row8);
+  return it->second->CreateImage (ImageId, Row1, Row2, Row3, Row4, Row5, Row6, Row7, Row8);
 }     // end of CMUSHclientDoc::WindowCreateImage
 
 

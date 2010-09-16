@@ -874,7 +874,7 @@ int myAtoF(const char *z, double *pResult);
 
 // colour stuff
 
-#define CLAMP(x) (((x) < 0) ? 0 : (x > 255) ? 255 : (unsigned char) (x))
+#define CLAMP(x) (((x) < 0) ? 0 : (x > 255) ? 255 : (x))
 
 
 // see: http://www.nathanm.com/photoshop-blending-math/

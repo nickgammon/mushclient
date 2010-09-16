@@ -160,8 +160,8 @@ int iResult = 0;
 
     case eColourHue:
       {
-      double hue1 = clr1.GetHue ();
-      double hue2 = clr2.GetHue ();
+      float hue1 = clr1.GetHue ();
+      float hue2 = clr2.GetHue ();
       if (hue1 < hue2)
         {
         iResult = -1;
@@ -177,16 +177,16 @@ int iResult = 0;
     // hue the same - fall through and compare saturation (then luminance)
     case eColourSaturation:
       {
-      double saturation1 = clr1.GetSaturation ();
-      double saturation2 = clr2.GetSaturation ();
+      float saturation1 = clr1.GetSaturation ();
+      float saturation2 = clr2.GetSaturation ();
       if (saturation1 < saturation2)
         iResult = -1;
       else if (saturation1 > saturation2)
         iResult = 1;
       else
         { // saturation the same - compare luminance
-        double luminance1 = clr1.GetLuminance ();
-        double luminance2 = clr2.GetLuminance ();
+        float luminance1 = clr1.GetLuminance ();
+        float luminance2 = clr2.GetLuminance ();
         if (luminance1 < luminance2)
           iResult = -1;
         else if (luminance1 > luminance2)
@@ -197,16 +197,16 @@ int iResult = 0;
 
     case eColourLuminance:
       {
-      double luminance1 = clr1.GetLuminance ();
-      double luminance2 = clr2.GetLuminance ();
+      float luminance1 = clr1.GetLuminance ();
+      float luminance2 = clr2.GetLuminance ();
       if (luminance1 < luminance2)
         iResult = -1;
       else if (luminance1 > luminance2)
         iResult = 1;
       else
         { // luminance the same - compare saturation
-        double saturation1 = clr1.GetSaturation ();
-        double saturation2 = clr2.GetSaturation ();
+        float saturation1 = clr1.GetSaturation ();
+        float saturation2 = clr2.GetSaturation ();
         if (saturation1 < saturation2)
           iResult = -1;
         else if (saturation1 > saturation2)
@@ -334,9 +334,9 @@ CColor clr;
 
   clr.SetColor (m_ctlSwatch.m_colour);
 
-double fHue = clr.GetHue ();
-double fSaturation = clr.GetSaturation ();
-double fLuminance = clr.GetLuminance ();
+float fHue = clr.GetHue ();
+float fSaturation = clr.GetSaturation ();
+float fLuminance = clr.GetLuminance ();
 
   CString strName;
 
@@ -549,7 +549,7 @@ LRESULT CColourPickerDlg::OnKickIdle(WPARAM, LPARAM)
 
 void CColourPickerDlg::OnRandom() 
 {
-  m_ctlSwatch.m_colour  = (COLORREF) (genrand () * (double) 0x1000000);
+  m_ctlSwatch.m_colour  = genrand () * (double) 0x1000000;
 	
   m_ctlSwatch.RedrawWindow ();
   ShowName ();

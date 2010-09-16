@@ -228,7 +228,7 @@ class CMiniWindow
               long EllipseWidth, long EllipseHeight);
 
   long CreateImage(LPCTSTR ImageId, 
-                   WORD Row1, WORD Row2, WORD Row3, WORD Row4, WORD Row5, WORD Row6, WORD Row7, WORD Row8);
+                   long Row1, long Row2, long Row3, long Row4, long Row5, long Row6, long Row7, long Row8);
 
   long BlendImage(LPCTSTR ImageId, 
                   long Left, long Top, long Right, long Bottom, 

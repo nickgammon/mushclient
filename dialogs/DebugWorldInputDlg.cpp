@@ -208,7 +208,7 @@ CInsertUnicodeDlg dlg;
 
 unsigned char utf8 [10];
 
-int iLen = _pcre_ord2utf8 ((int) dlg.m_iCode, utf8);
+int iLen = _pcre_ord2utf8 (dlg.m_iCode, utf8);
 
 
 CString strText;
