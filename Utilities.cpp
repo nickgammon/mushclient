@@ -255,6 +255,9 @@ bool CreateTextWindow (const char * sText,
                        const int iLines,
                        const int iNotepadType)
   {
+  // during startup, may not exist
+  if (App.m_pNormalDocTemplate == NULL)
+     return false;
 
   CTextDocument * pNewDoc = (CTextDocument *)
     App.m_pNormalDocTemplate->OpenDocumentFile(NULL);

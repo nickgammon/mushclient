@@ -1133,15 +1133,8 @@ SOURCE=.\pcre\pcre_info.c
 # Begin Source File
 
 SOURCE=.\pcre\pcre_maketables.c
-
-!IF  "$(CFG)" == "MUSHclient - Win32 Debug"
-
+# ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "MUSHclient - Win32 Release"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
