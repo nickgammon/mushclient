@@ -20,7 +20,6 @@
 #pragma warning (disable : 4663)  // C++ language change: to explicitly specialize class template yadda yadda
 #pragma warning (disable : 4706)  // assignment within conditional expression
 #pragma warning (disable : 4786)  // identifier was truncated to 'number' characters in the debug information
-#pragma warning (disable : 4800)  // forcing value to bool 'true' or 'false' (performance warning)
 
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers

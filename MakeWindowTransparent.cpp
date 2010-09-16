@@ -34,7 +34,7 @@ typedef DWORD (WINAPI *PSLWA)(HWND, DWORD, BYTE, DWORD);
 static PSLWA pSetLayeredWindowAttributes = NULL;
 static BOOL initialized = FALSE;
 
-bool MakeWindowTransparent(HWND hWnd, long key, const unsigned char factor)
+BOOL MakeWindowTransparent(HWND hWnd, long key, const unsigned char factor)
 {
 	/* First, see if we can get the API call we need. If we've tried
 	 * once, we don't need to try again. */
@@ -77,7 +77,7 @@ bool MakeWindowTransparent(HWND hWnd, long key, const unsigned char factor)
                                       flags);
 }
 
-bool MakeWindowTransparent(CWnd *w, long key, const unsigned char factor)
+BOOL MakeWindowTransparent(CWnd *w, long key, const unsigned char factor)
 {
 	HWND wnd = w->GetSafeHwnd();
 
