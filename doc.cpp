@@ -6043,7 +6043,7 @@ void CMUSHclientDoc::SendWindowSizes (const int iNewWidth)
 
       pmyView->GetTextRect (&r);
 
-      WORD height = (r.bottom - r.top - m_iPixelOffset) / m_FontHeight;
+      WORD height = (WORD) ((r.bottom - r.top - m_iPixelOffset) / m_FontHeight);
 
       // now tell them our size
       unsigned char p [] = { IAC, SB, TELOPT_NAWS, 

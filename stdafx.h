@@ -185,7 +185,7 @@ enum { BLACK = 0, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE };
 #define PLURALES(arg) (arg), (arg) == 1 ? "" : "es"
 
 // number of items in an array
-#define NUMITEMS(arg) (sizeof (arg) / sizeof (arg [0]))
+#define NUMITEMS(arg) ((unsigned int) (sizeof (arg) / sizeof (arg [0])))
 
 #define DEFAULT_CHAT_PORT 4050
 #define DEFAULT_CHAT_NAME "Name-not-set"
@@ -874,7 +874,7 @@ int myAtoF(const char *z, double *pResult);
 
 // colour stuff
 
-#define CLAMP(x) (((x) < 0) ? 0 : (x > 255) ? 255 : (x))
+#define CLAMP(x) (((x) < 0) ? 0 : (x > 255) ? 255 : (unsigned char) (x))
 
 
 // see: http://www.nathanm.com/photoshop-blending-math/
