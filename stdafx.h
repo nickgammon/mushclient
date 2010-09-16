@@ -185,7 +185,7 @@ enum { BLACK = 0, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE };
 #define PLURALES(arg) (arg), (arg) == 1 ? "" : "es"
 
 // number of items in an array
-#define NUMITEMS(arg) (sizeof (arg) / sizeof (arg [0]))
+#define NUMITEMS(arg) ((unsigned int) (sizeof (arg) / sizeof (arg [0])))
 
 #define DEFAULT_CHAT_PORT 4050
 #define DEFAULT_CHAT_NAME "Name-not-set"

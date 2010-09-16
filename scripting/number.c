@@ -36,10 +36,10 @@
 
 #include <stdio.h>
 #include "bcconfig.h"
-#include "number.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <ctype.h>/* Prototypes needed for external utility routines. */
+#include "number.h"
 
 #define bc_rt_warn rt_warn
 #define bc_rt_error rt_error
