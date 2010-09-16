@@ -3,7 +3,7 @@
 
 <muclient>
 <plugin
-   name="Sapi_speaker"
+   name="Text_To_Speech"
    author="Nick Gammon"
    id="463242566069ebfd1b379ec1"
    language="Lua"
