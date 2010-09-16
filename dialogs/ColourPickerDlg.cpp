@@ -160,8 +160,8 @@ int iResult = 0;
 
     case eColourHue:
       {
-      float hue1 = clr1.GetHue ();
-      float hue2 = clr2.GetHue ();
+      double hue1 = clr1.GetHue ();
+      double hue2 = clr2.GetHue ();
       if (hue1 < hue2)
         {
         iResult = -1;
@@ -177,16 +177,16 @@ int iResult = 0;
     // hue the same - fall through and compare saturation (then luminance)
     case eColourSaturation:
       {
-      float saturation1 = clr1.GetSaturation ();
-      float saturation2 = clr2.GetSaturation ();
+      double saturation1 = clr1.GetSaturation ();
+      double saturation2 = clr2.GetSaturation ();
       if (saturation1 < saturation2)
         iResult = -1;
       else if (saturation1 > saturation2)
         iResult = 1;
       else
         { // saturation the same - compare luminance
-        float luminance1 = clr1.GetLuminance ();
-        float luminance2 = clr2.GetLuminance ();
+        double luminance1 = clr1.GetLuminance ();
+        double luminance2 = clr2.GetLuminance ();
         if (luminance1 < luminance2)
           iResult = -1;
         else if (luminance1 > luminance2)
@@ -197,16 +197,16 @@ int iResult = 0;
 
     case eColourLuminance:
       {
-      float luminance1 = clr1.GetLuminance ();
-      float luminance2 = clr2.GetLuminance ();
+      double luminance1 = clr1.GetLuminance ();
+      double luminance2 = clr2.GetLuminance ();
       if (luminance1 < luminance2)
         iResult = -1;
       else if (luminance1 > luminance2)
         iResult = 1;
       else
         { // luminance the same - compare saturation
-        float saturation1 = clr1.GetSaturation ();
-        float saturation2 = clr2.GetSaturation ();
+        double saturation1 = clr1.GetSaturation ();
+        double saturation2 = clr2.GetSaturation ();
         if (saturation1 < saturation2)
           iResult = -1;
         else if (saturation1 > saturation2)
