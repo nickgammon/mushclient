@@ -334,9 +334,9 @@ CColor clr;
 
   clr.SetColor (m_ctlSwatch.m_colour);
 
-float fHue = clr.GetHue ();
-float fSaturation = clr.GetSaturation ();
-float fLuminance = clr.GetLuminance ();
+double fHue = clr.GetHue ();
+double fSaturation = clr.GetSaturation ();
+double fLuminance = clr.GetLuminance ();
 
   CString strName;
 
@@ -550,7 +550,7 @@ LRESULT CColourPickerDlg::OnKickIdle(WPARAM, LPARAM)
 
 void CColourPickerDlg::OnRandom() 
 {
-  m_ctlSwatch.m_colour  = genrand () * (double) 0x1000000;
+  m_ctlSwatch.m_colour  = (COLORREF) (genrand () * (double) 0x1000000);
 	
   m_ctlSwatch.RedrawWindow ();
   ShowName ();
