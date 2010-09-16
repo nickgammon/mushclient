@@ -463,7 +463,7 @@ Section "Plugins"
   File "..\plugins\ATCP_Mapper.xml"
   File "..\plugins\Messages_Window.xml"
   File "..\plugins\Calculator.xml"
-  File "..\plugins\Lua_Sapi.xml"
+  File "..\plugins\Text_To_Speech.xml"
   File "..\plugins\Automatic_Backup.xml"
 
 
@@ -688,7 +688,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\ATCP_Mapper.xml"  
   Delete "$INSTDIR\worlds\plugins\Messages_Window.xml"
   Delete "$INSTDIR\worlds\plugins\Calculator.xml"
-  Delete "$INSTDIR\worlds\plugins\Lua_Sapi.xml"
+  Delete "$INSTDIR\worlds\plugins\Text_To_Speech.xml"
   Delete "$INSTDIR\worlds\plugins\Automatic_Backup.xml"
   
   ; locale stuff
