@@ -1313,7 +1313,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
         {
         CTimer * pTimer;
         CString strName;
-        GetTimerMap ().GetNextAssoc (timerpos, strName, pTimer);
+        pPlugin->m_TimerMap.GetNextAssoc (timerpos, strName, pTimer);
         } // end of for loop
 
 
@@ -2055,29 +2055,18 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "------ Callback List (alphabetic order) ------");
     Note ("");
-
     int iCount = 0;
-    map<string,CScriptDispatchID> sortedCallbacks;
 
     for (CScriptDispatchIDIterator it = m_CurrentPlugin->m_PluginCallbacks.begin ();
          it != m_CurrentPlugin->m_PluginCallbacks.end ();
          it++)
-
       if (it->second.isvalid () || it->second._count > 0)
-        sortedCallbacks [it->first] = it->second;
-
-    // this will get them into alphabetic order (the original map is by pointers, not sorted by name)
-
-    for (map<string,CScriptDispatchID>::const_iterator it2 = sortedCallbacks.begin ();
-         it2 != sortedCallbacks.end ();
-         it2++)
-
         {
         iCount++;
-        Note ( CFormat ("%-30s : Valid: %s.  Called %I64i time%s.", 
-                                  it2->first.c_str (),
-                                  SHOW_TRUE (it2->second.isvalid ()),
-                                  PLURAL (it2->second._count)
+        Note ( CFormat ("%-30s -> Valid: %s.  %10I64i call%s.", 
+                                  it->first.c_str (),
+                                  SHOW_TRUE (it->second.isvalid ()),
+                                  PLURAL (it->second._count)
                                   ));
 
         }

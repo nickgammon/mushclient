@@ -905,7 +905,7 @@ typedef CTypedPtrList <CPtrList, CActiveTag*> CActiveTagList;
 /////////////////////////////////////////////////////////////////////////////
 //  CPlugin - these are world plugins
 
-// for storing map directions, and inverses of them
+// for storing dispatch IDs, and how many times each one is called
 class CScriptDispatchID
   {
   public:
@@ -931,12 +931,12 @@ class CScriptDispatchID
     // returns true if DISPID is valid
     inline bool isvalid () const { return _dispid != DISPID_UNKNOWN; };
 
-    DISPID _dispid;
-    __int64 _count;
+    DISPID _dispid;   // the dispatch ID from the COM engine, or  DISPID_UNKNOWN
+    __int64 _count;   // count of attempts to call it (if not DISPID_UNKNOWN)
   };  // end of class CScriptDispatchID
 
-typedef map<const char *, CScriptDispatchID> CScriptDispatchIDsMap;
-typedef map<const char *, CScriptDispatchID>::const_iterator CScriptDispatchIDIterator;
+typedef map<const string, CScriptDispatchID> CScriptDispatchIDsMap;
+typedef map<const string, CScriptDispatchID>::const_iterator CScriptDispatchIDIterator;
 
 
 class CScriptEngine;
