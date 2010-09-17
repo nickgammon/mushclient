@@ -11466,7 +11466,7 @@ long CMUSHclientDoc::BroadcastPlugin(long Message, LPCTSTR Text)
                                   (LPCTSTR) strCurrentName,
                                   Text); 
 
-    if (pPlugin->m_PluginCallbacks [ON_PLUGIN_BROADCAST] != DISPID_UNKNOWN)
+    if (pPlugin->m_PluginCallbacks [ON_PLUGIN_BROADCAST].isvalid ())
       iCount++;
 
     }   // end of doing each plugin

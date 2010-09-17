@@ -68,11 +68,13 @@ DISPID CPlugin::GetPluginDispid (const char * sName)
 
 void CPlugin::ExecutePluginScript (const char * sName)
   {
-
-  DISPID & iRoutine = m_PluginCallbacks [sName];
+  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
+  DISPID & iRoutine = dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
+    dispid_info._count++;
+
     // do this so plugin can find its own state (eg. with GetPluginID)
     CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin; 
     m_pDoc->m_CurrentPlugin = this;   
@@ -119,10 +121,13 @@ void CPlugin::ExecutePluginScript (const char * sName)
 bool CPlugin::ExecutePluginScript (const char * sName, 
                                    const char * sText)
   {
-  DISPID & iRoutine = m_PluginCallbacks [sName];
+  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
+  DISPID & iRoutine = dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
+    dispid_info._count++;
+
     // do this so plugin can find its own state (eg. with GetPluginID)
     CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin; 
     m_pDoc->m_CurrentPlugin = this;   
@@ -206,10 +211,12 @@ bool CPlugin::ExecutePluginScript (const char * sName,
                                   const long arg1,
                                   const string sText)
   {
-  DISPID & iRoutine = m_PluginCallbacks [sName];
+  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
+  DISPID & iRoutine = dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
+    dispid_info._count++;
     // do this so plugin can find its own state (eg. with GetPluginID)
     CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin; 
     m_pDoc->m_CurrentPlugin = this;   
@@ -303,10 +310,12 @@ bool CPlugin::ExecutePluginScript (const char * sName,
                                   const long arg2,
                                   const string sText)
   {
-  DISPID & iRoutine = m_PluginCallbacks [sName];
+  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
+  DISPID & iRoutine = dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
+    dispid_info._count++;
     long nInvocationCount = 0;
 
     // do this so plugin can find its own state (eg. with GetPluginID)
@@ -398,10 +407,12 @@ bool CPlugin::ExecutePluginScript (const char * sName,
                                   const char * arg3,
                                   const char * arg4)
   {
-  DISPID & iRoutine = m_PluginCallbacks [sName];
+  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
+  DISPID & iRoutine = dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
+    dispid_info._count++;
     long nInvocationCount = 0;
 
     // do this so plugin can find its own state (eg. with GetPluginID)
@@ -492,10 +503,12 @@ bool CPlugin::ExecutePluginScript (const char * sName,
 void CPlugin::ExecutePluginScriptRtn (const char * sName, 
                                    CString & strText) 
   {
-  DISPID & iRoutine = m_PluginCallbacks [sName];
+  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
+  DISPID & iRoutine = dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
+    dispid_info._count++;
     // do this so plugin can find its own state (eg. with GetPluginID)
     CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin; 
     m_pDoc->m_CurrentPlugin = this;   

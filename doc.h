@@ -1181,11 +1181,11 @@ public:
 	DISPID	m_dispidOnMXP_SetVariable;     // handler on MXP set variable, eg. set hp
 	DISPID	m_dispidOnMXP_Error;           // handler on MXP error (parse etc.)
 
-  bool    m_bPluginProcessesOpenTag;     // does a plugin handle the open tag?
-  bool    m_bPluginProcessesCloseTag;    // does a plugin handle the close tag?
-  bool    m_bPluginProcessesSetVariable; // does a plugin handle set variable?
-  bool    m_bPluginProcessesSetEntity;   // does a plugin handle set entity?
-  bool    m_bPluginProcessesError;       // does a plugin handle the error?
+  bool    m_bPluginProcessesOpenTag;     // does any plugin handle the open tag?
+  bool    m_bPluginProcessesCloseTag;    // does any plugin handle the close tag?
+  bool    m_bPluginProcessesSetVariable; // does any plugin handle set variable?
+  bool    m_bPluginProcessesSetEntity;   // does any plugin handle set entity?
+  bool    m_bPluginProcessesError;       // does any plugin handle the error?
 
   // listening for UDP packets
 

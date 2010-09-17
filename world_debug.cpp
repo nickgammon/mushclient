@@ -1297,7 +1297,25 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
         CString strVariableName;
         CVariable * variable_item;
         pPlugin->m_VariableMap.GetNextAssoc (varpos, strVariableName, variable_item);
-        }
+        }  // end of for loop
+
+      // count callbacks that are either valid (and not fired) or fired at some point
+      int nTotalCallbacks = 0;
+      for (CScriptDispatchIDIterator i = pPlugin->m_PluginCallbacks.begin ();
+           i != pPlugin->m_PluginCallbacks.end ();
+           i++)
+           if (i->second.isvalid () || i->second._count > 0)
+              nTotalCallbacks++;
+
+      // no quick way of finding timers count
+      int nTotalTimers = 0;
+      for (POSITION timerpos = pPlugin->m_TimerMap.GetStartPosition(); timerpos; nTotalTimers++)
+        {
+        CTimer * pTimer;
+        CString strName;
+        GetTimerMap ().GetNextAssoc (timerpos, strName, pTimer);
+        } // end of for loop
+
 
       // first time we find a non-zero count, we draw the left bracket
       // afterwards, we put a space between the previous item and this one
@@ -1325,7 +1343,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
         }
 
       // hyperlink for timers
-      if (pPlugin->m_TimerRevMap.size () > 0)
+      if (nTotalTimers > 0)
         {
         if (bDoneOne)
           Tell (" ");
@@ -1345,6 +1363,18 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
           ColourTell (strColour, "", " [");
         Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":variablelist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
                    "Va", "Click to list variables", "cyan", "", 0);
+        bDoneOne = true;
+        }
+
+      // hyperlink for callbacks
+      if (nTotalCallbacks > 0)
+        {
+        if (bDoneOne)
+          Tell (" ");
+        else
+          ColourTell (strColour, "", " [");
+        Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":callbacklist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
+                   "Cb", "Click to list callbacks", "cyan", "", 0);
         bDoneOne = true;
         }
 
@@ -2014,6 +2044,47 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 
 
     }   // end of variablelist
+
+
+//-----------------------------------------------------------------------
+//          callbacklist
+//-----------------------------------------------------------------------
+
+  else if (strAction == "callbacklist")
+    {
+
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "------ Callback List (alphabetic order) ------");
+    Note ("");
+
+    int iCount = 0;
+    map<string,CScriptDispatchID> sortedCallbacks;
+
+    for (CScriptDispatchIDIterator it = m_CurrentPlugin->m_PluginCallbacks.begin ();
+         it != m_CurrentPlugin->m_PluginCallbacks.end ();
+         it++)
+
+      if (it->second.isvalid () || it->second._count > 0)
+        sortedCallbacks [it->first] = it->second;
+
+    // this will get them into alphabetic order (the original map is by pointers, not sorted by name)
+
+    for (map<string,CScriptDispatchID>::const_iterator it2 = sortedCallbacks.begin ();
+         it2 != sortedCallbacks.end ();
+         it2++)
+
+        {
+        iCount++;
+        Note ( CFormat ("%-30s : Valid: %s.  Called %I64i time%s.", 
+                                  it2->first.c_str (),
+                                  SHOW_TRUE (it2->second.isvalid ()),
+                                  PLURAL (it2->second._count)
+                                  ));
+
+        }
+
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", TFormat ("%i callback%s.", PLURAL (iCount)));
+
+    }   // end of callbacklist
 
 
 //-----------------------------------------------------------------------

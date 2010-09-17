@@ -478,23 +478,28 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
         // find all plugin callbacks by looping through table - add to map
 
         for (int i = 0; PluginCallbacksNames [i]; i++)
-          m_CurrentPlugin->m_PluginCallbacks [PluginCallbacksNames [i]] = 
+          m_CurrentPlugin->m_PluginCallbacks [PluginCallbacksNames [i]]._dispid = 
             m_CurrentPlugin->GetPluginDispid (PluginCallbacksNames [i]);
 
-        // note if we need to call these routines
+        // note if we need to call these routines (that is, if *any* plugin supports them)
 
-        m_bPluginProcessesOpenTag     = m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_OPENTAG]  != DISPID_UNKNOWN;
-        m_bPluginProcessesCloseTag    = m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_CLOSETAG]  != DISPID_UNKNOWN;
-        m_bPluginProcessesSetVariable = m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_SETVARIABLE]  != DISPID_UNKNOWN; 
-        m_bPluginProcessesSetEntity   = m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_SETENTITY]  != DISPID_UNKNOWN;
-        m_bPluginProcessesError       = m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_ERROR] != DISPID_UNKNOWN;
+        if (m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_OPENTAG].isvalid ())
+          m_bPluginProcessesOpenTag = true;
+
+        if (m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_CLOSETAG].isvalid ())
+          m_bPluginProcessesCloseTag = true;
+
+        if (m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_SETVARIABLE].isvalid ())
+          m_bPluginProcessesSetVariable = true;
+
+        if (m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_SETENTITY].isvalid ())
+          m_bPluginProcessesSetEntity   = true;
+
+        if (m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_ERROR].isvalid ())
+          m_bPluginProcessesError  = true;
+
 
         }  // end of having a script
-      else 
-        {  // no script, make sure all callbacks are marked as not available
-        for (int i = 0; PluginCallbacksNames [i]; i++)  
-          m_CurrentPlugin->m_PluginCallbacks [PluginCallbacksNames [i]] = DISPID_UNKNOWN;
-        }
 
       // add to world plugins
       m_PluginList.AddTail (m_CurrentPlugin);

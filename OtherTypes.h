@@ -905,6 +905,40 @@ typedef CTypedPtrList <CPtrList, CActiveTag*> CActiveTagList;
 /////////////////////////////////////////////////////////////////////////////
 //  CPlugin - these are world plugins
 
+// for storing map directions, and inverses of them
+class CScriptDispatchID
+  {
+  public:
+    // default constructor
+    CScriptDispatchID () : 
+                      _dispid (DISPID_UNKNOWN), 
+                      _count (0) {};
+
+    // copy constructor
+    CScriptDispatchID (const CScriptDispatchID & d)
+                    : _dispid (d._dispid), 
+                      _count (d._count)
+                       {};
+
+    // operator =
+    const CScriptDispatchID & operator= (const CScriptDispatchID & rhs)
+      {
+      _dispid = rhs._dispid;
+      _count  = rhs._count;
+      return *this;
+      };
+
+    // returns true if DISPID is valid
+    inline bool isvalid () const { return _dispid != DISPID_UNKNOWN; };
+
+    DISPID _dispid;
+    __int64 _count;
+  };  // end of class CScriptDispatchID
+
+typedef map<const char *, CScriptDispatchID> CScriptDispatchIDsMap;
+typedef map<const char *, CScriptDispatchID>::const_iterator CScriptDispatchIDIterator;
+
+
 class CScriptEngine;
 
 class CPlugin :public CObject
@@ -954,7 +988,7 @@ class CPlugin :public CObject
 
   // WARNING! PHP currently uses a DISPID of zero, so that can't be used as a "not found" flag.
 
-  map<const char *, DISPID> m_PluginCallbacks;  // maps plugin callback names to their DISPIDs
+  CScriptDispatchIDsMap m_PluginCallbacks;  // maps plugin callback names to their DISPIDs
 
   // methods
 

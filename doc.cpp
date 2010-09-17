@@ -8086,7 +8086,7 @@ bool CMUSHclientDoc::SendToFirstPluginCallbacks (const char * sName, const char 
     // see what the plugin makes of this,
     pPlugin->ExecutePluginScript (sName, sText); 
 
-    if (pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+    if (pPlugin->m_PluginCallbacks [sName].isvalid ())
       {
       m_CurrentPlugin = pSavedPlugin;
       return true;   // indicate we found it
@@ -8119,7 +8119,7 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
       if (!pPlugin->ExecutePluginScript (sName, sText))
         bResult = false;
 
-    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName].isvalid ())
       return false;
 
     }   // end of doing each plugin
@@ -8171,10 +8171,10 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
 
     bool bResult = pPlugin->ExecutePluginScript (sName, arg1, sText);
 
-    if (bStopOnTrue && bResult && pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+    if (bStopOnTrue && bResult && pPlugin->m_PluginCallbacks [sName].isvalid ())
       return true;
 
-    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName].isvalid ())
       return false;
 
     }   // end of doing each plugin
@@ -8209,10 +8209,10 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
 
     bool bResult = pPlugin->ExecutePluginScript (sName, arg1, arg2, sText);
 
-    if (bStopOnTrue && bResult && pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+    if (bStopOnTrue && bResult && pPlugin->m_PluginCallbacks [sName].isvalid ())
       return true;
 
-    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName].isvalid ())
       return false;
 
     }   // end of doing each plugin

@@ -177,10 +177,11 @@ bool bHaveVariable = false;
       } // not Lua
     }  // end of script callback wanted
 
-  SendToAllPluginCallbacks (ON_PLUGIN_MXP_CLOSETAG, 
-                            CFormat ("%s,%s",
-                            (LPCTSTR) strTag,
-                            (LPCTSTR) strText));
+  if (m_bPluginProcessesCloseTag)
+    SendToAllPluginCallbacks (ON_PLUGIN_MXP_CLOSETAG, 
+                              CFormat ("%s,%s",
+                              (LPCTSTR) strTag,
+                              (LPCTSTR) strText));
 
   m_CurrentPlugin = NULL;
 
