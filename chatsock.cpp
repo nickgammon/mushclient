@@ -118,24 +118,12 @@ CChatSocket::~CChatSocket()
 
   if (m_bWasConnected)
     {
-    CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin;
 
     // tell each plugin about the departing user
-    for (POSITION pluginpos = m_pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-      {
-      CPlugin * pPlugin = m_pDoc->m_PluginList.GetNext (pluginpos);
-      
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      // see what the plugin makes of this,
-      pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_USERDISCONNECT, 
-                            pPlugin->m_dispid_plugin_On_Chat_UserDisconnect, 
-                            m_iChatID,     // user ID
-                            string (m_strRemoteUserName)    // user name
-                            );
-      }   // end of doing each plugin
-    m_pDoc->m_CurrentPlugin = pSavedPlugin;
+    m_pDoc->SendToAllPluginCallbacks (ON_PLUGIN_CHAT_USERDISCONNECT, 
+                                      m_iChatID,     // user ID
+                                      string (m_strRemoteUserName),
+                                      false, false);
     }   // end of needing to notify about him
 }
 
@@ -185,7 +173,6 @@ void CChatSocket::OnReceive(int nErrorCode)
 
 char buff [1000];
 int count = Receive (buff, sizeof (buff) - 1);
-POSITION pluginpos;
 
   if (count == SOCKET_ERROR)
     {
@@ -258,24 +245,12 @@ POSITION pluginpos;
         SendChatMessage (CHAT_STAMP, MakeStamp (m_zChatStamp));  // send it
         }
 
-      CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin;
-
       // tell each plugin about the new user
-      for (pluginpos = m_pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-        {
-        CPlugin * pPlugin = m_pDoc->m_PluginList.GetNext (pluginpos);
-
-        if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-          continue;
-
-        // see what the plugin makes of this,
-        pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_NEWUSER, 
-                              pPlugin->m_dispid_plugin_On_Chat_NewUser, 
-                              m_iChatID,     // user ID
-                              string (m_strRemoteUserName)    // user name
-                              );
-        }   // end of doing each plugin
-      m_pDoc->m_CurrentPlugin = pSavedPlugin;
+      m_pDoc->SendToAllPluginCallbacks (ON_PLUGIN_CHAT_NEWUSER, 
+                                        m_iChatID,     // user ID
+                                        string (m_strRemoteUserName),
+                                        false, 
+                                        false);
 
       if (count <= 0)
         return;       // only the negotiation text here
@@ -354,32 +329,18 @@ POSITION pluginpos;
 
       count = 0;    // can't see how this packet can be reasonably terminated
 
-      CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin;
-
-      // tell each plugin what we are about to display
-      for (pluginpos = m_pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-        {
-        CPlugin * pPlugin = m_pDoc->m_PluginList.GetNext (pluginpos);
-
-        if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-          continue;
-
-        // see what the plugin makes of this,
-        if (!pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_ACCEPT, 
-                              pPlugin->m_dispid_plugin_On_Chat_Accept, 
-                              CFormat ("%s,%s",
-                              (LPCTSTR) inet_ntoa (m_ServerAddr.sin_addr),
-                              (LPCTSTR) m_strRemoteUserName
-                              )))
+      if (!m_pDoc->SendToAllPluginCallbacks (ON_PLUGIN_CHAT_ACCEPT, 
+                                              CFormat ("%s,%s",
+                                              (LPCTSTR) inet_ntoa (m_ServerAddr.sin_addr),
+                                              (LPCTSTR) m_strRemoteUserName
+                                              ),
+                                              true))    // stop on false response
           {
-          m_pDoc->m_CurrentPlugin = pSavedPlugin;
           // tell them our rejection
           SendData ("NO");
           OnClose (0);
           return;   // false means plugin rejects him 
           }
-        }   // end of doing each plugin
-      m_pDoc->m_CurrentPlugin = pSavedPlugin;
 
       if (m_pDoc->m_bValidateIncomingCalls)
         {
@@ -421,24 +382,12 @@ POSITION pluginpos;
         SendChatMessage (CHAT_STAMP, MakeStamp (m_zChatStamp));  // send it
         }
 
-      pSavedPlugin = m_pDoc->m_CurrentPlugin;
-
       // tell each plugin about the new user
-      for (POSITION pluginpos = m_pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-        {
-        CPlugin * pPlugin = m_pDoc->m_PluginList.GetNext (pluginpos);
-
-        if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-          continue;
-
-        // see what the plugin makes of this,
-        pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_NEWUSER, 
-                              pPlugin->m_dispid_plugin_On_Chat_NewUser, 
-                              m_iChatID,     // user ID
-                              string (m_strRemoteUserName)    // user name
-                              );
-        }   // end of doing each plugin
-      m_pDoc->m_CurrentPlugin = pSavedPlugin;
+      m_pDoc->SendToAllPluginCallbacks (ON_PLUGIN_CHAT_NEWUSER, 
+                                        m_iChatID,     // user ID
+                                        string (m_strRemoteUserName),
+                                        false,
+                                        false);
 
       if (count <= 0)
         return;       // only the negotiation text here
@@ -733,29 +682,14 @@ void CChatSocket::ProcessChatMessage (const int iMessage, const CString strMessa
 
 #endif
 
-  CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin;
+  if (!m_pDoc->SendToAllPluginCallbacks (ON_PLUGIN_CHAT_MESSAGE, 
+                                        m_iChatID,    // who we are
+                                        iMessage,     // message number
+                                        string (strMessage),    // message text
+                                        false,
+                                        true))  // stop on false response
+    return;   // false means plugin handled it                       
 
-  // tell each plugin what we are about to display
-  for (POSITION pluginpos = m_pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_pDoc->m_PluginList.GetNext (pluginpos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    if (!pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_MESSAGE, 
-                          pPlugin->m_dispid_plugin_On_Chat_Message,
-                          m_iChatID,    // who we are
-                          iMessage,     // message number
-                          string (strMessage)    // message text
-                          ))                                           
-      {                                                                
-      m_pDoc->m_CurrentPlugin = pSavedPlugin;                                  
-      return;   // false means plugin handled it                       
-      }
-    }   // end of doing each plugin
-  m_pDoc->m_CurrentPlugin = pSavedPlugin;
 
   switch (iMessage)
     {
@@ -821,28 +755,13 @@ void CChatSocket::SendChatMessage (const int iMessage,
 
 #endif
 
-  CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin;
-  // tell each plugin what we are about to display
-  for (POSITION pluginpos = m_pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_pDoc->m_PluginList.GetNext (pluginpos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    if (!pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_MESSAGE_OUT, 
-                          pPlugin->m_dispid_plugin_On_Chat_MessageOut,
-                          m_iChatID,    // which chat ID
-                          iMessage,     // message number
-                          string (strMessage)    // message text
-                          ))
-      {
-      m_pDoc->m_CurrentPlugin = pSavedPlugin;
+  if (!m_pDoc->SendToAllPluginCallbacks (ON_PLUGIN_CHAT_MESSAGE_OUT, 
+                                        m_iChatID,    // which chat ID
+                                        iMessage,     // message number
+                                        string (strMessage),    // message text
+                                        false,
+                                        true)) // stop on false response
       return;   // false means plugin discarded it 
-      }
-    }   // end of doing each plugin
-  m_pDoc->m_CurrentPlugin = pSavedPlugin;
 
   if (iMessage == CHAT_SNOOP && m_bYouAreSnooping)
     m_bYouAreSnooping = false;

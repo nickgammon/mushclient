@@ -1864,6 +1864,37 @@ public:
   CPlugin * GetPlugin (LPCTSTR PluginID);
   CMUSHView * GetFirstOutputWindow ();
 
+  // calls sName in all plugins
+  void SendToAllPluginCallbacks (const char * sName);   // no arguments
+
+  // sends sText to all plugins, stops when one handles it, returns true if handled
+  bool SendToFirstPluginCallbacks (const char * sName, 
+                                   const char * sText);   // one argument
+
+  // sends sText to all plugins, returns false if one returned false
+  bool SendToAllPluginCallbacks (const char * sName, 
+                                 const char * sText,   // one argument
+                                 const bool bStopOnFalse = false);
+
+  // send strResult to all plugins, allow them to modify it
+  void SendToAllPluginCallbacksRtn (const char * sName, 
+                                    CString & strResult);  // taking and returning a string
+
+  // send a number and a string to all plugins, optionally stopping when one returns true or false
+  bool SendToAllPluginCallbacks (const char * sName, 
+                                 const long arg1,      // 2 arguments
+                                 const string sText,
+                                 const bool bStopOnTrue,
+                                 const bool bStopOnFalse);
+
+  // send two numbers and a string to all plugins, optionally stopping when one returns true or false
+  bool SendToAllPluginCallbacks (const char * sName, 
+                                 const long arg1,      // 3 arguments
+                                 const long arg2,
+                                 const string sText,
+                                 const bool bStopOnTrue,
+                                 const bool bStopOnFalse);
+
   // load from document into property page
 
   void LoadPrefsP1  (CPrefsP1  &page1);

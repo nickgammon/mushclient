@@ -1699,35 +1699,14 @@ CString strMsg;
 	va_end(argList);
 
   // see if a plugin will handle trace message
-  CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL;
 
   m_bTrace = false;  // stop infinite loops, where we report that the trace script was called
-
-  // tell a plugin the trace message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+  if (SendToFirstPluginCallbacks (ON_PLUGIN_TRACE, strMsg))
     {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+    m_bTrace = true;
+    return;   // sent to plugin? don't display it
+    }
 
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    pPlugin->ExecutePluginScript (ON_PLUGIN_TRACE,
-                                  strMsg,  
-                                  pPlugin->m_dispid_plugin_trace); 
-
-    if (pPlugin->m_dispid_plugin_trace != DISPID_UNKNOWN)
-      {
-      m_CurrentPlugin = pSavedPlugin;
-      m_bTrace = true;
-      return;   // sent to plugin? don't display it
-      }
-
-    }   // end of doing each plugin
-
-  m_CurrentPlugin = pSavedPlugin;
   m_bTrace = true;
 
   strMsg += ENDLINE;      // add a new line
@@ -5792,9 +5771,9 @@ CPlugin * pPlugin = GetPlugin (PluginID);
   pPlugin->m_bEnabled = Enabled != 0;
 
   if (pPlugin->m_bEnabled)
-    pPlugin->ExecutePluginScript (ON_PLUGIN_ENABLE, pPlugin->m_dispid_plugin_enable); 
+    pPlugin->ExecutePluginScript (ON_PLUGIN_ENABLE); 
   else
-    pPlugin->ExecutePluginScript (ON_PLUGIN_DISABLE, pPlugin->m_dispid_plugin_disable); 
+    pPlugin->ExecutePluginScript (ON_PLUGIN_DISABLE); 
   
   return eOK;
 }   // end of EnablePlugin
@@ -7281,24 +7260,13 @@ for (POSITION command_pos = strList.GetHeadPosition (); command_pos; )
   if (!m_bPluginProcessingCommand)
       {
       m_bPluginProcessingCommand = true;  // so we don't go into a loop
-      bool bOK = true;
-      // tell each plugin what we are about to Command
-      for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
+      if (!SendToAllPluginCallbacks (ON_PLUGIN_COMMAND, str))
         {
-        CPlugin * pPlugin = m_PluginList.GetNext (pos);
-
-        if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-          continue;
-
-        // see what the plugin makes of this, excluding the ENDLINE
-        if (!pPlugin->ExecutePluginScript (ON_PLUGIN_COMMAND, pPlugin->m_dispid_plugin_command, str))
-          bOK = false;
-        }   // end of doing each plugin
+        m_bPluginProcessingCommand = false;
+        continue;
+        }
 
       m_bPluginProcessingCommand = false;
-
-      if (!bOK)
-        continue;   // plugin doesn't want to send it
       }
 
   // empty line - just send it
@@ -8026,27 +7994,12 @@ void CMUSHclientDoc::ChatNote(short NoteType, LPCTSTR Message)
             m_iMaxChatLinesPerMessage);
     }   // end of line count check wanted
 
-  CPlugin * pSavedPlugin = m_CurrentPlugin;
-  // tell each plugin what we are about to display
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    if (!pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_DISPLAY, 
-                          pPlugin->m_dispid_plugin_On_Chat_Display, 
-                          NoteType,     // message number
-                          string (strMessage)    // message text
-                          ))
-      {
-      m_CurrentPlugin = pSavedPlugin;
-      return;   // false means plugin handled it 
-      }
-    }   // end of doing each plugin
-  m_CurrentPlugin = pSavedPlugin;
+  if (!SendToAllPluginCallbacks (ON_PLUGIN_CHAT_DISPLAY, 
+                                NoteType,     // message number
+                                string (strMessage),    // message text
+                                false,
+                                true))  // stop on false response
+    return;   // false means plugin handled it 
 
 
 // save old colours - because we switch to the chat colour below
@@ -11508,13 +11461,12 @@ long CMUSHclientDoc::BroadcastPlugin(long Message, LPCTSTR Text)
 
     // see what the plugin makes of this,
     pPlugin->ExecutePluginScript (ON_PLUGIN_BROADCAST,
-                                  pPlugin->m_dispid_plugin_broadcast,
                                   Message, 
                                   (LPCTSTR) strCurrentID,
                                   (LPCTSTR) strCurrentName,
                                   Text); 
 
-    if (pPlugin->m_dispid_plugin_broadcast != DISPID_UNKNOWN)
+    if (pPlugin->m_PluginCallbacks [ON_PLUGIN_BROADCAST] != DISPID_UNKNOWN)
       iCount++;
 
     }   // end of doing each plugin

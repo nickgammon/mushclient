@@ -177,23 +177,11 @@ bool bHaveVariable = false;
       } // not Lua
     }  // end of script callback wanted
 
-  // tell each plugin about the close tag
-  if (m_bPluginProcessesCloseTag)
-    for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-      {
-      CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      // see what the plugin makes of this,
-      pPlugin->ExecutePluginScript (ON_PLUGIN_MXP_CLOSETAG, 
-                            pPlugin->m_dispid_plugin_OnMXP_CloseTag, 
+  SendToAllPluginCallbacks (ON_PLUGIN_MXP_CLOSETAG, 
                             CFormat ("%s,%s",
                             (LPCTSTR) strTag,
-                            (LPCTSTR) strText)
-                            );
-      }   // end of doing each plugin
+                            (LPCTSTR) strText));
+
   m_CurrentPlugin = NULL;
 
   // if this tag had a FLAG directive, set the desired variable - prefixed with mxp_
@@ -287,45 +275,21 @@ bool bHaveVariable = false;
 
     // tell each plugin what we have received
     if (m_bPluginProcessesSetVariable)
-      for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-        {
-        CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-        if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-          continue;
-
-        // see what the plugin makes of this,
-        pPlugin->ExecutePluginScript (ON_PLUGIN_MXP_SETVARIABLE, 
-                              pPlugin->m_dispid_plugin_OnMXP_SetVariable, 
+      SendToAllPluginCallbacks (ON_PLUGIN_MXP_SETVARIABLE, 
                               CFormat ("%s=%s",
                               (LPCTSTR) strVariable,
-                              (LPCTSTR) strText)
-                              );
-        }   // end of doing each plugin
-    m_CurrentPlugin = NULL;
-      
+                              (LPCTSTR) strText));
+
     if (strTag == "var"|| strTag == "v") // add entity to map
       {
       m_CustomEntityMap.SetAt (strVariable, strText);
 
       // tell each plugin what we have received
       if (m_bPluginProcessesSetEntity)
-        for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-          {
-          CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-          if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-            continue;
-
-          // see what the plugin makes of this,
-          pPlugin->ExecutePluginScript (ON_PLUGIN_MXP_SETENTITY, 
-                                pPlugin->m_dispid_plugin_OnMXP_SetEntity, 
+        SendToAllPluginCallbacks (ON_PLUGIN_MXP_SETENTITY, 
                                 CFormat ("%s=%s",
                                 (LPCTSTR) strVariable,
-                                (LPCTSTR) strText)
-                                );
-          }   // end of doing each plugin
-      m_CurrentPlugin = NULL;
+                                (LPCTSTR) strText));
 
       }
 

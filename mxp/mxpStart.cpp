@@ -547,27 +547,13 @@ bool CMUSHclientDoc::MXP_StartTagScript  (const CString & strName,
   if (strName == "afk")
     return false;
 
-  // tell each plugin what we have received
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    if (!pPlugin->ExecutePluginScript (ON_PLUGIN_MXP_OPENTAG, 
-                          pPlugin->m_dispid_plugin_OnMXP_OpenTag, 
-                          CFormat ("%s,%s",
-                          (LPCTSTR) strName,
-                          (LPCTSTR) strArguments)
-                          ))
-      {
-      m_CurrentPlugin = NULL;
+  if (!SendToAllPluginCallbacks (ON_PLUGIN_MXP_OPENTAG, 
+                                CFormat ("%s,%s",
+                                (LPCTSTR) strName,
+                                (LPCTSTR) strArguments)
+                                ), true)
       return true;    
-      }
-    }   // end of doing each plugin
-  m_CurrentPlugin = NULL;
+
 
   // see if main script wants to do anything
   if (m_dispidOnMXP_OpenTag == DISPID_UNKNOWN)

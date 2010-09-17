@@ -1285,24 +1285,12 @@ CString str = strText;
   if (!m_bPluginProcessingSend)
     {
     m_bPluginProcessingSend = true;  // so we don't go into a loop
-    bool bOK = true;
-    // tell each plugin what we are about to send - it can return false to cancel send
-    for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
+    if (!SendToAllPluginCallbacks (ON_PLUGIN_SEND, str.Left (str.GetLength () - 2)))
       {
-      CPlugin * pPlugin = m_PluginList.GetNext (pos);
-
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      // see what the plugin makes of this, excluding the ENDLINE
-      if (!pPlugin->ExecutePluginScript (ON_PLUGIN_SEND, pPlugin->m_dispid_plugin_send, str.Left (str.GetLength () - 2)))
-        bOK = false;
-      }   // end of doing each plugin
-
+      m_bPluginProcessingSend = false;
+      return;     // plugin declines to send this line
+      }
     m_bPluginProcessingSend = false;
-
-    if (!bOK)
-      return;   // plugin doesn't want to send it
     }
 
   // "OnPluginSent" - we are definitely sending this
@@ -1311,21 +1299,8 @@ CString str = strText;
   if (!m_bPluginProcessingSent)
     {
     m_bPluginProcessingSent = true;  // so we don't go into a loop
-
-    // tell each plugin what we are about to send
-    for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
-      {
-      CPlugin * pPlugin = m_PluginList.GetNext (pos);
-
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      // see what the plugin makes of this, excluding the ENDLINE
-      pPlugin->ExecutePluginScript (ON_PLUGIN_SENT, pPlugin->m_dispid_plugin_sent, str.Left (str.GetLength () - 2));
-      }   // end of doing each plugin
-
+    SendToAllPluginCallbacks (ON_PLUGIN_SENT, str.Left (str.GetLength () - 2));
     m_bPluginProcessingSent = false;
-
     }
 
 // echo sent text if required
@@ -1833,21 +1808,7 @@ CString strLine (lpszText, size);
 
     m_iCurrentActionSource = eInputFromServer;
 
-    // tell each plugin what we have received
-    for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-      {
-      CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      // see what the plugin makes of this,
-      pPlugin->ExecutePluginScript (ON_PLUGIN_PACKET_RECEIVED,
-                                    strLine,  // input and output line
-                                    pPlugin->m_dispid_plugin_packet_received); 
-
-      }   // end of doing each plugin
+    SendToAllPluginCallbacksRtn (ON_PLUGIN_PACKET_RECEIVED, strLine);
 
     m_iCurrentActionSource = eUnknownActionSource;
 
@@ -4779,18 +4740,7 @@ void CMUSHclientDoc::CheckTickTimers ()
       }	  // end of being a CSendView
     }
 
-  // tell each plugin about the tick
-  for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    pPlugin->ExecutePluginScript (ON_PLUGIN_TICK, pPlugin->m_dispid_plugin_tick);
-    }   // end of doing each plugin
-
-    m_CurrentPlugin = NULL;
+  SendToAllPluginCallbacks (ON_PLUGIN_TICK);
 
   } // end of CMUSHclientDoc::CheckTickTimers
 
@@ -4935,23 +4885,7 @@ BOOL CMUSHclientDoc::DoSave(LPCTSTR lpszPathName, BOOL bReplace)
 
 
   // now do plugins "world save"
-  CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL;
-
-  // tell each plugin the world is saving
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    pPlugin->ExecutePluginScript (ON_PLUGIN_WORLD_SAVE, pPlugin->m_dispid_plugin_world_save);
-    }   // end of doing each plugin
-
-  m_CurrentPlugin = pSavedPlugin;
-
+  SendToAllPluginCallbacks (ON_PLUGIN_WORLD_SAVE);
 
   BOOL bSuccess = CDocument::DoSave (strNewName, bReplace);
 
@@ -7336,17 +7270,7 @@ CString strIpAddress = inet_ntoa (*((struct in_addr *) lpHostEntry->h_addr));
       }
     } // end of executing open script
 
-  // tell each plugin we have connected
-  for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    pPlugin->ExecutePluginScript (ON_PLUGIN_CONNECT, pPlugin->m_dispid_plugin_connect);
-    }   // end of doing each plugin
-
+  SendToAllPluginCallbacks (ON_PLUGIN_CONNECT);
 
   } // end of CMUSHclientDoc::ConnectionEstablished
 
@@ -7810,30 +7734,9 @@ UINT dFormat = 0;
 
 void CMUSHclientDoc::SendLineToPlugin (void)
   {
-  //  We can be in a plugin if we had a prompt, which was not terminated, then
-  //   user input. The user input calls an alias, the alias does a world.note
-  //   inside a plugin, however we are here right now because we are terminating the
-  //   *previous* line (the prompt line).
-  //  So, we save and restore the current plugin pointer.
 
-    CPlugin * pSavedPlugin = m_CurrentPlugin;
-    m_CurrentPlugin = NULL;
-
-    CString strPartialLine = CString (m_pCurrentLine->text, m_pCurrentLine->len);
-
-    // tell each plugin what we have received
-    for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-      {
-      CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      // see what the plugin makes of this,
-      pPlugin->ExecutePluginScript (ON_PLUGIN_PARTIAL_LINE, pPlugin->m_dispid_plugin_partial_line, strPartialLine);
-      }   // end of doing each plugin
-
-    m_CurrentPlugin = pSavedPlugin;
+  CString strPartialLine = CString (m_pCurrentLine->text, m_pCurrentLine->len);
+  SendToAllPluginCallbacks (ON_PLUGIN_PARTIAL_LINE, strPartialLine);
 
   } // end of CMUSHclientDoc::SendLineToPlugin
 
@@ -7943,31 +7846,12 @@ static bool bInScreendraw = false;
     return;
 
   bInScreendraw = true;
-
-  // send to all plugins
-  CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL;
-
-  // tell a plugin the message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    pPlugin->ExecutePluginScript (ON_PLUGIN_SCREENDRAW,
-                                  pPlugin->m_dispid_plugin_screendraw,
-                                  iType,
-                                  iLog,
-                                  sText
-                                  ); 
-
-    }   // end of doing each plugin
-
-  m_CurrentPlugin = pSavedPlugin;
+  SendToAllPluginCallbacks (ON_PLUGIN_SCREENDRAW,
+                            iType,
+                            iLog,
+                            sText,
+                            false,
+                            false);
   bInScreendraw = false;
 
   }  // end of CMUSHclientDoc::Screendraw 
@@ -7981,34 +7865,12 @@ bool CMUSHclientDoc::PlaySoundFile (CString strSound)
     {
     m_bInPlaySoundFilePlugin = true;
     
-    // see if a plugin will handle sound message
-    CPlugin * pSavedPlugin = m_CurrentPlugin;
-    m_CurrentPlugin = NULL;
-
-    // tell a plugin the sound to play
-    for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-      {
-      CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      // see what the plugin makes of this,
-      pPlugin->ExecutePluginScript (ON_PLUGIN_PLAYSOUND,
-                                    strSound,  
-                                    pPlugin->m_dispid_plugin_playsound); 
-
-      if (pPlugin->m_dispid_plugin_playsound != DISPID_UNKNOWN)
+    if (SendToFirstPluginCallbacks (ON_PLUGIN_PLAYSOUND, strSound))
         {
-        m_CurrentPlugin = pSavedPlugin;
         m_bInPlaySoundFilePlugin = false;
         return true;   // handled by plugin? don't do our own sound
         }
 
-      }   // end of doing each plugin
-
-    m_CurrentPlugin = pSavedPlugin;
     m_bInPlaySoundFilePlugin = false;
     }   // of not in plugin already
 
@@ -8025,39 +7887,15 @@ void CMUSHclientDoc::CancelSound (void)
     {
     m_bInCancelSoundFilePlugin = true;
 
-    // see if a plugin will handle cancel sound message
-    CPlugin * pSavedPlugin = m_CurrentPlugin;
-    m_CurrentPlugin = NULL;
-
-    // tell a plugin the sound to play
-    for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-      {
-      CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      CString strSound;   // deliberately the empty string
-
-      // see what the plugin makes of this,
-      pPlugin->ExecutePluginScript (ON_PLUGIN_PLAYSOUND,
-                                    strSound,  // empty string cancels sound 
-                                    pPlugin->m_dispid_plugin_playsound); 
-
-      if (pPlugin->m_dispid_plugin_playsound != DISPID_UNKNOWN)
+    CString strSound;   // deliberately the empty string
+    if (SendToFirstPluginCallbacks (ON_PLUGIN_PLAYSOUND, strSound))
         {
-        m_CurrentPlugin = pSavedPlugin;
         m_bInCancelSoundFilePlugin = false;
-        return;   // handled by plugin? don't do our own cancel
+        return;   // handled by plugin? don't do our own sound
         }
 
-      }   // end of doing each plugin
-
-    m_CurrentPlugin = pSavedPlugin;
     m_bInCancelSoundFilePlugin = false;
     } // end of not in plugin already
-
 
   // default sound-cancel mechanism
   Frame.CancelSound ();
@@ -8206,10 +8044,36 @@ static bool bInPluginListChanged = false;
     return;
 
   bInPluginListChanged = true;
+  SendToAllPluginCallbacks (ON_PLUGIN_LIST_CHANGED);
+  bInPluginListChanged = false;
+
+  }    // end CMUSHclientDoc::PluginListChanged 
 
 
+void  CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName)   // no arguments
+  {
   CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL;
+  m_CurrentPlugin = NULL; // not sure about this
+
+  // tell a plugin the message
+  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+    {
+    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+
+    if (pPlugin->m_bEnabled)   // ignore disabled plugins
+      pPlugin->ExecutePluginScript (sName);
+
+    }   // end of doing each plugin
+
+  m_CurrentPlugin = pSavedPlugin;
+
+  } // end of CMUSHclientDoc::SendToAllPluginCallbacks
+
+// this is for when we want the first available plugin to handle something (eg. Trace, Sound)
+bool CMUSHclientDoc::SendToFirstPluginCallbacks (const char * sName, const char * sText)   // one argument
+  {
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+  m_CurrentPlugin = NULL; // not sure about this
 
   // tell a plugin the message
   for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
@@ -8219,13 +8083,145 @@ static bool bInPluginListChanged = false;
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
 
-    pPlugin->ExecutePluginScript (ON_PLUGIN_LIST_CHANGED, pPlugin->m_dispid_plugin_list_changed);
+    // see what the plugin makes of this,
+    pPlugin->ExecutePluginScript (sName, sText); 
+
+    if (pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+      {
+      m_CurrentPlugin = pSavedPlugin;
+      return true;   // indicate we found it
+      }
 
     }   // end of doing each plugin
 
   m_CurrentPlugin = pSavedPlugin;
-  bInPluginListChanged = false;
+
+  return false;  // didn't find one
+  } // end of CMUSHclientDoc::SendToFirstPluginCallbacks
 
 
-  }    // end CMUSHclientDoc::PluginListChanged 
+// this is for when each plugin gets a chance to "black ball" an action (like sending a line)
+// we only return true if each plugin returned true
+bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName, 
+                                               const char * sText,         // one argument
+                                               const bool bStopOnFalse)
+  {
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+  m_CurrentPlugin = NULL; // not sure about this
+  bool bResult = true;    // assume they OK'd something
 
+  // tell a plugin the message
+  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+    {
+    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+
+    if (pPlugin->m_bEnabled)   // ignore disabled plugins
+      if (!pPlugin->ExecutePluginScript (sName, sText))
+        bResult = false;
+
+    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+      return false;
+
+    }   // end of doing each plugin
+
+  m_CurrentPlugin = pSavedPlugin;
+
+  return bResult;
+  } // end of CMUSHclientDoc::SendToAllPluginCallbacks
+
+
+// this sends a string to all plugins and allows them to modify it
+void CMUSHclientDoc::SendToAllPluginCallbacksRtn (const char * sName, CString & strResult)  // taking and returning a string
+  {
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+  m_CurrentPlugin = NULL; // not sure about this
+
+  // tell a plugin the message
+  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+    {
+    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+
+    if (pPlugin->m_bEnabled)   // ignore disabled plugins
+      pPlugin->ExecutePluginScriptRtn (sName, strResult);
+
+    }   // end of doing each plugin
+
+  m_CurrentPlugin = pSavedPlugin;
+
+  } // end of CMUSHclientDoc::SendToAllPluginCallbacks
+
+
+// this sends a number and a string to all plugins, and optionally stops on a true or false response
+bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName, 
+                                               const long arg1,      // 2 arguments
+                                               const string sText,
+                                               const bool bStopOnTrue,
+                                               const bool bStopOnFalse)
+  {
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+  m_CurrentPlugin = NULL; // not sure about this
+
+  // tell a plugin the message
+  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+    {
+    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+
+    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
+      continue;
+
+    bool bResult = pPlugin->ExecutePluginScript (sName, arg1, sText);
+
+    if (bStopOnTrue && bResult && pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+      return true;
+
+    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+      return false;
+
+    }   // end of doing each plugin
+
+  m_CurrentPlugin = pSavedPlugin;
+
+  if (bStopOnTrue)
+    return false;
+  else 
+    return !bStopOnFalse;  // if they wanted to stop on true, assume false and vice-versa
+
+  }  // end of CMUSHclientDoc::SendToAllPluginCallbacks
+
+// this sends two numbers and a string to all plugins, and optionally stops on a true or false response
+bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName, 
+                                               const long arg1,      // 3 arguments
+                                               const long arg2,
+                                               const string sText,
+                                               const bool bStopOnTrue,
+                                               const bool bStopOnFalse)
+  {
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+  m_CurrentPlugin = NULL; // not sure about this
+
+  // tell a plugin the message
+  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+    {
+    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+
+    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
+      continue;
+
+    bool bResult = pPlugin->ExecutePluginScript (sName, arg1, arg2, sText);
+
+    if (bStopOnTrue && bResult && pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+      return true;
+
+    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName] != DISPID_UNKNOWN)
+      return false;
+
+    }   // end of doing each plugin
+
+  m_CurrentPlugin = pSavedPlugin;
+
+  if (bStopOnTrue)
+    return false;
+  else 
+    return !bStopOnFalse;  // if they wanted to stop on true, assume false and vice-versa
+
+  }  // end of CMUSHclientDoc::SendToAllPluginCallbacks

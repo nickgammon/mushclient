@@ -2945,21 +2945,7 @@ CSize sizeTotal (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_Fon
   
   Frame.FixUpTitleBar ();   // in case we need to add the mud name to the title bar
 
-    // tell each plugin we have resized. Hello, Worstje!
-
-  for (POSITION pluginpos = pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pluginpos);
-
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    pPlugin->ExecutePluginScript (ON_PLUGIN_WORLD_OUTPUT_RESIZED,
-                                  pPlugin->m_dispid_plugin_on_world_output_resized); 
-
-    }   // end of doing each plugin
+  pDoc->SendToAllPluginCallbacks (ON_PLUGIN_WORLD_OUTPUT_RESIZED);
 
 
 // this is for the guy that wants to fit the max text he can in his window,
@@ -3170,27 +3156,7 @@ ASSERT_VALID(pDoc);
         } // end of executing get focus script
 
       if (!pDoc->m_bWorldClosing)
-        {
-
-        // now do plugins "get focus"
-        CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-        pDoc->m_CurrentPlugin = NULL;
-
-        // tell each plugin what we have received
-        for (POSITION pluginpos = pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-          {
-          CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pluginpos);
-
-          if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-            continue;
-
-          // see what the plugin makes of this,
-          pPlugin->ExecutePluginScript (ON_PLUGIN_GETFOCUS, pPlugin->m_dispid_plugin_get_focus);
-          }   // end of doing each plugin
-
-        pDoc->m_CurrentPlugin = pSavedPlugin;
-
-        } // end of world not closing
+        pDoc->SendToAllPluginCallbacks (ON_PLUGIN_GETFOCUS);
       
       }   // end of executing "get focus" scripts
     // make sure status line is updated
@@ -3223,25 +3189,8 @@ ASSERT_VALID(pDoc);
         } // end of executing lose focus script
 
       if (!pDoc->m_bWorldClosing)
-        {
-        // now do plugins "lose focus"
-        CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-        pDoc->m_CurrentPlugin = NULL;
+        pDoc->SendToAllPluginCallbacks (ON_PLUGIN_LOSEFOCUS);
 
-        // tell each plugin what we have received
-        for (POSITION pluginpos = pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-          {
-          CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pluginpos);
-
-          if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-            continue;
-
-          // see what the plugin makes of this,
-          pPlugin->ExecutePluginScript (ON_PLUGIN_LOSEFOCUS, pPlugin->m_dispid_plugin_lose_focus);
-          }   // end of doing each plugin
-
-        pDoc->m_CurrentPlugin = pSavedPlugin;
-        } // end of world not closing
       }  // end of executing "Lose focus" scripts
     // make sure status line is updated
     Frame.SetStatusNormal (); 
@@ -6372,22 +6321,12 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
   // report mouse movements: version 4.45
   pDoc->m_lastMousePosition = point;
 
-  CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-  pDoc->m_CurrentPlugin = NULL;
-
-  // tell each plugin about the mouse movement
-  for (POSITION pos = pDoc->m_PluginList.GetHeadPosition(); pos; )
-    {
-    CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    pPlugin->ExecutePluginScript (ON_PLUGIN_MOUSE_MOVED, 
-                                  pPlugin->m_dispid_plugin_mouse_moved, point.x, point.y, sMiniWindowId.c_str ());
-    }   // end of doing each plugin
-
-  pDoc->m_CurrentPlugin = pSavedPlugin;
+  pDoc->SendToAllPluginCallbacks (ON_PLUGIN_MOUSE_MOVED, 
+                                  point.x, 
+                                  point.y, 
+                                  sMiniWindowId.c_str (),
+                                  false,
+                                  false);
 
   // drag-and-drop stuff
 

@@ -455,19 +455,8 @@ assemble the full text of the original line.
 
   m_iCurrentActionSource = eInputFromServer;
 
-  // tell each plugin what we have received
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    if (!pPlugin->ExecutePluginScript (ON_PLUGIN_LINE_RECEIVED, pPlugin->m_dispid_plugin_line_received, strCurrentLine))
-      bNoOutput = true;
-    }   // end of doing each plugin
-  m_CurrentPlugin = NULL;
+  if (!SendToAllPluginCallbacks (ON_PLUGIN_LINE_RECEIVED, strCurrentLine))
+    bNoOutput = true;
 
   m_iCurrentActionSource = eUnknownActionSource;
 

@@ -90,25 +90,7 @@ void CMUSHclientDoc::Phase_ANSI (const unsigned char c)
 
 void CMUSHclientDoc::Handle_IAC_GA ()
   {
-  CPlugin * pSavedPlugin = m_CurrentPlugin;
-
-  // tell each plugin what we have received
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    pPlugin->ExecutePluginScript (ON_PLUGIN_IAC_GA,
-                                  pPlugin->m_dispid_plugin_IAC_GA);
-
-    }   // end of doing each plugin
-
-  m_CurrentPlugin = pSavedPlugin;
-
+  SendToAllPluginCallbacks (ON_PLUGIN_IAC_GA);
   }   // end of  CMUSHclientDoc::Handle_IAC_GA
 
 void CMUSHclientDoc::Phase_IAC (unsigned char & c)
@@ -164,38 +146,12 @@ void CMUSHclientDoc::Phase_IAC (unsigned char & c)
 bool CMUSHclientDoc::Handle_Telnet_Request (const int iNumber, const string sType)
 
   {
-  bool bOK = false;
 
-  CPlugin * pSavedPlugin = m_CurrentPlugin;
-
-  // tell each plugin what we have received
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // don't default to true if routine does not exist
-    if (!(pPlugin->m_ScriptEngine) || 
-        pPlugin->m_dispid_plugin_telnet_request == DISPID_UNKNOWN)
-      continue;
-
-    // see what the plugin makes of this,
-    if (pPlugin->ExecutePluginScript (ON_PLUGIN_TELNET_REQUEST,
-                                  pPlugin->m_dispid_plugin_telnet_request,
-                                  iNumber,
-                                  sType))  // what we got
-      {
-      bOK = true;
-      break;   // only get the first positive reply
-      }
-
-    }   // end of doing each plugin
-
-    m_CurrentPlugin = pSavedPlugin;
-    return bOK;
+  return SendToAllPluginCallbacks (ON_PLUGIN_TELNET_REQUEST,
+                                    iNumber,
+                                    sType,
+                                    true,     // stop on true response
+                                    false);
 
   } // end of CMUSHclientDoc::Handle_Telnet_Request 
 
@@ -584,26 +540,11 @@ void CMUSHclientDoc::Phase_SUBNEGOTIATION_IAC (const unsigned char c)
 
     default:
       {
-      CPlugin * pSavedPlugin = m_CurrentPlugin;
-
-      // tell each plugin what we have received
-      for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-        {
-        CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-
-        if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-          continue;
-
-        // see what the plugin makes of this,
-        pPlugin->ExecutePluginScript (ON_PLUGIN_TELNET_SUBNEGOTIATION,
-                                      pPlugin->m_dispid_plugin_telnet_subnegotiation,
-                                      m_subnegotiation_type,
-                                      m_IAC_subnegotiation_data);  // what we got
-
-        }   // end of doing each plugin
-
-      m_CurrentPlugin = pSavedPlugin;
+      SendToAllPluginCallbacks (ON_PLUGIN_TELNET_SUBNEGOTIATION,
+                                m_subnegotiation_type,
+                                m_IAC_subnegotiation_data,
+                                false,
+                                false);
 
       }
       break;  // end of default
@@ -748,28 +689,8 @@ void CMUSHclientDoc::Handle_TELOPT_CHARSET ()
 // stuff for Aardwolf (telopt 102) - call specific plugin handler: OnPluginTelnetOption
 void CMUSHclientDoc::Handle_TELOPT_MUD_SPECIFIC ()
   {
-  CPlugin * pSavedPlugin = m_CurrentPlugin;
-
-  // tell each plugin what we have received
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    CString strReceived (m_IAC_subnegotiation_data.c_str ());
-
-    // see what the plugin makes of this,
-    pPlugin->ExecutePluginScript (ON_PLUGIN_TELNET_OPTION,
-                                  strReceived,  // what we got
-                                  pPlugin->m_dispid_plugin_telnet_option); 
-
-    }   // end of doing each plugin
-
-  m_CurrentPlugin = pSavedPlugin;
-
+  CString strReceived (m_IAC_subnegotiation_data.c_str ());
+  SendToAllPluginCallbacks (ON_PLUGIN_TELNET_OPTION, strReceived);
   } // end of CMUSHclientDoc::Handle_TELOPT_MUD_SPECIFIC ()
 
 

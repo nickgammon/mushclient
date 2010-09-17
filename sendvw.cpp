@@ -346,24 +346,9 @@ ASSERT_VALID(pDoc);
 
       }   // end of spell check wanted
 
-    CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-
     // tell each plugin what we have received
     // the plugin callback OnPluginCommandEntered gets a chance to attack the entire command
-    for (POSITION pluginpos = pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-      {
-      CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pluginpos);
-
-
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      // see what the plugin makes of this,
-      pPlugin->ExecutePluginScript (ON_PLUGIN_COMMAND_ENTERED,
-                                    strText,  // input and output command
-                                    pPlugin->m_dispid_plugin_command_entered); 
-      }   // end of doing each plugin
-    pDoc->m_CurrentPlugin = pSavedPlugin;
+    pDoc->SendToAllPluginCallbacksRtn (ON_PLUGIN_COMMAND_ENTERED, strText);
 
     // special string to indicate command should be discarded
     if (strText == "\t")
@@ -955,29 +940,10 @@ ASSERT_VALID(pDoc);
                      nInvocationCount); 
         } // end of executing get focus script
 
-        if (!pDoc->m_bWorldClosing)
-          {
+      if (!pDoc->m_bWorldClosing)
+        pDoc->SendToAllPluginCallbacks (ON_PLUGIN_GETFOCUS);
 
-          // now do plugins "get focus"
-          CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-          pDoc->m_CurrentPlugin = NULL;
-
-          // tell each plugin what we have received
-          for (POSITION pluginpos = pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-            {
-            CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pluginpos);
-
-            if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-              continue;
-
-            // see what the plugin makes of this,
-            pPlugin->ExecutePluginScript (ON_PLUGIN_GETFOCUS, pPlugin->m_dispid_plugin_get_focus);
-            }   // end of doing each plugin
-
-          pDoc->m_CurrentPlugin = pSavedPlugin;
-
-          } // end of world not closing
-        }  // end of not swapping
+      }  // end of not swapping
 
     // make sure status line is updated
     pDoc->ShowStatusLine ();
@@ -1005,26 +971,8 @@ ASSERT_VALID(pDoc);
                      nInvocationCount); 
         } // end of executing lose focus script
 
-        if (!pDoc->m_bWorldClosing)
-          {
-          // now do plugins "lose focus"
-          CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-          pDoc->m_CurrentPlugin = NULL;
-
-          // tell each plugin what we have received
-          for (POSITION pluginpos = pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-            {
-            CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pluginpos);
-
-            if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-              continue;
-
-            // see what the plugin makes of this,
-            pPlugin->ExecutePluginScript (ON_PLUGIN_LOSEFOCUS, pPlugin->m_dispid_plugin_lose_focus);
-            }   // end of doing each plugin
-
-          pDoc->m_CurrentPlugin = pSavedPlugin;
-        } // end of world not closing
+      if (!pDoc->m_bWorldClosing)
+        pDoc->SendToAllPluginCallbacks (ON_PLUGIN_LOSEFOCUS);
 
       }
     // make sure status line is updated
@@ -1222,7 +1170,7 @@ void CSendView::OnChange()
 
   NotifyPluginCommandChanged ();
 
-}
+}   // end of CSendView::OnChange
 
 
 void CSendView::NotifyPluginCommandChanged ()
@@ -1230,27 +1178,14 @@ void CSendView::NotifyPluginCommandChanged ()
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
-    static bool doing_change = false;
+  static bool doing_change = false;
 
-    // tell each plugin the edit window has changed. Hello, Worstje!
+  // tell each plugin the edit window has changed. Hello, Worstje!
 
   if (!doing_change)      // don't recurse
     {
     doing_change = true;
-    for (POSITION pluginpos = pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-      {
-      CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pluginpos);
-
-
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      // see what the plugin makes of this,
-      pPlugin->ExecutePluginScript (ON_PLUGIN_COMMAND_CHANGED,
-                                    pPlugin->m_dispid_plugin_on_command_changed); 
-
-      }   // end of doing each plugin
-
+    pDoc->SendToAllPluginCallbacks (ON_PLUGIN_COMMAND_CHANGED);
     doing_change = false;
     }
 
@@ -1279,7 +1214,7 @@ void CSendView::OnInitialUpdate()
 
   // if they want auto-command size, put back to 1
   AdjustCommandWindowSize ();
-}
+}   // end of CSendView::OnInitialUpdate
 
 void CSendView::OnContextMenu(CWnd*, CPoint point)
 {
@@ -2053,24 +1988,8 @@ while (*p)
       if (pDoc->m_bLowerCaseTabCompletion)
         sReplacement.MakeLower ();
 
-      CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-
-      // tell each plugin what we are doing
-      for (POSITION pluginpos = pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-        {
-        CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pluginpos);
-
-
-        if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-          continue;
-
-        // see what the plugin makes of this,
-        pPlugin->ExecutePluginScript (ON_PLUGIN_TABCOMPLETE,
-                                      sReplacement,  // input and output line
-                                      pPlugin->m_dispid_plugin_tabcomplete); 
-        }   // end of doing each plugin
-
-      pDoc->m_CurrentPlugin = pSavedPlugin;
+      // plugins might change tab-complete string
+      pDoc->SendToAllPluginCallbacksRtn (ON_PLUGIN_TABCOMPLETE, sReplacement);
 
       // stop flicker
       LockWindowUpdate ();

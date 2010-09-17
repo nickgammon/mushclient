@@ -453,21 +453,11 @@ void CMUSHclientDoc::MXP_Entity (CString strName, CString strTag)
 
     // tell each plugin what we have received
     if (m_bPluginProcessesSetEntity)
-      for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-        {
-        CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+      SendToAllPluginCallbacks (ON_PLUGIN_MXP_SETENTITY, 
+                                CFormat ("%s=%s",
+                                (LPCTSTR) strName,
+                                (LPCTSTR) strFixedValue));
 
-        if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-          continue;
-
-        // see what the plugin makes of this,
-        pPlugin->ExecutePluginScript (ON_PLUGIN_MXP_SETENTITY, 
-                              pPlugin->m_dispid_plugin_OnMXP_SetEntity, 
-                              CFormat ("%s=%s",
-                              (LPCTSTR) strName,
-                              (LPCTSTR) strFixedValue)
-                              );
-        }   // end of doing each plugin
     m_CurrentPlugin = NULL;
 
     }

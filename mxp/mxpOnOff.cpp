@@ -80,17 +80,7 @@ void CMUSHclientDoc::MXP_Off (const bool bCompletely)
                      nInvocationCount); 
         }
       } // end of executing close script
-
-    // tell each plugin we have connected
-    for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
-      {
-      CPlugin * pPlugin = m_PluginList.GetNext (pos);
-
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      pPlugin->ExecutePluginScript (ON_PLUGIN_MXP_STOP, pPlugin->m_dispid_plugin_OnMXP_Stop);
-      }   // end of doing each plugin
+    SendToAllPluginCallbacks (ON_PLUGIN_MXP_STOP);
 
     } // end of turn MXP off completely
   }  // end of CMUSHclientDoc::MXP_Off
@@ -127,16 +117,7 @@ void CMUSHclientDoc::MXP_On (const bool bPueblo, const bool bManual)
         }
     } // end of executing open script
 
-  // tell each plugin MXP is starting
-  for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    pPlugin->ExecutePluginScript (ON_PLUGIN_MXP_START, pPlugin->m_dispid_plugin_OnMXP_Start);
-    }   // end of doing each plugin
+ SendToAllPluginCallbacks (ON_PLUGIN_MXP_START);
 
  m_bMXP = true;
  m_bPuebloActive = bPueblo;

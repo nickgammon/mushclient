@@ -28,60 +28,13 @@ CPlugin::CPlugin (CMUSHclientDoc * pDoc)
   m_bGlobal = false;
   m_iLoadOrder = 0;
 
-  // no dispatch IDs yet
-  m_dispid_plugin_install       = DISPID_UNKNOWN;
-  m_dispid_plugin_connect       = DISPID_UNKNOWN;
-  m_dispid_plugin_disconnect    = DISPID_UNKNOWN;
-  m_dispid_plugin_close         = DISPID_UNKNOWN;
-  m_dispid_plugin_save_state    = DISPID_UNKNOWN;
-  m_dispid_plugin_world_save    = DISPID_UNKNOWN;
-  m_dispid_plugin_enable        = DISPID_UNKNOWN;
-  m_dispid_plugin_disable       = DISPID_UNKNOWN; 
-  m_dispid_plugin_command       = DISPID_UNKNOWN;
-  m_dispid_plugin_command_entered       = DISPID_UNKNOWN;
-  m_dispid_plugin_get_focus     = DISPID_UNKNOWN;
-  m_dispid_plugin_lose_focus    = DISPID_UNKNOWN;
-  m_dispid_plugin_trace         = DISPID_UNKNOWN;
-  m_dispid_plugin_broadcast     = DISPID_UNKNOWN;
-  m_dispid_plugin_screendraw    = DISPID_UNKNOWN;
-  m_dispid_plugin_playsound     = DISPID_UNKNOWN;
-  m_dispid_plugin_tabcomplete   = DISPID_UNKNOWN;
-//  m_dispid_plugin_tooltip       = DISPID_UNKNOWN;
-  m_dispid_plugin_tick          = DISPID_UNKNOWN;
-  m_dispid_plugin_mouse_moved   = DISPID_UNKNOWN;
-
-  m_dispid_plugin_send          = DISPID_UNKNOWN;
-  m_dispid_plugin_sent          = DISPID_UNKNOWN;
-  m_dispid_plugin_line_received = DISPID_UNKNOWN;
-  m_dispid_plugin_packet_received= DISPID_UNKNOWN;
-  m_dispid_plugin_telnet_option  = DISPID_UNKNOWN;
-  m_dispid_plugin_telnet_request = DISPID_UNKNOWN;
-  m_dispid_plugin_telnet_subnegotiation = DISPID_UNKNOWN;
-  m_dispid_plugin_IAC_GA         = DISPID_UNKNOWN;
-  m_dispid_plugin_partial_line          = DISPID_UNKNOWN;
-  m_dispid_plugin_on_world_output_resized = DISPID_UNKNOWN;
-  m_dispid_plugin_on_command_changed = DISPID_UNKNOWN;
-
-  m_dispid_plugin_OnMXP_Start     = DISPID_UNKNOWN;      
-  m_dispid_plugin_OnMXP_Stop      = DISPID_UNKNOWN;       
-  m_dispid_plugin_OnMXP_OpenTag   = DISPID_UNKNOWN;    
-  m_dispid_plugin_OnMXP_CloseTag  = DISPID_UNKNOWN;   
-  m_dispid_plugin_OnMXP_SetVariable = DISPID_UNKNOWN;
-  m_dispid_plugin_OnMXP_SetEntity = DISPID_UNKNOWN;
-  m_dispid_plugin_OnMXP_Error     = DISPID_UNKNOWN;      
-
-  m_dispid_plugin_On_Chat_Accept  = DISPID_UNKNOWN;
-  m_dispid_plugin_On_Chat_Message = DISPID_UNKNOWN;
-  m_dispid_plugin_On_Chat_MessageOut = DISPID_UNKNOWN;
-  m_dispid_plugin_On_Chat_Display = DISPID_UNKNOWN;
-
   } // end of constructor
 
 // destructor
 CPlugin::~CPlugin () 
   {
   CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin;    
-  ExecutePluginScript (ON_PLUGIN_CLOSE, m_dispid_plugin_close);
+  ExecutePluginScript (ON_PLUGIN_CLOSE);
   m_pDoc->m_CurrentPlugin = pSavedPlugin;
 
   SaveState ();
@@ -113,8 +66,10 @@ DISPID CPlugin::GetPluginDispid (const char * sName)
 
   } // end of CPlugin::GetPluginDispid
 
-void CPlugin::ExecutePluginScript (const char * sName, DISPID & iRoutine)
+void CPlugin::ExecutePluginScript (const char * sName)
   {
+
+  DISPID & iRoutine = m_PluginCallbacks [sName];
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
@@ -162,9 +117,9 @@ void CPlugin::ExecutePluginScript (const char * sName, DISPID & iRoutine)
 
 
 bool CPlugin::ExecutePluginScript (const char * sName, 
-                                   DISPID & iRoutine, 
                                    const char * sText)
   {
+  DISPID & iRoutine = m_PluginCallbacks [sName];
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
@@ -248,10 +203,11 @@ bool CPlugin::ExecutePluginScript (const char * sName,
   }  // end of CPlugin::ExecutePluginScript
 
 bool CPlugin::ExecutePluginScript (const char * sName, 
-                                  DISPID & iRoutine, 
                                   const long arg1,
                                   const string sText)
   {
+  DISPID & iRoutine = m_PluginCallbacks [sName];
+
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
     // do this so plugin can find its own state (eg. with GetPluginID)
@@ -343,11 +299,12 @@ bool CPlugin::ExecutePluginScript (const char * sName,
   } // end of CPlugin::ExecutePluginScript
 
 bool CPlugin::ExecutePluginScript (const char * sName, 
-                                  DISPID & iRoutine, 
                                   const long arg1,
                                   const long arg2,
                                   const string sText)
   {
+  DISPID & iRoutine = m_PluginCallbacks [sName];
+
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
     long nInvocationCount = 0;
@@ -436,12 +393,13 @@ bool CPlugin::ExecutePluginScript (const char * sName,
 
 
 bool CPlugin::ExecutePluginScript (const char * sName, 
-                                  DISPID & iRoutine, 
                                   const long arg1,
                                   const char * arg2,
                                   const char * arg3,
                                   const char * arg4)
   {
+  DISPID & iRoutine = m_PluginCallbacks [sName];
+
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
     long nInvocationCount = 0;
@@ -531,10 +489,10 @@ bool CPlugin::ExecutePluginScript (const char * sName,
 
   } // end of CPlugin::ExecutePluginScript
 
-void CPlugin::ExecutePluginScript (const char * sName, 
-                                   CString & strText,
-                                   DISPID & iRoutine) 
+void CPlugin::ExecutePluginScriptRtn (const char * sName, 
+                                   CString & strText) 
   {
+  DISPID & iRoutine = m_PluginCallbacks [sName];
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
@@ -716,7 +674,7 @@ bool bError = true;
     }  // end of no save state folder
 
 
-  ExecutePluginScript (ON_PLUGIN_SAVE_STATE, m_dispid_plugin_save_state);
+  ExecutePluginScript (ON_PLUGIN_SAVE_STATE);
 
   strFilename += m_pDoc->m_strWorldID;    // world ID
   strFilename += "-";
@@ -1308,5 +1266,5 @@ void CMUSHclientDoc::OnFilePluginwizard()
 		e->Delete();
 	}       // end of catch
 
-}
+}  // end of CMUSHclientDoc::OnFilePluginwizard
 
