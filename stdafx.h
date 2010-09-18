@@ -19,7 +19,7 @@
 #pragma warning (disable : 4663)  // C++ language change: to explicitly specialize class template yadda yadda
 #pragma warning (disable : 4702)  // unreachable code
 #pragma warning (disable : 4706)  // assignment within conditional expression
-#pragma warning (disable : 4710)  // function 'x' not inlined
+//#pragma warning (disable : 4710)  // function 'x' not inlined
 #pragma warning (disable : 4786)  // identifier was truncated to 'number' characters in the debug information
 
 
