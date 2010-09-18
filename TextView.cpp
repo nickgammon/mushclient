@@ -125,8 +125,6 @@ END_MESSAGE_MAP()
 
 void CTextView::OnDraw(CDC* pDC)
 {
-	CDocument* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
 }
 
 /////////////////////////////////////////////////////////////////////////////

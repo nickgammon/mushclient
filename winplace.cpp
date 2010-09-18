@@ -84,10 +84,6 @@ BOOL CWindowPlacement::Restore(LPCSTR lpKeyName,
 // Get window placement from profile.
 void CWindowPlacement::GetProfileWP(LPCSTR lpKeyName)
 {
-   CWinApp *pApp = AfxGetApp();
-   ASSERT_VALID(pApp);
-
-
   showCmd         = App.db_get_int ("worlds", (LPCTSTR) CFormat ("%s:%s", lpKeyName, "wp.showCmd"), showCmd);
   flags           = App.db_get_int ("worlds", (LPCTSTR) CFormat ("%s:%s", lpKeyName, "wp.flags"), flags);
 
@@ -121,10 +117,6 @@ void CWindowPlacement::Save(LPCSTR lpKeyName, CWnd* pWnd)
 // Write window placement to app profile
 void CWindowPlacement::WriteProfileWP(LPCSTR lpKeyName)
 {
-   CWinApp *pApp = AfxGetApp();
-   ASSERT_VALID(pApp);
-
-
    int rc = App.db_execute ("BEGIN TRANSACTION", true);
 
    // give it up if we can't get a transaction going - it's no big deal

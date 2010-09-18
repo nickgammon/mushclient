@@ -10,6 +10,80 @@
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
+// plugin callback routines - start with OnPlugin so that we can advise
+// users not to use that string for their own routines
+
+// install / remove
+const string ON_PLUGIN_INSTALL               ("OnPluginInstall");
+const string ON_PLUGIN_CLOSE                 ("OnPluginClose");
+const string ON_PLUGIN_LIST_CHANGED          ("OnPluginListChanged");
+
+// connect / disconnect
+const string ON_PLUGIN_CONNECT               ("OnPluginConnect");
+const string ON_PLUGIN_DISCONNECT            ("OnPluginDisconnect");
+
+// saving
+const string ON_PLUGIN_SAVE_STATE            ("OnPluginSaveState");
+const string ON_PLUGIN_WORLD_SAVE            ("OnPluginWorldSave");
+
+// enable / disable
+const string ON_PLUGIN_ENABLE                ("OnPluginEnable");
+const string ON_PLUGIN_DISABLE               ("OnPluginDisable");
+
+// the focus                                        
+const string ON_PLUGIN_GETFOCUS              ("OnPluginGetFocus");
+const string ON_PLUGIN_LOSEFOCUS             ("OnPluginLoseFocus"); 
+
+// capture stuff
+const string ON_PLUGIN_TRACE                 ("OnPluginTrace"); 
+const string ON_PLUGIN_BROADCAST             ("OnPluginBroadcast"); 
+const string ON_PLUGIN_SCREENDRAW            ("OnPluginScreendraw"); 
+
+// sounds
+const string ON_PLUGIN_PLAYSOUND             ("OnPluginPlaySound"); 
+
+// stuff received/sent                
+const string ON_PLUGIN_SEND                  ("OnPluginSend"); 
+const string ON_PLUGIN_SENT                  ("OnPluginSent"); 
+const string ON_PLUGIN_PARTIAL_LINE          ("OnPluginPartialLine");
+const string ON_PLUGIN_LINE_RECEIVED         ("OnPluginLineReceived");    
+const string ON_PLUGIN_PACKET_RECEIVED       ("OnPluginPacketReceived");    
+
+// telnet negotiation    
+const string ON_PLUGIN_TELNET_OPTION         ("OnPluginTelnetOption");    
+const string ON_PLUGIN_TELNET_REQUEST        ("OnPluginTelnetRequest");    
+const string ON_PLUGIN_TELNET_SUBNEGOTIATION ("OnPluginTelnetSubnegotiation");    
+const string ON_PLUGIN_IAC_GA                ("OnPlugin_IAC_GA");  
+
+// commands
+const string ON_PLUGIN_COMMAND               ("OnPluginCommand"); 
+const string ON_PLUGIN_COMMAND_ENTERED       ("OnPluginCommandEntered"); 
+const string ON_PLUGIN_COMMAND_CHANGED       ("OnPluginCommandChanged");    
+const string ON_PLUGIN_TABCOMPLETE           ("OnPluginTabComplete"); 
+
+// resizing, ticking, moving, rhythm  
+const string ON_PLUGIN_WORLD_OUTPUT_RESIZED  ("OnPluginWorldOutputResized");    
+const string ON_PLUGIN_TICK                  ("OnPluginTick");    
+const string ON_PLUGIN_MOUSE_MOVED           ("OnPluginMouseMoved");    
+
+// MXP stuff
+const string ON_PLUGIN_MXP_START             ("OnPluginMXPstart");
+const string ON_PLUGIN_MXP_STOP              ("OnPluginMXPstop");
+const string ON_PLUGIN_MXP_OPENTAG           ("OnPluginMXPopenTag");    
+const string ON_PLUGIN_MXP_CLOSETAG          ("OnPluginMXPcloseTag");
+const string ON_PLUGIN_MXP_SETVARIABLE       ("OnPluginMXPsetVariable");
+const string ON_PLUGIN_MXP_SETENTITY         ("OnPluginMXPsetEntity");
+const string ON_PLUGIN_MXP_ERROR             ("OnPluginMXPerror");
+
+// chat stuff
+const string ON_PLUGIN_CHAT_ACCEPT           ("OnPluginChatAccept");
+const string ON_PLUGIN_CHAT_MESSAGE          ("OnPluginChatMessage");
+const string ON_PLUGIN_CHAT_MESSAGE_OUT      ("OnPluginChatMessageOut");
+const string ON_PLUGIN_CHAT_DISPLAY          ("OnPluginChatDisplay");
+const string ON_PLUGIN_CHAT_NEWUSER          ("OnPluginChatNewUser");
+const string ON_PLUGIN_CHAT_USERDISCONNECT   ("OnPluginChatUserDisconnect");
+
+
 // possible plugin callbacks
 string PluginCallbacksNames [] = {
  

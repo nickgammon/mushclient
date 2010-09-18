@@ -1740,9 +1740,6 @@ ASSERT_VALID(pDoc);
 
 void CSendView::OnRepeatLastCommand() 
 {
-	CMUSHclientDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
-
   POSITION pos = m_msgList.GetTailPosition ();   // if at bottom, get it
   CString strText;
 
@@ -1752,7 +1749,7 @@ void CSendView::OnRepeatLastCommand()
    strText = m_msgList.GetAt (pos);    // if found, get its text
 
   SendCommand (strText, TRUE);
-	
+
 }
 
 void CSendView::OnUpdateRepeatLastCommand(CCmdUI* pCmdUI) 

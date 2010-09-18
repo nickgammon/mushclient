@@ -1312,9 +1312,6 @@ COLORREF iBackColour = BLACK;
 
 void CMUSHView::OnInitialUpdate()
 {
-  CMUSHclientDoc* pDoc = GetDocument();
-  ASSERT_VALID(pDoc);
-
   CView::OnInitialUpdate();
 
   CSize sizeTotal;
@@ -1473,13 +1470,9 @@ ScrollToPosition (pt, false);
 
 void CMUSHView::OnTestStart() 
 {
-CMUSHclientDoc* pDoc = GetDocument();
-ASSERT_VALID(pDoc);
-
 POINT pt = {0, 0};
 
 ScrollToPosition (pt, false);
-
 }
 
 
@@ -2898,10 +2891,6 @@ long startcol,
 
 BOOL CMUSHView::OnEraseBkgnd(CDC* pDC) 
 {
-CMUSHclientDoc* pDoc = GetDocument();
-ASSERT_VALID(pDoc);
-
-
   return FALSE;
 }
 
@@ -6229,13 +6218,11 @@ DISPID iDispid = pPlugin->m_ScriptEngine->GetDispid (sRoutineName.c_str ());
   // change to this plugin, call function, put current plugin back
   CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
   pDoc->m_CurrentPlugin = pPlugin;   
-  CScriptDispatchID dispid_info;
-  dispid_info._dispid = iDispid;
+  CScriptDispatchID dispid_info (iDispid);
   CScriptCallInfo callinfo (sRoutineName.c_str (), dispid_info);
   pPlugin->ExecutePluginScript (callinfo, 
                                 Flags,              // keyboard flags
-                                HotspotId.c_str ()  // which hotspot
-                                );
+                                HotspotId.c_str ());  // which hotspot
   pDoc->m_CurrentPlugin = pSavedPlugin;
 
 

@@ -1044,8 +1044,10 @@ void ShutDownSocket (CAsyncSocket & s)
     // stop asynchronous notifications (otherwise IOCtl will fail)
     if (!s.AsyncSelect (0))
       {
+#ifdef _DEBUG
       int iError = s.GetLastError ();
       TRACE1 ("Error on AsyncSelect: %08X\n", iError);
+#endif
       } // end of failure
 
 /*

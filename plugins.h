@@ -5,6 +5,11 @@
 class CScriptDispatchID
   {
   public:
+    // constructor
+    CScriptDispatchID (DISPID dispid) : 
+                      _dispid (dispid), 
+                      _count (0) {};
+
     // default constructor
     CScriptDispatchID () : 
                       _dispid (DISPID_UNKNOWN), 
@@ -125,80 +130,78 @@ class CPlugin :public CObject
 
 typedef CTypedPtrList <CPtrList, CPlugin*> CPluginList;
 
-
-
 // plugin callback routines - start with OnPlugin so that we can advise
 // users not to use that string for their own routines
 
 // install / remove
-const string ON_PLUGIN_INSTALL               ("OnPluginInstall");
-const string ON_PLUGIN_CLOSE                 ("OnPluginClose");
-const string ON_PLUGIN_LIST_CHANGED          ("OnPluginListChanged");
+extern const string ON_PLUGIN_INSTALL;
+extern const string ON_PLUGIN_CLOSE;
+extern const string ON_PLUGIN_LIST_CHANGED;
 
 // connect / disconnect
-const string ON_PLUGIN_CONNECT               ("OnPluginConnect");
-const string ON_PLUGIN_DISCONNECT            ("OnPluginDisconnect");
+extern const string ON_PLUGIN_CONNECT;
+extern const string ON_PLUGIN_DISCONNECT;
 
 // saving
-const string ON_PLUGIN_SAVE_STATE            ("OnPluginSaveState");
-const string ON_PLUGIN_WORLD_SAVE            ("OnPluginWorldSave");
+extern const string ON_PLUGIN_SAVE_STATE;
+extern const string ON_PLUGIN_WORLD_SAVE;
 
 // enable / disable
-const string ON_PLUGIN_ENABLE                ("OnPluginEnable");
-const string ON_PLUGIN_DISABLE               ("OnPluginDisable");
+extern const string ON_PLUGIN_ENABLE;
+extern const string ON_PLUGIN_DISABLE;
 
-// the focus                                        
-const string ON_PLUGIN_GETFOCUS              ("OnPluginGetFocus");
-const string ON_PLUGIN_LOSEFOCUS             ("OnPluginLoseFocus"); 
+// the focus                                 
+extern const string ON_PLUGIN_GETFOCUS;
+extern const string ON_PLUGIN_LOSEFOCUS;
 
 // capture stuff
-const string ON_PLUGIN_TRACE                 ("OnPluginTrace"); 
-const string ON_PLUGIN_BROADCAST             ("OnPluginBroadcast"); 
-const string ON_PLUGIN_SCREENDRAW            ("OnPluginScreendraw"); 
+extern const string ON_PLUGIN_TRACE;
+extern const string ON_PLUGIN_BROADCAST;
+extern const string ON_PLUGIN_SCREENDRAW;
 
 // sounds
-const string ON_PLUGIN_PLAYSOUND             ("OnPluginPlaySound"); 
+extern const string ON_PLUGIN_PLAYSOUND;
 
 // stuff received/sent                
-const string ON_PLUGIN_SEND                  ("OnPluginSend"); 
-const string ON_PLUGIN_SENT                  ("OnPluginSent"); 
-const string ON_PLUGIN_PARTIAL_LINE          ("OnPluginPartialLine");
-const string ON_PLUGIN_LINE_RECEIVED         ("OnPluginLineReceived");    
-const string ON_PLUGIN_PACKET_RECEIVED       ("OnPluginPacketReceived");    
+extern const string ON_PLUGIN_SEND;
+extern const string ON_PLUGIN_SENT;
+extern const string ON_PLUGIN_PARTIAL_LINE;
+extern const string ON_PLUGIN_LINE_RECEIVED;
+extern const string ON_PLUGIN_PACKET_RECEIVED;
 
 // telnet negotiation    
-const string ON_PLUGIN_TELNET_OPTION         ("OnPluginTelnetOption");    
-const string ON_PLUGIN_TELNET_REQUEST        ("OnPluginTelnetRequest");    
-const string ON_PLUGIN_TELNET_SUBNEGOTIATION ("OnPluginTelnetSubnegotiation");    
-const string ON_PLUGIN_IAC_GA                ("OnPlugin_IAC_GA");  
+extern const string ON_PLUGIN_TELNET_OPTION;
+extern const string ON_PLUGIN_TELNET_REQUEST;
+extern const string ON_PLUGIN_TELNET_SUBNEGOTIATION;
+extern const string ON_PLUGIN_IAC_GA;
 
 // commands
-const string ON_PLUGIN_COMMAND               ("OnPluginCommand"); 
-const string ON_PLUGIN_COMMAND_ENTERED       ("OnPluginCommandEntered"); 
-const string ON_PLUGIN_COMMAND_CHANGED       ("OnPluginCommandChanged");    
-const string ON_PLUGIN_TABCOMPLETE           ("OnPluginTabComplete"); 
+extern const string ON_PLUGIN_COMMAND;
+extern const string ON_PLUGIN_COMMAND_ENTERED;
+extern const string ON_PLUGIN_COMMAND_CHANGED;
+extern const string ON_PLUGIN_TABCOMPLETE;
 
 // resizing, ticking, moving, rhythm  
-const string ON_PLUGIN_WORLD_OUTPUT_RESIZED  ("OnPluginWorldOutputResized");    
-const string ON_PLUGIN_TICK                  ("OnPluginTick");    
-const string ON_PLUGIN_MOUSE_MOVED           ("OnPluginMouseMoved");    
+extern const string ON_PLUGIN_WORLD_OUTPUT_RESIZED;
+extern const string ON_PLUGIN_TICK;
+extern const string ON_PLUGIN_MOUSE_MOVED;
 
 // MXP stuff
-const string ON_PLUGIN_MXP_START             ("OnPluginMXPstart");
-const string ON_PLUGIN_MXP_STOP              ("OnPluginMXPstop");
-const string ON_PLUGIN_MXP_OPENTAG           ("OnPluginMXPopenTag");    
-const string ON_PLUGIN_MXP_CLOSETAG          ("OnPluginMXPcloseTag");
-const string ON_PLUGIN_MXP_SETVARIABLE       ("OnPluginMXPsetVariable");
-const string ON_PLUGIN_MXP_SETENTITY         ("OnPluginMXPsetEntity");
-const string ON_PLUGIN_MXP_ERROR             ("OnPluginMXPerror");
+extern const string ON_PLUGIN_MXP_START;
+extern const string ON_PLUGIN_MXP_STOP;
+extern const string ON_PLUGIN_MXP_OPENTAG;
+extern const string ON_PLUGIN_MXP_CLOSETAG;
+extern const string ON_PLUGIN_MXP_SETVARIABLE;
+extern const string ON_PLUGIN_MXP_SETENTITY;
+extern const string ON_PLUGIN_MXP_ERROR;
 
 // chat stuff
-const string ON_PLUGIN_CHAT_ACCEPT           ("OnPluginChatAccept");
-const string ON_PLUGIN_CHAT_MESSAGE          ("OnPluginChatMessage");
-const string ON_PLUGIN_CHAT_MESSAGE_OUT      ("OnPluginChatMessageOut");
-const string ON_PLUGIN_CHAT_DISPLAY          ("OnPluginChatDisplay");
-const string ON_PLUGIN_CHAT_NEWUSER          ("OnPluginChatNewUser");
-const string ON_PLUGIN_CHAT_USERDISCONNECT   ("OnPluginChatUserDisconnect");
+extern const string ON_PLUGIN_CHAT_ACCEPT;
+extern const string ON_PLUGIN_CHAT_MESSAGE;
+extern const string ON_PLUGIN_CHAT_MESSAGE_OUT;
+extern const string ON_PLUGIN_CHAT_DISPLAY;
+extern const string ON_PLUGIN_CHAT_NEWUSER;
+extern const string ON_PLUGIN_CHAT_USERDISCONNECT;
 
 // table of callbacks
 extern string PluginCallbacksNames [];
