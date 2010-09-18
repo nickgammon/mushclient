@@ -48,6 +48,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/D &quot;_CRT_SECURE_NO_WARNINGS&quot;"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)luacom\&quot;"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;LUA51"
@@ -61,7 +62,7 @@
 				ProgramDataBaseFileName=".\WinDebug/"
 				BrowseInformation="1"
 				BrowseInformationFile=".\WinDebug/"
-				WarningLevel="1"
+				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 			/>
@@ -145,6 +146,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/D &quot;_CRT_SECURE_NO_WARNINGS&quot;"
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;"
