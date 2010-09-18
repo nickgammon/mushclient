@@ -2063,13 +2063,17 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
       if (it->second.isvalid () || it->second._count > 0)
         {
         iCount++;
-        Note ( CFormat ("%-30s -> Valid: %s.  %10I64i call%s.", 
+        CString strColour = enabledFore;
+        if (!it->second.isvalid ())
+          strColour = disabledFore; 
+
+        ColourNote (strColour, "", CFormat ("%-30s -> Valid: %3s  %10I64i call%s.", 
                                   it->first.c_str (),
                                   SHOW_TRUE (it->second.isvalid ()),
                                   PLURAL (it->second._count)
                                   ));
 
-        }
+        }  // end if valid or non-zero count (and for loop)
 
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", TFormat ("%i callback%s.", PLURAL (iCount)));
 

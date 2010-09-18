@@ -8050,30 +8050,9 @@ static bool bInPluginListChanged = false;
   }    // end CMUSHclientDoc::PluginListChanged 
 
 
-void  CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName)   // no arguments
+void CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName)   // no arguments
   {
   CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL; // not sure about this
-
-  // tell a plugin the message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-    if (pPlugin->m_bEnabled)   // ignore disabled plugins
-      pPlugin->ExecutePluginScript (sName);
-
-    }   // end of doing each plugin
-
-  m_CurrentPlugin = pSavedPlugin;
-
-  } // end of CMUSHclientDoc::SendToAllPluginCallbacks
-
-// this is for when we want the first available plugin to handle something (eg. Trace, Sound)
-bool CMUSHclientDoc::SendToFirstPluginCallbacks (const char * sName, const char * sText)   // one argument
-  {
-  CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL; // not sure about this
 
   // tell a plugin the message
   for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
@@ -8083,18 +8062,42 @@ bool CMUSHclientDoc::SendToFirstPluginCallbacks (const char * sName, const char 
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
 
-    // see what the plugin makes of this,
-    pPlugin->ExecutePluginScript (sName, sText); 
+    // change to this plugin, call function, put current plugin back
+    m_CurrentPlugin = pPlugin;        // so plugin knows who it is
+    CScriptCallInfo callinfo (sName, pPlugin->m_PluginCallbacks [sName]);
+    pPlugin->ExecutePluginScript (callinfo);
+    m_CurrentPlugin = pSavedPlugin;  // back to current plugin
 
-    if (pPlugin->m_PluginCallbacks [sName].isvalid ())
+    }   // end of doing each plugin
+
+  } // end of CMUSHclientDoc::SendToAllPluginCallbacks
+
+// this is for when we want the first available plugin to handle something (eg. Trace, Sound)
+bool CMUSHclientDoc::SendToFirstPluginCallbacks (const char * sName, const char * sText)   // one argument
+  {
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+
+  // tell a plugin the message
+  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+    {
+    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+
+    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
+      continue;
+
+    // change to this plugin, call function, put current plugin back
+    m_CurrentPlugin = pPlugin;        // so plugin knows who it is
+    CScriptCallInfo callinfo (sName, pPlugin->m_PluginCallbacks [sName]);
+    pPlugin->ExecutePluginScript (callinfo, sText); 
+    m_CurrentPlugin = pSavedPlugin;   // back to current plugin
+
+    if (callinfo._dispid_info.isvalid ())
       {
       m_CurrentPlugin = pSavedPlugin;
       return true;   // indicate we found it
       }
 
     }   // end of doing each plugin
-
-  m_CurrentPlugin = pSavedPlugin;
 
   return false;  // didn't find one
   } // end of CMUSHclientDoc::SendToFirstPluginCallbacks
@@ -8107,7 +8110,6 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
                                                const bool bStopOnFalse)
   {
   CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL; // not sure about this
   bool bResult = true;    // assume they OK'd something
 
   // tell a plugin the message
@@ -8115,16 +8117,20 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
     {
     CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
 
-    if (pPlugin->m_bEnabled)   // ignore disabled plugins
-      if (!pPlugin->ExecutePluginScript (sName, sText))
-        bResult = false;
+    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
+      continue;
 
-    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName].isvalid ())
+    // change to this plugin, call function, put current plugin back
+    m_CurrentPlugin = pPlugin;        // so plugin knows who it is
+    CScriptCallInfo callinfo (sName, pPlugin->m_PluginCallbacks [sName]);
+    if (!pPlugin->ExecutePluginScript (callinfo, sText))
+        bResult = false;
+    m_CurrentPlugin = pSavedPlugin;  // back to current plugin
+
+    if (bStopOnFalse && !bResult && callinfo._dispid_info.isvalid ())
       return false;
 
     }   // end of doing each plugin
-
-  m_CurrentPlugin = pSavedPlugin;
 
   return bResult;
   } // end of CMUSHclientDoc::SendToAllPluginCallbacks
@@ -8134,19 +8140,22 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
 void CMUSHclientDoc::SendToAllPluginCallbacksRtn (const char * sName, CString & strResult)  // taking and returning a string
   {
   CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL; // not sure about this
 
   // tell a plugin the message
   for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
     {
     CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
 
-    if (pPlugin->m_bEnabled)   // ignore disabled plugins
-      pPlugin->ExecutePluginScriptRtn (sName, strResult);
+    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
+      continue;
+
+    // change to this plugin, call function, put current plugin back
+    m_CurrentPlugin = pPlugin;        // so plugin knows who it is
+    CScriptCallInfo callinfo (sName, pPlugin->m_PluginCallbacks [sName]);
+    pPlugin->ExecutePluginScriptRtn (callinfo, strResult);
+    m_CurrentPlugin = pSavedPlugin;   // back to current plugin
 
     }   // end of doing each plugin
-
-  m_CurrentPlugin = pSavedPlugin;
 
   } // end of CMUSHclientDoc::SendToAllPluginCallbacks
 
@@ -8159,7 +8168,6 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
                                                const bool bStopOnFalse)
   {
   CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL; // not sure about this
 
   // tell a plugin the message
   for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
@@ -8169,17 +8177,20 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
 
-    bool bResult = pPlugin->ExecutePluginScript (sName, arg1, sText);
+    // change to this plugin, call function, put current plugin back
+    m_CurrentPlugin = pPlugin;        // so plugin knows who it is
+    CScriptCallInfo callinfo (sName, pPlugin->m_PluginCallbacks [sName]);
+    bool bResult = pPlugin->ExecutePluginScript (callinfo, arg1, sText);
+    m_CurrentPlugin = pSavedPlugin;  // back to current plugin
 
-    if (bStopOnTrue && bResult && pPlugin->m_PluginCallbacks [sName].isvalid ())
+    if (bStopOnTrue && bResult && callinfo._dispid_info.isvalid ())
       return true;
 
-    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName].isvalid ())
+    if (bStopOnFalse && !bResult && callinfo._dispid_info.isvalid ())
       return false;
 
     }   // end of doing each plugin
 
-  m_CurrentPlugin = pSavedPlugin;
 
   if (bStopOnTrue)
     return false;
@@ -8197,7 +8208,6 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
                                                const bool bStopOnFalse)
   {
   CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL; // not sure about this
 
   // tell a plugin the message
   for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
@@ -8207,17 +8217,19 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
 
-    bool bResult = pPlugin->ExecutePluginScript (sName, arg1, arg2, sText);
+    // change to this plugin, call function, put current plugin back
+    m_CurrentPlugin = pPlugin;        // so plugin knows who it is
+    CScriptCallInfo callinfo (sName, pPlugin->m_PluginCallbacks [sName]);
+    bool bResult = pPlugin->ExecutePluginScript (callinfo, arg1, arg2, sText);
+    m_CurrentPlugin = pSavedPlugin;   // back to current plugin
 
-    if (bStopOnTrue && bResult && pPlugin->m_PluginCallbacks [sName].isvalid ())
+    if (bStopOnTrue && bResult && callinfo._dispid_info.isvalid ())
       return true;
 
-    if (bStopOnFalse && !bResult && pPlugin->m_PluginCallbacks [sName].isvalid ())
+    if (bStopOnFalse && !bResult && callinfo._dispid_info.isvalid ())
       return false;
 
     }   // end of doing each plugin
-
-  m_CurrentPlugin = pSavedPlugin;
 
   if (bStopOnTrue)
     return false;

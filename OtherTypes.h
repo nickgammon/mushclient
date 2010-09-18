@@ -938,6 +938,17 @@ class CScriptDispatchID
 typedef map<const string, CScriptDispatchID> CScriptDispatchIDsMap;
 typedef map<const string, CScriptDispatchID>::const_iterator CScriptDispatchIDIterator;
 
+class CScriptCallInfo
+  {
+  public:
+
+  CScriptCallInfo (const string name, CScriptDispatchID & dispid_info)
+    :  _dispid_info (dispid_info), _name (name) {};
+
+  CScriptDispatchID & _dispid_info;
+  const string _name;
+
+  }; // end of class CScriptCallInfo
 
 class CScriptEngine;
 
@@ -996,22 +1007,22 @@ class CPlugin :public CObject
   ~CPlugin (); // destructor
   bool SaveState (const bool bScripted = false);
   DISPID GetPluginDispid (const char * sName);
-  void ExecutePluginScript (const char * sName);   // no arguments
-  bool ExecutePluginScript (const char * sName, 
+  void ExecutePluginScript (CScriptCallInfo & callinfo);   // no arguments
+  bool ExecutePluginScript (CScriptCallInfo & callinfo, 
                             const char * sText);  // 1 argument
-  bool ExecutePluginScript (const char * sName, 
+  bool ExecutePluginScript (CScriptCallInfo & callinfo, 
                             const long arg1,      // 2 arguments
                             const string sText);
-  bool ExecutePluginScript (const char * sName, 
+  bool ExecutePluginScript (CScriptCallInfo & callinfo, 
                             const long arg1,      // 3 arguments
                             const long arg2,
                             const string sText);
-  bool ExecutePluginScript (const char * sName, 
+  bool ExecutePluginScript (CScriptCallInfo & callinfo, 
                             const long arg1,      // 1 number, 3 strings
                             const char * arg2,
                             const char * arg3,
                             const char * arg4);
-  void ExecutePluginScriptRtn (const char * sName,
+  void ExecutePluginScriptRtn (CScriptCallInfo & callinfo,
                             CString & strResult);  // taking and returning a string
 
   };

@@ -96,63 +96,7 @@ the root level. ie.
 
 */
 
-const char * PluginCallbacksNames [] = {
- 
-   ON_PLUGIN_BROADCAST,             
-     
-   ON_PLUGIN_CHAT_ACCEPT,           
-   ON_PLUGIN_CHAT_DISPLAY,          
-   ON_PLUGIN_CHAT_MESSAGE,          
-   ON_PLUGIN_CHAT_MESSAGE_OUT,      
-   ON_PLUGIN_CHAT_NEWUSER,          
-   ON_PLUGIN_CHAT_USERDISCONNECT,   
-     
-   ON_PLUGIN_CLOSE,                 
-   ON_PLUGIN_COMMAND,               
-   ON_PLUGIN_COMMAND_CHANGED,       
-   ON_PLUGIN_COMMAND_ENTERED,       
-   ON_PLUGIN_CONNECT,               
-   ON_PLUGIN_DISABLE,               
-   ON_PLUGIN_DISCONNECT,            
-   ON_PLUGIN_ENABLE,                
-   ON_PLUGIN_GETFOCUS,              
-   ON_PLUGIN_IAC_GA,                
-   ON_PLUGIN_INSTALL,               
-   ON_PLUGIN_LINE_RECEIVED,         
-   ON_PLUGIN_LIST_CHANGED,          
-   ON_PLUGIN_LOSEFOCUS,             
-   ON_PLUGIN_MOUSE_MOVED,           
-
-   ON_PLUGIN_MXP_CLOSETAG,          
-   ON_PLUGIN_MXP_ERROR,             
-   ON_PLUGIN_MXP_OPENTAG,           
-   ON_PLUGIN_MXP_SETENTITY,         
-   ON_PLUGIN_MXP_SETVARIABLE,       
-   ON_PLUGIN_MXP_START,             
-   ON_PLUGIN_MXP_STOP,              
-
-   ON_PLUGIN_PACKET_RECEIVED,       
-   ON_PLUGIN_PARTIAL_LINE,          
-   ON_PLUGIN_PLAYSOUND,             
-   ON_PLUGIN_SAVE_STATE,            
-   ON_PLUGIN_SCREENDRAW,            
-   ON_PLUGIN_SEND,                  
-   ON_PLUGIN_SENT,                  
-   ON_PLUGIN_TABCOMPLETE,           
-
-   ON_PLUGIN_TELNET_OPTION,         
-   ON_PLUGIN_TELNET_REQUEST,        
-   ON_PLUGIN_TELNET_SUBNEGOTIATION, 
-
-   ON_PLUGIN_TICK,                  
-   ON_PLUGIN_TRACE,                 
-   ON_PLUGIN_WORLD_OUTPUT_RESIZED,  
-   ON_PLUGIN_WORLD_SAVE,            
-
-  NULL   // end of table marker            
-
-  };  // end of PluginCallbacksNames 
-
+extern const char * PluginCallbacksNames [1];
 extern tConfigurationNumericOption OptionsTable [];
 extern tConfigurationAlphaOption AlphaOptionsTable [];
 extern UINT iLineLastItemFound;
@@ -508,7 +452,8 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
 
 //      ::TMessageBox ("Plugin OnInstall");
       
-      m_CurrentPlugin->ExecutePluginScript (ON_PLUGIN_INSTALL);
+      CScriptCallInfo callinfo (ON_PLUGIN_INSTALL, m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_INSTALL]);
+      m_CurrentPlugin->ExecutePluginScript (callinfo);
 
       }   // end of having a plugin
 

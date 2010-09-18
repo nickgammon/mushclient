@@ -10,6 +10,65 @@
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
+// possible plugin callbacks
+const char * PluginCallbacksNames [] = {
+ 
+   ON_PLUGIN_BROADCAST,             
+     
+   ON_PLUGIN_CHAT_ACCEPT,           
+   ON_PLUGIN_CHAT_DISPLAY,          
+   ON_PLUGIN_CHAT_MESSAGE,          
+   ON_PLUGIN_CHAT_MESSAGE_OUT,      
+   ON_PLUGIN_CHAT_NEWUSER,          
+   ON_PLUGIN_CHAT_USERDISCONNECT,   
+     
+   ON_PLUGIN_CLOSE,                 
+   ON_PLUGIN_COMMAND,               
+   ON_PLUGIN_COMMAND_CHANGED,       
+   ON_PLUGIN_COMMAND_ENTERED,       
+   ON_PLUGIN_CONNECT,               
+   ON_PLUGIN_DISABLE,               
+   ON_PLUGIN_DISCONNECT,            
+   ON_PLUGIN_ENABLE,                
+   ON_PLUGIN_GETFOCUS,              
+   ON_PLUGIN_IAC_GA,                
+   ON_PLUGIN_INSTALL,               
+   ON_PLUGIN_LINE_RECEIVED,         
+   ON_PLUGIN_LIST_CHANGED,          
+   ON_PLUGIN_LOSEFOCUS,             
+   ON_PLUGIN_MOUSE_MOVED,           
+
+   ON_PLUGIN_MXP_CLOSETAG,          
+   ON_PLUGIN_MXP_ERROR,             
+   ON_PLUGIN_MXP_OPENTAG,           
+   ON_PLUGIN_MXP_SETENTITY,         
+   ON_PLUGIN_MXP_SETVARIABLE,       
+   ON_PLUGIN_MXP_START,             
+   ON_PLUGIN_MXP_STOP,              
+
+   ON_PLUGIN_PACKET_RECEIVED,       
+   ON_PLUGIN_PARTIAL_LINE,          
+   ON_PLUGIN_PLAYSOUND,             
+   ON_PLUGIN_SAVE_STATE,            
+   ON_PLUGIN_SCREENDRAW,            
+   ON_PLUGIN_SEND,                  
+   ON_PLUGIN_SENT,                  
+   ON_PLUGIN_TABCOMPLETE,           
+
+   ON_PLUGIN_TELNET_OPTION,         
+   ON_PLUGIN_TELNET_REQUEST,        
+   ON_PLUGIN_TELNET_SUBNEGOTIATION, 
+
+   ON_PLUGIN_TICK,                  
+   ON_PLUGIN_TRACE,                 
+   ON_PLUGIN_WORLD_OUTPUT_RESIZED,  
+   ON_PLUGIN_WORLD_SAVE,            
+
+  NULL   // end of table marker            
+
+  };  // end of PluginCallbacksNames 
+
+
 // constructor
 CPlugin::CPlugin (CMUSHclientDoc * pDoc) 
   { 
@@ -33,8 +92,11 @@ CPlugin::CPlugin (CMUSHclientDoc * pDoc)
 // destructor
 CPlugin::~CPlugin () 
   {
-  CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin;    
-  ExecutePluginScript (ON_PLUGIN_CLOSE);
+  // change to this plugin, call function, put current plugin back
+  CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin;
+  m_pDoc->m_CurrentPlugin = this;
+  CScriptCallInfo callinfo (ON_PLUGIN_CLOSE, m_PluginCallbacks [ON_PLUGIN_CLOSE]);
+  ExecutePluginScript (callinfo);
   m_pDoc->m_CurrentPlugin = pSavedPlugin;
 
   SaveState ();
@@ -66,18 +128,13 @@ DISPID CPlugin::GetPluginDispid (const char * sName)
 
   } // end of CPlugin::GetPluginDispid
 
-void CPlugin::ExecutePluginScript (const char * sName)
+void CPlugin::ExecutePluginScript (CScriptCallInfo & callinfo)
   {
-  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
-  DISPID & iRoutine = dispid_info._dispid;
+  DISPID & iRoutine = callinfo._dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
-    dispid_info._count++;
-
-    // do this so plugin can find its own state (eg. with GetPluginID)
-    CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin; 
-    m_pDoc->m_CurrentPlugin = this;   
+    callinfo._dispid_info._count++;
 
     long nInvocationCount = 0;
 
@@ -85,14 +142,14 @@ void CPlugin::ExecutePluginScript (const char * sName)
                                (LPCTSTR) m_strName);
     CString strReason = TFormat ("Executing plugin %s sub %s", 
                                  (LPCTSTR) m_strName,
-                                 sName );
+                                 callinfo._name.c_str () );
 
     if (m_ScriptEngine->IsLua ())
       {
       list<double> nparams;
       list<string> sparams;
       m_ScriptEngine->ExecuteLua (iRoutine, 
-                                   sName,  
+                                   callinfo._name.c_str (),  
                                    eDontChangeAction,
                                    strType, 
                                    strReason,
@@ -104,35 +161,28 @@ void CPlugin::ExecutePluginScript (const char * sName)
       {
       DISPPARAMS params = { NULL, NULL, 0, 0 };
       m_ScriptEngine->Execute (iRoutine, 
-                               sName, 
+                               callinfo._name.c_str (), 
                                eDontChangeAction,
                                strType,
                                strReason,
                                params, 
                                nInvocationCount, NULL);
-      }
-    m_pDoc->m_CurrentPlugin = pSavedPlugin;
+      } // end of not Lua
     }   // end of having a script engine
 
 
   } // end of CPlugin::ExecutePluginScript 
 
 
-bool CPlugin::ExecutePluginScript (const char * sName, 
+bool CPlugin::ExecutePluginScript (CScriptCallInfo & callinfo, 
                                    const char * sText)
   {
-  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
-  DISPID & iRoutine = dispid_info._dispid;
+  DISPID & iRoutine = callinfo._dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
-    dispid_info._count++;
+    callinfo._dispid_info._count++;
 
-    // do this so plugin can find its own state (eg. with GetPluginID)
-    CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin; 
-    m_pDoc->m_CurrentPlugin = this;   
-
-    
     long nInvocationCount = 0;
 
     CString strType = TFormat ("Plugin %s", 
@@ -140,7 +190,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
 
     CString strReason = TFormat ("Executing plugin %s sub %s", 
                                  (LPCTSTR) m_strName,
-                                 sName );
+                                 callinfo._name.c_str () );
 
     if (m_ScriptEngine->IsLua ())
       {
@@ -149,7 +199,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
       sparams.push_back (sText);
       bool result;
       m_ScriptEngine->ExecuteLua (iRoutine, 
-                                   sName, 
+                                   callinfo._name.c_str (), 
                                    eDontChangeAction,
                                    strType, 
                                    strReason,
@@ -158,7 +208,6 @@ bool CPlugin::ExecutePluginScript (const char * sName,
                                    nInvocationCount,
                                    NULL, NULL, NULL,
                                    &result);
-      m_pDoc->m_CurrentPlugin = pSavedPlugin;
       return result;
       }   // end of Lua
     else
@@ -179,15 +228,13 @@ bool CPlugin::ExecutePluginScript (const char * sName,
       COleVariant result;
 
       m_ScriptEngine->Execute (iRoutine, 
-                               sName, 
+                               callinfo._name.c_str (), 
                                eDontChangeAction,
                                strType,
                                strReason,
                                params, 
                                nInvocationCount, 
                                &result);
-
-      m_pDoc->m_CurrentPlugin = pSavedPlugin;
 
       // see what result was
       if (result.vt != VT_EMPTY)
@@ -207,19 +254,15 @@ bool CPlugin::ExecutePluginScript (const char * sName,
 
   }  // end of CPlugin::ExecutePluginScript
 
-bool CPlugin::ExecutePluginScript (const char * sName, 
+bool CPlugin::ExecutePluginScript (CScriptCallInfo & callinfo, 
                                   const long arg1,
                                   const string sText)
   {
-  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
-  DISPID & iRoutine = dispid_info._dispid;
+  DISPID & iRoutine = callinfo._dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
-    dispid_info._count++;
-    // do this so plugin can find its own state (eg. with GetPluginID)
-    CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin; 
-    m_pDoc->m_CurrentPlugin = this;   
+    callinfo._dispid_info._count++;
 
     long nInvocationCount = 0;
 
@@ -227,7 +270,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
     CString strType = TFormat ("Plugin %s", (LPCTSTR) m_strName);
     CString strReason =  TFormat ("Executing plugin %s sub %s", 
                                        (LPCTSTR) m_strName,
-                                       sName );
+                                       callinfo._name.c_str () );
 
     if (m_ScriptEngine && m_ScriptEngine->IsLua ())
       {
@@ -237,7 +280,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
       nparams.push_back (arg1);
       sparams.push_back (sText);
       m_ScriptEngine->ExecuteLua (iRoutine, 
-                                  sName, 
+                                  callinfo._name.c_str (), 
                                   eDontChangeAction,
                                   strType, 
                                   strReason, 
@@ -246,7 +289,6 @@ bool CPlugin::ExecutePluginScript (const char * sName,
                                   nInvocationCount,
                                   NULL, NULL, NULL,
                                   &bResult); 
-      m_pDoc->m_CurrentPlugin = pSavedPlugin;
       return bResult;
       }   // end of Lua
 
@@ -278,15 +320,13 @@ bool CPlugin::ExecutePluginScript (const char * sName,
     COleVariant result;
 
     m_ScriptEngine->Execute (iRoutine, 
-                             sName, 
+                             callinfo._name.c_str (), 
                              eDontChangeAction,
                              strType,
                              strReason,
                              params, 
                              nInvocationCount, 
                              &result);
-
-    m_pDoc->m_CurrentPlugin = pSavedPlugin;
 
     // see what result was
     if (result.vt != VT_EMPTY)
@@ -305,28 +345,22 @@ bool CPlugin::ExecutePluginScript (const char * sName,
 
   } // end of CPlugin::ExecutePluginScript
 
-bool CPlugin::ExecutePluginScript (const char * sName, 
+bool CPlugin::ExecutePluginScript (CScriptCallInfo & callinfo, 
                                   const long arg1,
                                   const long arg2,
                                   const string sText)
   {
-  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
-  DISPID & iRoutine = dispid_info._dispid;
+  DISPID & iRoutine = callinfo._dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
-    dispid_info._count++;
+    callinfo._dispid_info._count++;
     long nInvocationCount = 0;
-
-    // do this so plugin can find its own state (eg. with GetPluginID)
-    CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin; 
-    m_pDoc->m_CurrentPlugin = this;   
-
 
     CString strType = TFormat ("Plugin %s", (LPCTSTR) m_strName);
     CString strReason =  TFormat ("Executing plugin %s sub %s", 
                                        (LPCTSTR) m_strName,
-                                       sName );
+                                       callinfo._name.c_str () );
 
     if (m_ScriptEngine && m_ScriptEngine->IsLua ())
       {
@@ -337,7 +371,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
       nparams.push_back (arg2);
       sparams.push_back (sText);
       m_ScriptEngine->ExecuteLua (iRoutine, 
-                                  sName, 
+                                  callinfo._name.c_str (), 
                                   eDontChangeAction,
                                   strType, 
                                   strReason, 
@@ -346,7 +380,6 @@ bool CPlugin::ExecutePluginScript (const char * sName,
                                   nInvocationCount,
                                   NULL, NULL, NULL,
                                   &bResult); 
-      m_pDoc->m_CurrentPlugin = pSavedPlugin;
       return bResult;
       }   // end of Lua
 
@@ -373,15 +406,13 @@ bool CPlugin::ExecutePluginScript (const char * sName,
     COleVariant result;
 
     m_ScriptEngine->Execute (iRoutine, 
-                             sName, 
+                             callinfo._name.c_str (), 
                              eDontChangeAction,
                              strType,
                              strReason,
                              params, 
                              nInvocationCount, 
                              &result);
-
-    m_pDoc->m_CurrentPlugin = pSavedPlugin;
 
     // see what result was
     if (result.vt != VT_EMPTY)
@@ -401,29 +432,23 @@ bool CPlugin::ExecutePluginScript (const char * sName,
   } // end of CPlugin::ExecutePluginScript
 
 
-bool CPlugin::ExecutePluginScript (const char * sName, 
+bool CPlugin::ExecutePluginScript (CScriptCallInfo & callinfo, 
                                   const long arg1,
                                   const char * arg2,
                                   const char * arg3,
                                   const char * arg4)
   {
-  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
-  DISPID & iRoutine = dispid_info._dispid;
+  DISPID & iRoutine = callinfo._dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
-    dispid_info._count++;
+    callinfo._dispid_info._count++;
     long nInvocationCount = 0;
-
-    // do this so plugin can find its own state (eg. with GetPluginID)
-    CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin; 
-    m_pDoc->m_CurrentPlugin = this;   
-
 
     CString strType = TFormat ("Plugin %s", (LPCTSTR) m_strName);
     CString strReason =  TFormat ("Executing plugin %s sub %s", 
                                        (LPCTSTR) m_strName,
-                                       sName );
+                                       callinfo._name.c_str () );
 
     if (m_ScriptEngine && m_ScriptEngine->IsLua ())
       {
@@ -435,7 +460,7 @@ bool CPlugin::ExecutePluginScript (const char * sName,
       sparams.push_back ((LPCTSTR) arg3);
       sparams.push_back ((LPCTSTR) arg4);
       m_ScriptEngine->ExecuteLua (iRoutine, 
-                                  sName, 
+                                  callinfo._name.c_str (), 
                                   eDontChangeAction,
                                   strType, 
                                   strReason, 
@@ -444,7 +469,6 @@ bool CPlugin::ExecutePluginScript (const char * sName,
                                   nInvocationCount,
                                   NULL, NULL, NULL,
                                   &bResult); 
-      m_pDoc->m_CurrentPlugin = pSavedPlugin;
       return bResult;
       }   // end of Lua
 
@@ -473,15 +497,13 @@ bool CPlugin::ExecutePluginScript (const char * sName,
     COleVariant result;
 
     m_ScriptEngine->Execute (iRoutine, 
-                             sName, 
+                             callinfo._name.c_str (), 
                              eDontChangeAction,
                              strType,
                              strReason,
                              params, 
                              nInvocationCount, 
                              &result);
-
-    m_pDoc->m_CurrentPlugin = pSavedPlugin;
 
     // see what result was
     if (result.vt != VT_EMPTY)
@@ -500,18 +522,14 @@ bool CPlugin::ExecutePluginScript (const char * sName,
 
   } // end of CPlugin::ExecutePluginScript
 
-void CPlugin::ExecutePluginScriptRtn (const char * sName, 
+void CPlugin::ExecutePluginScriptRtn (CScriptCallInfo & callinfo, 
                                    CString & strText) 
   {
-  CScriptDispatchID & dispid_info = m_PluginCallbacks [sName];
-  DISPID & iRoutine = dispid_info._dispid;
+  DISPID & iRoutine = callinfo._dispid_info._dispid;
 
   if (m_ScriptEngine && iRoutine != DISPID_UNKNOWN)
     {
-    dispid_info._count++;
-    // do this so plugin can find its own state (eg. with GetPluginID)
-    CPlugin * pSavedPlugin = m_pDoc->m_CurrentPlugin; 
-    m_pDoc->m_CurrentPlugin = this;   
+    callinfo._dispid_info._count++;
 
     long nInvocationCount = 0;
 
@@ -520,12 +538,12 @@ void CPlugin::ExecutePluginScriptRtn (const char * sName,
 
     CString strReason = TFormat ("Executing plugin %s sub %s", 
                                  (LPCTSTR) m_strName,
-                                 sName );
+                                 callinfo._name.c_str () );
 
     if (m_ScriptEngine->IsLua ())
       {
       m_ScriptEngine->ExecuteLua (iRoutine,
-                                  sName,
+                                  callinfo._name.c_str (),
                                   eDontChangeAction,
                                   strType,
                                   strReason,
@@ -551,7 +569,7 @@ void CPlugin::ExecutePluginScriptRtn (const char * sName,
       COleVariant result;
 
       m_ScriptEngine->Execute (iRoutine, 
-                               sName, 
+                               callinfo._name.c_str (), 
                                eDontChangeAction,
                                strType,
                                strReason,
@@ -565,8 +583,6 @@ void CPlugin::ExecutePluginScriptRtn (const char * sName,
         strText = result.bstrVal;
 
       } // end of not Lua
-
-    m_pDoc->m_CurrentPlugin = pSavedPlugin;
 
     }   // end of having a script engine
 
@@ -687,7 +703,8 @@ bool bError = true;
     }  // end of no save state folder
 
 
-  ExecutePluginScript (ON_PLUGIN_SAVE_STATE);
+  CScriptCallInfo callinfo (ON_PLUGIN_SAVE_STATE, m_PluginCallbacks [ON_PLUGIN_SAVE_STATE]);
+  ExecutePluginScript (callinfo);
 
   strFilename += m_pDoc->m_strWorldID;    // world ID
   strFilename += "-";

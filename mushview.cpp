@@ -6226,16 +6226,16 @@ DISPID iDispid = pPlugin->m_ScriptEngine->GetDispid (sRoutineName.c_str ());
     return;                       
     }
 
+  // change to this plugin, call function, put current plugin back
   CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-
   pDoc->m_CurrentPlugin = pPlugin;   
-   
-
-  pPlugin->ExecutePluginScript (sRoutineName.c_str (), 
-                          iDispid, 
-                          Flags,              // keyboard flags
-                          HotspotId.c_str ()  // which hotspot
-                          );
+  CScriptDispatchID dispid_info;
+  dispid_info._dispid = iDispid;
+  CScriptCallInfo callinfo (sRoutineName.c_str (), dispid_info);
+  pPlugin->ExecutePluginScript (callinfo, 
+                                Flags,              // keyboard flags
+                                HotspotId.c_str ()  // which hotspot
+                                );
   pDoc->m_CurrentPlugin = pSavedPlugin;
 
 

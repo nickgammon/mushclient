@@ -5771,10 +5771,17 @@ CPlugin * pPlugin = GetPlugin (PluginID);
   pPlugin->m_bEnabled = Enabled != 0;
 
   if (pPlugin->m_bEnabled)
-    pPlugin->ExecutePluginScript (ON_PLUGIN_ENABLE); 
+    {
+    CScriptCallInfo callinfo (ON_PLUGIN_ENABLE, pPlugin->m_PluginCallbacks [ON_PLUGIN_ENABLE]);
+    pPlugin->ExecutePluginScript (callinfo); 
+    }
   else
-    pPlugin->ExecutePluginScript (ON_PLUGIN_DISABLE); 
+    {
+    CScriptCallInfo callinfo (ON_PLUGIN_DISABLE, pPlugin->m_PluginCallbacks [ON_PLUGIN_DISABLE]);
+    pPlugin->ExecutePluginScript (callinfo); 
+    }
   
+
   return eOK;
 }   // end of EnablePlugin
 
@@ -11459,14 +11466,16 @@ long CMUSHclientDoc::BroadcastPlugin(long Message, LPCTSTR Text)
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
 
+    CScriptCallInfo callinfo (ON_PLUGIN_BROADCAST, pPlugin->m_PluginCallbacks [ON_PLUGIN_BROADCAST]);
+
     // see what the plugin makes of this,
-    pPlugin->ExecutePluginScript (ON_PLUGIN_BROADCAST,
+    pPlugin->ExecutePluginScript (callinfo,
                                   Message, 
                                   (LPCTSTR) strCurrentID,
                                   (LPCTSTR) strCurrentName,
                                   Text); 
 
-    if (pPlugin->m_PluginCallbacks [ON_PLUGIN_BROADCAST].isvalid ())
+    if (callinfo._dispid_info.isvalid ())
       iCount++;
 
     }   // end of doing each plugin
