@@ -523,7 +523,7 @@ bool CPlugin::ExecutePluginScript (CScriptCallInfo & callinfo,
   } // end of CPlugin::ExecutePluginScript
 
 void CPlugin::ExecutePluginScriptRtn (CScriptCallInfo & callinfo, 
-                                   CString & strText) 
+                                      CString & strText) 
   {
   DISPID & iRoutine = callinfo._dispid_info._dispid;
 
