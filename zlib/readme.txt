@@ -47,6 +47,7 @@ add:
 4. Edit: zlib.h and at the start add the lines:
 
 // pragmas added by Nick Gammon
-#pragma warning( disable : 4131)  // uses old-style declarator
 #pragma warning( disable : 4127)  // conditional expression is constant
+#pragma warning( disable : 4131)  // uses old-style declarator
 #pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
+#pragma warning( disable : 4702)  // unreachable code

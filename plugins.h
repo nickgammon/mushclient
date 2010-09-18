@@ -133,75 +133,75 @@ typedef CTypedPtrList <CPtrList, CPlugin*> CPluginList;
 // plugin callback routines - start with OnPlugin so that we can advise
 // users not to use that string for their own routines
 
-// install / remove
-extern const string ON_PLUGIN_INSTALL;
-extern const string ON_PLUGIN_CLOSE;
-extern const string ON_PLUGIN_LIST_CHANGED;
-
-// connect / disconnect
-extern const string ON_PLUGIN_CONNECT;
-extern const string ON_PLUGIN_DISCONNECT;
-
-// saving
-extern const string ON_PLUGIN_SAVE_STATE;
-extern const string ON_PLUGIN_WORLD_SAVE;
-
-// enable / disable
-extern const string ON_PLUGIN_ENABLE;
-extern const string ON_PLUGIN_DISABLE;
-
-// the focus                                 
-extern const string ON_PLUGIN_GETFOCUS;
-extern const string ON_PLUGIN_LOSEFOCUS;
-
-// capture stuff
-extern const string ON_PLUGIN_TRACE;
-extern const string ON_PLUGIN_BROADCAST;
-extern const string ON_PLUGIN_SCREENDRAW;
-
-// sounds
-extern const string ON_PLUGIN_PLAYSOUND;
-
-// stuff received/sent                
-extern const string ON_PLUGIN_SEND;
-extern const string ON_PLUGIN_SENT;
-extern const string ON_PLUGIN_PARTIAL_LINE;
-extern const string ON_PLUGIN_LINE_RECEIVED;
-extern const string ON_PLUGIN_PACKET_RECEIVED;
-
-// telnet negotiation    
-extern const string ON_PLUGIN_TELNET_OPTION;
-extern const string ON_PLUGIN_TELNET_REQUEST;
-extern const string ON_PLUGIN_TELNET_SUBNEGOTIATION;
-extern const string ON_PLUGIN_IAC_GA;
-
-// commands
-extern const string ON_PLUGIN_COMMAND;
-extern const string ON_PLUGIN_COMMAND_ENTERED;
-extern const string ON_PLUGIN_COMMAND_CHANGED;
-extern const string ON_PLUGIN_TABCOMPLETE;
-
-// resizing, ticking, moving, rhythm  
-extern const string ON_PLUGIN_WORLD_OUTPUT_RESIZED;
-extern const string ON_PLUGIN_TICK;
-extern const string ON_PLUGIN_MOUSE_MOVED;
-
-// MXP stuff
-extern const string ON_PLUGIN_MXP_START;
-extern const string ON_PLUGIN_MXP_STOP;
-extern const string ON_PLUGIN_MXP_OPENTAG;
-extern const string ON_PLUGIN_MXP_CLOSETAG;
-extern const string ON_PLUGIN_MXP_SETVARIABLE;
-extern const string ON_PLUGIN_MXP_SETENTITY;
-extern const string ON_PLUGIN_MXP_ERROR;
-
-// chat stuff
-extern const string ON_PLUGIN_CHAT_ACCEPT;
-extern const string ON_PLUGIN_CHAT_MESSAGE;
-extern const string ON_PLUGIN_CHAT_MESSAGE_OUT;
-extern const string ON_PLUGIN_CHAT_DISPLAY;
-extern const string ON_PLUGIN_CHAT_NEWUSER;
-extern const string ON_PLUGIN_CHAT_USERDISCONNECT;
-
+// install / remove                                 
+extern const string ON_PLUGIN_INSTALL;              //  "OnPluginInstall"              
+extern const string ON_PLUGIN_CLOSE;                //  "OnPluginClose"                
+extern const string ON_PLUGIN_LIST_CHANGED;         //  "OnPluginListChanged"          
+                                                                                      
+// connect / disconnect                                                               
+extern const string ON_PLUGIN_CONNECT;              //  "OnPluginConnect"              
+extern const string ON_PLUGIN_DISCONNECT;           //  "OnPluginDisconnect"           
+                                                                                      
+// saving                                                                             
+extern const string ON_PLUGIN_SAVE_STATE;           //  "OnPluginSaveState"            
+extern const string ON_PLUGIN_WORLD_SAVE;           //  "OnPluginWorldSave"            
+                                                                                      
+// enable / disable                                                                   
+extern const string ON_PLUGIN_ENABLE;               //  "OnPluginEnable"               
+extern const string ON_PLUGIN_DISABLE;              //  "OnPluginDisable"              
+                                                                                      
+// the focus                                                                          
+extern const string ON_PLUGIN_GETFOCUS;             //  "OnPluginGetFocus"             
+extern const string ON_PLUGIN_LOSEFOCUS;            //  "OnPluginLoseFocus"            
+                                                                                      
+// capture stuff                                                                      
+extern const string ON_PLUGIN_TRACE;                //  "OnPluginTrace"                
+extern const string ON_PLUGIN_BROADCAST;            //  "OnPluginBroadcast"            
+extern const string ON_PLUGIN_SCREENDRAW;           //  "OnPluginScreendraw"           
+                                                                                      
+// sounds                                                                             
+extern const string ON_PLUGIN_PLAYSOUND;            //  "OnPluginPlaySound"            
+                                                                                      
+// stuff received/sent                                                                
+extern const string ON_PLUGIN_SEND;                 //  "OnPluginSend"                 
+extern const string ON_PLUGIN_SENT;                 //  "OnPluginSent"                 
+extern const string ON_PLUGIN_PARTIAL_LINE;         //  "OnPluginPartialLine"          
+extern const string ON_PLUGIN_LINE_RECEIVED;        //  "OnPluginLineReceived"         
+extern const string ON_PLUGIN_PACKET_RECEIVED;      //  "OnPluginPacketReceived"       
+                                                                                      
+// telnet negotiation                                                                 
+extern const string ON_PLUGIN_TELNET_OPTION;        //  "OnPluginTelnetOption"         
+extern const string ON_PLUGIN_TELNET_REQUEST;       //  "OnPluginTelnetRequest"        
+extern const string ON_PLUGIN_TELNET_SUBNEGOTIATION;//  "OnPluginTelnetSubnegotiation"
+extern const string ON_PLUGIN_IAC_GA;               //  "OnPlugin_IAC_GA"              
+                                                                                      
+// commands                                                                           
+extern const string ON_PLUGIN_COMMAND;              //  "OnPluginCommand"              
+extern const string ON_PLUGIN_COMMAND_ENTERED;      //  "OnPluginCommandEntered"       
+extern const string ON_PLUGIN_COMMAND_CHANGED;      //  "OnPluginCommandChanged"       
+extern const string ON_PLUGIN_TABCOMPLETE;          //  "OnPluginTabComplete"          
+                                                                                      
+// resizing, ticking, moving, rhythm                                                  
+extern const string ON_PLUGIN_WORLD_OUTPUT_RESIZED; //  "OnPluginWorldOutputResized"   
+extern const string ON_PLUGIN_TICK;                 //  "OnPluginTick"                 
+extern const string ON_PLUGIN_MOUSE_MOVED;          //  "OnPluginMouseMoved"           
+                                                                                      
+// MXP stuff                                                                          
+extern const string ON_PLUGIN_MXP_START;            //  "OnPluginMXPstart"             
+extern const string ON_PLUGIN_MXP_STOP;             //  "OnPluginMXPstop"              
+extern const string ON_PLUGIN_MXP_OPENTAG;          //  "OnPluginMXPopenTag"           
+extern const string ON_PLUGIN_MXP_CLOSETAG;         //  "OnPluginMXPcloseTag"          
+extern const string ON_PLUGIN_MXP_SETVARIABLE;      //  "OnPluginMXPsetVariable"       
+extern const string ON_PLUGIN_MXP_SETENTITY;        //  "OnPluginMXPsetEntity"         
+extern const string ON_PLUGIN_MXP_ERROR;            //  "OnPluginMXPerror"             
+                                                                                      
+// chat stuff                                                                         
+extern const string ON_PLUGIN_CHAT_ACCEPT;          //  "OnPluginChatAccept"           
+extern const string ON_PLUGIN_CHAT_MESSAGE;         //  "OnPluginChatMessage"          
+extern const string ON_PLUGIN_CHAT_MESSAGE_OUT;     //  "OnPluginChatMessageOut"       
+extern const string ON_PLUGIN_CHAT_DISPLAY;         //  "OnPluginChatDisplay"          
+extern const string ON_PLUGIN_CHAT_NEWUSER;         //  "OnPluginChatNewUser"          
+extern const string ON_PLUGIN_CHAT_USERDISCONNECT;  //  "OnPluginChatUserDisconnect"   
+                                                                                     
 // table of callbacks
 extern string PluginCallbacksNames [];
