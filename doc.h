@@ -50,7 +50,6 @@ const CString MUSHCLIENT_VERSION = "4.62";    // Step 2.
 
 const int JUMP_SIZE = 100;     // how many lines we discard when we reach maximum lines
 const char ENDLINE [] = "\r\n";         // line terminator
-const char SIGNATURE [] = "WinMUSH";    // world file signature
 const int VERSION = 15;                  // version number written to world file
 #define MAX_EXECUTION_DEPTH 20          // number of nested calls to world.Execute we permit
 
