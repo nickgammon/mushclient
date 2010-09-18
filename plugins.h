@@ -207,8 +207,8 @@ extern const string ON_PLUGIN_CHAT_USERDISCONNECT;  //  "OnPluginChatUserDisconn
 extern string PluginCallbacksNames [];
 
 // for plugin callbacks
-typedef struct
+struct tPluginCallbackNames
   {
   char *  pName;      // name, eg. "OnPluginListChanged"
   int     iOffset;    // offset in CPlugin
-  }  tPluginCallbackNames;
+  };
