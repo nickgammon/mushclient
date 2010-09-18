@@ -8050,7 +8050,7 @@ static bool bInPluginListChanged = false;
   }    // end CMUSHclientDoc::PluginListChanged 
 
 
-void CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName)   // no arguments
+void CMUSHclientDoc::SendToAllPluginCallbacks (const string & sName)   // no arguments
   {
   CPlugin * pSavedPlugin = m_CurrentPlugin;
 
@@ -8073,7 +8073,7 @@ void CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName)   // no argum
   } // end of CMUSHclientDoc::SendToAllPluginCallbacks
 
 // this is for when we want the first available plugin to handle something (eg. Trace, Sound)
-bool CMUSHclientDoc::SendToFirstPluginCallbacks (const char * sName, const char * sText)   // one argument
+bool CMUSHclientDoc::SendToFirstPluginCallbacks (const string & sName, const char * sText)   // one argument
   {
   CPlugin * pSavedPlugin = m_CurrentPlugin;
 
@@ -8105,7 +8105,7 @@ bool CMUSHclientDoc::SendToFirstPluginCallbacks (const char * sName, const char 
 
 // this is for when each plugin gets a chance to "black ball" an action (like sending a line)
 // we only return true if each plugin returned true
-bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName, 
+bool CMUSHclientDoc::SendToAllPluginCallbacks (const string & sName, 
                                                const char * sText,         // one argument
                                                const bool bStopOnFalse)
   {
@@ -8137,7 +8137,7 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
 
 
 // this sends a string to all plugins and allows them to modify it
-void CMUSHclientDoc::SendToAllPluginCallbacksRtn (const char * sName, CString & strResult)  // taking and returning a string
+void CMUSHclientDoc::SendToAllPluginCallbacksRtn (const string & sName, CString & strResult)  // taking and returning a string
   {
   CPlugin * pSavedPlugin = m_CurrentPlugin;
 
@@ -8161,7 +8161,7 @@ void CMUSHclientDoc::SendToAllPluginCallbacksRtn (const char * sName, CString & 
 
 
 // this sends a number and a string to all plugins, and optionally stops on a true or false response
-bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName, 
+bool CMUSHclientDoc::SendToAllPluginCallbacks (const string & sName, 
                                                const long arg1,      // 2 arguments
                                                const string sText,
                                                const bool bStopOnTrue,
@@ -8200,7 +8200,7 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName,
   }  // end of CMUSHclientDoc::SendToAllPluginCallbacks
 
 // this sends two numbers and a string to all plugins, and optionally stops on a true or false response
-bool CMUSHclientDoc::SendToAllPluginCallbacks (const char * sName, 
+bool CMUSHclientDoc::SendToAllPluginCallbacks (const string & sName, 
                                                const long arg1,      // 3 arguments
                                                const long arg2,
                                                const string sText,

@@ -11,7 +11,7 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
 // possible plugin callbacks
-const char * PluginCallbacksNames [] = {
+string PluginCallbacksNames [] = {
  
    ON_PLUGIN_BROADCAST,             
      
@@ -64,7 +64,7 @@ const char * PluginCallbacksNames [] = {
    ON_PLUGIN_WORLD_OUTPUT_RESIZED,  
    ON_PLUGIN_WORLD_SAVE,            
 
-  NULL   // end of table marker            
+  ""   // end of table marker            
 
   };  // end of PluginCallbacksNames 
 

@@ -499,62 +499,6 @@ class CStyle;
 CStyle * GetNewStyle (const char * filename, const long linenumber);
 void DeleteStyle (CStyle * pStyle, const char * filename, const long linenumber);
 
-// plugin callback routines - start with OnPlugin so that we can advise
-// users not to use that string for their own routines
-
-#define ON_PLUGIN_INSTALL     "OnPluginInstall"
-#define ON_PLUGIN_CONNECT     "OnPluginConnect"
-#define ON_PLUGIN_DISCONNECT  "OnPluginDisconnect"
-#define ON_PLUGIN_CLOSE       "OnPluginClose"
-#define ON_PLUGIN_SAVE_STATE  "OnPluginSaveState"
-#define ON_PLUGIN_WORLD_SAVE  "OnPluginWorldSave"
-#define ON_PLUGIN_ENABLE      "OnPluginEnable"
-#define ON_PLUGIN_DISABLE     "OnPluginDisable"
-#define ON_PLUGIN_COMMAND     "OnPluginCommand" 
-#define ON_PLUGIN_COMMAND_ENTERED     "OnPluginCommandEntered" 
-#define ON_PLUGIN_GETFOCUS    "OnPluginGetFocus"
-#define ON_PLUGIN_LOSEFOCUS   "OnPluginLoseFocus" 
-#define ON_PLUGIN_TRACE       "OnPluginTrace" 
-#define ON_PLUGIN_BROADCAST   "OnPluginBroadcast" 
-#define ON_PLUGIN_SCREENDRAW  "OnPluginScreendraw" 
-#define ON_PLUGIN_PLAYSOUND   "OnPluginPlaySound" 
-#define ON_PLUGIN_TABCOMPLETE "OnPluginTabComplete" 
-#define ON_PLUGIN_LIST_CHANGED "OnPluginListChanged"
-
-//#define ON_PLUGIN_TOOLTIP     "OnPluginToolTip" 
-
-// stuff received/send
-#define ON_PLUGIN_SEND        "OnPluginSend" 
-#define ON_PLUGIN_SENT        "OnPluginSent" 
-#define ON_PLUGIN_LINE_RECEIVED "OnPluginLineReceived"    
-#define ON_PLUGIN_PACKET_RECEIVED "OnPluginPacketReceived"    
-#define ON_PLUGIN_PARTIAL_LINE "OnPluginPartialLine"    
-#define ON_PLUGIN_TELNET_OPTION "OnPluginTelnetOption"    
-#define ON_PLUGIN_TELNET_REQUEST "OnPluginTelnetRequest"    
-#define ON_PLUGIN_TELNET_SUBNEGOTIATION "OnPluginTelnetSubnegotiation"    
-#define ON_PLUGIN_IAC_GA "OnPlugin_IAC_GA"    
-#define ON_PLUGIN_WORLD_OUTPUT_RESIZED "OnPluginWorldOutputResized"    
-#define ON_PLUGIN_TICK "OnPluginTick"    
-#define ON_PLUGIN_MOUSE_MOVED "OnPluginMouseMoved"    
-#define ON_PLUGIN_COMMAND_CHANGED "OnPluginCommandChanged"    
-
-// MXP stuff
-#define ON_PLUGIN_MXP_START       "OnPluginMXPstart"
-#define ON_PLUGIN_MXP_STOP        "OnPluginMXPstop"
-#define ON_PLUGIN_MXP_OPENTAG     "OnPluginMXPopenTag"    
-#define ON_PLUGIN_MXP_CLOSETAG    "OnPluginMXPcloseTag"
-#define ON_PLUGIN_MXP_SETVARIABLE "OnPluginMXPsetVariable"
-#define ON_PLUGIN_MXP_SETENTITY   "OnPluginMXPsetEntity"
-#define ON_PLUGIN_MXP_ERROR       "OnPluginMXPerror"
-
-// chat stuff
-#define ON_PLUGIN_CHAT_ACCEPT     "OnPluginChatAccept"
-#define ON_PLUGIN_CHAT_MESSAGE    "OnPluginChatMessage"
-#define ON_PLUGIN_CHAT_MESSAGE_OUT "OnPluginChatMessageOut"
-#define ON_PLUGIN_CHAT_DISPLAY    "OnPluginChatDisplay"
-#define ON_PLUGIN_CHAT_NEWUSER    "OnPluginChatNewUser"
-#define ON_PLUGIN_CHAT_USERDISCONNECT  "OnPluginChatUserDisconnect"
-
 // ANSI Colour Codes
 
 #define ANSI_RESET             0 

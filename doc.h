@@ -13,6 +13,7 @@
 #include "xml\xmlparse.h"
 #include "paneline.h"
 #include "miniwindow.h"
+#include "plugins.h"
 
 #define COMPRESS_BUFFER_LENGTH 1024   // size of decompression buffer
 
@@ -1865,30 +1866,30 @@ public:
   CMUSHView * GetFirstOutputWindow ();
 
   // calls sName in all plugins
-  void SendToAllPluginCallbacks (const char * sName);   // no arguments
+  void SendToAllPluginCallbacks (const string & sName);   // no arguments
 
   // sends sText to all plugins, stops when one handles it, returns true if handled
-  bool SendToFirstPluginCallbacks (const char * sName, 
+  bool SendToFirstPluginCallbacks (const string & sName, 
                                    const char * sText);   // one argument
 
   // sends sText to all plugins, returns false if one returned false
-  bool SendToAllPluginCallbacks (const char * sName, 
+  bool SendToAllPluginCallbacks (const string & sName, 
                                  const char * sText,   // one argument
                                  const bool bStopOnFalse = false);
 
   // send strResult to all plugins, allow them to modify it
-  void SendToAllPluginCallbacksRtn (const char * sName, 
+  void SendToAllPluginCallbacksRtn (const string & sName, 
                                     CString & strResult);  // taking and returning a string
 
   // send a number and a string to all plugins, optionally stopping when one returns true or false
-  bool SendToAllPluginCallbacks (const char * sName, 
+  bool SendToAllPluginCallbacks (const string & sName, 
                                  const long arg1,      // 2 arguments
                                  const string sText,
                                  const bool bStopOnTrue,
                                  const bool bStopOnFalse);
 
   // send two numbers and a string to all plugins, optionally stopping when one returns true or false
-  bool SendToAllPluginCallbacks (const char * sName, 
+  bool SendToAllPluginCallbacks (const string & sName, 
                                  const long arg1,      // 3 arguments
                                  const long arg2,
                                  const string sText,

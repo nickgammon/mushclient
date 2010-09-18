@@ -96,7 +96,7 @@ the root level. ie.
 
 */
 
-extern const char * PluginCallbacksNames [1];
+extern string PluginCallbacksNames [1];
 extern tConfigurationNumericOption OptionsTable [];
 extern tConfigurationAlphaOption AlphaOptionsTable [];
 extern UINT iLineLastItemFound;
@@ -421,9 +421,9 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
 
         // find all plugin callbacks by looping through table - add to map
 
-        for (int i = 0; PluginCallbacksNames [i]; i++)
+        for (int i = 0; PluginCallbacksNames [i] != ""; i++)
           m_CurrentPlugin->m_PluginCallbacks [PluginCallbacksNames [i]]._dispid = 
-            m_CurrentPlugin->GetPluginDispid (PluginCallbacksNames [i]);
+            m_CurrentPlugin->GetPluginDispid (PluginCallbacksNames [i].c_str ());
 
         // note if we need to call these routines (that is, if *any* plugin supports them)
 
