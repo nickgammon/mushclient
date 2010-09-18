@@ -3060,6 +3060,8 @@ unsigned char header [8];
     return eUnableToLoadImage;
     }
 
+#pragma warning (push)
+#pragma warning (disable : 4611)  // interaction between '_setjmp' and C++ object destruction is non-portable
 
   // if png fails it will longjmp back to here, so we destroy the structure,
   // close the file, and wrap up
@@ -3071,6 +3073,7 @@ unsigned char header [8];
     return eUnableToLoadImage;
     }
 
+#pragma warning (pop)
 
   // initialize IO
   png_init_io (png_ptr, fp);
@@ -3204,6 +3207,8 @@ long LoadPngMemory (unsigned char * Buffer, const size_t Length, HBITMAP & hbmp,
     return eUnableToLoadImage;
     }
 
+#pragma warning (push)
+#pragma warning (disable : 4611)  // interaction between '_setjmp' and C++ object destruction is non-portable
 
   // if png fails it will longjmp back to here, so we destroy the structure,
   // and wrap up
@@ -3214,6 +3219,7 @@ long LoadPngMemory (unsigned char * Buffer, const size_t Length, HBITMAP & hbmp,
     return eUnableToLoadImage;
     }
 
+#pragma warning (pop)
 
   tPngBufferInfo PngBufferInfo;
   PngBufferInfo.BufferPos = Buffer;

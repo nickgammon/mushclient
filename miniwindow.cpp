@@ -1264,6 +1264,9 @@ long CMiniWindow::WritePng (LPCTSTR FileName, const BITMAPINFO * bmi, unsigned c
     }
   
 
+#pragma warning (push)
+#pragma warning (disable : 4611)  // interaction between '_setjmp' and C++ object destruction is non-portable
+
   // if png fails it will longjmp back to here, so we destroy the structure,
   // close the file, and wrap up
   if (setjmp(png_jmpbuf(png_ptr)))
@@ -1272,6 +1275,8 @@ long CMiniWindow::WritePng (LPCTSTR FileName, const BITMAPINFO * bmi, unsigned c
     fclose (fp);
     return eLogFileBadWrite;
     }
+
+#pragma warning (pop)
 
   // initialize IO
   png_init_io (png_ptr, fp);

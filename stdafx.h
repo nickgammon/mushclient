@@ -16,7 +16,6 @@
 #pragma warning (disable : 4511)  // copy constructor could not be generated
 #pragma warning (disable : 4512)  // assignment operator could not be generated
 #pragma warning (disable : 4514)  // unreferenced inline function has been removed
-#pragma warning (disable : 4611)  // interaction between '_setjmp' and C++ object destruction is non-portable
 #pragma warning (disable : 4663)  // C++ language change: to explicitly specialize class template yadda yadda
 #pragma warning (disable : 4702)  // unreachable code
 #pragma warning (disable : 4706)  // assignment within conditional expression
