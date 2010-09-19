@@ -811,7 +811,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     for (PluginListIterator pit = m_PluginList.begin (); 
          pit != m_PluginList.end (); 
-         ++pit)
+         ++pit, ++iCount)
       {
       CPlugin * p = *pit;
       Note (TFormat ("Name:       %s", (LPCTSTR) p->m_strName));
