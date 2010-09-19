@@ -21,6 +21,7 @@
 #pragma warning (disable : 4706)  // assignment within conditional expression
 #pragma warning (disable : 4710)  // function 'x' not inlined
 #pragma warning (disable : 4786)  // identifier was truncated to 'number' characters in the debug information
+#pragma warning (disable : 4996)  // This function or variable may be unsafe.
 
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers

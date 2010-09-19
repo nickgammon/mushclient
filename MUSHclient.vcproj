@@ -48,7 +48,6 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/D &quot;_CRT_SECURE_NO_WARNINGS&quot;"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)luacom\&quot;"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;LUA51"
