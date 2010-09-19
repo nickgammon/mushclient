@@ -774,12 +774,14 @@ CString strFileName;
 void CMUSHclientDoc::Save_Plugins_XML (CArchive& ar)
   {
 
-  if (m_PluginList.GetCount () > 0)
+  if (m_PluginList.size () > 0)
     ar.WriteString   (NL "<!-- plugins -->" NL);
 
-  for (POSITION pos = m_PluginList.GetHeadPosition (); pos; )
+  for (PluginListIterator pit = m_PluginList.begin (); 
+       pit != m_PluginList.end (); 
+       ++pit)
     {
-    CPlugin * p = m_PluginList.GetNext (pos);
+    CPlugin * p = *pit;
 
     if (!p->m_bGlobal)
       {

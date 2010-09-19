@@ -2,6 +2,9 @@
 //  CPlugin - these are world plugins
 
 // for storing dispatch IDs, and how many times each one is called
+// we need a copy constructor and operator =, so it can be moved 
+// around in the STL map it is stored in
+
 class CScriptDispatchID
   {
   public:
@@ -37,7 +40,12 @@ class CScriptDispatchID
   };  // end of class CScriptDispatchID
 
 typedef map<const string, CScriptDispatchID> CScriptDispatchIDsMap;
-typedef map<const string, CScriptDispatchID>::const_iterator CScriptDispatchIDIterator;
+typedef CScriptDispatchIDsMap::const_iterator CScriptDispatchIDIterator;
+
+// when we call a script (with ExecutePluginScript) we pass down one of these. It has
+// 1. the name (for error messages and for Lua)
+// 2. the dispatch ID (from CScriptDispatchID) - to help call the function
+// 3. the count of invocations (passed by reference so it can be updated)
 
 class CScriptCallInfo
   {
@@ -53,6 +61,7 @@ class CScriptCallInfo
 
 class CScriptEngine;
 
+// world plugins
 class CPlugin :public CObject
   {
 
@@ -128,7 +137,24 @@ class CPlugin :public CObject
 
   };
 
-typedef CTypedPtrList <CPtrList, CPlugin*> CPluginList;
+typedef list<CPlugin*> CPluginList;
+typedef CPluginList::iterator PluginListIterator;
+
+// Unary predicate for use in find_if to find a plugin by name
+//  ... not case-sensitive
+struct compare_plugin_name : binary_function <CPlugin *, CString, bool>
+  {
+  bool operator() (const CPlugin * p, const CString name) const
+    { return p->m_strName.CompareNoCase (name) == 0; };
+  };  // end of struct compare_plugin_name
+
+// Unary predicate for use in find_if to find a plugin by plugin ID
+//  ... not case-sensitive
+struct compare_plugin_id : binary_function <CPlugin *, CString, bool>
+  {
+  bool operator() (const CPlugin * p, const CString id) const
+    { return p->m_strID.CompareNoCase (id) == 0; };
+  };  // end of struct compare_plugin_id
 
 // plugin callback routines - start with OnPlugin so that we can advise
 // users not to use that string for their own routines

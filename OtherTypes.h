@@ -936,7 +936,7 @@ class CMapDirection
   };  // end of class CMapDirection
 
 typedef map<string, CMapDirection> CMapDirectionsMap;
-typedef map<string, CMapDirection>::const_iterator MapDirectionsIterator;
+typedef CMapDirectionsMap::const_iterator MapDirectionsIterator;
 
 extern CMapDirectionsMap MapDirectionsMap;
 

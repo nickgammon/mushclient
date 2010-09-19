@@ -820,7 +820,7 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
     {
 
     vector<string> v;
-    POSITION pos;
+    PluginListIterator pit;
 
     StringToVector ((LPCTSTR) App.m_strPluginList, v, "*");
 
@@ -830,9 +830,11 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
       bool bAlreadyLoaded = false;
 
       // see if we already have this one
-      for (pos = m_PluginList.GetHeadPosition(); pos; )
+      for (pit = m_PluginList.begin (); 
+           pit != m_PluginList.end (); 
+           ++pit)
         {
-        CPlugin * p = m_PluginList.GetNext (pos);
+        CPlugin * p = *pit;
 
         if (p->m_strSource == strPath)
           {
@@ -846,9 +848,11 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
         {
         InternalLoadPlugin (strPath);
         // mark it as loaded globally
-        for (pos = m_PluginList.GetHeadPosition(); pos; )
+        for (pit = m_PluginList.begin (); 
+             pit != m_PluginList.end (); 
+             ++pit)
           {
-          CPlugin * p = m_PluginList.GetNext (pos);
+          CPlugin * p = *pit;
 
           if (p->m_strSource == strPath)
             {
@@ -4707,9 +4711,11 @@ void CMUSHclientDoc::CheckTimers ()
 
     CheckTimerList (GetTimerMap ());
     // do plugins
-    for (POSITION pos = m_PluginList.GetHeadPosition (); pos; )
+   for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
       {
-      m_CurrentPlugin = m_PluginList.GetNext (pos);
+      m_CurrentPlugin = *pit;
       if (m_CurrentPlugin->m_bEnabled)
         CheckTimerList (GetTimerMap ());
       } // end of doing each plugin
@@ -5158,9 +5164,11 @@ void CMUSHclientDoc::OnGameResetalltimers()
 {
   ResetAllTimers (GetTimerMap ());
   // do plugins
-  for (POSITION pos = m_PluginList.GetHeadPosition (); pos; )
+ for (PluginListIterator pit = m_PluginList.begin (); 
+       pit != m_PluginList.end (); 
+       ++pit)
     {
-    m_CurrentPlugin = m_PluginList.GetNext (pos);
+    m_CurrentPlugin = *pit;
     if (m_CurrentPlugin->m_bEnabled)
       ResetAllTimers (GetTimerMap ());
     } // end of doing each plugin

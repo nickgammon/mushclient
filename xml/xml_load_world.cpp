@@ -446,7 +446,7 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
         }  // end of having a script
 
       // add to world plugins
-      m_PluginList.AddTail (m_CurrentPlugin);
+      m_PluginList.push_back (m_CurrentPlugin);
 
       // now call the OnInstall routine (once it is in the list)
 
@@ -2246,9 +2246,11 @@ void CMUSHclientDoc::Load_Plugin_XML (CXMLelement & parent)
       m_CurrentPlugin->m_strID.MakeLower ();
 
       // check ID is unique
-      for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
+      for (PluginListIterator pit = m_PluginList.begin (); 
+           pit != m_PluginList.end (); 
+           ++pit)
         {
-        CPlugin * p = m_PluginList.GetNext (pos);
+        CPlugin * p = *pit;
         if (m_CurrentPlugin->m_strID == p->m_strID)
            ThrowErrorException ("The plugin '%s' is already loaded.", p->m_strName);
         }      // end of looping through each plugins

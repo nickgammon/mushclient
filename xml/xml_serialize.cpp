@@ -29,10 +29,13 @@ void CMUSHclientDoc::Serialize_World_XML (CArchive& ar)
       Save_World_XML (ar, (unsigned long) ~0);    // save all options
 
       // ensure all plugins save their state right now :)
-      for (POSITION pos = m_PluginList.GetHeadPosition (); pos; )
-          m_PluginList.GetNext (pos)->SaveState ();
 
-      }
+      for (PluginListIterator pit = m_PluginList.begin (); 
+           pit != m_PluginList.end (); 
+           ++pit)
+         (*pit)->SaveState ();
+
+      } // end of try
 
     catch (CException *)
       {    

@@ -1788,11 +1788,12 @@ CPoint menupoint = point;
     } // end of all aliases
 
   // do plugins
-  for (POSITION plugin_pos = pDoc->m_PluginList.GetHeadPosition (); 
-        plugin_pos && i < MXP_MENU_COUNT; )
+  for (PluginListIterator pit = pDoc->m_PluginList.begin (); 
+       pit != pDoc->m_PluginList.end () && i < MXP_MENU_COUNT; 
+       ++pit)
     {
-    pDoc->m_CurrentPlugin = pDoc->m_PluginList.GetNext (plugin_pos);
-
+    pDoc->m_CurrentPlugin = *pit;
+        
     if (pDoc->m_CurrentPlugin->m_bEnabled)
       for (POSITION pos = pDoc->GetAliasMap ().GetStartPosition (); 
             pos && i < MXP_MENU_COUNT; )

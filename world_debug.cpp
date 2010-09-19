@@ -807,13 +807,13 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 //-----------------------------------------------------------------------
   else if (strcmp (Command, "plugins") == 0)
     {
-    CPlugin * p;
-    POSITION ppos,  // plugin pos
-             pos;   // other pos
+    POSITION pos;   // other pos
 
-    for (ppos = m_PluginList.GetHeadPosition (); ppos; iCount++)
+    for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit, ++iCount)
       {
-      p = m_PluginList.GetNext (ppos);
+      CPlugin * p = *pit;
       Note (TFormat ("Name:       %s", (LPCTSTR) p->m_strName));
       Note (TFormat ("ID:         %s", (LPCTSTR) p->m_strID));
       Note (TFormat ("Purpose:    %s", (LPCTSTR) p->m_strPurpose));
@@ -944,7 +944,6 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     CTrigger * pTrigger;
     CAlias * pAlias;
     CTimer * pTimer;
-    CPlugin * pPlugin;
 
     __int64   nTotalMatches = 0;
     __int64   nTotalMatchAttempts = 0;
@@ -1265,9 +1264,11 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     nTotal = 0;
     nEnabled = 0;
 
-    for (pos = m_PluginList.GetHeadPosition (); pos; iCount++)
+    for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
       {
-      pPlugin = m_PluginList.GetNext (pos);
+      CPlugin * pPlugin = *pit;
       nTotal++;
       
       if (pPlugin->m_bEnabled)

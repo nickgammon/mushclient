@@ -582,23 +582,35 @@ assemble the full text of the original line.
     m_CurrentPlugin = NULL;
     // do main triggers
     ProcessOneTriggerSequence (strCurrentLine, 
-                              StyledLine, 
-                              strResponse, 
-                              prevpos, 
-                              bNoLog, bNoOutput, bChangedColour, 
-                              triggerList, strExtraOutput, mapDeferredScripts, mapOneShotItems);
+                               StyledLine, 
+                               strResponse, 
+                               prevpos, 
+                               bNoLog, 
+                               bNoOutput, 
+                               bChangedColour, 
+                               triggerList, 
+                               strExtraOutput, 
+                               mapDeferredScripts, 
+                               mapOneShotItems);
 
     // do plugins
-    for (pos = m_PluginList.GetHeadPosition (); pos; )
+   for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
       {
-      m_CurrentPlugin = m_PluginList.GetNext (pos);
+      m_CurrentPlugin = *pit;
       if (m_CurrentPlugin->m_bEnabled)
         ProcessOneTriggerSequence (strCurrentLine, 
-                              StyledLine, 
-                              strResponse, 
-                              prevpos, 
-                              bNoLog, bNoOutput, bChangedColour, 
-                              triggerList, strExtraOutput, mapDeferredScripts, mapOneShotItems);
+                                   StyledLine, 
+                                   strResponse, 
+                                   prevpos, 
+                                   bNoLog, 
+                                   bNoOutput, 
+                                   bChangedColour, 
+                                   triggerList, 
+                                   strExtraOutput, 
+                                   mapDeferredScripts, 
+                                   mapOneShotItems);
       } // end of doing each plugin
 
     m_CurrentPlugin = NULL; // not in a plugin any more
@@ -846,9 +858,11 @@ assemble the full text of the original line.
         }
 
     // do plugins
-    for (POSITION plugin_pos = m_PluginList.GetHeadPosition (); !bFoundIt && plugin_pos; )
+    for (PluginListIterator pit = m_PluginList.begin (); 
+         !bFoundIt && pit != m_PluginList.end (); 
+          ++pit)
       {
-      m_CurrentPlugin = m_PluginList.GetNext (plugin_pos);
+      m_CurrentPlugin = *pit;
 
       if (m_CurrentPlugin->m_bEnabled)
         for (iItem = 0; !bFoundIt && iItem < GetTriggerArray ().GetSize (); iItem++)
