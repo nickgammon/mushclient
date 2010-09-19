@@ -33,8 +33,6 @@ const CString MUSHCLIENT_VERSION = "4.62";    // Step 2.
 #define MUD_LIST "http://www.gammon.com.au/links/muds.htm" 
 #define BUG_REPORT_PAGE "http://www.gammon.com.au/forum/?bbtopic_id=5"
 #define FORUM_URL "http://www.gammon.com.au/forum/"
-#define ORDERS_PAGE "http://www.gammon.com.au/fee.htm" 
-#define REGCODE_URL "http://www.gammon.com.au/regcode.htm" 
 #define MUSHCLIENT_FORUM_URL "http://www.gammon.com.au/forum/?bbsection_id=1"
 #define MUSHCLIENT_FUNCTIONS_URL "http://www.gammon.com.au/mushclient/functions.htm"
 #define DOCUMENTATION_PAGE "http://www.gammon.com.au/scripts/doc.php"
@@ -49,7 +47,7 @@ const CString MUSHCLIENT_VERSION = "4.62";    // Step 2.
 // program constants
 
 const int JUMP_SIZE = 100;     // how many lines we discard when we reach maximum lines
-const char ENDLINE [] = "\r\n";         // line terminator
+const char ENDLINE [] = "\r\n";         // line terminator  
 const int VERSION = 15;                  // version number written to world file
 #define MAX_EXECUTION_DEPTH 20          // number of nested calls to world.Execute we permit
 
@@ -68,8 +66,6 @@ const int VERSION = 15;                  // version number written to world file
 #define PUEBLO_REPLY2 "PUEBLOCLIENT"
 // this string identifies that Pueblo starts after it is received
 #define PUEBLO_START "</xch_mudtext>"
-
-#define ORIGINAL_MACRO_COUNT 60
 
 class CSendView;
 class CMUSHView;
@@ -621,8 +617,6 @@ public:
   unsigned short m_bEscapeDeletesInput;
   unsigned short m_bArrowsChangeHistory;
   unsigned short m_bConfirmOnPaste;
-
-  unsigned short m_version;
 
   CString m_macros [MACRO_COUNT];                // for function keys
   unsigned short m_macro_type [MACRO_COUNT];     // see macro send types above
