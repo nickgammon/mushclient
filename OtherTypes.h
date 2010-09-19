@@ -982,11 +982,3 @@ class CKeyValuePair
   string sValue_;  // value 
 
   };   // end of class  CStringValuePair
-
-
-// for plugin callbacks
-typedef struct
-  {
-  char *  pName;      // name, eg. "OnPluginListChanged"
-  int     iOffset;    // offset in CPlugin
-  }  tPluginCallbackNames;
