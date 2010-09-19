@@ -254,7 +254,7 @@ static LONGLONG iCounterFrequency = 0;
       }
     }
 
-  double secs;
+  double secs = 0;
   LARGE_INTEGER time_now;
 
   if (iCounterFrequency)
@@ -265,6 +265,12 @@ static LONGLONG iCounterFrequency = 0;
     secs = (double) offset / (double) iCounterFrequency;
 //    TRACE ("Secs = %10.4f\n", secs);
     }
+  else
+    {
+    time_now.QuadPart = 0;
+    time_now.QuadPart = 0;
+    }
+
 
   // if no high-performance counter, just query the time each time
   if (iCounterFrequency == 0 || 

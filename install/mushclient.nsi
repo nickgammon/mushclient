@@ -227,7 +227,7 @@ Section "Spell checker"
   SetOutPath $INSTDIR
 
   ; New spell checker
-  File "..\WinRel\spellchecker.lua"
+  File "..\scripting\spellchecker.lua"
 
 SectionEnd
 
@@ -435,7 +435,6 @@ Section "Plugins"
   File "..\plugins\plugin_list.xml"
   File "..\plugins\plugin_summary.xml"
   File "..\plugins\random_socials.xml"
-  File "..\plugins\sample_plugin.xml"
   File "..\plugins\scan.xml"
   File "..\plugins\msp.xml"
   File "..\plugins\reverse_speedwalk.xml"
@@ -448,10 +447,6 @@ Section "Plugins"
   File "..\plugins\MudDatabase.xml"
   File "..\plugins\Chat.xml"
   File "..\plugins\Health_Bar.xml"
-  File "..\plugins\JScript_Version.xml"
-  File "..\plugins\Perlscript_Version.xml"
-  File "..\plugins\Python_Version.xml"
-  File "..\plugins\VBscript_Version.xml"
   File "..\plugins\ANSI_Log.xml"
   File "..\plugins\Hyperlink_URL.xml"
   File "..\plugins\Gag.xml"
@@ -459,7 +454,6 @@ Section "Plugins"
   File "..\plugins\Timer.xml"
   File "..\plugins\ShowActivity.xml"
   File "..\plugins\Installer_sumcheck.xml"
-  File "..\plugins\lua_chat.xml"
   File "..\plugins\Current_Output_Window.xml"
   File "..\plugins\InfoBox_Demo.xml"
   File "..\plugins\ATCP_NJG.xml"
@@ -469,7 +463,8 @@ Section "Plugins"
   File "..\plugins\ATCP_Mapper.xml"
   File "..\plugins\Messages_Window.xml"
   File "..\plugins\Calculator.xml"
-  File "..\plugins\Lua_Sapi.xml"
+  File "..\plugins\Text_To_Speech.xml"
+  File "..\plugins\Automatic_Backup.xml"
 
 
 SectionEnd
@@ -480,8 +475,8 @@ Section "Start Menu Shortcuts"
   ; Which section type it is in
   SectionIn 1 2   ; typical, full
 
-;  SetOutPath $INSTDIR
   SetOutPath "$SMPROGRAMS\MUSHclient"
+  SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\MUSHclient\MUSHclient.lnk" "$INSTDIR\MUSHclient.exe" "" "$INSTDIR\MUSHclient.exe" 0
   CreateShortCut "$SMPROGRAMS\MUSHclient\Read Me.lnk" "$INSTDIR\Readme.txt" "" "$INSTDIR\Readme.txt" 0
   CreateShortCut "$SMPROGRAMS\MUSHclient\Uninstall MUSHclient.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
@@ -663,8 +658,8 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\constants.pys"
   Delete "$INSTDIR\worlds\plugins\constants.lua"
   Delete "$INSTDIR\worlds\plugins\plugin_list.xml"
+  Delete "$INSTDIR\worlds\plugins\plugin_summary.xml"
   Delete "$INSTDIR\worlds\plugins\random_socials.xml"
-  Delete "$INSTDIR\worlds\plugins\sample_plugin.xml"
   Delete "$INSTDIR\worlds\plugins\scan.xml"
   Delete "$INSTDIR\worlds\plugins\msp.xml"
   Delete "$INSTDIR\worlds\plugins\reverse_speedwalk.xml"
@@ -677,10 +672,6 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\MudDatabase.xml"
   Delete "$INSTDIR\worlds\plugins\Chat.xml"
   Delete "$INSTDIR\worlds\plugins\Health_Bar.xml"
-  Delete "$INSTDIR\worlds\plugins\JScript_Version.xml"
-  Delete "$INSTDIR\worlds\plugins\Perlscript_Version.xml"
-  Delete "$INSTDIR\worlds\plugins\Python_Version.xml"
-  Delete "$INSTDIR\worlds\plugins\VBscript_Version.xml"
   Delete "$INSTDIR\worlds\plugins\ANSI_Log.xml"
   Delete "$INSTDIR\worlds\plugins\Hyperlink_URL.xml"
   Delete "$INSTDIR\worlds\plugins\Gag.xml"
@@ -688,7 +679,6 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\Timer.xml"
   Delete "$INSTDIR\worlds\plugins\ShowActivity.xml"
   Delete "$INSTDIR\worlds\plugins\Installer_sumcheck.xml"
-  Delete "$INSTDIR\worlds\plugins\lua_chat.xml"
   Delete "$INSTDIR\worlds\plugins\Current_Output_Window.xml"
   Delete "$INSTDIR\worlds\plugins\InfoBox_Demo.xml"
   Delete "$INSTDIR\worlds\plugins\ATCP_NJG.xml"
@@ -698,7 +688,8 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\ATCP_Mapper.xml"  
   Delete "$INSTDIR\worlds\plugins\Messages_Window.xml"
   Delete "$INSTDIR\worlds\plugins\Calculator.xml"
-  Delete "$INSTDIR\worlds\plugins\Lua_Sapi.xml"
+  Delete "$INSTDIR\worlds\plugins\Text_To_Speech.xml"
+  Delete "$INSTDIR\worlds\plugins\Automatic_Backup.xml"
   
   ; locale stuff
   

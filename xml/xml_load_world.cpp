@@ -96,68 +96,7 @@ the root level. ie.
 
 */
 
-#define O(arg) offsetof (CPlugin, arg)
-
-tPluginCallbackNames PluginCallbacksTable [] = {
-
-//{ ON_PLUGIN_TOOLTIP,              O(m_dispid_plugin_tooltip) },
-  
-{ ON_PLUGIN_BROADCAST,              O(m_dispid_plugin_broadcast) }, 
-      
-{ ON_PLUGIN_CHAT_ACCEPT,            O(m_dispid_plugin_On_Chat_Accept) },        
-{ ON_PLUGIN_CHAT_DISPLAY,           O(m_dispid_plugin_On_Chat_Display) },        
-{ ON_PLUGIN_CHAT_MESSAGE,           O(m_dispid_plugin_On_Chat_Message) },        
-{ ON_PLUGIN_CHAT_MESSAGE_OUT,       O(m_dispid_plugin_On_Chat_MessageOut) },        
-{ ON_PLUGIN_CHAT_NEWUSER,           O(m_dispid_plugin_On_Chat_NewUser) },        
-{ ON_PLUGIN_CHAT_USERDISCONNECT,    O(m_dispid_plugin_On_Chat_UserDisconnect) },  
-      
-{ ON_PLUGIN_CLOSE,                  O(m_dispid_plugin_close) },        
-{ ON_PLUGIN_COMMAND,                O(m_dispid_plugin_command) },        
-{ ON_PLUGIN_COMMAND_CHANGED,        O(m_dispid_plugin_on_command_changed) },        
-{ ON_PLUGIN_COMMAND_ENTERED,        O(m_dispid_plugin_command_entered) },        
-{ ON_PLUGIN_CONNECT,                O(m_dispid_plugin_connect) },        
-{ ON_PLUGIN_DISABLE,                O(m_dispid_plugin_disable) },        
-{ ON_PLUGIN_DISCONNECT,             O(m_dispid_plugin_disconnect) },        
-{ ON_PLUGIN_ENABLE,                 O(m_dispid_plugin_enable) },        
-{ ON_PLUGIN_GETFOCUS,               O(m_dispid_plugin_get_focus) },        
-{ ON_PLUGIN_IAC_GA,                 O(m_dispid_plugin_IAC_GA) },        
-{ ON_PLUGIN_INSTALL,                O(m_dispid_plugin_install) },        
-{ ON_PLUGIN_LINE_RECEIVED,          O(m_dispid_plugin_line_received) },        
-{ ON_PLUGIN_LIST_CHANGED,           O(m_dispid_plugin_list_changed) },        
-{ ON_PLUGIN_LOSEFOCUS,              O(m_dispid_plugin_lose_focus) },        
-{ ON_PLUGIN_MOUSE_MOVED,            O(m_dispid_plugin_mouse_moved) },        
-
-{ ON_PLUGIN_MXP_CLOSETAG,           O(m_dispid_plugin_OnMXP_CloseTag) },        
-{ ON_PLUGIN_MXP_ERROR,              O(m_dispid_plugin_OnMXP_Error) },        
-{ ON_PLUGIN_MXP_OPENTAG,            O(m_dispid_plugin_OnMXP_OpenTag) },        
-{ ON_PLUGIN_MXP_SETENTITY,          O(m_dispid_plugin_OnMXP_SetEntity) },        
-{ ON_PLUGIN_MXP_SETVARIABLE,        O(m_dispid_plugin_OnMXP_SetVariable) },        
-{ ON_PLUGIN_MXP_START,              O(m_dispid_plugin_OnMXP_Start) },        
-{ ON_PLUGIN_MXP_STOP,               O(m_dispid_plugin_OnMXP_Stop) },        
-
-{ ON_PLUGIN_PACKET_RECEIVED,        O(m_dispid_plugin_packet_received) },        
-{ ON_PLUGIN_PARTIAL_LINE,           O(m_dispid_plugin_partial_line) },        
-{ ON_PLUGIN_PLAYSOUND,              O(m_dispid_plugin_playsound) },        
-{ ON_PLUGIN_SAVE_STATE,             O(m_dispid_plugin_save_state) },        
-{ ON_PLUGIN_SCREENDRAW,             O(m_dispid_plugin_screendraw) },        
-{ ON_PLUGIN_SEND,                   O(m_dispid_plugin_send) },        
-{ ON_PLUGIN_SENT,                   O(m_dispid_plugin_sent) },        
-{ ON_PLUGIN_TABCOMPLETE,            O(m_dispid_plugin_tabcomplete) },        
-
-{ ON_PLUGIN_TELNET_OPTION,          O(m_dispid_plugin_telnet_option) },        
-{ ON_PLUGIN_TELNET_REQUEST,         O(m_dispid_plugin_telnet_request) },        
-{ ON_PLUGIN_TELNET_SUBNEGOTIATION,  O(m_dispid_plugin_telnet_subnegotiation) },        
-
-{ ON_PLUGIN_TICK,                   O(m_dispid_plugin_tick) },        
-{ ON_PLUGIN_TRACE,                  O(m_dispid_plugin_trace) },        
-{ ON_PLUGIN_WORLD_OUTPUT_RESIZED,   O(m_dispid_plugin_on_world_output_resized) },        
-{ ON_PLUGIN_WORLD_SAVE,             O(m_dispid_plugin_world_save) },        
-
-{NULL}   // end of table marker            
-
-  };  // end of PluginCallbacksTable 
-
-
+extern string PluginCallbacksNames [1];
 extern tConfigurationNumericOption OptionsTable [];
 extern tConfigurationAlphaOption AlphaOptionsTable [];
 extern UINT iLineLastItemFound;
@@ -480,32 +419,41 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
           ThrowErrorException ("Could not find all required script routines");
 
 
-        // find all plugin callbacks by looping through table
+        // find all plugin callbacks by looping through table - add to map
 
-        for (int i = 0; PluginCallbacksTable [i].pName; i++)
-          {
-          const char * p = (const char *) m_CurrentPlugin + PluginCallbacksTable [i].iOffset;
-          * (int *) p = m_CurrentPlugin->GetPluginDispid (PluginCallbacksTable [i].pName);
-          }     // end of for each callback
+        for (int i = 0; PluginCallbacksNames [i] != ""; i++)
+          m_CurrentPlugin->m_PluginCallbacks [PluginCallbacksNames [i]]._dispid = 
+            m_CurrentPlugin->GetPluginDispid (PluginCallbacksNames [i].c_str ());
 
-        // note if we need to call these routines
+        // note if we need to call these routines (that is, if *any* plugin supports them)
 
-        m_bPluginProcessesOpenTag       = m_CurrentPlugin->m_dispid_plugin_OnMXP_OpenTag      != DISPID_UNKNOWN;
-        m_bPluginProcessesCloseTag      = m_CurrentPlugin->m_dispid_plugin_OnMXP_CloseTag     != DISPID_UNKNOWN;
-        m_bPluginProcessesSetVariable   = m_CurrentPlugin->m_dispid_plugin_OnMXP_SetVariable  != DISPID_UNKNOWN; 
-        m_bPluginProcessesSetEntity     = m_CurrentPlugin->m_dispid_plugin_OnMXP_SetEntity    != DISPID_UNKNOWN;
-        m_bPluginProcessesError         = m_CurrentPlugin->m_dispid_plugin_OnMXP_Error        != DISPID_UNKNOWN;
+        if (m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_OPENTAG].isvalid ())
+          m_bPluginProcessesOpenTag = true;
+
+        if (m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_CLOSETAG].isvalid ())
+          m_bPluginProcessesCloseTag = true;
+
+        if (m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_SETVARIABLE].isvalid ())
+          m_bPluginProcessesSetVariable = true;
+
+        if (m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_SETENTITY].isvalid ())
+          m_bPluginProcessesSetEntity   = true;
+
+        if (m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_MXP_ERROR].isvalid ())
+          m_bPluginProcessesError  = true;
+
 
         }  // end of having a script
 
       // add to world plugins
-      m_PluginList.AddTail (m_CurrentPlugin);
+      m_PluginList.push_back (m_CurrentPlugin);
 
       // now call the OnInstall routine (once it is in the list)
 
 //      ::TMessageBox ("Plugin OnInstall");
       
-      m_CurrentPlugin->ExecutePluginScript (ON_PLUGIN_INSTALL, m_CurrentPlugin->m_dispid_plugin_install);
+      CScriptCallInfo callinfo (ON_PLUGIN_INSTALL, m_CurrentPlugin->m_PluginCallbacks [ON_PLUGIN_INSTALL]);
+      m_CurrentPlugin->ExecutePluginScript (callinfo);
 
       }   // end of having a plugin
 
@@ -825,6 +773,8 @@ bool bPlugin;
 
   } // end of  CMUSHclientDoc::Load_One_Include_XML
 
+#pragma warning(push)
+#pragma warning(disable : 4189)     // warning C4189: 'iVersion' : local variable is initialized but not referenced
 void CMUSHclientDoc::Load_General_XML (CXMLelement & parent, 
                                        const unsigned long iFlags)
   {
@@ -867,6 +817,7 @@ void CMUSHclientDoc::Load_General_XML (CXMLelement & parent,
   END_LOAD_LOOP;
 
   } // end of CMUSHclientDoc::Load_General_XML
+#pragma warning(pop)
 
 void CMUSHclientDoc::Load_World_Numeric_Options_XML (CXMLelement & parent,
                                                     bool bUseDefault,
@@ -1740,7 +1691,7 @@ CString strName,
   if (i >= NUMITEMS (strMacroDescriptions))
     ThrowErrorException ("Macro named \"%s\" not recognised", (LPCTSTR) strName);
 
-  unsigned short iType;
+  unsigned short iType = REPLACE_COMMAND;
 
   if (strType == "replace")
     iType = REPLACE_COMMAND;
@@ -2176,6 +2127,8 @@ long iSequence;
   } // end of CMUSHclientDoc::Load_One_Print_Colour_XML
 
 
+#pragma warning(push)
+#pragma warning(disable : 4189)     // warning C4189: 'iVersion' : local variable is initialized but not referenced
 void CMUSHclientDoc::Load_Comments_XML (CXMLelement & parent)
   {
 CString strComment;
@@ -2208,7 +2161,7 @@ int iFlags = 0; // for use by GET_VERSION_AND_DEFAULTS macro
   ActivateNotepad (strTitle);
 
   } // end of CMUSHclientDoc::Load_Comments_XML
-
+#pragma warning(pop)
 
 void CMUSHclientDoc::Load_Plugin_XML (CXMLelement & parent)
   {
@@ -2293,9 +2246,11 @@ void CMUSHclientDoc::Load_Plugin_XML (CXMLelement & parent)
       m_CurrentPlugin->m_strID.MakeLower ();
 
       // check ID is unique
-      for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
+      for (PluginListIterator pit = m_PluginList.begin (); 
+           pit != m_PluginList.end (); 
+           ++pit)
         {
-        CPlugin * p = m_PluginList.GetNext (pos);
+        CPlugin * p = *pit;
         if (m_CurrentPlugin->m_strID == p->m_strID)
            ThrowErrorException ("The plugin '%s' is already loaded.", p->m_strName);
         }      // end of looping through each plugins

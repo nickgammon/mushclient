@@ -1699,35 +1699,14 @@ CString strMsg;
 	va_end(argList);
 
   // see if a plugin will handle trace message
-  CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL;
 
   m_bTrace = false;  // stop infinite loops, where we report that the trace script was called
-
-  // tell a plugin the trace message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+  if (SendToFirstPluginCallbacks (ON_PLUGIN_TRACE, strMsg))
     {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+    m_bTrace = true;
+    return;   // sent to plugin? don't display it
+    }
 
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    pPlugin->ExecutePluginScript (ON_PLUGIN_TRACE,
-                                  strMsg,  
-                                  pPlugin->m_dispid_plugin_trace); 
-
-    if (pPlugin->m_dispid_plugin_trace != DISPID_UNKNOWN)
-      {
-      m_CurrentPlugin = pSavedPlugin;
-      m_bTrace = true;
-      return;   // sent to plugin? don't display it
-      }
-
-    }   // end of doing each plugin
-
-  m_CurrentPlugin = pSavedPlugin;
   m_bTrace = true;
 
   strMsg += ENDLINE;      // add a new line
@@ -2287,12 +2266,8 @@ CAlias * alias_item;
     case  30:
       if (alias_item->regexp && App.m_iCounterFrequency)
         {
-        LONGLONG iTimeTaken = 0;
-        double   elapsed_time;
-
-
-        elapsed_time = ((double) alias_item->regexp->TimeTaken ()) / 
-                        ((double) App.m_iCounterFrequency);
+        double elapsed_time = ((double) alias_item->regexp->TimeTaken ()) / 
+                                ((double) App.m_iCounterFrequency);
 
         SetUpVariantDouble (vaResult, elapsed_time);
         }
@@ -2407,12 +2382,8 @@ CTrigger * trigger_item;
     case  37:
       if (trigger_item->regexp && App.m_iCounterFrequency)
         {
-        LONGLONG iTimeTaken = 0;
-        double   elapsed_time;
-
-
-        elapsed_time = ((double) trigger_item->regexp->TimeTaken ()) / 
-                        ((double) App.m_iCounterFrequency);
+        double elapsed_time = ((double) trigger_item->regexp->TimeTaken ()) / 
+                                ((double) App.m_iCounterFrequency);
 
         SetUpVariantDouble (vaResult, elapsed_time);
         }
@@ -3178,7 +3149,6 @@ void CMUSHclientDoc::ShowQueuedCommands (void)
     }
 
   CString strQueued = "Queued: ";
-  int i = 0;
   const int MAX_SHOWN = 50;
 
   CString str;
@@ -3586,7 +3556,7 @@ CLine * pLine = m_LineList.GetAt (GetLinePosition (LineNumber - 1));
   if (StyleNumber <= 0 || StyleNumber > pLine->styleList.GetCount ())
     return vaResult;
 
-CStyle * pStyle;
+CStyle * pStyle = NULL;
 POSITION pos;
 int iCol = 0;
 int iCount = 1;
@@ -3607,7 +3577,7 @@ int iCount = 1;
     } // end of looping looking for it
 
 CString strAction, strHint, strVariable;
-CAction * pAction = pStyle->pAction;
+CAction * pAction = pStyle ? pStyle->pAction : NULL;
 
 COLORREF colour1,
          colour2;
@@ -4007,7 +3977,8 @@ long iCount;
       CString strLine = m_QueuedCommandsList.GetNext (pos);
 
       // the array must be a bloody array of variants, or VBscript kicks up
-      COleVariant v (strLine.Mid (1));  // drop echo flag
+      CString s = strLine.Mid (1);
+      COleVariant v (s);  // drop echo flag
       sa.PutElement (&iCount, &v);
       iCount++;
       }      // end of looping through each command
@@ -4312,6 +4283,8 @@ tInfoTypeMapping InfoTypes [] =
 { 302, "Time log file was last flushed to disk" },
 { 303, "When script file was last modified" },
 { 304, "Time now" },
+{ 305, "When client started executing" },
+{ 306, "When this world was created/opened" },
 
 
  { 0, "" }, // end of table marker
@@ -4341,6 +4314,11 @@ static void GetWindowWidth (CWnd * pWnd, VARIANT & vaResult, const bool client =
 static void GetWindowHeight (CWnd * pWnd, VARIANT & vaResult, const bool client = false )
   {
   RECT rect;
+  rect.left = 0;
+  rect.top = 0;
+  rect.right = 0;
+  rect.bottom = 0;
+
   if (pWnd->m_hWnd)
     {
     if (client)
@@ -5055,6 +5033,14 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
       SetUpVariantDate (vaResult, COleDateTime (CTime::GetCurrentTime().GetTime ())); 
       break;      
 
+    case  305:
+      SetUpVariantDate (vaResult, COleDateTime (App.m_whenClientStarted.GetTime ())); 
+      break;
+
+    case  306:
+      SetUpVariantDate (vaResult, COleDateTime (m_whenWorldStarted.GetTime ())); 
+      break;
+
     default:
       vaResult.vt = VT_NULL;
       break;
@@ -5337,17 +5323,18 @@ VARIANT CMUSHclientDoc::GetPluginList()
 
   CString strVariableName;
 
-  POSITION pos;
-  long iCount;
+  long iCount = 0;
   
   // put the plugins into the array
-  if (!m_PluginList.IsEmpty ())    // cannot create empty dimension
+  if (!m_PluginList.empty ())    // cannot create empty dimension
     {
-    sa.CreateOneDim (VT_VARIANT, m_PluginList.GetCount ());
+    sa.CreateOneDim (VT_VARIANT, m_PluginList.size ());
 
-    for (iCount = 0, pos = m_PluginList.GetHeadPosition(); pos; )
+    for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
       {
-      CPlugin * p = m_PluginList.GetNext (pos);
+      CPlugin * p = *pit;
 
       // the array must be a bloody array of variants, or VBscript kicks up
       COleVariant v (p->m_strID);
@@ -5407,11 +5394,10 @@ VARIANT CMUSHclientDoc::GetPluginInfo(LPCTSTR PluginID, short InfoType)
       int iCount = 0;
 
       // first work out what order each plugin is in *now*
-      for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
-        {
-        CPlugin * p = m_PluginList.GetNext (pos);
-        p->m_iLoadOrder = ++iCount;
-        }      // end of looping through each plugin
+      for (PluginListIterator pit = m_PluginList.begin (); 
+           pit != m_PluginList.end (); 
+           ++pit)
+        (*pit)->m_iLoadOrder = ++iCount;
 
       // now return the order of *this* one
       SetUpVariantLong   (vaResult, pPlugin->m_iLoadOrder); 
@@ -5475,14 +5461,12 @@ CPlugin * pPlugin = GetPlugin (PluginID);
   // if not found, try to find by name
   if (pPlugin == NULL && strlen (PluginID) > 0)
     {
-    // see if plugin exists in list of plugins for this document
-    for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
-      {
-      pPlugin = m_PluginList.GetNext (pos);
-      if (pPlugin->m_strName.CompareNoCase (PluginID) == 0)
-        break;
-      pPlugin = NULL;
-      }      // end of looping through each plugins
+    PluginListIterator pit = find_if (m_PluginList.begin (),
+                                     m_PluginList.end (),
+                                     bind2nd (compare_plugin_name (), PluginID));
+    if (pit != m_PluginList.end ())
+       pPlugin = *pit;
+       
     }    
 
   if (pPlugin == NULL)
@@ -5492,13 +5476,15 @@ CPlugin * pPlugin = GetPlugin (PluginID);
   if (pPlugin == m_CurrentPlugin)
     return eBadParameter;
 
-  POSITION pos = m_PluginList.Find (pPlugin);
-
-  if (!pos)
+  PluginListIterator pit = find (m_PluginList.begin (), 
+                                 m_PluginList.end (), 
+                                 pPlugin);
+ 
+  if (pit == m_PluginList.end () )
     return eNoSuchPlugin;
 
   CString strName = pPlugin->m_strSource;
-  m_PluginList.RemoveAt (pos);  // remove from list
+  m_PluginList.erase (pit);  // remove from list
   delete pPlugin;   // delete the plugin
 
   CPlugin * pCurrentPlugin = m_CurrentPlugin;
@@ -5547,13 +5533,11 @@ CPlugin * CMUSHclientDoc::GetPlugin (LPCTSTR PluginID)
       m_CurrentPlugin->m_strID.CompareNoCase (PluginID) == 0)
     return m_CurrentPlugin;
 
-  // see if plugin exists in list of plugins for this document
-  for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pos);
-    if (pPlugin->m_strID.CompareNoCase (PluginID) == 0)
-      return pPlugin;
-    }      // end of looping through each plugins
+  PluginListIterator pit = find_if (m_PluginList.begin (),
+                                    m_PluginList.end (),
+                                    bind2nd (compare_plugin_id (), PluginID));
+  if (pit != m_PluginList.end ())
+     return *pit;
 
   return NULL;  // not found
 
@@ -5783,10 +5767,17 @@ CPlugin * pPlugin = GetPlugin (PluginID);
   pPlugin->m_bEnabled = Enabled != 0;
 
   if (pPlugin->m_bEnabled)
-    pPlugin->ExecutePluginScript (ON_PLUGIN_ENABLE, pPlugin->m_dispid_plugin_enable); 
+    {
+    CScriptCallInfo callinfo (ON_PLUGIN_ENABLE, pPlugin->m_PluginCallbacks [ON_PLUGIN_ENABLE]);
+    pPlugin->ExecutePluginScript (callinfo); 
+    }
   else
-    pPlugin->ExecutePluginScript (ON_PLUGIN_DISABLE, pPlugin->m_dispid_plugin_disable); 
+    {
+    CScriptCallInfo callinfo (ON_PLUGIN_DISABLE, pPlugin->m_PluginCallbacks [ON_PLUGIN_DISABLE]);
+    pPlugin->ExecutePluginScript (callinfo); 
+    }
   
+
   return eOK;
 }   // end of EnablePlugin
 
@@ -7272,24 +7263,13 @@ for (POSITION command_pos = strList.GetHeadPosition (); command_pos; )
   if (!m_bPluginProcessingCommand)
       {
       m_bPluginProcessingCommand = true;  // so we don't go into a loop
-      bool bOK = true;
-      // tell each plugin what we are about to Command
-      for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
+      if (!SendToAllPluginCallbacks (ON_PLUGIN_COMMAND, str))
         {
-        CPlugin * pPlugin = m_PluginList.GetNext (pos);
-
-        if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-          continue;
-
-        // see what the plugin makes of this, excluding the ENDLINE
-        if (!pPlugin->ExecutePluginScript (ON_PLUGIN_COMMAND, pPlugin->m_dispid_plugin_command, str))
-          bOK = false;
-        }   // end of doing each plugin
+        m_bPluginProcessingCommand = false;
+        continue;
+        }
 
       m_bPluginProcessingCommand = false;
-
-      if (!bOK)
-        continue;   // plugin doesn't want to send it
       }
 
   // empty line - just send it
@@ -8017,27 +7997,12 @@ void CMUSHclientDoc::ChatNote(short NoteType, LPCTSTR Message)
             m_iMaxChatLinesPerMessage);
     }   // end of line count check wanted
 
-  CPlugin * pSavedPlugin = m_CurrentPlugin;
-  // tell each plugin what we are about to display
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    if (!pPlugin->ExecutePluginScript (ON_PLUGIN_CHAT_DISPLAY, 
-                          pPlugin->m_dispid_plugin_On_Chat_Display, 
-                          NoteType,     // message number
-                          string (strMessage)    // message text
-                          ))
-      {
-      m_CurrentPlugin = pSavedPlugin;
-      return;   // false means plugin handled it 
-      }
-    }   // end of doing each plugin
-  m_CurrentPlugin = pSavedPlugin;
+  if (!SendToAllPluginCallbacks (ON_PLUGIN_CHAT_DISPLAY, 
+                                NoteType,     // message number
+                                string (strMessage),    // message text
+                                false,
+                                true))  // stop on false response
+    return;   // false means plugin handled it 
 
 
 // save old colours - because we switch to the chat colour below
@@ -9007,7 +8972,7 @@ long iCount = 0;
       // do it
       Load_World_XML (ar, 
                       // don't load plugins or general world config here  (note, this sets XML_OVERWRITE)
-                      ~(XML_PLUGINS | XML_NO_PLUGINS | XML_GENERAL), 
+                      (unsigned long) ~(XML_PLUGINS | XML_NO_PLUGINS | XML_GENERAL), 
                       0,          // load flags
                       &iTriggers,  
                       &iAliases,   
@@ -10592,9 +10557,10 @@ VARIANT CMUSHclientDoc::AcceleratorList()
       if (m_CommandToSendToMap [it->second] == eSendToExecute)
         strSendTo = "";
       // the array must be a bloody array of variants, or VBscript kicks up
-      COleVariant v (CFormat ("%s = %s%s", (LPCTSTR) key, 
-                      command.c_str (), 
-                      (LPCTSTR) strSendTo));
+      CString s = CFormat ("%s = %s%s", (LPCTSTR) key, 
+                          command.c_str (), 
+                          (LPCTSTR) strSendTo);
+      COleVariant v (s);
       sa.PutElement (&iCount, &v);
       }      // end of looping through each accelerator
     } // end of having at least one
@@ -10632,9 +10598,10 @@ VARIANT CMUSHclientDoc::MapColourList()
          it != m_ColourTranslationMap.end (); it++, iCount++)
       {
       // the array must be a bloody array of variants, or VBscript kicks up
-      COleVariant v (CFormat ("%s = %s", 
-                    (LPCTSTR) ColourToName (it->first), 
-                    (LPCTSTR) ColourToName (it->second)));
+      CString s = CFormat ("%s = %s", 
+                          (LPCTSTR) ColourToName (it->first), 
+                          (LPCTSTR) ColourToName (it->second));
+      COleVariant v (s);
       sa.PutElement (&iCount, &v);
       }      // end of looping through each colour
     } // end of having at least one
@@ -11487,23 +11454,25 @@ long CMUSHclientDoc::BroadcastPlugin(long Message, LPCTSTR Text)
     }
 
   // tell a plugin the message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+  for (PluginListIterator pit = m_PluginList.begin (); 
+       pit != m_PluginList.end (); 
+       ++pit)
     {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
+    CPlugin * pPlugin = *pit;
 
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
 
+    CScriptCallInfo callinfo (ON_PLUGIN_BROADCAST, pPlugin->m_PluginCallbacks [ON_PLUGIN_BROADCAST]);
+
     // see what the plugin makes of this,
-    pPlugin->ExecutePluginScript (ON_PLUGIN_BROADCAST,
-                                  pPlugin->m_dispid_plugin_broadcast,
+    pPlugin->ExecutePluginScript (callinfo,
                                   Message, 
                                   (LPCTSTR) strCurrentID,
                                   (LPCTSTR) strCurrentName,
                                   Text); 
 
-    if (pPlugin->m_dispid_plugin_broadcast != DISPID_UNKNOWN)
+    if (callinfo._dispid_info.isvalid ())
       iCount++;
 
     }   // end of doing each plugin
@@ -11791,7 +11760,7 @@ POSITION pos;
   if (!m_LineList.IsEmpty ())
     {
     m_pCurrentLine = m_LineList.GetTail ();
-    if ((m_pCurrentLine->flags & COMMENT == 0) ||
+    if (((m_pCurrentLine->flags & COMMENT) == 0) ||
         m_pCurrentLine->hard_return)
         m_pCurrentLine = NULL;
     }
@@ -11927,7 +11896,7 @@ BOOL CMUSHclientDoc::Transparency(long Key, short Amount)
   else if (Amount > MWT_MAX_FACTOR)
     Amount = MWT_MAX_FACTOR;
 
-  return MakeWindowTransparent (App.m_pMainWnd->m_hWnd, Key, Amount);
+  return MakeWindowTransparent (App.m_pMainWnd->m_hWnd, Key, (unsigned char) Amount);
 }
 
 
@@ -12592,7 +12561,7 @@ CMyToolBar * pToolBar = NULL;
     }
   else
     {
-    UINT nDockBarID;
+    UINT nDockBarID = AFX_IDW_DOCKBAR_TOP;
     CRect rect (Left, Top, Left + rectBar.right - rectBar.left, Top + rectBar.bottom - rectBar.top);
     Frame.ClientToScreen (rect);
     switch (Side)

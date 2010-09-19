@@ -25,6 +25,8 @@ int i;
   // each document will have a unique number
   m_iUniqueDocumentNumber = App.GetUniqueNumber ();
 
+  m_whenWorldStarted = CTime::GetCurrentTime();
+
   AllocateConfigurationArrays ();
 
   m_bTrace = false;   // not tracing yet
@@ -522,7 +524,12 @@ int i;
 
 // delete plugins
 
-  DELETE_LIST (m_PluginList);
+  for (PluginListIterator pit = m_PluginList.begin (); 
+       pit != m_PluginList.end (); 
+       ++pit)
+    delete *pit;
+
+  m_PluginList.clear ();
 
   CloseLog ();    // this writes out the log file postamble as well
 

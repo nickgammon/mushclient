@@ -3,14 +3,30 @@
 //      are changed infrequently
 //
 
-#ifdef WIN32
-// disable warnings about long STL-generated names
-  #pragma warning( disable : 4503 4786 4800)
-#endif
+// disable some warnings (especially at warning level 4)
+
+#pragma warning (disable : 4018)  // '<' : signed/unsigned mismatch
+#pragma warning (disable : 4100)  // unreferenced formal parameter
+#pragma warning (disable : 4127)  // conditional expression is constant
+#pragma warning (disable : 4201)  // nonstandard extension used : nameless struct/union
+#pragma warning (disable : 4244)  // conversion from 'int ' to 'char ', possible loss of data
+#pragma warning (disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
+#pragma warning (disable : 4503)  // decorated name length exceeded, name was truncated
+#pragma warning (disable : 4505)  // unreferenced local function has been removed
+#pragma warning (disable : 4511)  // copy constructor could not be generated
+#pragma warning (disable : 4512)  // assignment operator could not be generated
+#pragma warning (disable : 4514)  // unreferenced inline function has been removed
+#pragma warning (disable : 4663)  // C++ language change: to explicitly specialize class template yadda yadda
+#pragma warning (disable : 4702)  // unreachable code
+#pragma warning (disable : 4706)  // assignment within conditional expression
+#pragma warning (disable : 4710)  // function 'x' not inlined
+#pragma warning (disable : 4786)  // identifier was truncated to 'number' characters in the debug information
+
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #define HAVE_CONFIG_H   // for PCRE
       
+#pragma warning( push, 3)
 #include <afx.h>
 
 #ifdef _DEBUG
@@ -51,6 +67,7 @@
 #include <activscp.h>
 #include <afxmt.h>
 #include <afxpriv.h>
+
 #include "format.h"
 #include "exceptions.h"
 
@@ -66,6 +83,7 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#pragma warning (pop)
 
 extern "C"
   {
@@ -167,7 +185,7 @@ enum { BLACK = 0, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE };
 #define PLURALES(arg) (arg), (arg) == 1 ? "" : "es"
 
 // number of items in an array
-#define NUMITEMS(arg) (sizeof (arg) / sizeof (arg [0]))
+#define NUMITEMS(arg) ((unsigned int) (sizeof (arg) / sizeof (arg [0])))
 
 #define DEFAULT_CHAT_PORT 4050
 #define DEFAULT_CHAT_NAME "Name-not-set"
@@ -481,62 +499,6 @@ class CStyle;
 
 CStyle * GetNewStyle (const char * filename, const long linenumber);
 void DeleteStyle (CStyle * pStyle, const char * filename, const long linenumber);
-
-// plugin callback routines - start with OnPlugin so that we can advise
-// users not to use that string for their own routines
-
-#define ON_PLUGIN_INSTALL     "OnPluginInstall"
-#define ON_PLUGIN_CONNECT     "OnPluginConnect"
-#define ON_PLUGIN_DISCONNECT  "OnPluginDisconnect"
-#define ON_PLUGIN_CLOSE       "OnPluginClose"
-#define ON_PLUGIN_SAVE_STATE  "OnPluginSaveState"
-#define ON_PLUGIN_WORLD_SAVE  "OnPluginWorldSave"
-#define ON_PLUGIN_ENABLE      "OnPluginEnable"
-#define ON_PLUGIN_DISABLE     "OnPluginDisable"
-#define ON_PLUGIN_COMMAND     "OnPluginCommand" 
-#define ON_PLUGIN_COMMAND_ENTERED     "OnPluginCommandEntered" 
-#define ON_PLUGIN_GETFOCUS    "OnPluginGetFocus"
-#define ON_PLUGIN_LOSEFOCUS   "OnPluginLoseFocus" 
-#define ON_PLUGIN_TRACE       "OnPluginTrace" 
-#define ON_PLUGIN_BROADCAST   "OnPluginBroadcast" 
-#define ON_PLUGIN_SCREENDRAW  "OnPluginScreendraw" 
-#define ON_PLUGIN_PLAYSOUND   "OnPluginPlaySound" 
-#define ON_PLUGIN_TABCOMPLETE "OnPluginTabComplete" 
-#define ON_PLUGIN_LIST_CHANGED "OnPluginListChanged"
-
-//#define ON_PLUGIN_TOOLTIP     "OnPluginToolTip" 
-
-// stuff received/send
-#define ON_PLUGIN_SEND        "OnPluginSend" 
-#define ON_PLUGIN_SENT        "OnPluginSent" 
-#define ON_PLUGIN_LINE_RECEIVED "OnPluginLineReceived"    
-#define ON_PLUGIN_PACKET_RECEIVED "OnPluginPacketReceived"    
-#define ON_PLUGIN_PARTIAL_LINE "OnPluginPartialLine"    
-#define ON_PLUGIN_TELNET_OPTION "OnPluginTelnetOption"    
-#define ON_PLUGIN_TELNET_REQUEST "OnPluginTelnetRequest"    
-#define ON_PLUGIN_TELNET_SUBNEGOTIATION "OnPluginTelnetSubnegotiation"    
-#define ON_PLUGIN_IAC_GA "OnPlugin_IAC_GA"    
-#define ON_PLUGIN_WORLD_OUTPUT_RESIZED "OnPluginWorldOutputResized"    
-#define ON_PLUGIN_TICK "OnPluginTick"    
-#define ON_PLUGIN_MOUSE_MOVED "OnPluginMouseMoved"    
-#define ON_PLUGIN_COMMAND_CHANGED "OnPluginCommandChanged"    
-
-// MXP stuff
-#define ON_PLUGIN_MXP_START       "OnPluginMXPstart"
-#define ON_PLUGIN_MXP_STOP        "OnPluginMXPstop"
-#define ON_PLUGIN_MXP_OPENTAG     "OnPluginMXPopenTag"    
-#define ON_PLUGIN_MXP_CLOSETAG    "OnPluginMXPcloseTag"
-#define ON_PLUGIN_MXP_SETVARIABLE "OnPluginMXPsetVariable"
-#define ON_PLUGIN_MXP_SETENTITY   "OnPluginMXPsetEntity"
-#define ON_PLUGIN_MXP_ERROR       "OnPluginMXPerror"
-
-// chat stuff
-#define ON_PLUGIN_CHAT_ACCEPT     "OnPluginChatAccept"
-#define ON_PLUGIN_CHAT_MESSAGE    "OnPluginChatMessage"
-#define ON_PLUGIN_CHAT_MESSAGE_OUT "OnPluginChatMessageOut"
-#define ON_PLUGIN_CHAT_DISPLAY    "OnPluginChatDisplay"
-#define ON_PLUGIN_CHAT_NEWUSER    "OnPluginChatNewUser"
-#define ON_PLUGIN_CHAT_USERDISCONNECT  "OnPluginChatUserDisconnect"
 
 // ANSI Colour Codes
 

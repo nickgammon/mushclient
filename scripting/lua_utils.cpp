@@ -74,7 +74,6 @@ size_t xmlLength;
 const char * xml = luaL_checklstring (L, 1, &xmlLength);
 
 CXMLparser parser;
-CXMLelement * pMuClientElement = NULL;
 
   try
     {
@@ -541,16 +540,14 @@ static int functionargs (lua_State *L)
   return 1;   // 1 table
   } // end of functionargs
 
-extern tPluginCallbackNames PluginCallbacksTable [1];
-
 // returns table of internal functions
 static int callbackslist (lua_State *L) 
   {
   lua_newtable(L);    // table of function names
 
-  for (int i = 0;  PluginCallbacksTable [i].pName; i++)
+  for (int i = 0;  PluginCallbacksNames [i] != ""; i++)
     {
-    lua_pushstring (L, PluginCallbacksTable [i].pName);
+    lua_pushstring (L, PluginCallbacksNames [i].c_str ());
     lua_rawseti(L, -2, i + 1);  // make 1-relative
     }
 

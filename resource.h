@@ -1529,7 +1529,7 @@
 #define ID_ALT_Y                        33023
 #define ID_ALT_B                        33024
 #define ID_GAME_CONFIGURE_CHAT          33025
-#define ID_MACRO_F1                     -32510
+#define ID_MACRO_F1                     33026
 #define ID_MACRO_CTRL_F1                33027
 #define ID_MACRO_SHIFT_F1               33028
 #define ID_HELP_DOCUMENTATIONWEBPAGE    33029
@@ -1562,7 +1562,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        360
+#define _APS_NEXT_RESOURCE_VALUE        361
 #define _APS_NEXT_COMMAND_VALUE         33054
 #define _APS_NEXT_CONTROL_VALUE         2897
 #define _APS_NEXT_SYMED_VALUE           312

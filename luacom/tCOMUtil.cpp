@@ -1,3 +1,6 @@
+#pragma warning( disable : 4189)  // warning C4189: 'iVersion' : local variable is initialized but not referenced
+#pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
+
 // tCOMUtil.cpp: implementation of the tCOMUtil class.
 //
 //////////////////////////////////////////////////////////////////////

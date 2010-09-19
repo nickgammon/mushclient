@@ -469,7 +469,7 @@ POSITION foundpos;
       }
 
 
-int iUnicodeCharacters;
+int iUnicodeCharacters = 0;
 
 // unicode conversion from UTF-8
 
@@ -1312,9 +1312,6 @@ COLORREF iBackColour = BLACK;
 
 void CMUSHView::OnInitialUpdate()
 {
-  CMUSHclientDoc* pDoc = GetDocument();
-  ASSERT_VALID(pDoc);
-
   CView::OnInitialUpdate();
 
   CSize sizeTotal;
@@ -1473,13 +1470,9 @@ ScrollToPosition (pt, false);
 
 void CMUSHView::OnTestStart() 
 {
-CMUSHclientDoc* pDoc = GetDocument();
-ASSERT_VALID(pDoc);
-
 POINT pt = {0, 0};
 
 ScrollToPosition (pt, false);
-
 }
 
 
@@ -1653,7 +1646,6 @@ CPoint point (pt);
 int lastline;
 long lastx = 0;
 bool bOutside = true;
-int oldstyle = 0;
 long pixel;
 
   dc.SelectObject(pDoc->m_font [0]);
@@ -1796,11 +1788,12 @@ CPoint menupoint = point;
     } // end of all aliases
 
   // do plugins
-  for (POSITION plugin_pos = pDoc->m_PluginList.GetHeadPosition (); 
-        plugin_pos && i < MXP_MENU_COUNT; )
+  for (PluginListIterator pit = pDoc->m_PluginList.begin (); 
+       pit != pDoc->m_PluginList.end () && i < MXP_MENU_COUNT; 
+       ++pit)
     {
-    pDoc->m_CurrentPlugin = pDoc->m_PluginList.GetNext (plugin_pos);
-
+    pDoc->m_CurrentPlugin = *pit;
+        
     if (pDoc->m_CurrentPlugin->m_bEnabled)
       for (POSITION pos = pDoc->GetAliasMap ().GetStartPosition (); 
             pos && i < MXP_MENU_COUNT; )
@@ -1974,8 +1967,6 @@ int line,
           // However an action in the form !!pluginID:script(arg)
           // eg. !!753ba7e011f3c8943a885f18:mysub(1234)   
           // will be passed the nominted sub in the nominated plugin
-
-          CPlugin * pPlugin = NULL;
 
           // rather elaborate test ...
 
@@ -2316,8 +2307,6 @@ int line,
 
   // end of tooltips stuff
 
-CLine * pLine = pDoc->m_LineList.GetAt (pDoc->GetLinePosition (line));
-
   // only if the user is currently drawing a new stroke by dragging
   // the captured mouse.
 
@@ -2469,7 +2458,6 @@ long start_textsize,
       end_textsize;
 
 long right;
-int oldstyle = 0;
 
 GetTextRect (&r);
 right = r.right;
@@ -2904,10 +2892,6 @@ long startcol,
 
 BOOL CMUSHView::OnEraseBkgnd(CDC* pDC) 
 {
-CMUSHclientDoc* pDoc = GetDocument();
-ASSERT_VALID(pDoc);
-
-
   return FALSE;
 }
 
@@ -2951,21 +2935,7 @@ CSize sizeTotal (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_Fon
   
   Frame.FixUpTitleBar ();   // in case we need to add the mud name to the title bar
 
-    // tell each plugin we have resized. Hello, Worstje!
-
-  for (POSITION pluginpos = pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pluginpos);
-
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    pPlugin->ExecutePluginScript (ON_PLUGIN_WORLD_OUTPUT_RESIZED,
-                                  pPlugin->m_dispid_plugin_on_world_output_resized); 
-
-    }   // end of doing each plugin
+  pDoc->SendToAllPluginCallbacks (ON_PLUGIN_WORLD_OUTPUT_RESIZED);
 
 
 // this is for the guy that wants to fit the max text he can in his window,
@@ -3176,27 +3146,7 @@ ASSERT_VALID(pDoc);
         } // end of executing get focus script
 
       if (!pDoc->m_bWorldClosing)
-        {
-
-        // now do plugins "get focus"
-        CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-        pDoc->m_CurrentPlugin = NULL;
-
-        // tell each plugin what we have received
-        for (POSITION pluginpos = pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-          {
-          CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pluginpos);
-
-          if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-            continue;
-
-          // see what the plugin makes of this,
-          pPlugin->ExecutePluginScript (ON_PLUGIN_GETFOCUS, pPlugin->m_dispid_plugin_get_focus);
-          }   // end of doing each plugin
-
-        pDoc->m_CurrentPlugin = pSavedPlugin;
-
-        } // end of world not closing
+        pDoc->SendToAllPluginCallbacks (ON_PLUGIN_GETFOCUS);
       
       }   // end of executing "get focus" scripts
     // make sure status line is updated
@@ -3229,25 +3179,8 @@ ASSERT_VALID(pDoc);
         } // end of executing lose focus script
 
       if (!pDoc->m_bWorldClosing)
-        {
-        // now do plugins "lose focus"
-        CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-        pDoc->m_CurrentPlugin = NULL;
+        pDoc->SendToAllPluginCallbacks (ON_PLUGIN_LOSEFOCUS);
 
-        // tell each plugin what we have received
-        for (POSITION pluginpos = pDoc->m_PluginList.GetHeadPosition(); pluginpos; )
-          {
-          CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pluginpos);
-
-          if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-            continue;
-
-          // see what the plugin makes of this,
-          pPlugin->ExecutePluginScript (ON_PLUGIN_LOSEFOCUS, pPlugin->m_dispid_plugin_lose_focus);
-          }   // end of doing each plugin
-
-        pDoc->m_CurrentPlugin = pSavedPlugin;
-        } // end of world not closing
       }  // end of executing "Lose focus" scripts
     // make sure status line is updated
     Frame.SetStatusNormal (); 
@@ -3689,7 +3622,7 @@ t_print_control_block pcb;
       (line == m_selend_line))
       endcol = m_selend_col;
 
-    CStyle * pStyle;
+    CStyle * pStyle = NULL;
     int i = 0;
     POSITION stylepos;
 
@@ -3709,6 +3642,8 @@ t_print_control_block pcb;
 
     for (thiscol = startcol; thiscol < endcol; )
       {
+      if (!pStyle)
+        break;
 
       // don't overshoot
       thislen = MIN (cols_to_go, thislen);
@@ -4671,7 +4606,7 @@ CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
 POSITION startpos, pos;
-CLine * pLine,
+CLine * pLine = NULL,
       * pInitialLine;
 int nNewLine = m_selstart_line,
     nInitialLine;
@@ -5554,7 +5489,8 @@ ASSERT_VALID(pDoc);
             sa.CreateOneDim (VT_VARIANT, MAX_WILDCARDS, NULL, 1);
             for (long i = 1; i <= MAX_WILDCARDS; i++)
               {
-              COleVariant v (CString ("")); // no wildcards are relevant
+              CString s ("");
+              COleVariant v (s); // no wildcards are relevant
               sa.PutElement (&i, &v);
               }
             args [eWildcards] = sa;
@@ -5572,7 +5508,6 @@ ASSERT_VALID(pDoc);
 
     // send the message
 
-      bool bOmitFromLog = false;
       CString strExtraOutput;
 
       pDoc->m_iCurrentActionSource = eUserMenuAction;
@@ -6281,16 +6216,14 @@ DISPID iDispid = pPlugin->m_ScriptEngine->GetDispid (sRoutineName.c_str ());
     return;                       
     }
 
+  // change to this plugin, call function, put current plugin back
   CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-
   pDoc->m_CurrentPlugin = pPlugin;   
-   
-
-  pPlugin->ExecutePluginScript (sRoutineName.c_str (), 
-                          iDispid, 
-                          Flags,              // keyboard flags
-                          HotspotId.c_str ()  // which hotspot
-                          );
+  CScriptDispatchID dispid_info (iDispid);
+  CScriptCallInfo callinfo (sRoutineName.c_str (), dispid_info);
+  pPlugin->ExecutePluginScript (callinfo, 
+                                Flags,              // keyboard flags
+                                HotspotId.c_str ());  // which hotspot
   pDoc->m_CurrentPlugin = pSavedPlugin;
 
 
@@ -6376,22 +6309,12 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
   // report mouse movements: version 4.45
   pDoc->m_lastMousePosition = point;
 
-  CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
-  pDoc->m_CurrentPlugin = NULL;
-
-  // tell each plugin about the mouse movement
-  for (POSITION pos = pDoc->m_PluginList.GetHeadPosition(); pos; )
-    {
-    CPlugin * pPlugin = pDoc->m_PluginList.GetNext (pos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    pPlugin->ExecutePluginScript (ON_PLUGIN_MOUSE_MOVED, 
-                                  pPlugin->m_dispid_plugin_mouse_moved, point.x, point.y, sMiniWindowId.c_str ());
-    }   // end of doing each plugin
-
-  pDoc->m_CurrentPlugin = pSavedPlugin;
+  pDoc->SendToAllPluginCallbacks (ON_PLUGIN_MOUSE_MOVED, 
+                                  point.x, 
+                                  point.y, 
+                                  sMiniWindowId.c_str (),
+                                  false,
+                                  false);
 
   // drag-and-drop stuff
 

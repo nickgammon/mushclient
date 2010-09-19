@@ -82,7 +82,6 @@ static int Lprogress_gc (lua_State *L) {
 // tostring helper
 static int Lprogress_tostring (lua_State *L) 
   {
-  CProgressDlg *pProgressDlg = Lprogress_getdialog (L);
   lua_pushstring(L, "progress_dialog");
   return 1;
 }  // end of Lprogress_tostring

@@ -151,9 +151,7 @@ static void ShowAnsiColour (CMUSHclientDoc * pDoc,
   CString strTextColour = "black";
 
    // if colour is dark, use white, otherwise use black
-   if (((GetRValue (iColour) & 0xFF) +
-       (GetGValue (iColour) & 0xFF) +
-       (GetBValue (iColour) & 0xFF) ) < (128 * 3))
+   if (((iRed & 0xFF) + (iGreen & 0xFF) + (iBlue & 0xFF) ) < (128 * 3))
      strTextColour = "white";
 
   pDoc->ColourTell (strTextColour, ColourToName (iColour), strName);
@@ -791,7 +789,6 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
          it != GetArrayMap ().end ();
          it++, iCount++)
            {
-           tStringToStringMap * m = it->second;
            Note (CFormat ("Array: \"%s\"", it->first.c_str ()));
 
           // now show key/value pairs
@@ -810,13 +807,13 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 //-----------------------------------------------------------------------
   else if (strcmp (Command, "plugins") == 0)
     {
-    CPlugin * p;
-    POSITION ppos,  // plugin pos
-             pos;   // other pos
+    POSITION pos;   // other pos
 
-    for (ppos = m_PluginList.GetHeadPosition (); ppos; iCount++)
+    for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit, ++iCount)
       {
-      p = m_PluginList.GetNext (ppos);
+      CPlugin * p = *pit;
       Note (TFormat ("Name:       %s", (LPCTSTR) p->m_strName));
       Note (TFormat ("ID:         %s", (LPCTSTR) p->m_strID));
       Note (TFormat ("Purpose:    %s", (LPCTSTR) p->m_strPurpose));
@@ -947,7 +944,6 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     CTrigger * pTrigger;
     CAlias * pAlias;
     CTimer * pTimer;
-    CPlugin * pPlugin;
 
     __int64   nTotalMatches = 0;
     __int64   nTotalMatchAttempts = 0;
@@ -1268,9 +1264,11 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     nTotal = 0;
     nEnabled = 0;
 
-    for (pos = m_PluginList.GetHeadPosition (); pos; iCount++)
+    for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
       {
-      pPlugin = m_PluginList.GetNext (pos);
+      CPlugin * pPlugin = *pit;
       nTotal++;
       
       if (pPlugin->m_bEnabled)
@@ -1300,7 +1298,25 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
         CString strVariableName;
         CVariable * variable_item;
         pPlugin->m_VariableMap.GetNextAssoc (varpos, strVariableName, variable_item);
-        }
+        }  // end of for loop
+
+      // count callbacks that are either valid (and not fired) or fired at some point
+      int nTotalCallbacks = 0;
+      for (CScriptDispatchIDIterator i = pPlugin->m_PluginCallbacks.begin ();
+           i != pPlugin->m_PluginCallbacks.end ();
+           i++)
+           if (i->second.isvalid () || i->second._count > 0)
+              nTotalCallbacks++;
+
+      // no quick way of finding timers count
+      int nTotalTimers = 0;
+      for (POSITION timerpos = pPlugin->m_TimerMap.GetStartPosition(); timerpos; nTotalTimers++)
+        {
+        CTimer * pTimer;
+        CString strName;
+        pPlugin->m_TimerMap.GetNextAssoc (timerpos, strName, pTimer);
+        } // end of for loop
+
 
       // first time we find a non-zero count, we draw the left bracket
       // afterwards, we put a space between the previous item and this one
@@ -1328,7 +1344,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
         }
 
       // hyperlink for timers
-      if (pPlugin->m_TimerRevMap.size () > 0)
+      if (nTotalTimers > 0)
         {
         if (bDoneOne)
           Tell (" ");
@@ -1351,6 +1367,18 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
         bDoneOne = true;
         }
 
+      // hyperlink for callbacks
+      if (nTotalCallbacks > 0)
+        {
+        if (bDoneOne)
+          Tell (" ");
+        else
+          ColourTell (strColour, "", " [");
+        Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":callbacklist(_%s_)",(LPCTSTR) pPlugin->m_strID), 
+                   "Cb", "Click to list callbacks", "cyan", "", 0);
+        bDoneOne = true;
+        }
+
       // wrap up line
       if (bDoneOne)
         ColourNote (strColour, "", "]");
@@ -1367,8 +1395,8 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     CString strStatus = GetConnectionStatus (m_iConnectPhase);
 
-    Note (TFormat ("Connect phase: %i (%s)", 
-          m_iConnectPhase, (LPCTSTR) strStatus));
+    Note (TFormat ("Connect phase: %i (%s). NAWS wanted: %s", 
+          m_iConnectPhase, (LPCTSTR) strStatus, SHOW_TRUE (m_bNAWS)));
 
     __int64 nInK = m_nBytesIn / (__int64) 1024;
     __int64 nOutK = m_nBytesOut / (__int64) 1024;
@@ -2017,6 +2045,40 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
 
 
     }   // end of variablelist
+
+
+//-----------------------------------------------------------------------
+//          callbacklist
+//-----------------------------------------------------------------------
+
+  else if (strAction == "callbacklist")
+    {
+
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "------ Callback List (alphabetic order) ------");
+    Note ("");
+    int iCount = 0;
+
+    for (CScriptDispatchIDIterator it = m_CurrentPlugin->m_PluginCallbacks.begin ();
+         it != m_CurrentPlugin->m_PluginCallbacks.end ();
+         it++)
+      if (it->second.isvalid () || it->second._count > 0)
+        {
+        iCount++;
+        CString strColour = enabledFore;
+        if (!it->second.isvalid ())
+          strColour = disabledFore; 
+
+        ColourNote (strColour, "", CFormat ("%-30s -> Valid: %3s  %10I64i call%s.", 
+                                  it->first.c_str (),
+                                  SHOW_TRUE (it->second.isvalid ()),
+                                  PLURAL (it->second._count)
+                                  ));
+
+        }  // end if valid or non-zero count (and for loop)
+
+    ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", TFormat ("%i callback%s.", PLURAL (iCount)));
+
+    }   // end of callbacklist
 
 
 //-----------------------------------------------------------------------

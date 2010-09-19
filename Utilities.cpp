@@ -183,8 +183,10 @@ char * pNew = p;
 char c;
 int i;
 
-  for ( ; c = *p; p++)
+  for ( ; *p; p++)
     {
+    c = *p;
+
     // look for escape sequences ...
     if (c == '\\')
       {
@@ -252,6 +254,9 @@ bool CreateTextWindow (const char * sText,
                        const int iLines,
                        const int iNotepadType)
   {
+  // during startup, may not exist
+  if (App.m_pNormalDocTemplate == NULL)
+     return false;
 
   CTextDocument * pNewDoc = (CTextDocument *)
     App.m_pNormalDocTemplate->OpenDocumentFile(NULL);
@@ -440,7 +445,6 @@ bool GetClipboardColour (COLORREF & colour)
   {
 CString strColour; 
 int i;
-bool bEnable = true;
 bool bReverse;
 CColours * colour_item;
 
@@ -533,7 +537,7 @@ static char base64code[64]=
 int getBase64Value(char code){
 
     int val= (int)code;
-    int result;
+    int result = 0;
 
     if (val >= 'A' && val <= 'Z')
         result= val - 65;
@@ -1039,8 +1043,10 @@ void ShutDownSocket (CAsyncSocket & s)
     // stop asynchronous notifications (otherwise IOCtl will fail)
     if (!s.AsyncSelect (0))
       {
+#ifdef _DEBUG
       int iError = s.GetLastError ();
       TRACE1 ("Error on AsyncSelect: %08X\n", iError);
+#endif
       } // end of failure
 
 /*
@@ -1537,7 +1543,7 @@ void MakeTableItem (lua_State *L, const char * name, const string & str)
   }
 
 // make number table item
-void MakeTableItem (lua_State *L, const char * name, const int n)
+void MakeTableItem (lua_State *L, const char * name, const double n)
   {
   lua_pushstring (L, name);
   lua_pushnumber (L, n);
@@ -3009,6 +3015,8 @@ unsigned char header [8];
     return eUnableToLoadImage;
     }
 
+#pragma warning (push)
+#pragma warning (disable : 4611)  // interaction between '_setjmp' and C++ object destruction is non-portable
 
   // if png fails it will longjmp back to here, so we destroy the structure,
   // close the file, and wrap up
@@ -3020,6 +3028,7 @@ unsigned char header [8];
     return eUnableToLoadImage;
     }
 
+#pragma warning (pop)
 
   // initialize IO
   png_init_io (png_ptr, fp);
@@ -3153,6 +3162,8 @@ long LoadPngMemory (unsigned char * Buffer, const size_t Length, HBITMAP & hbmp,
     return eUnableToLoadImage;
     }
 
+#pragma warning (push)
+#pragma warning (disable : 4611)  // interaction between '_setjmp' and C++ object destruction is non-portable
 
   // if png fails it will longjmp back to here, so we destroy the structure,
   // and wrap up
@@ -3163,6 +3174,7 @@ long LoadPngMemory (unsigned char * Buffer, const size_t Length, HBITMAP & hbmp,
     return eUnableToLoadImage;
     }
 
+#pragma warning (pop)
 
   tPngBufferInfo PngBufferInfo;
   PngBufferInfo.BufferPos = Buffer;

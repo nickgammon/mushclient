@@ -13,6 +13,7 @@
 #include "xml\xmlparse.h"
 #include "paneline.h"
 #include "miniwindow.h"
+#include "plugins.h"
 
 #define COMPRESS_BUFFER_LENGTH 1024   // size of decompression buffer
 
@@ -20,8 +21,8 @@
 
 // New versions - things to change
 
-#define THISVERSION 460                       // Step 1.
-const CString MUSHCLIENT_VERSION = "4.60";    // Step 2.
+#define THISVERSION 462                       // Step 1.
+const CString MUSHCLIENT_VERSION = "4.62";    // Step 2.
 // Step 3. Don't forget VERSION resource in Resources tab
 // Step 4. Remember: README.TXT 
 
@@ -541,7 +542,7 @@ typedef CTypedPtrArray <CPtrArray, CAlphaConfiguration*> CAlphaConfigurationArra
 #ifdef PANE
   class CPaneView;
   typedef map<string, CPaneView *> CPaneMap;
-  typedef map<string, CPaneView *>::iterator PaneMapIterator;
+  typedef CPaneMap::iterator PaneMapIterator;
 #endif // PANE
 
 class CMUSHclientDoc : public CDocument
@@ -976,6 +977,8 @@ public:
   CTime m_tConnectTime;       // time we connected to the world
   CTime m_tLastPlayerInput;   // time the player last typed something (for <afk> )
   CTimeSpan m_tsConnectDuration;  // timespan we have been connected
+  CTime m_whenWorldStarted;   // when world document started
+
 
   CTime m_tStatusTime;    // time of line that mouse was over
   CPoint m_lastMousePosition;  // where mouse last was over the world window
@@ -1179,11 +1182,11 @@ public:
 	DISPID	m_dispidOnMXP_SetVariable;     // handler on MXP set variable, eg. set hp
 	DISPID	m_dispidOnMXP_Error;           // handler on MXP error (parse etc.)
 
-  bool    m_bPluginProcessesOpenTag;     // does a plugin handle the open tag?
-  bool    m_bPluginProcessesCloseTag;    // does a plugin handle the close tag?
-  bool    m_bPluginProcessesSetVariable; // does a plugin handle set variable?
-  bool    m_bPluginProcessesSetEntity;   // does a plugin handle set entity?
-  bool    m_bPluginProcessesError;       // does a plugin handle the error?
+  bool    m_bPluginProcessesOpenTag;     // does any plugin handle the open tag?
+  bool    m_bPluginProcessesCloseTag;    // does any plugin handle the close tag?
+  bool    m_bPluginProcessesSetVariable; // does any plugin handle set variable?
+  bool    m_bPluginProcessesSetEntity;   // does any plugin handle set entity?
+  bool    m_bPluginProcessesError;       // does any plugin handle the error?
 
   // listening for UDP packets
 
@@ -1861,6 +1864,37 @@ public:
 
   CPlugin * GetPlugin (LPCTSTR PluginID);
   CMUSHView * GetFirstOutputWindow ();
+
+  // calls sName in all plugins
+  void SendToAllPluginCallbacks (const string & sName);   // no arguments
+
+  // sends sText to all plugins, stops when one handles it, returns true if handled
+  bool SendToFirstPluginCallbacks (const string & sName, 
+                                   const char * sText);   // one argument
+
+  // sends sText to all plugins, returns false if one returned false
+  bool SendToAllPluginCallbacks (const string & sName, 
+                                 const char * sText,   // one argument
+                                 const bool bStopOnFalse = false);
+
+  // send strResult to all plugins, allow them to modify it
+  void SendToAllPluginCallbacksRtn (const string & sName, 
+                                    CString & strResult);  // taking and returning a string
+
+  // send a number and a string to all plugins, optionally stopping when one returns true or false
+  bool SendToAllPluginCallbacks (const string & sName, 
+                                 const long arg1,      // 2 arguments
+                                 const string sText,
+                                 const bool bStopOnTrue,
+                                 const bool bStopOnFalse);
+
+  // send two numbers and a string to all plugins, optionally stopping when one returns true or false
+  bool SendToAllPluginCallbacks (const string & sName, 
+                                 const long arg1,      // 3 arguments
+                                 const long arg2,
+                                 const string sText,
+                                 const bool bStopOnTrue,
+                                 const bool bStopOnFalse);
 
   // load from document into property page
 

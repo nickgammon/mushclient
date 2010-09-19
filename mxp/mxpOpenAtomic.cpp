@@ -44,7 +44,7 @@ COLORREF       iForeColour = pStyle->iForeColour;
 COLORREF       iBackColour = pStyle->iBackColour; 
 
   // call script if required
-  if (m_dispidOnMXP_OpenTag != DISPID_UNKNOWN || m_bPluginProcessesOpenTag)
+  if ((m_dispidOnMXP_OpenTag != DISPID_UNKNOWN) || m_bPluginProcessesOpenTag)
     {
     // dummy-up an argument list
     CString strArgument;

@@ -623,7 +623,8 @@ void CGenPropertyPage::LoadList (void)
        {
        lua_pushvalue(L, 1);        // filter function
        lua_pushstring (L, (const char *) strObjectName);     // key of the item
-       if (lua_pcall (L, 1, 1, 0))   // call with 1 arg1 and 1 result
+       GetFilterInfo (pItem, L);   // table of related info
+       if (lua_pcall (L, 2, 1, 0))   // call with 1 arg1 and 1 result
          {
          LuaError (L);
          bFiltering = false;

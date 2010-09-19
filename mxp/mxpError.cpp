@@ -118,24 +118,13 @@ char * p = "?";
 
   // tell each plugin about the error tag
   if (m_bPluginProcessesError)
-    for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-      {
-      CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+    SendToAllPluginCallbacks (ON_PLUGIN_MXP_ERROR, 
+                              CFormat ("%s,%ld,%ld,%s",
+                              (LPCTSTR) p,
+                              iMessageNumber,
+                              (long) m_LineList.GetCount (),
+                              (LPCTSTR) strMessage));
 
-      if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-        continue;
-
-      // see what the plugin makes of this,
-      pPlugin->ExecutePluginScript (ON_PLUGIN_MXP_ERROR, 
-                            pPlugin->m_dispid_plugin_OnMXP_Error, 
-                            CFormat ("%s,%ld,%ld,%s",
-                            (LPCTSTR) p,
-                            iMessageNumber,
-                            (long) m_LineList.GetCount (),
-                            (LPCTSTR) strMessage)
-                            );
-      }   // end of doing each plugin
-  m_CurrentPlugin = NULL;
 
   CString strTitle = MXP_ERROR_WINDOW;
   strTitle += " - ";

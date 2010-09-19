@@ -16,7 +16,7 @@
 #define MWT_MIN_FACTOR (0)
 #define MWT_MAX_FACTOR (0xFF)
 
-bool MakeWindowTransparent(HWND hWnd, long key, const unsigned char factor);
-bool MakeWindowTransparent(CWnd *w, long key, const unsigned char factor);
+BOOL MakeWindowTransparent(HWND hWnd, long key, const unsigned char factor);
+BOOL MakeWindowTransparent(CWnd *w, long key, const unsigned char factor);
 
 #endif // __MAKEWINDOWTRANSPARENT_H

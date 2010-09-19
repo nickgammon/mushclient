@@ -532,7 +532,7 @@ static int L_AdjustColour (lua_State *L)
 //----------------------------------------
 static int L_ANSI (lua_State *L)
   {
-  CMUSHclientDoc * pDoc = doc (L);  // must do this first
+  doc (L);  // must do this first
 
   int n = lua_gettop(L);  /* number of arguments */
   int i;
@@ -2965,7 +2965,7 @@ static int L_GetWorldWindowPosition (lua_State *L)
 //----------------------------------------
 static int L_MakeRegularExpression (lua_State *L)
   {
-  CMUSHclientDoc *pDoc = doc (L);
+  doc (L);
   // uses helper routine to avoid using BSTR
   lua_pushstring (L, ConvertToRegularExpression(my_checkstring (L, 1)));
   return 1;  // number of result fields
@@ -3427,7 +3427,7 @@ static bool DoStyle (lua_State *L,
   if (iStyleNumber <= 0 || iStyleNumber > pLine->styleList.GetCount ())
     return true;   // error, style doesn't exist
 
-  CStyle * pStyle;
+  CStyle * pStyle = NULL;
   POSITION pos;
   int iCol = 0;
   int iCount = 1;
@@ -3448,13 +3448,14 @@ static bool DoStyle (lua_State *L,
     } // end of looping looking for it
 
     int iAction = 0;
-    switch (pStyle->iFlags & ACTIONTYPE)
-      {
-      case ACTION_NONE:       iAction = 0; break;
-      case ACTION_SEND:       iAction = 1; break;
-        case ACTION_HYPERLINK:  iAction = 2; break;
-      case ACTION_PROMPT:     iAction = 3; break;
-      } // end of switch
+    if (pStyle)
+      switch (pStyle->iFlags & ACTIONTYPE)
+        {
+        case ACTION_NONE:       iAction = 0; break;
+        case ACTION_SEND:       iAction = 1; break;
+          case ACTION_HYPERLINK:  iAction = 2; break;
+        case ACTION_PROMPT:     iAction = 3; break;
+        } // end of switch
 
 
     COLORREF colour1,
@@ -4512,7 +4513,7 @@ static int L_NoteStyle (lua_State *L)
 //----------------------------------------
 static int L_Open (lua_State *L)
   {
-  CMUSHclientDoc *pDoc = doc (L);
+  doc (L);
 
   CDocument * pnewDoc = App.OpenDocumentFile (my_checkstring (L, 1));
 
@@ -4806,9 +4807,9 @@ static int L_ResetTimers (lua_State *L)
 //----------------------------------------
 static int L_ReverseSpeedwalk (lua_State *L)
   {
-  CMUSHclientDoc *pDoc = doc (L);
+  doc (L);
   // this is a helper function that returns a CString, not a BSTR
-  lua_pushstring (L, pDoc->DoReverseSpeedwalk (my_checkstring (L, 1)));
+  lua_pushstring (L, CMUSHclientDoc::DoReverseSpeedwalk (my_checkstring (L, 1)));
   return 1;  // number of result fields
   } // end of L_ReverseSpeedwalk
 

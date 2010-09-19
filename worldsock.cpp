@@ -108,21 +108,11 @@ bool bWasClosed = m_pDoc->m_iConnectPhase == eConnectNotConnected;
       }
     } // end of executing disconnect script
 
-  // tell each plugin we have disconnected
-  for (POSITION pos = m_pDoc->m_PluginList.GetHeadPosition(); pos; )
-    {
-    CPlugin * pPlugin = m_pDoc->m_PluginList.GetNext (pos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    pPlugin->ExecutePluginScript (ON_PLUGIN_DISCONNECT, pPlugin->m_dispid_plugin_disconnect);
-    }   // end of doing each plugin
+  m_pDoc->SendToAllPluginCallbacks (ON_PLUGIN_DISCONNECT);
 
   // close log file if we auto-opened it
   if (!m_pDoc->m_strAutoLogFileName.IsEmpty ())
     m_pDoc->CloseLog ();
-
 
   if (m_pDoc->m_bShowConnectDisconnect && !bWasClosed)
     {

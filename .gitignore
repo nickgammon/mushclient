@@ -43,6 +43,7 @@ find_non_standard_encoding.lua
 *.po
 *.GID
 *.suo
+*.clw
 
 #
 #  Notes for me:

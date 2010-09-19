@@ -184,14 +184,15 @@ void CPluginsDlg::LoadList (void)
 
 int nItem = 0;
 
-   m_ctlPluginList.DeleteAllItems ();
+  m_ctlPluginList.DeleteAllItems ();
 
-  for (POSITION pos = m_pDoc->m_PluginList.GetHeadPosition(); pos; nItem++)
+  for (PluginListIterator pit = m_pDoc->m_PluginList.begin (); 
+       pit != m_pDoc->m_PluginList.end (); 
+       ++pit, nItem++)
     {
-    CPlugin * p = m_pDoc->m_PluginList.GetNext (pos);
+    CPlugin * p = *pit;
 
  	  m_ctlPluginList.InsertItem (nItem, p->m_strName);    // eColumnName
-
 	  m_ctlPluginList.SetItemText (nItem, eColumnPurpose, p->m_strPurpose);
 	  m_ctlPluginList.SetItemText (nItem, eColumnAuthor, p->m_strAuthor);
 	  m_ctlPluginList.SetItemText (nItem, eColumnLanguage, p->m_strLanguage);
@@ -328,10 +329,7 @@ void CPluginsDlg::OnAddPlugin()
 
 
   if (nResult != IDOK)
-    {
-    DWORD reason = CommDlgExtendedError();
     return;    // cancelled dialog
-    }
   
   bool bChanged = false;
 
@@ -404,11 +402,13 @@ int nItem,
 
     CPlugin * p = (CPlugin *) m_ctlPluginList.GetItemData (nItem);
 	  
-    POSITION pos = m_pDoc->m_PluginList.Find (p);
+    PluginListIterator pit = find (m_pDoc->m_PluginList.begin (), 
+                                   m_pDoc->m_PluginList.end (), 
+                                   p);
 
-    if (pos)
+    if (pit != m_pDoc->m_PluginList.end ())
       {
-      m_pDoc->m_PluginList.RemoveAt (pos);  // remove from list
+      m_pDoc->m_PluginList.erase (pit);  // remove from list
       delete p;   // delete the plugin
       bChanged = true;
       }
@@ -478,12 +478,15 @@ for (int nItem = -1;
 
   CPlugin * p = (CPlugin *) m_ctlPluginList.GetItemData (nItem);
 	  
-    POSITION pos = m_pDoc->m_PluginList.Find (p);
 
-    if (pos)
+    PluginListIterator pit = find (m_pDoc->m_PluginList.begin (), 
+                                   m_pDoc->m_PluginList.end (), 
+                                   p);
+
+    if (pit != m_pDoc->m_PluginList.end ())
       {
       CString strName = p->m_strSource;
-      m_pDoc->m_PluginList.RemoveAt (pos);  // remove from list
+      m_pDoc->m_PluginList.erase (pit);  // remove from list
       delete p;   // delete the plugin
 
       try
@@ -570,9 +573,11 @@ for (int nItem = -1;
 
   CPlugin * p = (CPlugin *) m_ctlPluginList.GetItemData (nItem);
 	  
-  POSITION pos = m_pDoc->m_PluginList.Find (p);
+  PluginListIterator pit = find (m_pDoc->m_PluginList.begin (), 
+                                 m_pDoc->m_PluginList.end (), 
+                                 p);
 
-    if (!pos)
+  if (pit == m_pDoc->m_PluginList.end ())
       continue;
 
   EditPlugin (p->m_strSource);
@@ -684,9 +689,11 @@ void CPluginsDlg::OnRdblclkPluginsList(NMHDR* pNMHDR, LRESULT* pResult)
 
     CPlugin * p = (CPlugin *) m_ctlPluginList.GetItemData (nItem);
 	    
-    POSITION pos = m_pDoc->m_PluginList.Find (p);
+    PluginListIterator pit = find (m_pDoc->m_PluginList.begin (), 
+                                   m_pDoc->m_PluginList.end (), 
+                                   p);
 
-    if (!pos)
+    if (pit == m_pDoc->m_PluginList.end ())
       continue;
 
     // need a directory
@@ -734,9 +741,11 @@ for (int nItem = -1;
 
   CPlugin * p = (CPlugin *) m_ctlPluginList.GetItemData (nItem);
 	  
-  POSITION pos = m_pDoc->m_PluginList.Find (p);
+  PluginListIterator pit = find (m_pDoc->m_PluginList.begin (), 
+                                 m_pDoc->m_PluginList.end (), 
+                                 p);
 
-    if (!pos)
+  if (pit == m_pDoc->m_PluginList.end ())
       continue;
 
   m_pDoc->EnablePlugin (p->m_strID, TRUE);
@@ -761,10 +770,12 @@ for (int nItem = -1;
 
   CPlugin * p = (CPlugin *) m_ctlPluginList.GetItemData (nItem);
 	  
-  POSITION pos = m_pDoc->m_PluginList.Find (p);
+  PluginListIterator pit = find (m_pDoc->m_PluginList.begin (), 
+                                 m_pDoc->m_PluginList.end (), 
+                                 p);
 
-    if (!pos)
-      continue;
+  if (pit == m_pDoc->m_PluginList.end ())
+      continue;                          
 
   m_pDoc->EnablePlugin (p->m_strID, FALSE);
   bChanged = true;

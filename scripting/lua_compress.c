@@ -11,6 +11,8 @@
 #include <ctype.h>
 #include <string.h>
 
+#pragma warning( disable : 4057)  // 'unsigned char *' differs in indirection to slightly different base types from 'char *'
+
 typedef unsigned char UC;
 
 // compression for use in MUSHclient Lua

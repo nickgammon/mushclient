@@ -36,7 +36,7 @@
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
-#pragma warning( disable: 4800)
+#pragma warning (disable : 4800)  // forcing value to bool 'true' or 'false' (performance warning)
 bool NotFound (CFindInfo & FindInfo);
 
 #define NL "\r\n"
@@ -3068,7 +3068,7 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    int nNewItem = add_item (pItem, pstrObjectName, nItem, FALSE);
+    add_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
@@ -3152,7 +3152,7 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    int nNewItem = add_item (pItem, pstrObjectName, nItem, FALSE);
+    add_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
@@ -3266,6 +3266,82 @@ void CPrefsP7::OnEditFilter()
 if (EditFilterText (m_doc->m_strAliasesFilter))
   LoadList ();  // need to reload the list now	
 }
+
+void CPrefsP7::GetFilterInfo (CObject * pItem, lua_State * L)
+  {
+  CAlias * alias = (CAlias *) pItem;
+
+  ASSERT_VALID (alias);
+  ASSERT( alias->IsKindOf( RUNTIME_CLASS( CAlias ) ) );
+
+  // the table of stuff
+  lua_newtable(L);                                                            
+
+  MakeTableItemBool (L, "echo_alias",                 alias->bEchoAlias);
+  MakeTableItemBool (L, "enabled",                    alias->bEnabled);
+  MakeTableItemBool (L, "expand_variables",           alias->bExpandVariables);
+  MakeTableItem     (L, "group",                      alias->strGroup);
+  MakeTableItemBool (L, "ignore_case",                alias->bIgnoreCase);
+  MakeTableItemBool (L, "keep_evaluating",            alias->bKeepEvaluating);
+  MakeTableItem     (L, "match",                      alias->name);
+  MakeTableItemBool (L, "menu",                       alias->bMenu);
+  MakeTableItem     (L, "name",                       alias->strLabel);
+  MakeTableItemBool (L, "omit_from_command_history",  alias->bOmitFromCommandHistory);
+  MakeTableItemBool (L, "omit_from_log",              alias->bOmitFromLog);
+  MakeTableItemBool (L, "omit_from_output",           alias->bOmitFromOutput);
+  MakeTableItemBool (L, "one_shot",                   alias->bOneShot);
+  MakeTableItemBool (L, "regexp",                     alias->bRegexp);
+  MakeTableItem     (L, "script",                     alias->strProcedure);
+  MakeTableItem     (L, "send",                       alias->contents);
+  MakeTableItem     (L, "send_to",                    alias->iSendTo);
+  MakeTableItem     (L, "sequence",                   alias->iSequence);
+  MakeTableItem     (L, "user",                       alias->iUserOption);
+  MakeTableItem     (L, "variable",                   alias->strVariable);
+
+  // stuff below is not part of the world file but calculated at runtime
+
+  //  GetAliasInfo  (10)
+  MakeTableItem (L, "invocation_count", alias->nInvocationCount);
+  
+  //  GetAliasInfo  (11)
+  MakeTableItem (L, "times_matched",    alias->nMatched);
+
+  //  GetAliasInfo  (13)
+  if (alias->tWhenMatched.GetTime ())  
+    MakeTableItem   (L, "when_matched", COleDateTime (alias->tWhenMatched.GetTime ())); 
+
+  //  GetAliasInfo  (14)
+  MakeTableItemBool (L, "temporary",    alias->bTemporary);
+
+  //  GetAliasInfo  (15)
+  MakeTableItemBool (L, "included",     alias->bIncluded);
+
+  //  GetAliasInfo  (24)
+  if (alias->regexp)      
+    MakeTableItem   (L, "match_count",  alias->regexp->MatchedCapturesCount ());
+
+  //  GetAliasInfo  (25)
+  if (alias->regexp)      
+    MakeTableItem   (L, "last_match",   alias->regexp->LastTarget ());
+
+  //  GetAliasInfo  (27)
+  MakeTableItemBool (L, "script_valid", alias->dispid != DISPID_UNKNOWN);
+
+  //  GetAliasInfo  (28)
+  if (alias->regexp)
+    MakeTableItem   (L, "execution_error", alias->regexp->LastError ());
+
+  //  GetAliasInfo  (30)
+  if (alias->regexp && App.m_iCounterFrequency)
+    MakeTableItem (L, "execution_time", ((double) alias->regexp->TimeTaken ()) / 
+                                        ((double) App.m_iCounterFrequency));
+
+  //  GetAliasInfo  (31)
+  if (alias->regexp)
+    MakeTableItem   (L, "match_attempts", alias->regexp->MatchAttempts ());
+
+  }   // end of CPrefsP7::GetFilterInfo
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CPrefsP8 property page
@@ -4022,7 +4098,7 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    int nNewItem = add_item (pItem, pstrObjectName, nItem, FALSE);
+    add_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
@@ -4106,7 +4182,7 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    int nNewItem = add_item (pItem, pstrObjectName, nItem, FALSE);
+    add_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
@@ -4220,6 +4296,109 @@ CString CPrefsP8::GetFilterScript ()       // get the filter script
   {
   return m_doc->m_strTriggersFilter;
   }
+
+void CPrefsP8::GetFilterInfo (CObject * pItem, lua_State * L)
+  {
+CTrigger * trigger = (CTrigger * ) pItem;
+
+ASSERT_VALID (trigger);
+ASSERT( trigger->IsKindOf( RUNTIME_CLASS( CTrigger ) ) );
+
+
+  // the table of stuff
+  lua_newtable(L);                                                            
+
+  MakeTableItem     (L, "back_colour",       (trigger->iMatch >> 8) & 0x0F);
+  MakeTableItemBool (L, "bold",              trigger->iMatch & HILITE);
+  MakeTableItem     (L, "clipboard_arg",     trigger->iClipboardArg);
+  if (trigger->colour == SAMECOLOUR)   // 
+   MakeTableItem    (L, "custom_colour",     0); 
+  else
+   MakeTableItem    (L, "custom_colour",     trigger->colour + 1); // + 1, to match custom colours
+  MakeTableItem     (L, "colour_change_type",trigger->iColourChangeType);
+  MakeTableItemBool (L, "enabled",           trigger->bEnabled);
+  MakeTableItemBool (L, "expand_variables",  trigger->bExpandVariables);
+  MakeTableItem     (L, "group",             trigger->strGroup);
+  MakeTableItemBool (L, "ignore_case",       trigger->ignore_case);
+  MakeTableItemBool (L, "inverse",           trigger->iMatch & INVERSE);
+  MakeTableItemBool (L, "italic",            trigger->iMatch & BLINK);
+  MakeTableItem     (L, "lines_to_match",    trigger->iLinesToMatch);
+  MakeTableItemBool (L, "keep_evaluating",   trigger->bKeepEvaluating);
+  MakeTableItemBool (L, "make_bold",         trigger->iStyle & HILITE);
+  MakeTableItemBool (L, "make_italic",       trigger->iStyle & BLINK);
+  MakeTableItemBool (L, "make_underline",    trigger->iStyle & UNDERLINE);
+  MakeTableItem     (L, "match",             trigger->trigger);
+  MakeTableItemBool (L, "match_back_colour", trigger->iMatch & TRIGGER_MATCH_BACK);
+  MakeTableItemBool (L, "match_bold",        trigger->iMatch & TRIGGER_MATCH_HILITE);
+  MakeTableItemBool (L, "match_inverse",     trigger->iMatch & TRIGGER_MATCH_INVERSE);
+  MakeTableItemBool (L, "match_italic",      trigger->iMatch & TRIGGER_MATCH_BLINK);
+  MakeTableItemBool (L, "match_text_colour", trigger->iMatch & TRIGGER_MATCH_TEXT);
+  MakeTableItemBool (L, "match_underline",   trigger->iMatch & TRIGGER_MATCH_UNDERLINE);
+  MakeTableItemBool (L, "multi_line",        trigger->bMultiLine);
+  MakeTableItem     (L, "name",              trigger->strLabel);
+  MakeTableItemBool (L, "one_shot",          trigger->bOneShot);
+  MakeTableItemBool (L, "omit_from_log",     trigger->omit_from_log);
+  MakeTableItemBool (L, "omit_from_output",  trigger->bOmitFromOutput);
+  MakeTableItem     (L, "other_text_colour", trigger->iOtherForeground);
+  MakeTableItem     (L, "other_back_colour", trigger->iOtherBackground);
+  MakeTableItemBool (L, "regexp",            trigger->bRegexp);
+  MakeTableItemBool (L, "repeat",            trigger->bRepeat);
+  MakeTableItem     (L, "script",            trigger->strProcedure);
+  MakeTableItem     (L, "send", trigger->contents);
+  MakeTableItem     (L, "send_to",           trigger->iSendTo);
+  MakeTableItem     (L, "sequence",          trigger->iSequence);
+  MakeTableItem     (L, "sound",             trigger->sound_to_play);
+  MakeTableItemBool (L, "sound_if_inactive", trigger->bSoundIfInactive);
+  MakeTableItemBool (L, "lowercase_wildcard",trigger->bLowercaseWildcard);
+  MakeTableItemBool (L, "temporary",         trigger->bTemporary);
+  MakeTableItem     (L, "text_colour",       (trigger->iMatch >> 4) & 0x0F);
+  MakeTableItem     (L, "user",              trigger->iUserOption);
+  MakeTableItem     (L, "variable",          trigger->strVariable);
+
+
+  // stuff below is not part of the world file but calculated at runtime
+
+  //  GetTriggerInfo  (20)
+  MakeTableItem (L, "invocation_count", trigger->nInvocationCount);
+  
+  //  GetTriggerInfo  (21)
+  MakeTableItem (L, "times_matched",    trigger->nMatched);
+
+  //  GetTriggerInfo  (22)
+  if (trigger->tWhenMatched.GetTime ())  
+    MakeTableItem   (L, "when_matched", COleDateTime (trigger->tWhenMatched.GetTime ())); 
+
+  //  GetTriggerInfo  (23)
+  MakeTableItemBool (L, "temporary",    trigger->bTemporary);
+
+  //  GetTriggerInfo  (24)
+  MakeTableItemBool (L, "included",     trigger->bIncluded);
+
+  //  GetTriggerInfo  (31)
+  if (trigger->regexp)      
+    MakeTableItem   (L, "match_count",  trigger->regexp->MatchedCapturesCount ());
+
+  //  GetTriggerInfo  (32)
+  if (trigger->regexp)      
+    MakeTableItem   (L, "last_match",   trigger->regexp->LastTarget ());
+
+  //  GetTriggerInfo  (34)
+  MakeTableItemBool (L, "script_valid", trigger->dispid != DISPID_UNKNOWN);
+
+  //  GetTriggerInfo  (35)
+  if (trigger->regexp)
+    MakeTableItem   (L, "execution_error", trigger->regexp->LastError ());
+
+  //  GetTriggerInfo  (37)
+  if (trigger->regexp && App.m_iCounterFrequency)
+    MakeTableItem (L, "execution_time", ((double) trigger->regexp->TimeTaken ()) / 
+                                        ((double) App.m_iCounterFrequency));
+
+  //  GetTriggerInfo  (38)
+  if (trigger->regexp)
+    MakeTableItem   (L, "match_attempts", trigger->regexp->MatchAttempts ());
+
+  }   // end of CPrefsP8::GetFilterInfo
 
 /////////////////////////////////////////////////////////////////////////////
 // CPrefsP9 property page
@@ -6074,7 +6253,7 @@ CTimer * timer1 = (CTimer *) item1,
   ASSERT_VALID (timer2);
   ASSERT( timer2->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
 
-int iResult;
+int iResult = 0;
 CmcDateTimeSpan ts1,
                 ts2;
 
@@ -6389,6 +6568,65 @@ void CPrefsP16::OnEditFilter()
 if (EditFilterText (m_doc->m_strTimersFilter))
   LoadList ();  // need to reload the list now	
 }
+
+void CPrefsP16::GetFilterInfo (CObject * pItem, lua_State * L)
+  {
+  CTimer * timer = (CTimer *) pItem;
+
+  ASSERT_VALID (timer);
+  ASSERT( timer->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
+
+  // the table of stuff
+  lua_newtable(L);                                                            
+
+  MakeTableItemBool (L, "active_closed",    timer->bActiveWhenClosed);
+  MakeTableItemBool (L, "at_time",          timer->iType);
+  MakeTableItemBool (L, "enabled",          timer->bEnabled);
+  MakeTableItem     (L, "group",            timer->strGroup);
+  MakeTableItem     (L, "hour",             (timer->iType == CTimer::eAtTime ? timer->iAtHour   : timer->iEveryHour));
+  MakeTableItem     (L, "minute",           (timer->iType == CTimer::eAtTime ? timer->iAtMinute : timer->iEveryMinute));
+  MakeTableItem     (L, "name",             timer->strLabel);
+  MakeTableItem     (L, "offset_hour",      timer->iOffsetHour);
+  MakeTableItem     (L, "offset_minute",    timer->iOffsetMinute);
+  MakeTableItem     (L, "offset_second",    timer->fOffsetSecond);
+  MakeTableItemBool (L, "omit_from_log",    timer->bOmitFromLog);
+  MakeTableItemBool (L, "omit_from_output", timer->bOmitFromOutput);
+  MakeTableItemBool (L, "one_shot",         timer->bOneShot);
+  MakeTableItem     (L, "script",           timer->strProcedure);
+  MakeTableItem     (L, "second",           (timer->iType == CTimer::eAtTime ? timer->fAtSecond : timer->fEverySecond));
+  MakeTableItem     (L, "send", timer->strContents);
+  MakeTableItem     (L, "send_to",          timer->iSendTo);
+  MakeTableItemBool (L, "temporary",        timer->bTemporary);
+  MakeTableItem     (L, "user",             timer->iUserOption);
+  MakeTableItem     (L, "variable",         timer->strVariable);
+
+  // stuff below is not part of the world file but calculated at runtime
+
+  //  GetTimerInfo  (9)
+  MakeTableItem (L, "invocation_count", timer->nInvocationCount);
+  
+  //  GetTimerInfo  (10)
+  MakeTableItem (L, "times_fired",      timer->nMatched);
+
+  //  GetTimerInfo  (11)
+  if (timer->tWhenFired.GetTime ())  
+    MakeTableItem   (L, "when_fired",   COleDateTime (timer->tWhenFired.GetTime ())); 
+
+  //  GetTimerInfo  (12)
+  if (timer->tFireTime.GetTime ())  
+    MakeTableItem   (L,"fire_time",     COleDateTime (timer->tFireTime.GetTime ())); 
+
+  //  GetTimerInfo  (14)
+  MakeTableItemBool (L, "temporary",    timer->bTemporary);
+
+  //  GetTimerInfo  (18)
+  MakeTableItemBool (L, "included",     timer->bIncluded);
+
+  //  GetTimerInfo  (26)
+  MakeTableItemBool (L, "script_valid", timer->dispid != DISPID_UNKNOWN);
+
+  }   // end of CPrefsP16::GetFilterInfo
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CPrefsP17 property page
@@ -7402,6 +7640,21 @@ void CPrefsP18::OnEditFilter()
 if (EditFilterText (m_doc->m_strVariablesFilter))
   LoadList ();  // need to reload the list now	
 }
+
+void CPrefsP18::GetFilterInfo (CObject * pItem, lua_State * L)
+  {
+  CVariable * variable = (CVariable *) pItem;
+
+  ASSERT_VALID (variable);
+  ASSERT( variable->IsKindOf( RUNTIME_CLASS( CVariable ) ) );
+
+  // the table of stuff
+  lua_newtable(L);                                                            
+
+  MakeTableItem     (L, "contents",     variable->strContents);
+
+  }  // end of CPrefsP18::GetFilterInfo 
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -8430,7 +8683,7 @@ void CPrefsP15::CalculateMemoryUsage ()
     // count styles and work out how much memory they take too
     for (POSITION pos2 = pLine->styleList.GetHeadPosition(); pos2; iStyles++)
       {
-      CStyle * pStyle = pLine->styleList.GetNext (pos2);
+      pLine->styleList.GetNext (pos2);
       nMemory += sizeof CStyle;   // length of style class
       nMemory += sizeof (void *) * 3;   // and the list item
       }

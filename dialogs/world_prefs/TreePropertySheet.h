@@ -34,6 +34,11 @@ enum	{
 	tps_capborder_flow=2
 };
 
+class CTreePropertySheet : public CPropertySheet
+{
+	DECLARE_DYNAMIC(CTreePropertySheet)
+
+// Inner class CMemDC because having it outside conflicts with MSVC2008 Feature Pack and above
 class	CMemDC	: public CDC {
 public:
 	CBitmap m_MemBmp,*m_pOldBmp;
@@ -97,10 +102,6 @@ public:
 		nCurHeight		=nHeight;
     }
 };
-
-class CTreePropertySheet : public CPropertySheet
-{
-	DECLARE_DYNAMIC(CTreePropertySheet)
 
 // Subclasses
 protected:

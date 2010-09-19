@@ -52,7 +52,7 @@ static void BuildOneLuaFunction (lua_State * L, const char * sTableName)
         string sFullName;
 
         // global table will not have _G prefix
-        if (sTableName != "_G")
+        if (strcmp (sTableName, "_G") != 0)
           {
           sFullName= sTableName;
           sFullName += ".";
@@ -274,6 +274,11 @@ bool CScriptEngine::ParseLua (const CString & strCode, const CString & strWhat)
 
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
+  else
+    {
+    start.QuadPart = 0;
+    finish.QuadPart = 0;
+    }
 
 
   // note - an error here is a *compile* error
@@ -444,6 +449,11 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
 
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
+  else
+    {
+    start.QuadPart = 0;
+    finish.QuadPart = 0;
+    }
              
   unsigned short iOldStyle = m_pDoc->m_iNoteStyle;
   m_pDoc->m_iNoteStyle = NORMAL;    // back to default style
@@ -504,7 +514,6 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
       for (i = 0; i < namecount; i++, tabptr += name_entry_size) 
         {
         int n = (tabptr[0] << 8) | tabptr[1];
-        int j = n * 2;
         const unsigned char * name = tabptr + 2;
         // if duplicates were possible then ...
         if (regexp->DupNamesAllowed ())
@@ -609,8 +618,6 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
     {
     *result = true;
 
-    int i = lua_toboolean (L, paramCount + 1);
-
     // if a boolean result wanted, return it
 
     if (lua_gettop (L) > 0)
@@ -656,6 +663,11 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,          // dispatch ID, will b
 
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
+  else
+    {
+    start.QuadPart = 0;
+    finish.QuadPart = 0;
+    }
              
   unsigned short iOldStyle = m_pDoc->m_iNoteStyle;
   m_pDoc->m_iNoteStyle = NORMAL;    // back to default style
@@ -710,30 +722,32 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,          // dispatch ID, will b
   } // end of CScriptEngine::ExecuteLua 
 
 
+// bugfix thanks to Twisol (previous version didn't handle bad debug table properly)
 void GetTracebackFunction (lua_State *L)
   {
-  lua_pushliteral (L, LUA_DBLIBNAME);     // "debug"    
-  lua_rawget      (L, LUA_GLOBALSINDEX);    // get debug library   
+  // get debug table
+  lua_getfield (L, LUA_GLOBALSINDEX, LUA_DBLIBNAME);
 
-  if (!lua_istable (L, -1))
+  // if it is a table then find traceback function
+  if (lua_istable (L, -1))
     {
-    lua_pop (L, 2);   // pop result and debug table
-    lua_pushnil (L);
-    return;
+    lua_getfield (L, -1, "traceback");
+    
+    // remove debug table, leave traceback function
+    lua_remove (L, -2);
+
+    // if it is indeed a function, well and good
+    if (lua_isfunction (L, -1))
+      return; 
     }
 
-  // get debug.traceback
-  lua_pushstring(L, "traceback");  
-  lua_rawget    (L, -2);               // get getinfo function
-  
-  if (!lua_isfunction (L, -1))
-    {
-    lua_pop (L, 2);   // pop result and debug table
-    lua_pushnil (L);
-    return;
-    }
+  // not a table, or debug.traceback not a function, get rid of it
+  lua_pop (L, 1);
 
-  lua_remove (L, -2);   // remove debug table, leave traceback function
+  // return nil to caller
+  lua_pushnil (L);
+  return; 
+
   }
 
 int CallLuaWithTraceBack (lua_State *L, const int iArguments, const int iReturn)

@@ -52,7 +52,7 @@ class CMUSHclientDoc;
 #define CHAT_SEND_COMMAND        105  // extension, however see zChat
 #define CHAT_STAMP               106
 
-#define CHAT_END_OF_COMMAND			 255
+#define CHAT_END_OF_COMMAND			 '\xFF' // 255
 
 // types of ChatNotes
 

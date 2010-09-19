@@ -38,7 +38,7 @@ return CFormat ("%c[%dm", ESC, Code);
 
 void CMUSHclientDoc::LogLineInHTMLcolour (POSITION startpos)
   {
-   COLORREF prevcolour = -1;
+   COLORREF prevcolour = NO_COLOUR;
    bool bInSpan = false;
    COLORREF lastforecolour = 0;
    COLORREF lastbackcolour = 0;
@@ -324,8 +324,8 @@ assemble the full text of the original line.
                bUnderline = false,
                bBlink = false,
                bInverse = false;
-          unsigned int  iForeground = -1;
-          unsigned int  iBackground = -1;
+          unsigned int  iForeground = NO_COLOUR;
+          unsigned int  iBackground = NO_COLOUR;
           CString str;
           CString strRun;
 
@@ -455,19 +455,8 @@ assemble the full text of the original line.
 
   m_iCurrentActionSource = eInputFromServer;
 
-  // tell each plugin what we have received
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
-    if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
-      continue;
-
-    // see what the plugin makes of this,
-    if (!pPlugin->ExecutePluginScript (ON_PLUGIN_LINE_RECEIVED, pPlugin->m_dispid_plugin_line_received, strCurrentLine))
-      bNoOutput = true;
-    }   // end of doing each plugin
-  m_CurrentPlugin = NULL;
+  if (!SendToAllPluginCallbacks (ON_PLUGIN_LINE_RECEIVED, strCurrentLine))
+    bNoOutput = true;
 
   m_iCurrentActionSource = eUnknownActionSource;
 
@@ -593,23 +582,35 @@ assemble the full text of the original line.
     m_CurrentPlugin = NULL;
     // do main triggers
     ProcessOneTriggerSequence (strCurrentLine, 
-                              StyledLine, 
-                              strResponse, 
-                              prevpos, 
-                              bNoLog, bNoOutput, bChangedColour, 
-                              triggerList, strExtraOutput, mapDeferredScripts, mapOneShotItems);
+                               StyledLine, 
+                               strResponse, 
+                               prevpos, 
+                               bNoLog, 
+                               bNoOutput, 
+                               bChangedColour, 
+                               triggerList, 
+                               strExtraOutput, 
+                               mapDeferredScripts, 
+                               mapOneShotItems);
 
     // do plugins
-    for (pos = m_PluginList.GetHeadPosition (); pos; )
+   for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
       {
-      m_CurrentPlugin = m_PluginList.GetNext (pos);
+      m_CurrentPlugin = *pit;
       if (m_CurrentPlugin->m_bEnabled)
         ProcessOneTriggerSequence (strCurrentLine, 
-                              StyledLine, 
-                              strResponse, 
-                              prevpos, 
-                              bNoLog, bNoOutput, bChangedColour, 
-                              triggerList, strExtraOutput, mapDeferredScripts, mapOneShotItems);
+                                   StyledLine, 
+                                   strResponse, 
+                                   prevpos, 
+                                   bNoLog, 
+                                   bNoOutput, 
+                                   bChangedColour, 
+                                   triggerList, 
+                                   strExtraOutput, 
+                                   mapDeferredScripts, 
+                                   mapOneShotItems);
       } // end of doing each plugin
 
     m_CurrentPlugin = NULL; // not in a plugin any more
@@ -746,7 +747,7 @@ assemble the full text of the original line.
     if (!m_LineList.IsEmpty ())
       {
       m_pCurrentLine = m_LineList.GetTail ();
-      if ((m_pCurrentLine->flags & COMMENT == 0) ||
+      if (((m_pCurrentLine->flags & COMMENT) == 0) ||
           m_pCurrentLine->hard_return)
           m_pCurrentLine = NULL;
       }
@@ -857,9 +858,11 @@ assemble the full text of the original line.
         }
 
     // do plugins
-    for (POSITION plugin_pos = m_PluginList.GetHeadPosition (); !bFoundIt && plugin_pos; )
+    for (PluginListIterator pit = m_PluginList.begin (); 
+         !bFoundIt && pit != m_PluginList.end (); 
+          ++pit)
       {
-      m_CurrentPlugin = m_PluginList.GetNext (plugin_pos);
+      m_CurrentPlugin = *pit;
 
       if (m_CurrentPlugin->m_bEnabled)
         for (iItem = 0; !bFoundIt && iItem < GetTriggerArray ().GetSize (); iItem++)
@@ -952,11 +955,12 @@ POSITION pos;
 
   for (iItem = 0; iItem < GetTriggerArray ().GetSize (); iItem++)
     {
-    if (trigger_item = EvaluateTrigger (strCurrentLine, 
+    trigger_item = EvaluateTrigger (strCurrentLine, 
                                         strResponse,
                                         iItem,
                                         iStartCol,
-                                        iEndCol))
+                                        iEndCol);
+    if (trigger_item)
       {  
 
 
@@ -969,9 +973,9 @@ POSITION pos;
 
       if (trigger_item->iMatch && !trigger_item->bMultiLine)
         {
-        int iFlags;
-        COLORREF iForeColour; 
-        COLORREF iBackColour; 
+        int iFlags = 0;
+        COLORREF iForeColour = NO_COLOUR; 
+        COLORREF iBackColour = NO_COLOUR; 
         int iCurrentCol = 0;
         for (pos = prevpos; pos; )  // scan to end of buffer
          {
@@ -983,7 +987,7 @@ POSITION pos;
            if (i < 0)
              i = 0;
 
-           CStyle * pStyle;
+           CStyle * pStyle = NULL;
            int iStyleCol = 0;
      
            // find style run
@@ -994,10 +998,13 @@ POSITION pos;
              if (iStyleCol > i)   // we are at the column
                break;
              }   // end of finding style item
-     
-           iFlags = pStyle->iFlags & STYLE_BITS;  // get style
-           iForeColour = pStyle->iForeColour;
-           iBackColour = pStyle->iBackColour;
+                  
+           if (pStyle)
+             {
+             iFlags = pStyle->iFlags & STYLE_BITS;  // get style
+             iForeColour = pStyle->iForeColour;
+             iBackColour = pStyle->iBackColour;
+             }
            break;                      // done
            }
          iCurrentCol += pLine->len;   // next line starts where this left off

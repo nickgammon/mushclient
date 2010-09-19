@@ -218,6 +218,8 @@ static const CLSID clsid =
 BOOL CMUSHclientApp::InitInstance()
 {
 
+  m_whenClientStarted = CTime::GetCurrentTime();
+
   char fullfilename [MAX_PATH];
 
   if (GetModuleFileName (NULL, fullfilename, sizeof (fullfilename)))
@@ -261,7 +263,6 @@ BOOL CMUSHclientApp::InitInstance()
 
   // open SQLite database for preferences
 
-  char *zErrMsg = 0;
   int rc;
   CFileStatus	status;
 
@@ -1856,6 +1857,10 @@ CTextDocument * CMUSHclientApp::FindNotepad (const CString strTitle)
   {
 CTextDocument * pTextDoc = NULL;
 
+  // during startup, may not exist
+  if (App.m_pNormalDocTemplate == NULL)
+    return NULL;
+
   for (POSITION docPos = App.m_pNormalDocTemplate->GetFirstDocPosition();
       docPos != NULL; )
     {
@@ -2094,11 +2099,14 @@ void CMUSHclientApp::db_show_error (const char * sql)
    return;
 
   CString  strTitle = "SQL errors in global preferences";
+  CString  strMessage = CFormat ("SQL error on statement:\r\n\"%s\"\r\n%s\r\n", sql, sqlite3_errmsg(db));
 
-  AppendToTheNotepad (strTitle, 
-                      CFormat ("SQL error on statement:\r\n\"%s\"\r\n%s\r\n", sql, sqlite3_errmsg(db)),             
+  if (!AppendToTheNotepad (strTitle, 
+                      strMessage,             
                       false,   // append
-                      eNotepadWorldLoadError);
+                      eNotepadWorldLoadError))
+    // emergency fallback
+    ::AfxMessageBox ( (LPCTSTR) strMessage, MB_ICONEXCLAMATION );
 
   // make sure they see it
   ActivateNotepad (strTitle);

@@ -57,6 +57,7 @@ public:
   CActivityDoc * m_pActivityDoc;
   CActivityView * m_pActivityView;
   CTime m_timeLastActivityUpdate;
+  CTime m_whenClientStarted;
 
   DWORD platform;
 

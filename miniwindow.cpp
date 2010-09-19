@@ -1264,6 +1264,9 @@ long CMiniWindow::WritePng (LPCTSTR FileName, const BITMAPINFO * bmi, unsigned c
     }
   
 
+#pragma warning (push)
+#pragma warning (disable : 4611)  // interaction between '_setjmp' and C++ object destruction is non-portable
+
   // if png fails it will longjmp back to here, so we destroy the structure,
   // close the file, and wrap up
   if (setjmp(png_jmpbuf(png_ptr)))
@@ -1272,6 +1275,8 @@ long CMiniWindow::WritePng (LPCTSTR FileName, const BITMAPINFO * bmi, unsigned c
     fclose (fp);
     return eLogFileBadWrite;
     }
+
+#pragma warning (pop)
 
   // initialize IO
   png_init_io (png_ptr, fp);
@@ -2978,8 +2983,6 @@ static void Noise (unsigned char * inbuf, long iWidth, long iHeight, long iPerLi
 static void MonoNoise (unsigned char * inbuf, long iWidth, long iHeight, long iPerLine, double Options)
   {
 
-  unsigned char * pi = inbuf;
-  long count = iPerLine * iHeight / 3;
   long i, j, c, row;
   double threshold = Options / 100.0;
 
@@ -3197,8 +3200,6 @@ static void ColourGamma (unsigned char * inbuf, long iWidth, long iHeight,
 static void MakeGreyscale (unsigned char * inbuf, long iWidth, long iHeight, long iPerLine, double Options, const bool bLinear)
   {
 
-  unsigned char * pi = inbuf;
-  long count = iPerLine * iHeight / 3;
   long i, row;
   double c;
 
@@ -3990,7 +3991,6 @@ long CMiniWindow::DrawImageAlpha(LPCTSTR ImageId,
 
 
   long count = bmi.bmiHeader.biSizeImage;
-  long perline = BytesPerLine (iWidth, 24);
 
   long i;
 
@@ -4122,7 +4122,6 @@ long CMiniWindow::GetImageAlpha(LPCTSTR ImageId,
 
 
   long count = bmi.bmiHeader.biSizeImage;
-  long perline = BytesPerLine (iWidth, 24);
 
   long i;
 

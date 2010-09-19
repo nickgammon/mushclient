@@ -39,3 +39,8 @@ to
 
 #include "../zlib/zlib.h"
 
+
+Also add to the very start of png.h:
+
+// pragmas added by Nick Gammon
+#pragma warning( disable : 4115)  // named type definition in parentheses

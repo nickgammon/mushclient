@@ -269,7 +269,13 @@ win = GetPluginID ()  -- get a unique name
 
 -- make the window
 WindowCreate (win, 0, 0, 1, 1, WINDOW_POSITION, 0, 0)  -- create window
-               
+
+fonts = utils.getfontfamilies ()
+
+if not fonts.Dina then
+  AddFont (GetInfo (66) .. "\\Dina.fon")
+end -- if Dina not installed
+     
 -- grab a font
 WindowFont (win, "f", FONT_NAME, FONT_SIZE) -- define font
 WindowFont (win, "fb", FONT_NAME, FONT_SIZE, true) -- define font
@@ -297,12 +303,6 @@ WindowCreate (win,
 
 -- add the drag handler so they can move the window around
 movewindow.add_drag_handler (win, 0, 0, 0, font_height + 2)
-
-fonts = utils.getfontfamilies ()
-
-if not fonts.Dina then
-  AddFont (GetInfo (66) .. "\\Dina.fon")
-end -- if Dina not installed
       
 ]]>
 </script>

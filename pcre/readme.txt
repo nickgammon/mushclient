@@ -39,8 +39,29 @@ ucp.h
 4. Rename pcre_chartables.c.dist as pcre_chartables.c
    Rename pcre.h.generic as pcre.h
 
+
 5. Edit: pcre_compile.c and add:
 
-#pragma warning(disable: 4018)
+#pragma warning( disable : 4018)  // '<' : signed/unsigned mismatch
+#pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
+#pragma warning( disable : 4701)  // local variable 'othercase' may be used without having been initialized
 
-to the start of the file.
+to the start of the file.	
+
+
+6. Edit all of: 
+
+  pcre_dfa_exec.c
+  pcre_exec.c
+  pcre_maketables.c
+  pcre_ord2utf8.c
+  pcre_refcount.c
+  pcre_study.c
+
+and add:
+ 
+#pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
+
+to the start of each file.	
+
+

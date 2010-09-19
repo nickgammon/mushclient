@@ -560,7 +560,8 @@ CFunctionListDlg dlg;
 
 void CMainFrame::OnGameFunctionslist() 
   {
-  ShowFunctionslist (CString (), true);
+  CString s;
+  ShowFunctionslist (s, true);
   }
 
 void ShowHelp (const CString strPrefix, const CString strTopic)

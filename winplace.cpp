@@ -13,6 +13,13 @@
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
+// Version 10 of the MFC framework removed functions we need.
+// Which means we need to force generation of stubs in that case.
+// See: http://cppdepend.wordpress.com/2010/08/29/visual-c-2010-what’s-new-for-mfc-library/
+#if _MFC_VER >= 0x0A00
+#define COMPILE_MULTIMON_STUBS
+#endif
+
 #include <MULTIMON.H>
 
 CWindowPlacement::CWindowPlacement()
@@ -77,10 +84,6 @@ BOOL CWindowPlacement::Restore(LPCSTR lpKeyName,
 // Get window placement from profile.
 void CWindowPlacement::GetProfileWP(LPCSTR lpKeyName)
 {
-   CWinApp *pApp = AfxGetApp();
-   ASSERT_VALID(pApp);
-
-
   showCmd         = App.db_get_int ("worlds", (LPCTSTR) CFormat ("%s:%s", lpKeyName, "wp.showCmd"), showCmd);
   flags           = App.db_get_int ("worlds", (LPCTSTR) CFormat ("%s:%s", lpKeyName, "wp.flags"), flags);
 
@@ -114,10 +117,6 @@ void CWindowPlacement::Save(LPCSTR lpKeyName, CWnd* pWnd)
 // Write window placement to app profile
 void CWindowPlacement::WriteProfileWP(LPCSTR lpKeyName)
 {
-   CWinApp *pApp = AfxGetApp();
-   ASSERT_VALID(pApp);
-
-
    int rc = App.db_execute ("BEGIN TRANSACTION", true);
 
    // give it up if we can't get a transaction going - it's no big deal

@@ -53,7 +53,6 @@ char * p;
 
 	// We need to find out what the startup and file position parameters are
 	// If startup does not exist, we assume that the Tips on startup is checked TRUE.
-	CWinApp* pApp = AfxGetApp();
 	m_bStartup = !App.db_get_int("control", szIntStartup, 0);
 	UINT iFilePos = App.db_get_int("control", szIntFilePos, 0);
 
@@ -101,7 +100,6 @@ CTipDlg::~CTipDlg()
 	// But make sure the tips file existed in the first place....
 	if (m_pStream != NULL) 
 	{
-		CWinApp* pApp = AfxGetApp();
 		App.db_write_int("control", szIntFilePos, ftell(m_pStream));
 		fclose(m_pStream);
 	}
@@ -178,7 +176,6 @@ void CTipDlg::OnOK()
 	CDialog::OnOK();
 	
     // Update the startup information stored in the INI file
-	CWinApp* pApp = AfxGetApp();
 	App.db_write_int ("control", szIntStartup, !m_bStartup);
 }
 
