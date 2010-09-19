@@ -542,7 +542,7 @@ typedef CTypedPtrArray <CPtrArray, CAlphaConfiguration*> CAlphaConfigurationArra
 #ifdef PANE
   class CPaneView;
   typedef map<string, CPaneView *> CPaneMap;
-  typedef map<string, CPaneView *>::iterator PaneMapIterator;
+  typedef CPaneMap::iterator PaneMapIterator;
 #endif // PANE
 
 class CMUSHclientDoc : public CDocument

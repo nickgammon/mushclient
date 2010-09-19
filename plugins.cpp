@@ -1398,9 +1398,11 @@ void CMUSHclientDoc::SendToAllPluginCallbacks (const string & sName)   // no arg
   CPlugin * pSavedPlugin = m_CurrentPlugin;
 
   // tell a plugin the message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+   for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
     {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+    CPlugin * pPlugin = *pit;
 
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
@@ -1421,9 +1423,11 @@ bool CMUSHclientDoc::SendToFirstPluginCallbacks (const string & sName, const cha
   CPlugin * pSavedPlugin = m_CurrentPlugin;
 
   // tell a plugin the message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+   for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
     {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+    CPlugin * pPlugin = *pit;
 
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
@@ -1456,9 +1460,11 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const string & sName,
   bool bResult = true;    // assume they OK'd something
 
   // tell a plugin the message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+  for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
     {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+    CPlugin * pPlugin = *pit;
 
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
@@ -1485,9 +1491,11 @@ void CMUSHclientDoc::SendToAllPluginCallbacksRtn (const string & sName, CString 
   CPlugin * pSavedPlugin = m_CurrentPlugin;
 
   // tell a plugin the message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+  for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
     {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+    CPlugin * pPlugin = *pit;
 
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
@@ -1513,9 +1521,11 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const string & sName,
   CPlugin * pSavedPlugin = m_CurrentPlugin;
 
   // tell a plugin the message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+  for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
     {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+    CPlugin * pPlugin = *pit;
 
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
@@ -1553,9 +1563,11 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const string & sName,
   CPlugin * pSavedPlugin = m_CurrentPlugin;
 
   // tell a plugin the message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+  for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
     {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
+    CPlugin * pPlugin = *pit;
 
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;

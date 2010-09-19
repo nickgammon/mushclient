@@ -68,23 +68,25 @@ CAliasList AliasList;
     {
     m_CurrentPlugin = NULL;
     if (ProcessOneAliasSequence (input,
-                             bCountThem,
-                             bOmitFromLog,
-                             bEchoAlias,
-                             AliasList,
-                             mapOneShotItems))
-       return true;
-    // do plugins
-    for (pos = m_PluginList.GetHeadPosition (); pos; )
-      {
-      m_CurrentPlugin = m_PluginList.GetNext (pos);
-      if (m_CurrentPlugin->m_bEnabled)
-        if (ProcessOneAliasSequence (input,
                                  bCountThem,
                                  bOmitFromLog,
                                  bEchoAlias,
                                  AliasList,
                                  mapOneShotItems))
+       return true;
+    // do plugins
+    for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
+      {
+      m_CurrentPlugin = *pit;
+      if (m_CurrentPlugin->m_bEnabled)
+        if (ProcessOneAliasSequence (input,
+                                     bCountThem,
+                                     bOmitFromLog,
+                                     bEchoAlias,
+                                     AliasList,
+                                     mapOneShotItems))
           {
           m_CurrentPlugin = NULL;
           return true;
@@ -144,9 +146,11 @@ CAliasList AliasList;
      }  // end of scanning main aliases
 
     // do plugins
-    for (POSITION plugin_pos = m_PluginList.GetHeadPosition (); !bFoundIt && plugin_pos; )
+   for (PluginListIterator pit = m_PluginList.begin (); 
+         !bFoundIt && pit != m_PluginList.end (); 
+         ++pit)
       {
-      m_CurrentPlugin = m_PluginList.GetNext (plugin_pos);
+      m_CurrentPlugin = *pit;
 
       if (m_CurrentPlugin->m_bEnabled)
         for (POSITION pos = GetAliasMap ().GetStartPosition (); !bFoundIt && pos; )

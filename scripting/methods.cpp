@@ -5325,17 +5325,18 @@ VARIANT CMUSHclientDoc::GetPluginList()
 
   CString strVariableName;
 
-  POSITION pos;
-  long iCount;
+  long iCount = 0;
   
   // put the plugins into the array
-  if (!m_PluginList.IsEmpty ())    // cannot create empty dimension
+  if (!m_PluginList.empty ())    // cannot create empty dimension
     {
-    sa.CreateOneDim (VT_VARIANT, m_PluginList.GetCount ());
+    sa.CreateOneDim (VT_VARIANT, m_PluginList.size ());
 
-    for (iCount = 0, pos = m_PluginList.GetHeadPosition(); pos; )
+    for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end (); 
+         ++pit)
       {
-      CPlugin * p = m_PluginList.GetNext (pos);
+      CPlugin * p = *pit;
 
       // the array must be a bloody array of variants, or VBscript kicks up
       COleVariant v (p->m_strID);
@@ -5395,11 +5396,10 @@ VARIANT CMUSHclientDoc::GetPluginInfo(LPCTSTR PluginID, short InfoType)
       int iCount = 0;
 
       // first work out what order each plugin is in *now*
-      for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
-        {
-        CPlugin * p = m_PluginList.GetNext (pos);
-        p->m_iLoadOrder = ++iCount;
-        }      // end of looping through each plugin
+      for (PluginListIterator pit = m_PluginList.begin (); 
+           pit != m_PluginList.end (); 
+           ++pit)
+        (*pit)->m_iLoadOrder = ++iCount;
 
       // now return the order of *this* one
       SetUpVariantLong   (vaResult, pPlugin->m_iLoadOrder); 
@@ -5463,14 +5463,12 @@ CPlugin * pPlugin = GetPlugin (PluginID);
   // if not found, try to find by name
   if (pPlugin == NULL && strlen (PluginID) > 0)
     {
-    // see if plugin exists in list of plugins for this document
-    for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
-      {
-      pPlugin = m_PluginList.GetNext (pos);
-      if (pPlugin->m_strName.CompareNoCase (PluginID) == 0)
-        break;
-      pPlugin = NULL;
-      }      // end of looping through each plugins
+    PluginListIterator pit = find_if (m_PluginList.begin (),
+                                     m_PluginList.end (),
+                                     bind2nd (compare_plugin_name (), PluginID));
+    if (pit != m_PluginList.end ())
+       pPlugin = *pit;
+       
     }    
 
   if (pPlugin == NULL)
@@ -5480,13 +5478,15 @@ CPlugin * pPlugin = GetPlugin (PluginID);
   if (pPlugin == m_CurrentPlugin)
     return eBadParameter;
 
-  POSITION pos = m_PluginList.Find (pPlugin);
-
-  if (!pos)
+  PluginListIterator pit = find (m_PluginList.begin (), 
+                                 m_PluginList.end (), 
+                                 pPlugin);
+ 
+  if (pit == m_PluginList.end () )
     return eNoSuchPlugin;
 
   CString strName = pPlugin->m_strSource;
-  m_PluginList.RemoveAt (pos);  // remove from list
+  m_PluginList.erase (pit);  // remove from list
   delete pPlugin;   // delete the plugin
 
   CPlugin * pCurrentPlugin = m_CurrentPlugin;
@@ -5535,13 +5535,11 @@ CPlugin * CMUSHclientDoc::GetPlugin (LPCTSTR PluginID)
       m_CurrentPlugin->m_strID.CompareNoCase (PluginID) == 0)
     return m_CurrentPlugin;
 
-  // see if plugin exists in list of plugins for this document
-  for (POSITION pos = m_PluginList.GetHeadPosition(); pos; )
-    {
-    CPlugin * pPlugin = m_PluginList.GetNext (pos);
-    if (pPlugin->m_strID.CompareNoCase (PluginID) == 0)
-      return pPlugin;
-    }      // end of looping through each plugins
+  PluginListIterator pit = find_if (m_PluginList.begin (),
+                                    m_PluginList.end (),
+                                    bind2nd (compare_plugin_id (), PluginID));
+  if (pit != m_PluginList.end ())
+     return *pit;
 
   return NULL;  // not found
 
@@ -11458,10 +11456,11 @@ long CMUSHclientDoc::BroadcastPlugin(long Message, LPCTSTR Text)
     }
 
   // tell a plugin the message
-  for (POSITION pluginpos = m_PluginList.GetHeadPosition(); pluginpos; )
+  for (PluginListIterator pit = m_PluginList.begin (); 
+       pit != m_PluginList.end (); 
+       ++pit)
     {
-    CPlugin * pPlugin = m_PluginList.GetNext (pluginpos);
-
+    CPlugin * pPlugin = *pit;
 
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
