@@ -199,7 +199,6 @@ int i;
   m_nTotalLinesSent = 0;
   m_nTotalLinesReceived = 0;
   m_phase = NONE;
-  m_version = VERSION;
 
   m_bVariablesChanged = false;
 
