@@ -68,10 +68,6 @@ IMPLEMENT_DYNAMIC(CVariable, CObject)
 extern bool bNamesRead;
 extern char working_dir [_MAX_PATH];
 
-// count number of documents open
-
-int gdoccount = 0;
-
 //#include <mstcpip.h>
 // From: mstcpip.h
 /* Argument structure for SIO_KEEPALIVE_VALS */

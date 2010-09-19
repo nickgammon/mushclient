@@ -955,14 +955,12 @@ BOOL CAboutDlg::OnInitDialog()
 /////////////////////////////////////////////////////////////////////////////
 // CMUSHclientApp commands
 
-extern int gdoccount;
-
 BOOL CMUSHclientApp::SaveAllModified() 
 {
 
 // warn them, if they have sessions open.
   
-  if (gdoccount > 0 && App.m_bConfirmBeforeClosingMushclient)
+  if (CMUSHclientDoc::DocumentCount () > 0 && App.m_bConfirmBeforeClosingMushclient)
     if (::TMessageBox ("This will end your MUSHclient session.", 
           MB_OKCANCEL | MB_ICONINFORMATION)
           == IDCANCEL)

@@ -558,6 +558,14 @@ class CMUSHclientDoc : public CDocument
 	CMUSHclientDoc();
 	DECLARE_DYNCREATE(CMUSHclientDoc)
 
+  private:
+    static int sm_doc_count; // Number of documents alive
+  public:
+    static int DocumentCount ()
+    {
+      return sm_doc_count;
+    }
+
 // Attributes
 public:
 	CWorldSocket* m_pSocket;

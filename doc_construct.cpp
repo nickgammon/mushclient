@@ -10,7 +10,8 @@
 #include "dialogs\QuickConnectDlg.h"
 #include "UDPsocket.h"
 
-extern int gdoccount;
+// CMUSHclientDoc static member initialization
+int CMUSHclientDoc::sm_doc_count = 0;
 
 /////////////////////////////////////////////////////////////////////////////
 // CMUSHclientDoc construction/destruction
@@ -317,7 +318,7 @@ int i;
 
   m_iConnectPhase = eConnectNotConnected;
                                       
-  gdoccount++;
+  sm_doc_count += 1;
 
   m_pActiveCommandView = NULL;
   m_pActiveOutputView = NULL;
@@ -571,7 +572,7 @@ int i;
 
 // one less document
 
-  gdoccount--;
+  sm_doc_count -= 1;
 
 // update activity window
 
