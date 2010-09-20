@@ -14414,8 +14414,17 @@ BSTR CMUSHclientDoc::DatabaseError(LPCTSTR Name)
     {
     switch (sqlite3_errcode (it->second->db))
       {
-      case SQLITE_ROW: strResult = "row ready"; break;
-      case SQLITE_DONE: strResult = "finished"; break;
+      case SQLITE_ROW:  strResult = "row ready";             break;
+      case SQLITE_DONE: strResult = "finished";              break;
+
+      case -1: strResult = "database id not found";          break;
+      case -2: strResult = "database not open";              break;
+      case -3: strResult = "already have prepared statement";break;
+      case -4: strResult = "do not have prepared statement"; break;
+      case -5: strResult = "do not have a valid row";        break;
+      case -6: strResult = "database already exists under a different disk name"; break;
+      case -7: strResult = "column count out of valid range"; break;
+
       default:
           strResult = sqlite3_errmsg (it->second->db);
           break;
