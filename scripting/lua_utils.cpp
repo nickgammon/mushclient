@@ -8,6 +8,7 @@
 #include "..\dialogs\LuaChooseBox.h"
 #include "..\dialogs\LuaChooseList.h"
 #include "..\dialogs\LuaChooseListMulti.h"
+#include "..\dialogs\FunctionListDlg.h"
 #include "..\dmetaph.h"
 #include <direct.h>
 
@@ -1563,39 +1564,114 @@ static int shell_execute (lua_State *L)
   } // end of shell_execute	
 
 
+// arg1 is dialog title
+// arg2 is table of key/value pairs - value is shown
+// arg3 is initial filter
+
+int filterpicker (lua_State *L) 
+  {
+  const char * filtertitle   = luaL_optstring (L, 1, "Filter");
+  const char * initialfilter = luaL_optstring (L, 3, "");
+
+  if (strlen (filtertitle) > 100)
+     luaL_error (L, "title too long (max 100 characters)");
+
+  const int table = 2;
+
+  if (!lua_istable (L, table))
+     luaL_error (L, "must have table of choices as 2nd argument");
+
+CFunctionListDlg dlg;
+
+  dlg.m_strTitle    = filtertitle;
+  dlg.m_strFilter   = initialfilter;
+
+  // standard Lua table iteration
+  for (lua_pushnil (L); lua_next (L, table) != 0; lua_pop (L, 1))
+    {
+    if (!lua_isstring (L, -2))
+      luaL_error (L, "table must have string or number keys");
+
+    if (!lua_isstring (L, -1))
+      luaL_error (L, "table must have string or number values");
+
+    // value can simply be converted to a string
+    string sValue = lua_tostring (L, -1);
+
+    // get key
+    CKeyValuePair kv (sValue);
+    
+    if (lua_type (L, -2) == LUA_TSTRING)
+      {
+      kv.sKey_ = lua_tostring (L, -2);
+      }
+    else
+      {     // not string, should be number :)
+      // cannot do lua_tostring because that confuses lua_next
+      kv.bNumber_ = true;
+      kv.iKey_ = lua_tonumber (L, -2);
+      }   // end of key being a number
+
+
+    dlg.m_data.push_back (kv);
+
+    } // end of looping through table
+
+
+  if (dlg.DoModal () != IDOK)
+    lua_pushnil (L);
+  else
+    {  // not cancelled
+    if (dlg.m_result.sValue_ == "")
+      lua_pushnil (L);   // no choice made
+    else
+      {    // get key of choice
+      if (dlg.m_result.bNumber_)
+        lua_pushnumber (L, dlg.m_result.iKey_);
+      else
+        lua_pushstring (L, dlg.m_result.sKey_.c_str ()); 
+      }
+    }
+  
+  return 1;   // 1 result
+
+} // end of filterpicker
+
+
 
 // table of operations
 static const struct luaL_reg xmllib [] = 
   {
 
-  {"activatenotepad", activatenotepad},
-  {"appendtonotepad", appendtonotepad},
-  {"callbackslist",  callbackslist},
-  {"choose",        choose},
-  {"directorypicker", directorypicker},
-  {"edit_distance", edit_distance},
-  {"editbox",       editbox},
-  {"filepicker",    filepicker},
-  {"fontpicker",    fontpicker},
-  {"functionargs",  functionargs},
-  {"functionlist",  functionlist},
-  {"getfontfamilies", getfontfamilies},
-  {"info",          info},
-  {"inputbox",      inputbox},
-  {"listbox",       listbox},
-  {"metaphone",     metaphone},
-  {"msgbox",        msgbox},       // msgbox - not Unicode
-  {"multilistbox",  multilistbox},
-  {"showdebugstatus", showdebugstatus},
-  {"sendtofront",   send_to_front},
-  {"shellexecute",  shell_execute},
-  {"spellcheckdialog", spellcheckdialog},
-  {"umsgbox",       umsgbox},      // msgbox - UTF8
-  {"utf8decode",    utf8decode}, 
-  {"utf8encode",    utf8encode}, 
-  {"utf8sub",       utf8sub},
-  {"utf8valid",     utf8valid},
-  {"xmlread",       xmlread},
+  {"activatenotepad",   activatenotepad},
+  {"appendtonotepad",   appendtonotepad},
+  {"callbackslist",     callbackslist},
+  {"choose",            choose},
+  {"directorypicker",   directorypicker},
+  {"edit_distance",     edit_distance},
+  {"editbox",           editbox},
+  {"filepicker",        filepicker},
+  {"filterpicker",      filterpicker},
+  {"fontpicker",        fontpicker},
+  {"functionargs",      functionargs},
+  {"functionlist",      functionlist},
+  {"getfontfamilies",   getfontfamilies},
+  {"info",              info},
+  {"inputbox",          inputbox},
+  {"listbox",           listbox},
+  {"metaphone",         metaphone},
+  {"msgbox",            msgbox},       // msgbox - not Unicode
+  {"multilistbox",      multilistbox},
+  {"showdebugstatus",   showdebugstatus},
+  {"sendtofront",       send_to_front},
+  {"shellexecute",      shell_execute},
+  {"spellcheckdialog",  spellcheckdialog},
+  {"umsgbox",           umsgbox},      // msgbox - UTF8
+  {"utf8decode",        utf8decode}, 
+  {"utf8encode",        utf8encode}, 
+  {"utf8sub",           utf8sub},
+  {"utf8valid",         utf8valid},
+  {"xmlread",           xmlread},
 
 
   {NULL, NULL}

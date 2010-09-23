@@ -11,8 +11,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-extern set<string> LuaFunctionsSet;
-
 /////////////////////////////////////////////////////////////////////////////
 // CFunctionListDlg dialog
 
@@ -23,7 +21,7 @@ CFunctionListDlg::CFunctionListDlg(CWnd* pParent /*=NULL*/)
 	//{{AFX_DATA_INIT(CFunctionListDlg)
 	m_strFilter = _T("");
 	//}}AFX_DATA_INIT
-  m_bLua = false;
+  m_bFunctions = false;
 }
 
 
@@ -51,7 +49,13 @@ BEGIN_MESSAGE_MAP(CFunctionListDlg, CDialog)
 
 END_MESSAGE_MAP()
 
-extern tInternalFunctionsTable InternalFunctionsTable [1];
+
+// see Josuttis p499/500
+bool nocase_compare (char c1, char c2)
+  {
+  return toupper (c1) == toupper (c2);
+  }
+
 
 BOOL CFunctionListDlg::ReloadList ()
   {
@@ -62,59 +66,36 @@ BOOL CFunctionListDlg::ReloadList ()
   m_strFilter.TrimLeft ();
   m_strFilter.TrimRight ();
 
+  string sFilter (m_strFilter);
+
   // filter based on a partial match on what is in the filter box
   // (eg. "chat" would find all chat functions)
 
-  CString strFunction;
-
   int nItem = 0;
-
-  for (int i = 0; InternalFunctionsTable [i].sFunction [0]; i++)
+  int nKeynum = 0;
+  for (vector<CKeyValuePair>::const_iterator it = m_data.begin ();
+       it != m_data.end ();
+       it++, nKeynum++)
     {
-    strFunction = InternalFunctionsTable [i].sFunction;
-    strFunction.MakeLower ();
+    string sValue = it->sValue_;
 
-    if (m_strFilter.IsEmpty () || strFunction.Find (m_strFilter) != -1)
+    if (sFilter.empty () || search (sValue.begin (), sValue.end (),
+                                    sFilter.begin (), sFilter.end (),
+                                    nocase_compare) != sValue.end ())
       {
-      m_ctlFunctions.InsertItem (nItem, InternalFunctionsTable [i].sFunction);
+      int iPos = m_ctlFunctions.InsertItem (nItem, sValue.c_str ());
+      if (iPos != -1)
+        m_ctlFunctions.SetItemData (iPos, nKeynum);
 
       // select the exact match, if any (so, if they highlight world.Note then it is selected)
 
-      if (strFunction == m_strFilter)
+      if (sValue == sFilter)
         m_ctlFunctions.SetItemState (nItem, 
                                       LVIS_FOCUSED | LVIS_SELECTED,
                                       LVIS_FOCUSED | LVIS_SELECTED);
       nItem++;
 
       }
-    }
-
-  // add Lua functions
-  if (m_bLua)
-    {
-    for (set<string>::const_iterator it = LuaFunctionsSet.begin ();
-         it != LuaFunctionsSet.end (); 
-         it++)
-
-       {
-        strFunction = it->c_str ();
-        strFunction.MakeLower ();
-
-        if (m_strFilter.IsEmpty () || strFunction.Find (m_strFilter) != -1)
-          {
-          m_ctlFunctions.InsertItem (nItem, it->c_str ());
-
-          // select the exact match, if any (so, if they highlight world.Note then it is selected)
-
-          if (strFunction == m_strFilter)
-            m_ctlFunctions.SetItemState (nItem, 
-                                          LVIS_FOCUSED | LVIS_SELECTED,
-                                          LVIS_FOCUSED | LVIS_SELECTED);
-          nItem++;
-
-          }
-           
-       }   // end of doing each Lua function
     }
 
 
@@ -144,6 +125,15 @@ BOOL CFunctionListDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+  SetWindowText (m_strTitle);	
+
+  // hide buttons if we are not showing functions
+  if (!m_bFunctions)
+    {
+    GetDlgItem(IDC_LUA_FUNCTIONS)->ShowWindow (SW_HIDE);
+    GetDlgItem(IDC_COPY_NAME)->ShowWindow (SW_HIDE);
+    }
+
 	return ReloadList ();  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -156,14 +146,8 @@ void CFunctionListDlg::OnOK()
 
   if (iWhich != -1)
     {
-    string sFunctionName = (LPCTSTR) m_ctlFunctions.GetItemText (iWhich, 0);
-
-    // might be Lua function
-    if (LuaFunctionsSet.find (sFunctionName) != LuaFunctionsSet.end ())
-      m_strResult = CFormat ("LUA_%s", sFunctionName.c_str ());
-    else
-      m_strResult = CFormat ("FNC_%s", sFunctionName.c_str ());
-
+    int nKeynum = m_ctlFunctions.GetItemData (iWhich);
+    m_result = m_data [nKeynum];
   	CDialog::OnOK();
     }
 	
@@ -178,7 +162,7 @@ void CFunctionListDlg::OnDblclkFunctionsList(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CFunctionListDlg::OnLuaFunctions() 
 {
-  m_strResult = "DOC_lua";
+  m_result.sValue_ = "DOC_lua";
   CDialog::OnOK();
 }
 

@@ -24,9 +24,17 @@ public:
 	CString	m_strFilter;
 	//}}AFX_DATA
 
-  CString m_strResult;
 
-  bool m_bLua;
+  bool m_bFunctions;
+
+  // dialog title
+  CString m_strTitle;
+
+  // what to put in it
+  vector<CKeyValuePair> m_data;
+
+  // chosen item
+  CKeyValuePair m_result;
 
 // Overrides
 	// ClassWizard generated virtual function overrides

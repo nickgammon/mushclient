@@ -111,3 +111,45 @@ class CScriptEngine : public CObject
 int RegisterLuaRoutines (lua_State * L);
 int DisableDLLs (lua_State * L);
 #include "lua_helpers.h"
+
+
+// ----------- here used for Lua in choosing from combo-box
+
+class CKeyValuePair
+  {
+
+  public:
+    CKeyValuePair () :
+        bNumber_ (false), iKey_ (0.0) { };  // default constructor
+
+    CKeyValuePair (const string sValue) : 
+        bNumber_ (false), iKey_ (0.0), sValue_ (sValue) { };  // constructor
+
+    // copy constructor
+    CKeyValuePair (const CKeyValuePair & k)
+                    : bNumber_ (k.bNumber_), 
+                      sKey_ (k.sKey_),
+                      iKey_ (k.iKey_),
+                      sValue_ (k.sValue_)
+                       {};
+
+    // operator =
+    const CKeyValuePair & operator= (const CKeyValuePair & rhs)
+      {
+      bNumber_ = rhs.bNumber_;
+      sKey_  = rhs.sKey_;
+      iKey_ = rhs.iKey_;
+      sValue_ = rhs.sValue_;
+      return *this;
+      };
+
+
+  bool   bNumber_; // true if key a number, false if a string
+
+  string sKey_;    // key if string
+  double iKey_;    // key if number?
+
+  string sValue_;  // value 
+
+  };   // end of class  CStringValuePair
+

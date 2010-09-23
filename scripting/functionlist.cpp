@@ -547,13 +547,43 @@ CString strWord = GetSelectedFunction (strWindowContents, nStartChar, nEndChar);
 
 CFunctionListDlg dlg;
 
-  dlg.m_bLua = bLua;
   dlg.m_strFilter = strWord;     // selected word from dialog/text window
 
-  if (dlg.DoModal () == IDCANCEL || dlg.m_strResult.IsEmpty ())
+  for (int i = 0; InternalFunctionsTable [i].sFunction [0]; i++)
+    {
+    CKeyValuePair kv (InternalFunctionsTable [i].sFunction);
+    dlg.m_data.push_back (kv);
+    }
+
+  if (bLua)
+    {
+    for (set<string>::const_iterator it = LuaFunctionsSet.begin ();
+         it != LuaFunctionsSet.end (); 
+         it++)
+           {
+           CKeyValuePair kv (it->c_str ());
+           dlg.m_data.push_back (kv);
+           }
+    }
+
+  dlg.m_strTitle = "Functions";
+  dlg.m_bFunctions = true;
+
+  if (dlg.DoModal () == IDCANCEL || dlg.m_result.sValue_.empty ())
     return;
 
-  ShowHelp ("", dlg.m_strResult); // already has prefix
+  CString strResult = dlg.m_result.sValue_.c_str ();
+
+  if (dlg.m_result.sValue_ != "DOC_lua")
+    {
+    // might be Lua function
+    if (LuaFunctionsSet.find (dlg.m_result.sValue_) != LuaFunctionsSet.end ())
+      strResult = CFormat ("LUA_%s", dlg.m_result.sValue_.c_str ());
+    else
+      strResult = CFormat ("FNC_%s", dlg.m_result.sValue_.c_str ());
+    }
+
+  ShowHelp ("", strResult); // already has prefix
 
 }
 

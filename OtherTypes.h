@@ -965,20 +965,3 @@ class CPane
 
 //typedef map<string, CPane *>::iterator PaneMapIterator;
 
-// ----------- here used for Lua in choosing from combo-box
-
-class CKeyValuePair
-  {
-
-  public:
-    CKeyValuePair (const string sValue) : 
-          bNumber_ (false), iKey_ (0.0), sValue_ (sValue) { };  // constructor
-
-  bool   bNumber_; // true if key a number, false if a string
-
-  string sKey_;    // key if string
-  double iKey_;    // key if number?
-
-  string sValue_;  // value 
-
-  };   // end of class  CStringValuePair
