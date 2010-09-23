@@ -1570,16 +1570,16 @@ static int shell_execute (lua_State *L)
 
 int filterpicker (lua_State *L) 
   {
-  const char * filtertitle   = luaL_optstring (L, 1, "Filter");
+  const char * filtertitle   = luaL_optstring (L, 2, "Filter");
   const char * initialfilter = luaL_optstring (L, 3, "");
 
   if (strlen (filtertitle) > 100)
      luaL_error (L, "title too long (max 100 characters)");
 
-  const int table = 2;
+  const int table = 1;
 
   if (!lua_istable (L, table))
-     luaL_error (L, "must have table of choices as 2nd argument");
+     luaL_error (L, "must have table of choices as first argument");
 
 CFunctionListDlg dlg;
 
