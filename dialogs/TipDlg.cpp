@@ -165,15 +165,13 @@ void CTipDlg::GetNextTipString(CString& strNext)
 
 HBRUSH CTipDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
-	if (pWnd->GetDlgCtrlID() == IDC_TIPSTRING)
+  if (pWnd->GetDlgCtrlID() == IDC_TIPSTRING)
 		return (HBRUSH)GetStockObject(WHITE_BRUSH);
-  else if (pWnd->GetDlgCtrlID() == IDC_STARTUP)
-  	return CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
-  else if (nCtlColor == CTLCOLOR_STATIC)
-    /* Visual styles enabled causes the things we draw in our WM_PAINT
-    * to get cleared (and not redrawn) if we do not use a hollow brush here.
-    * Likely the default behaviour differs when using theming. -JW */
-    return (HBRUSH)GetStockObject(HOLLOW_BRUSH);
+	else if ((pWnd->GetDlgCtrlID() == IDC_BULB) || (pWnd->GetDlgCtrlID() == IDC_STATIC))
+		/* Visual styles enabled causes the things we draw in our WM_PAINT
+		 * to get cleared (and not redrawn) if we do not use a hollow brush here.
+		 * Likely the default behaviour differs when using theming. -JW */
+		return (HBRUSH)GetStockObject(HOLLOW_BRUSH);
 
 	return CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
 }
