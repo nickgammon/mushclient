@@ -4278,6 +4278,7 @@ tInfoTypeMapping InfoTypes [] =
 { 294, "State of keyboard modifiers" },
 { 295, "Times output window redrawn" },
 { 296, "Output window scroll bar position" },
+{ 297, "High-resolution timer frequency" },
    
 
 // (dates - calculated at runtime)
@@ -5026,6 +5027,10 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
         }
       }
       break;
+
+    case 297:
+       SetUpVariantDouble (vaResult, App.m_iCounterFrequency); 
+       break;
 
     case  301: 
       if (m_tConnectTime.GetTime ())     // only if non-zero, otherwise return empty
