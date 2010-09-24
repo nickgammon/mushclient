@@ -1567,11 +1567,14 @@ static int shell_execute (lua_State *L)
 // arg1 is dialog title
 // arg2 is table of key/value pairs - value is shown
 // arg3 is initial filter
+// arg4 is "no sort" boolean
+// arg5 is filter function
 
 int filterpicker (lua_State *L) 
   {
   const char * filtertitle   = luaL_optstring (L, 2, "Filter");
   const char * initialfilter = luaL_optstring (L, 3, "");
+  const bool bNoSort = optboolean (L, 4, 0);
 
   if (strlen (filtertitle) > 100)
      luaL_error (L, "title too long (max 100 characters)");
@@ -1585,6 +1588,7 @@ CFunctionListDlg dlg;
 
   dlg.m_strTitle    = filtertitle;
   dlg.m_strFilter   = initialfilter;
+  dlg.m_bNoSort     = bNoSort;
 
   // standard Lua table iteration
   for (lua_pushnil (L); lua_next (L, table) != 0; lua_pop (L, 1))
@@ -1617,6 +1621,19 @@ CFunctionListDlg dlg;
 
     } // end of looping through table
 
+
+  if (lua_gettop (L) > 4)
+    {
+    if (!lua_isnil (L, 5))
+      {
+      luaL_checktype (L, 5, LUA_TFUNCTION);
+      lua_remove (L, 1);   // get rid of bottom 4 items
+      lua_remove (L, 1);
+      lua_remove (L, 1);
+      lua_remove (L, 1);
+      dlg.m_L = L;   // function is now at stack item 1
+      }
+    }
 
   if (dlg.DoModal () != IDOK)
     lua_pushnil (L);

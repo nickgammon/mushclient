@@ -11,6 +11,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#pragma warning (disable : 4800)  // forcing value to bool 'true' or 'false' (performance warning)
+
 /////////////////////////////////////////////////////////////////////////////
 // CFunctionListDlg dialog
 
@@ -22,6 +24,8 @@ CFunctionListDlg::CFunctionListDlg(CWnd* pParent /*=NULL*/)
 	m_strFilter = _T("");
 	//}}AFX_DATA_INIT
   m_bFunctions = false;
+  m_bNoSort = false;
+  m_L = NULL;
 }
 
 
@@ -62,7 +66,6 @@ BOOL CFunctionListDlg::ReloadList ()
 
   m_ctlFunctions.DeleteAllItems ();
 
-  m_strFilter.MakeLower ();
   m_strFilter.TrimLeft ();
   m_strFilter.TrimRight ();
 
@@ -77,15 +80,54 @@ BOOL CFunctionListDlg::ReloadList ()
        it != m_data.end ();
        it++, nKeynum++)
     {
-    string sValue = it->sValue_;
+    CKeyValuePair kv = *it;
+    string sValue = kv.sValue_;
+    bool bWanted = false;
 
-    if (sFilter.empty () || search (sValue.begin (), sValue.end (),
+    if (m_L && lua_type (m_L, 1) == LUA_TFUNCTION)
+      {
+
+      // Lua filter:  function f (filter, key, value)  ... end
+
+      // filter function (make copy)
+      lua_pushvalue (m_L, 1);       
+      // what they have currently typed
+      lua_pushlstring (m_L, sFilter.c_str (), sFilter.size ());
+
+      // push number or string which is the key
+      if (kv.bNumber_)
+        lua_pushnumber (m_L, kv.iKey_);
+      else
+        lua_pushlstring (m_L, kv.sKey_.c_str (), kv.sKey_.size ());
+
+      // push value
+      lua_pushlstring (m_L, kv.sValue_.c_str (), kv.sValue_.size ());
+
+      // call the function: arg1: filter field, arg2: key, arg3: value
+      if (lua_pcall (m_L, 3, 1, 0))   // call with 3 args and 1 result
+        {
+        LuaError (m_L);    // note that this clears the stack, so we won't call it again
+        lua_settop (m_L, 0);   // clear stack, just in case LuaError changes behaviour
+        bWanted = false;
+        }   // end of error
+      else
+        {
+        bWanted = lua_toboolean (m_L, -1);
+        lua_pop (m_L, 1);  // pop result
+        }  // end of no error
+
+      }  // end of Lua filter function available
+    else
+      // no Lua function, just do a substring compare
+      bWanted = sFilter.empty () || search (sValue.begin (), sValue.end (),
                                     sFilter.begin (), sFilter.end (),
-                                    nocase_compare) != sValue.end ())
+                                    nocase_compare) != sValue.end ();
+
+    if (bWanted)
       {
       int iPos = m_ctlFunctions.InsertItem (nItem, sValue.c_str ());
       if (iPos != -1)
-        m_ctlFunctions.SetItemData (iPos, nKeynum);
+        m_ctlFunctions.SetItemData (iPos, nKeynum); // sorting changes the position
 
       // select the exact match, if any (so, if they highlight world.Note then it is selected)
 
@@ -95,8 +137,8 @@ BOOL CFunctionListDlg::ReloadList ()
                                       LVIS_FOCUSED | LVIS_SELECTED);
       nItem++;
 
-      }
-    }
+      }  // end of wanted in list
+   }  // end of for loop
 
 
   // if the filtering results in a single item, select it
@@ -108,6 +150,7 @@ BOOL CFunctionListDlg::ReloadList ()
     return FALSE;
     }
 
+  // if no filter value, put focus there so they can type one in
   if (m_strFilter.IsEmpty ())
     {
     m_ctlFilter.SetFocus ();
@@ -132,6 +175,12 @@ BOOL CFunctionListDlg::OnInitDialog()
     {
     GetDlgItem(IDC_LUA_FUNCTIONS)->ShowWindow (SW_HIDE);
     GetDlgItem(IDC_COPY_NAME)->ShowWindow (SW_HIDE);
+    }
+
+  if (m_bNoSort)
+    {
+    m_ctlFunctions.ModifyStyle (LVS_SORTASCENDING, 0);
+    m_ctlFunctions.ModifyStyle (LVS_SORTDESCENDING, 0);
     }
 
 	return ReloadList ();  // return TRUE unless you set the focus to a control
@@ -200,4 +249,5 @@ void CFunctionListDlg::OnUpdateNeedSelection(CCmdUI* pCmdUI)
   int iWhich = m_ctlFunctions.GetNextItem(-1, LVNI_SELECTED);
 	pCmdUI->Enable(iWhich != -1);
 }  // end of CFunctionListDlg::OnUpdateNeedSelection
+
 

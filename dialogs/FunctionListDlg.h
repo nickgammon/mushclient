@@ -26,6 +26,7 @@ public:
 
 
   bool m_bFunctions;
+  bool m_bNoSort;
 
   // dialog title
   CString m_strTitle;
@@ -35,6 +36,9 @@ public:
 
   // chosen item
   CKeyValuePair m_result;
+
+  // Lua state for filter function
+  lua_State * m_L;
 
 // Overrides
 	// ClassWizard generated virtual function overrides
