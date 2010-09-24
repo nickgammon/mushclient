@@ -9,6 +9,7 @@
 #include "scripting\errors.h"
 #include "color.h"
 #include "mainfrm.h"
+#include "blending.h"
 
 #define PNG_NO_CONSOLE_IO
 #include "png\png.h"
