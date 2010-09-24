@@ -4177,6 +4177,7 @@ tInfoTypeMapping InfoTypes [] =
 { 118, "Variables have changed" },
 { 119, "Script engine active" },
 { 120, "Scroll bar visible" },
+{ 121, "High-resolution timer available" },
 
 
 // (numbers (longs) - calculated at runtime)
@@ -4536,6 +4537,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case  118: SetUpVariantBool (vaResult, m_bVariablesChanged); break;
     case  119: SetUpVariantBool (vaResult, m_ScriptEngine != NULL); break;
     case  120: SetUpVariantBool (vaResult, m_bScrollBarWanted); break;
+    case  121: SetUpVariantBool (vaResult, App.m_iCounterFrequency != 0); break;
 
 
     case  201: SetUpVariantLong (vaResult, m_total_lines); break;
@@ -4591,6 +4593,13 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
         double ticks = (double) the_time.QuadPart / (double) App.m_iCounterFrequency;
         SetUpVariantDouble (vaResult, ticks);
         }
+      else
+        {
+        time_t timer;
+        time (&timer);
+        SetUpVariantDouble (vaResult, (double) timer);
+        }
+
       break;
 
     case 233:     // time taken doing triggers

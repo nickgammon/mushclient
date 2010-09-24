@@ -1654,7 +1654,23 @@ CFunctionListDlg dlg;
 
 } // end of filterpicker
 
+int timer (lua_State *L) 
+  {
+  if (App.m_iCounterFrequency)
+    {
+    LARGE_INTEGER the_time;
+    QueryPerformanceCounter (&the_time);
+    lua_pushnumber (L, (double) the_time.QuadPart / (double) App.m_iCounterFrequency);
+    }
+  else
+    {
+    time_t timer;
+    time (&timer);
+    lua_pushnumber (L, (double) timer);
+    }
 
+  return 1;   // 1 result
+  }
 
 // table of operations
 static const struct luaL_reg xmllib [] = 
@@ -1683,6 +1699,7 @@ static const struct luaL_reg xmllib [] =
   {"sendtofront",       send_to_front},
   {"shellexecute",      shell_execute},
   {"spellcheckdialog",  spellcheckdialog},
+  {"timer",             timer},
   {"umsgbox",           umsgbox},      // msgbox - UTF8
   {"utf8decode",        utf8decode}, 
   {"utf8encode",        utf8encode}, 
