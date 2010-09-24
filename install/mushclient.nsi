@@ -465,6 +465,7 @@ Section "Plugins"
   File "..\plugins\Calculator.xml"
   File "..\plugins\Text_To_Speech.xml"
   File "..\plugins\Automatic_Backup.xml"
+  File "..\plugins\Omit_Blank_Lines.xml"
 
 
 SectionEnd
@@ -690,6 +691,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\Calculator.xml"
   Delete "$INSTDIR\worlds\plugins\Text_To_Speech.xml"
   Delete "$INSTDIR\worlds\plugins\Automatic_Backup.xml"
+  Delete "$INSTDIR\worlds\plugins\Omit_Blank_Lines.xml"
   
   ; locale stuff
   
