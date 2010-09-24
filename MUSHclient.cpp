@@ -447,7 +447,7 @@ BOOL CMUSHclientApp::InitInstance()
 	Enable3dControls();
 
   //Make sure this is here so you can use XP Styles
-  //InitCommonControls();
+  InitCommonControls();
 
 	LoadStdProfileSettings(10);  // Load standard INI file options (including MRU)
 

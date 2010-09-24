@@ -15,6 +15,7 @@
 #include "..\dialogs\ChooseNotepadDlg.h"
 #include "..\dialogs\ColourPickerDlg.h"
 #include "..\MakeWindowTransparent.h"
+#include "..\blending.h"
 
 #include "errors.h"
 #include "..\flags.h"
