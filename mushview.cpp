@@ -1154,6 +1154,8 @@ COLORREF iBackColour = BLACK;
         pixel += textsize.cx;    // start rest of line further over
 
         }
+      else
+        pLine->m_iPreambleOffset = 0;  // ensure no offset if they change it
 
   // show the selection in a different colour
 
@@ -2008,7 +2010,10 @@ int line,
   int iCol;
 
   // don't do it *past* end of last word
-  long pixel = calculate_width (line, pLine->len, pDoc, dc) + pDoc->m_iPixelOffset + pDoc->m_TextRectangle.left;
+  long pixel = calculate_width (line, pLine->len, pDoc, dc) + 
+                pDoc->m_iPixelOffset + 
+                pDoc->m_TextRectangle.left +
+                pLine->m_iPreambleOffset;
 
   if (point.x < pixel &&
      pDoc->FindStyle (pLine, col, iCol, pStyle, foundpos))
@@ -3399,7 +3404,9 @@ ASSERT_VALID(pDoc);
     int iCol;
 
     // don't do it *past* end of last word
-    long pixel = calculate_width (line, pLine->len, pDoc, dc) + pDoc->m_iPixelOffset;
+    long pixel = calculate_width (line, pLine->len, pDoc, dc) + 
+                 pDoc->m_iPixelOffset + 
+                 pLine->m_iPreambleOffset;
 
     if (point.x < pixel &&
         pDoc->FindStyle (pLine, col, iCol, pStyle, foundpos))
@@ -4135,7 +4142,10 @@ BOOL CMUSHView::OnToolTipNeedText(UINT id, NMHDR * pNMHDR, LRESULT * pResult)
       int iCol = 0;
 
     // don't do it *past* end of last word
-    long pixel = calculate_width (line, pLine->len, pDoc, dc) + pDoc->m_iPixelOffset + pDoc->m_TextRectangle.left;
+    long pixel = calculate_width (line, pLine->len, pDoc, dc) + 
+                pDoc->m_iPixelOffset + 
+                pDoc->m_TextRectangle.left +
+                pLine->m_iPreambleOffset;
 
 //    m_ToolTip.SendMessage (TTM_SETTITLE, TTI_INFO, (LPARAM) Translate ("Line information") );
 
