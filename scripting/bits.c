@@ -1,3 +1,20 @@
+//  bits.c
+
+// Implements the "bit" library for Lua
+
+// In particular:
+
+//   bit.ashr
+//   bit.band
+//   bit.bor
+//   bit.mod
+//   bit.neg
+//   bit.shl
+//   bit.shr
+//   bit.tonumber
+//   bit.tostring
+//   bit.xor
+
 #include "..\lua.h"
 #include "..\lauxlib.h"
 
@@ -180,109 +197,3 @@ LUALIB_API int luaopen_bits(lua_State *L)
   luaL_register (L, "bit", bitlib);
   return 1;
   }
-
-
-/*  OLD VERSION 
-// shift right - shift arg1 right by arg2 bits
-static int shr (lua_State *L)
-  {
-  unsigned long num = (unsigned long) luaL_checknumber (L, 1);
-  unsigned long amount = (unsigned long) luaL_checknumber (L, 2);
-  unsigned long result = num >> amount;
-  lua_pushnumber (L, result);
-  return 1;  // number of result fields
-  } // end of shr
-
-// shift left - shift arg1 left by arg2 bits
-static int shl (lua_State *L)
-  {
-  unsigned long num = (unsigned long) luaL_checknumber (L, 1);
-  unsigned long amount = (unsigned long) luaL_checknumber (L, 2);
-  unsigned long result = num << amount;
-  lua_pushnumber (L, result);
-  return 1;  // number of result fields
-  } // end of shl
-
-// bitwise and ("and" is keyword) - takes multiple arguments
-static int band (lua_State *L)
-  {
-  // first argument must be there or the result will be zero
-  unsigned long result = (unsigned long) luaL_checknumber (L, 1);
-  int n = lua_gettop(L);  // number of arguments 
-  int i;
-  for (i=2; i<=n; i++) 
-    {
-    unsigned long n = (unsigned long) luaL_checknumber (L, i);
-    result &= n;
-    }
-
-  lua_pushnumber (L, result);
-  return 1;  // number of result fields
-  } // end of band
-
-// bitwise or ("or" is keyword) - takes multiple arguments
-static int bor (lua_State *L)
-  {
-  unsigned long result = 0;
-  int n = lua_gettop(L);  // number of arguments 
-  int i;
-  for (i=1; i<=n; i++) 
-    {
-    unsigned long n = (unsigned long) luaL_checknumber (L, i);
-    result |= n;
-    }
-
-  lua_pushnumber (L, result);
-  return 1;  // number of result fields
-  } // end of bor
-
-// xor - takes multiple arguments
-static int xor (lua_State *L)
-  {
-  unsigned long result = 0;
-  int n = lua_gettop(L);  // number of arguments 
-  int i;
-  for (i=1; i<=n; i++) 
-    {
-    unsigned long n = (unsigned long) luaL_checknumber (L, i);
-    result ^= n;
-    }
-
-  lua_pushnumber (L, result);
-  return 1;  // number of result fields
-  } // end of xor
-
-// neg - bitwise negate (ones complement)
-static int neg (lua_State *L)
-  {
-  unsigned long num = (unsigned long) luaL_checknumber (L, 1);
-  unsigned long result = ~num;
-  lua_pushnumber (L, result);
-  return 1;  // number of result fields
-  } // end of neg
-
-// table of operations
-static const struct luaL_reg bitslib [] = 
-  {
-
-  {"shr", shr},
-  {"shl", shl},
-  {"band", band},
-  {"bor", bor},
-  {"xor", xor},
-  {"neg", neg},
-
-  {NULL, NULL}
-  };
-
-
-// register library
-
-LUALIB_API int luaopen_bits(lua_State *L)
-  {
-  luaL_register (L, "bit", bitslib);
-  return 1;
-  }
-
-  END OLD VERSION */
-

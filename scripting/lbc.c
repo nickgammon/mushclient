@@ -6,6 +6,26 @@
 * This code is hereby placed in the public domain.
 */
 
+// Implements the "bc" library.
+
+// In particular:
+
+//   bc.add
+//   bc.compare
+//   bc.digits
+//   bc.div
+//   bc.isneg
+//   bc.iszero
+//   bc.mod
+//   bc.mul
+//   bc.number
+//   bc.pow
+//   bc.sqrt
+//   bc.sub
+//   bc.tostring
+//   bc.version
+
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>

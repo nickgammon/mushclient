@@ -1,3 +1,7 @@
+// world_debug.cpp
+
+// Implementation for script command: Debug ("something")
+
 #include "stdafx.h"
 #include "MUSHclient.h"
 #include "doc.h"

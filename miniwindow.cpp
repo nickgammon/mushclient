@@ -1,6 +1,6 @@
 // MiniWindow.cpp : implementation of the CMiniWindow class
 //
-
+// See: http://www.gammon.com.au/mw
 
 #include "stdafx.h"
 #include "MUSHclient.h"

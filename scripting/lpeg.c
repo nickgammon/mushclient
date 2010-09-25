@@ -1,6 +1,29 @@
 #pragma warning( disable : 4244)  // conversion from 'int ' to 'short ', possible loss of data
 #pragma warning( disable : 4505)  // unreferenced local function has been removed
 
+// Implements:
+
+//   lpeg.C
+//   lpeg.Carg
+//   lpeg.Cb
+//   lpeg.Cc
+//   lpeg.Cf
+//   lpeg.Cg
+//   lpeg.Cmt
+//   lpeg.Cp
+//   lpeg.Cs
+//   lpeg.Ct
+//   lpeg.P
+//   lpeg.R
+//   lpeg.S
+//   lpeg.V
+//   lpeg.locale
+//   lpeg.match
+//   lpeg.print
+//   lpeg.span
+//   lpeg.type
+//   lpeg.version
+
 /*
 ** $Id: lpeg.c,v 1.2 2009-02-23 03:13:05 nick Exp $
 ** LPeg - PEG pattern matching for Lua

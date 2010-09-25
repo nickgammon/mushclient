@@ -2,6 +2,10 @@
 #include "MUSHclient.h"
 #include "doc.h"
 
+// command evaluation
+
+// For lengthy explanation see: http://www.gammon.com.au/forum/?id=6572
+
 #ifdef _DEBUG
 //#define new DEBUG_NEW
 #undef THIS_FILE

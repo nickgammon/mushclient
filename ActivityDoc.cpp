@@ -65,14 +65,7 @@ void CActivityDoc::Dump(CDumpContext& dc) const
 
 void CActivityDoc::Serialize(CArchive& ar)
 {
-	if (ar.IsStoring())
-	{
-		// TODO: add storing code here
-	}
-	else
-	{
-		// TODO: add loading code here
-	}
+	// not serialized
 }
 
 /////////////////////////////////////////////////////////////////////////////

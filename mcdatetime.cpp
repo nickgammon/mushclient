@@ -1,3 +1,9 @@
+// mcdatetime.cpp
+
+// MUSHclient's date/time class
+// Handles sub-second intervals
+
+
 #include "stdafx.h"
 
 #define MIN_DATE                0  // year 1800

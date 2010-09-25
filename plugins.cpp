@@ -1,3 +1,7 @@
+// plugins.cpp
+
+// Plugins management
+
 #include "stdafx.h"
 #include "MUSHclient.h"
 

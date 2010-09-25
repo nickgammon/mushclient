@@ -1,3 +1,7 @@
+// Utilities.cpp
+
+// handy utilities
+
 #include "stdafx.h"
 #include "MUSHclient.h"
 
