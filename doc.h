@@ -722,7 +722,7 @@ public:
   CString m_strAutoLogFileName;          // name of file to log to
   CString m_strLogLinePreambleOutput;          // put at start of each log line - output
   CString m_strLogLinePreambleInput;          // put at start of each log line - input
-  CString m_strLogLinePreambleNotes;          // put at start of each log line - world.note
+  CString m_strLogLinePreambleNotes;          // put at start of each log line - world.Note
   CString m_strWorldGetFocus;          // script called when the world gets the focus
   CString m_strWorldLoseFocus;         // script called when the world loses the focus
   CString m_strLogFilePostamble;          // written when log file closed
@@ -767,7 +767,7 @@ public:
 
   CString m_strLogLinePostambleOutput;      // put at end of each log line - output
   CString m_strLogLinePostambleInput;       // put at end of each log line - input
-  CString m_strLogLinePostambleNotes;       // put at end of each log line - world.note
+  CString m_strLogLinePostambleNotes;       // put at end of each log line - world.Note
   CString m_strMappingFailure;              // message for mapping failure
 
 // callback routines for MXP
@@ -860,6 +860,19 @@ public:
 
   unsigned short m_bPlaySoundsInBackground;   // if true, PlaySound uses a global sound buffer
 
+
+  // version 4.62
+
+  CString m_strOutputLinePreambleOutput;         // put at start of each output line - MUD output
+  CString m_strOutputLinePreambleInput;          // put at start of each output line - input
+  CString m_strOutputLinePreambleNotes;          // put at start of each output line - world.Note
+
+  COLORREF m_OutputLinePreambleOutputTextColour; // text colour - MUD output preamble
+  COLORREF m_OutputLinePreambleOutputBackColour; // back colour - MUD output preamble
+  COLORREF m_OutputLinePreambleInputTextColour;  // text colour - input preamble 
+  COLORREF m_OutputLinePreambleInputBackColour;  // back colour - input preamble 
+  COLORREF m_OutputLinePreambleNotesTextColour;  // text colour - Note preamble 
+  COLORREF m_OutputLinePreambleNotesBackColour;  // back colour - Note preamble 
 
   // end of stuff saved to disk **************************************************************
 
@@ -1074,7 +1087,7 @@ public:
   COLORREF       m_iForeColour; // RGB foreground colour, or ANSI/custom colour number
   COLORREF       m_iBackColour; // RGB background colour, or ANSI/custom colour number
 
-  bool      m_bNotesInRGB;         // are notes in RGB mode?  (ie. world.note, world.tell)
+  bool      m_bNotesInRGB;         // are notes in RGB mode?  (ie. world.Note, world.Tell)
   COLORREF  m_iNoteColourFore;     // RGB notes text colour
   COLORREF  m_iNoteColourBack;     // RGB notes background colour
   unsigned short  m_iNoteStyle;    // notes style: HILITE, UNDERLINE, BLINK, INVERSE       

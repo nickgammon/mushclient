@@ -506,8 +506,10 @@ int iUnicodeCharacters = 0;
              pDoc->m_iPixelOffset + pixel + textsize.cx,
              - pDoc->m_iPixelOffset + (line + 1) * pDoc->m_FontHeight);
             
+    // allow for scroll position
     OffsetRect (&r, -m_scroll_position.x, -m_scroll_position.y);
-
+  
+    // allow for text rectangle
     OffsetRect (&r, pDoc->m_TextRectangle.left, pDoc->m_TextRectangle.top);
 
     if (bBackground)
@@ -525,23 +527,23 @@ int iUnicodeCharacters = 0;
       {
       if (pDoc->m_bUTF_8)     // Unicode output
         ExtTextOutW(          // W = wide
-                  pDC->m_hDC,          
-                  r.left,   // pDoc->m_iPixelOffset + pixel - m_scroll_position.x,  
-                  r.top, // - pDoc->m_iPixelOffset + line * pDoc->m_FontHeight - m_scroll_position.y,            
-                  0,      // transparent
-                  &r, 
-                  sUnicodeText, 
-                  iUnicodeCharacters,     
-                  NULL);
+                    pDC->m_hDC,          
+                    r.left,   
+                    r.top, 
+                    0,      // transparent
+                    &r, 
+                    sUnicodeText, 
+                    iUnicodeCharacters,     
+                    NULL);
       else                   // Ascii output
         pDC->ExtTextOut (
-                    r.left,  // pDoc->m_iPixelOffset + pixel - m_scroll_position.x, 
-                   r.top,    //- pDoc->m_iPixelOffset + line * pDoc->m_FontHeight - m_scroll_position.y,
-                   0,   // transparent
-                   &r,  
-                   &pLine->text [thiscol], 
-                   thislen,
-                   NULL);
+                     r.left,  
+                     r.top,    
+                     0,   // transparent
+                     &r,  
+                     &pLine->text [thiscol], 
+                     thislen,
+                     NULL);
 
       }
     thiscol += thislen;
@@ -1076,6 +1078,77 @@ COLORREF iBackColour = BLACK;
       bool bBackground = iPass == 0;
 
       pixel = 0;
+
+      // line preamble - version 4.62
+
+      CString  strPreamble;
+      COLORREF cPreambleText,
+               cPreambleBack;
+
+      // get appropriate preamble text, and colours, depending on line type
+      if (pLine->flags & COMMENT)
+        {
+        strPreamble   = pDoc->m_strOutputLinePreambleNotes;
+        cPreambleText = pDoc->m_OutputLinePreambleNotesTextColour;
+        cPreambleBack = pDoc->m_OutputLinePreambleNotesBackColour;
+        }
+      else if  (pLine->flags & USER_INPUT)
+        {
+        strPreamble   = pDoc->m_strOutputLinePreambleInput;
+        cPreambleText = pDoc->m_OutputLinePreambleInputTextColour;
+        cPreambleBack = pDoc->m_OutputLinePreambleInputBackColour;
+        }
+      else
+        {
+        strPreamble   = pDoc->m_strOutputLinePreambleOutput;
+        cPreambleText = pDoc->m_OutputLinePreambleOutputTextColour;
+        cPreambleBack = pDoc->m_OutputLinePreambleOutputBackColour;
+        }
+
+      // if not empty, do the work of drawing it
+      if (!strPreamble.IsEmpty ())
+        {
+        // convert codes like %H:%M:%S
+        strPreamble = pDoc->FormatTime (pLine->m_theTime, strPreamble, false);
+
+        // get plain font
+        pDC->SelectObject(pDoc->m_font [0]);
+
+        // find how big, so we can fill the background
+
+        RECT r;
+        CSize textsize = pDC->GetTextExtent (strPreamble, strPreamble.GetLength ());
+
+        // offsetting per above  (in display_text)
+        SetRect (&r, 
+                 pDoc->m_iPixelOffset + pixel,
+                 - pDoc->m_iPixelOffset + line * pDoc->m_FontHeight,
+                 pDoc->m_iPixelOffset + pixel + textsize.cx,
+                 - pDoc->m_iPixelOffset + (line + 1) * pDoc->m_FontHeight);
+            
+        // allow for scroll position
+        OffsetRect (&r, -m_scroll_position.x, -m_scroll_position.y);
+
+        // allow for text rectangle
+        OffsetRect (&r, pDoc->m_TextRectangle.left, pDoc->m_TextRectangle.top);
+
+        // now draw preamble (background/text)
+        if (bBackground)
+          pDC->FillSolidRect (&r, pDoc->TranslateColour (cPreambleBack));
+        else
+          {
+          pDC->SetTextColor (pDoc->TranslateColour (cPreambleText));  
+          pDC->ExtTextOut (r.left,  
+                           r.top,    
+                           0,   
+                           &r,  
+                           strPreamble, 
+                           strPreamble.GetLength (),
+                           NULL);
+          }
+        pixel += textsize.cx;    // start rest of line further over
+
+        }
 
   // show the selection in a different colour
 
