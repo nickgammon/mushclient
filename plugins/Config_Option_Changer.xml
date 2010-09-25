@@ -9,9 +9,9 @@
    language="Lua"
    purpose="Changes options not available in GUI configuration"
    date_written="2010-08-09 10:28:14"
-   date_modified="2010-08-10 09:50"
+   date_modified="2010-09-15 13:00"
    requires="4.50"
-   version="2.0"
+   version="3.0"
    >
 <description trim="y">
 <![CDATA[
@@ -44,8 +44,11 @@ Type 'config_options' to see dialog of options to change.
 
 -- alpha options they can change
 alpha_options = {
-  editor_window_name      = { desc = 'Name of external editor window' },
-  script_editor_argument  = { desc = 'External editor argument' },
+  editor_window_name          = { desc = 'Name of external editor window' },
+  script_editor_argument      = { desc = 'External editor argument' },
+  output_line_preamble_input  = { desc = 'Timestamp (input)' },
+  output_line_preamble_notes  = { desc = 'Timestamp (notes)' },
+  output_line_preamble_output = { desc = 'Timestamp (output)' },
   } -- end alpha_options
   
   
@@ -78,7 +81,16 @@ numeric_options = {
   default_trigger_sequence    = { desc = 'New triggers: Default sequence', min = 0, max = 10000 },
   } -- end numeric_options
   
-  
+-- colour options they can change
+colour_options = {
+  output_line_preamble_input_text_colour  = { desc = 'Timestamp (input) text colour' },  
+  output_line_preamble_notes_text_colour  = { desc = 'Timestamp (notes) text colour' },
+  output_line_preamble_output_text_colour = { desc = 'Timestamp (output) text colour' },
+  output_line_preamble_input_back_colour  = { desc = 'Timestamp (input) background colour' },
+  output_line_preamble_notes_back_colour  = { desc = 'Timestamp (notes) background colour' },
+  output_line_preamble_output_back_colour = { desc = 'Timestamp (output) background colour' },
+  } -- end colour_options
+ 
 function edit_boolean_option (name)
   local val = GetOption (name)
   local info = boolean_options [name]
@@ -177,6 +189,28 @@ function edit_numeric_option (name)
   
 end -- edit_numeric_option
 
+function edit_colour_option (name)
+ local val = tonumber (GetOption (name))
+ local info = colour_options [name]
+
+  local response = PickColour (val)
+  
+  -- if cancelled dialog, just return
+  if response == -1 then
+    return
+  end -- cancelled
+  
+  -- if value changed, notify them
+  if response ~= val then
+    SetOption (name, response)
+    ColourNote ("cyan", "", string.format ("Option '%s' changed from '%s' to '%s'", 
+                info.desc, 
+                RGBColourToName (val), 
+                RGBColourToName (response)))
+  end -- if  
+  
+end -- edit_colour_option
+
 function config_options (name, line, wildcards)
 
   repeat
@@ -213,6 +247,14 @@ function config_options (name, line, wildcards)
       end -- if exists
     end -- for numeric_options
         
+    -- colour
+    for k, v in pairs (colour_options) do
+      local val = GetOption (k)
+      if val then
+        choices [k] = string.format ("%s (%s)", v.desc, RGBColourToName (val))
+      end -- if exists
+    end -- for colour_options
+        
     -- choose one ...
     local result = utils.listbox (
         "Choose an option to edit.\r\n\r\nClick Cancel when done (any changes will be retained).", 
@@ -226,6 +268,8 @@ function config_options (name, line, wildcards)
         edit_boolean_option (result)
       elseif numeric_options [result] then
         edit_numeric_option (result)
+      elseif colour_options [result] then
+        edit_colour_option (result)
       end -- if  
     end -- if they chose something
    
