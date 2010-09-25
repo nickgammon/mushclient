@@ -1071,6 +1071,36 @@ COLORREF iBackColour = BLACK;
     startcol = MIN (m_selstart_col, pLine->len);
     endcol = MIN (m_selend_col, pLine->len);
 
+    // line preamble - version 4.62
+
+    CString  strPreamble;
+    COLORREF cPreambleText,
+             cPreambleBack;
+
+    // get appropriate preamble text, and colours, depending on line type
+    if (pLine->flags & COMMENT)
+      {
+      strPreamble   = pDoc->m_strOutputLinePreambleNotes;
+      cPreambleText = pDoc->m_OutputLinePreambleNotesTextColour;
+      cPreambleBack = pDoc->m_OutputLinePreambleNotesBackColour;
+      }
+    else if  (pLine->flags & USER_INPUT)
+      {
+      strPreamble   = pDoc->m_strOutputLinePreambleInput;
+      cPreambleText = pDoc->m_OutputLinePreambleInputTextColour;
+      cPreambleBack = pDoc->m_OutputLinePreambleInputBackColour;
+      }
+    else
+      {
+      strPreamble   = pDoc->m_strOutputLinePreambleOutput;
+      cPreambleText = pDoc->m_OutputLinePreambleOutputTextColour;
+      cPreambleBack = pDoc->m_OutputLinePreambleOutputBackColour;
+      }
+
+    // convert codes like %H:%M:%S
+    if (!strPreamble.IsEmpty ())
+      strPreamble = pDoc->FormatTime (pLine->m_theTime, strPreamble, false);
+
     // Draw the background and then the text
 
     for (int iPass = 0; iPass < 2; iPass++)
@@ -1081,41 +1111,14 @@ COLORREF iBackColour = BLACK;
 
       // line preamble - version 4.62
 
-      CString  strPreamble;
-      COLORREF cPreambleText,
-               cPreambleBack;
-
-      // get appropriate preamble text, and colours, depending on line type
-      if (pLine->flags & COMMENT)
-        {
-        strPreamble   = pDoc->m_strOutputLinePreambleNotes;
-        cPreambleText = pDoc->m_OutputLinePreambleNotesTextColour;
-        cPreambleBack = pDoc->m_OutputLinePreambleNotesBackColour;
-        }
-      else if  (pLine->flags & USER_INPUT)
-        {
-        strPreamble   = pDoc->m_strOutputLinePreambleInput;
-        cPreambleText = pDoc->m_OutputLinePreambleInputTextColour;
-        cPreambleBack = pDoc->m_OutputLinePreambleInputBackColour;
-        }
-      else
-        {
-        strPreamble   = pDoc->m_strOutputLinePreambleOutput;
-        cPreambleText = pDoc->m_OutputLinePreambleOutputTextColour;
-        cPreambleBack = pDoc->m_OutputLinePreambleOutputBackColour;
-        }
-
       // if not empty, do the work of drawing it
       if (!strPreamble.IsEmpty ())
         {
-        // convert codes like %H:%M:%S
-        strPreamble = pDoc->FormatTime (pLine->m_theTime, strPreamble, false);
 
         // get plain font
         pDC->SelectObject(pDoc->m_font [0]);
 
         // find how big, so we can fill the background
-
         RECT r;
         CSize textsize = pDC->GetTextExtent (strPreamble, strPreamble.GetLength ());
 
@@ -1137,6 +1140,7 @@ COLORREF iBackColour = BLACK;
           pDC->FillSolidRect (&r, pDoc->TranslateColour (cPreambleBack));
         else
           {
+          pDC->SetBkMode (TRANSPARENT);   // trouble brewing if this isn't here!
           pDC->SetTextColor (pDoc->TranslateColour (cPreambleText));  
           pDC->ExtTextOut (r.left,  
                            r.top,    
@@ -1146,6 +1150,7 @@ COLORREF iBackColour = BLACK;
                            strPreamble.GetLength (),
                            NULL);
           }
+        pLine->m_iPreambleOffset = textsize.cx;  // for selection calculations
         pixel += textsize.cx;    // start rest of line further over
 
         }
@@ -1726,6 +1731,7 @@ long pixel;
   point.y -= pDoc->m_TextRectangle.top;
   point.x -= pDoc->m_TextRectangle.left;
 
+
   line = (point.y + pDoc->m_iPixelOffset + m_scroll_position.y) / pDoc->m_FontHeight;
 
 // include partial last line if necessary
@@ -1744,14 +1750,16 @@ long pixel;
 
   CLine * pLine = pDoc->m_LineList.GetAt (pDoc->GetLinePosition (line));
 
+//  point.x -= pLine->m_iPreambleOffset; 
+
 // calculate which column we must be at
 
-  for (col = pixel = 0; 
+  for (col = 0, pixel = pLine->m_iPreambleOffset;
       pixel < point.x && col <= pLine->len; 
       col++)
         {
         lastx = pixel;
-        pixel = calculate_width (line, col, pDoc, dc) + pDoc->m_iPixelOffset;
+        pixel = calculate_width (line, col, pDoc, dc) + pDoc->m_iPixelOffset + pLine->m_iPreambleOffset;
         }
 
   col--;    // columns are zero-relative
@@ -2357,7 +2365,7 @@ int line,
 
   // first work out the line/column the mouse is over
 
-  calculate_line_and_column (point, dc, line, col, false);
+  calculate_line_and_column (point, dc, line, col, true);
 
   // tooltips stuff
 
@@ -2373,10 +2381,6 @@ int line,
     m_nLastToolTipLine = line;
     m_nLastToolTipColumn = col;
   }
-
-  // first work out the line/column the mouse is over
-
-  calculate_line_and_column (point, dc, line, col, true);
 
   // end of tooltips stuff
 
@@ -2722,7 +2726,10 @@ ASSERT_VALID(pDoc);
   POSITION foundpos;
 
   // don't show finger pointer *past* end of last word
-  long pixel = calculate_width (line, pLine->len, pDoc, dc) + pDoc->m_iPixelOffset + pDoc->m_TextRectangle.left;
+  long pixel = calculate_width (line, pLine->len, pDoc, dc) + 
+               pDoc->m_iPixelOffset + 
+               pDoc->m_TextRectangle.left +
+               pLine->m_iPreambleOffset;
 
   if (pDoc->FindStyle (pLine, col, iCol, pStyle, foundpos))
     {

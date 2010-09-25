@@ -329,6 +329,7 @@ class CLine : public CObject
   int iMemoryAllocated; // size of buffer allocated for "text"
 
   long m_nLineNumber;
+  short m_iPreambleOffset;  // how far in the preamble took us
 
   CLine (const long nLineNumber, 
          const unsigned int nWrapColumn,
