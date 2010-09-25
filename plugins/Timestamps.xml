@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<!--
+Change the following variables to customise your timestamps:
+
+TIMESTAMP_INPUT  : what to put in front of things you type
+TIMESTAMP_OUTPUT : what to put in front of MUD output
+TIMESTAMP_NOTES  : what to put in front of scripted notes
+
+Text colours:
+
+TIMESTAMP_INPUT_TEXT_COLOUR
+TIMESTAMP_OUTPUT_TEXT_COLOUR
+TIMESTAMP_NOTES_TEXT_COLOUR
+
+Background (behind the timestamp) colours:
+
+TIMESTAMP_INPUT_BACK_COLOUR
+TIMESTAMP_OUTPUT_BACK_COLOUR
+TIMESTAMP_NOTES_BACK_COLOUR
+
+
+-->
+
+<muclient>
+<plugin
+   name="Timestamps"
+   author="Nick Gammon"
+   id="559d05b18c3fd5602a433cf8"
+   language="Lua"
+   purpose="Adds a timestamp to each line in the output window"
+   save_state="y"
+   date_written="2010-09-25 14:02:11"
+   requires="4.62"
+   version="1.0"
+   >
+<description trim="y">
+<![CDATA[
+Enable this plugin to see timestamps.
+
+Disable to hide them.
+]]>
+</description>
+
+</plugin>
+
+
+<!--  Script  -->
+
+
+<script>
+<![CDATA[
+
+TIMESTAMP_INPUT   = "%H:%M:%S $ "
+TIMESTAMP_OUTPUT  = "%H:%M:%S > "
+TIMESTAMP_NOTES   = "%H:%M:%S ! "
+
+TIMESTAMP_INPUT_TEXT_COLOUR   = ColourNameToRGB ("maroon")
+TIMESTAMP_OUTPUT_TEXT_COLOUR  = ColourNameToRGB ("white")
+TIMESTAMP_NOTES_TEXT_COLOUR   = ColourNameToRGB ("cyan")
+
+TIMESTAMP_INPUT_BACK_COLOUR   = ColourNameToRGB ("#151515")
+TIMESTAMP_OUTPUT_BACK_COLOUR  = ColourNameToRGB ("#151515")
+TIMESTAMP_NOTES_BACK_COLOUR   = ColourNameToRGB ("#151515")
+
+function OnPluginInstall ()
+
+  -- if disabled last time, stay disabled
+  if GetVariable ("enabled") == "false" then
+    ColourNote ("yellow", "", "Warning: Plugin " .. GetPluginName ().. " is currently disabled.")
+    check (EnablePlugin(GetPluginID (), false))
+  end -- they didn't enable us last time
+ 
+  OnPluginEnable ()
+  
+end -- OnPluginInstall
+
+function OnPluginSaveState ()
+  SetVariable ("enabled", tostring (GetPluginInfo (GetPluginID (), 17)))
+end -- OnPluginSaveState
+
+function OnPluginDisable ()
+
+  SetAlphaOption ("timestamp_input",  "")
+  SetAlphaOption ("timestamp_output", "")
+  SetAlphaOption ("timestamp_notes",  "")
+  Redraw ()
+  
+end -- OnPluginDisable
+
+function OnPluginEnable ()
+ 
+  SetAlphaOption ("timestamp_input",  TIMESTAMP_INPUT)
+  SetAlphaOption ("timestamp_output", TIMESTAMP_OUTPUT)
+  SetAlphaOption ("timestamp_notes",  TIMESTAMP_NOTES)
+  
+  SetOption ("timestamp_input_text_colour",   TIMESTAMP_INPUT_TEXT_COLOUR )
+  SetOption ("timestamp_output_text_colour",  TIMESTAMP_OUTPUT_TEXT_COLOUR )
+  SetOption ("timestamp_notes_text_colour",   TIMESTAMP_NOTES_TEXT_COLOUR )
+
+  SetOption ("timestamp_input_back_colour",   TIMESTAMP_INPUT_BACK_COLOUR )
+  SetOption ("timestamp_output_back_colour",  TIMESTAMP_OUTPUT_BACK_COLOUR )
+  SetOption ("timestamp_notes_back_colour",   TIMESTAMP_NOTES_BACK_COLOUR )
+
+  Redraw ()
+  
+end -- OnPluginEnable
+
+
+]]>
+</script>
+
+
+</muclient>
