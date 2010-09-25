@@ -3,6 +3,12 @@
 /* Reuben Thomas   nov00-25aug04 */
 /* Shmuel Zeigerman   may04-25aug04 */
 
+// Implements:
+
+//   rex.flags
+//   rex.new
+//   rex.version
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

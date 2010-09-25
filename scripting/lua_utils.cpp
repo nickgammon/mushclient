@@ -1,3 +1,40 @@
+// Various Lua utilities:
+
+// Implements:
+
+//   utils.activatenotepad
+//   utils.appendtonotepad
+//   utils.callbackslist
+//   utils.choose
+//   utils.directorypicker
+//   utils.edit_distance
+//   utils.editbox
+//   utils.filepicker
+//   utils.filterpicker
+//   utils.fontpicker
+//   utils.functionargs
+//   utils.functionlist
+//   utils.getfontfamilies
+//   utils.info
+//   utils.inputbox
+//   utils.listbox
+//   utils.metaphone
+//   utils.msgbox
+//   utils.multilistbox
+//   utils.sendtofront
+//   utils.shellexecute
+//   utils.showdebugstatus
+//   utils.spellcheckdialog
+//   utils.timer
+//   utils.umsgbox
+//   utils.utf8decode
+//   utils.utf8encode
+//   utils.utf8sub
+//   utils.utf8valid
+//   utils.xmlread
+
+// Also see: lua_compress.c  for some more utils.xxx functions
+
 #include "stdafx.h"
 #include "..\mainfrm.h"
 #include "..\MUSHclient.h"

@@ -1,3 +1,21 @@
+// Various Lua utilities:
+
+// Implements:
+
+//   utils.base64decode
+//   utils.base64encode
+//   utils.compress
+//   utils.decompress
+//   utils.fromhex
+//   utils.hash
+//   utils.md5
+//   utils.readdir
+//   utils.sha256
+//   utils.split
+//   utils.tohex
+
+// Also see: lua_utils.cpp  for some more utils.xxx functions
+
 #include "..\lua.h"
 #include "..\lauxlib.h"
 

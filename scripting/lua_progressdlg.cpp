@@ -1,3 +1,9 @@
+// Progress dialog
+
+// Implements:
+
+// progress.new
+
 #include "stdafx.h"
 #include "..\MUSHclient.h"
 #include "..\mainfrm.h"
