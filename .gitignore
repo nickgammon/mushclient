@@ -56,3 +56,11 @@ using_git.txt
 #  VS2005 user-specific project data
 #  
 MUSHclient.vcproj.*
+
+#
+# VS2010 user-specific project data
+#
+MUSHclient.vcxproj.*
+MUSHclient.sdf
+MUSHclient.opensdf
+ipch
