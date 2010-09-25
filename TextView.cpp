@@ -121,15 +121,6 @@ BEGIN_MESSAGE_MAP(CTextView, CEditView)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CTextView drawing
-
-void CTextView::OnDraw(CDC* pDC)
-{
-	CDocument* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
-}
-
-/////////////////////////////////////////////////////////////////////////////
 // CTextView diagnostics
 
 #ifdef _DEBUG
