@@ -1,3 +1,7 @@
+// WSH (Windows Script Host) scripting-related stuff goes here
+//
+//  See lua_scripting.cpp for Lua-related scripting
+
 #include "stdafx.h"
 #include "..\mainfrm.h"
 #include "..\MUSHclient.h"
@@ -12,8 +16,6 @@
 static char BASED_CODE THIS_FILE[] = __FILE__;
 //#define new DEBUG_NEW
 #endif
-
-// all scripting-related stuff goes here
 
 
 bool CMUSHclientDoc::CreateScriptEngine() 

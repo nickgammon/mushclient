@@ -2,7 +2,16 @@
 
 // Implements:
 
-// progress.new
+// dlg = progress.new
+
+//    dlg:checkcancel
+//    dlg:close
+//    dlg:position 
+//    dlg:range    
+//    dlg:setstep  
+//    dlg:status   
+//    dlg:step     
+
 
 #include "stdafx.h"
 #include "..\MUSHclient.h"

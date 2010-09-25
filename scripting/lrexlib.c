@@ -6,8 +6,12 @@
 // Implements:
 
 //   rex.flags
-//   rex.new
+//   re = rex.new
 //   rex.version
+
+//   re:exec
+//   re:match
+//   re:gmatch
 
 #include <stdio.h>
 #include <stdlib.h>
