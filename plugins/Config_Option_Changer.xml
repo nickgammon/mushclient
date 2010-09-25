@@ -44,11 +44,11 @@ Type 'config_options' to see dialog of options to change.
 
 -- alpha options they can change
 alpha_options = {
-  editor_window_name          = { desc = 'Name of external editor window' },
-  script_editor_argument      = { desc = 'External editor argument' },
-  output_line_preamble_input  = { desc = 'Timestamp (input)' },
-  output_line_preamble_notes  = { desc = 'Timestamp (notes)' },
-  output_line_preamble_output = { desc = 'Timestamp (output)' },
+  editor_window_name      = { desc = 'Name of external editor window' },
+  script_editor_argument  = { desc = 'External editor argument' },
+  timestamp_input         = { desc = 'Timestamp (input)' },
+  timestamp_notes         = { desc = 'Timestamp (notes)' },
+  timestamp_output        = { desc = 'Timestamp (output)' },
   } -- end alpha_options
   
   
@@ -83,12 +83,12 @@ numeric_options = {
   
 -- colour options they can change
 colour_options = {
-  output_line_preamble_input_text_colour  = { desc = 'Timestamp (input) text colour' },  
-  output_line_preamble_notes_text_colour  = { desc = 'Timestamp (notes) text colour' },
-  output_line_preamble_output_text_colour = { desc = 'Timestamp (output) text colour' },
-  output_line_preamble_input_back_colour  = { desc = 'Timestamp (input) background colour' },
-  output_line_preamble_notes_back_colour  = { desc = 'Timestamp (notes) background colour' },
-  output_line_preamble_output_back_colour = { desc = 'Timestamp (output) background colour' },
+  timestamp_input_text_colour  = { desc = 'Timestamp (input) text colour' },  
+  timestamp_notes_text_colour  = { desc = 'Timestamp (notes) text colour' },
+  timestamp_output_text_colour = { desc = 'Timestamp (output) text colour' },
+  timestamp_input_back_colour  = { desc = 'Timestamp (input) background colour' },
+  timestamp_notes_back_colour  = { desc = 'Timestamp (notes) background colour' },
+  timestamp_output_back_colour = { desc = 'Timestamp (output) background colour' },
   } -- end colour_options
  
 function edit_boolean_option (name)
