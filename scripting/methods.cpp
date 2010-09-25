@@ -4,6 +4,7 @@
 //=============================================================
 // IMPORTANT - when adding methods here remember to add the 'glue'
 //             routine in lua_methods.cpp and add it to the library table
+//   - see comments at the end of this file
 //=============================================================
 #include "..\doc.h"
 #include "..\MUSHview.h"
