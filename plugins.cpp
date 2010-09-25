@@ -780,6 +780,8 @@ bool bError = true;
 
     }  // end of no save state folder
 
+  CPlugin * oldPlugin = m_pDoc->m_CurrentPlugin;
+  m_pDoc->m_CurrentPlugin = this;
 
   CScriptCallInfo callinfo (ON_PLUGIN_SAVE_STATE, m_PluginCallbacks [ON_PLUGIN_SAVE_STATE]);
   ExecutePluginScript (callinfo);
@@ -789,7 +791,6 @@ bool bError = true;
   strFilename += m_strID;                 // plugin ID
   strFilename += "-state.xml";            // suffix
 
-  CPlugin * oldPlugin = m_pDoc->m_CurrentPlugin;
 
   try
     {
@@ -802,7 +803,6 @@ bool bError = true;
                 (LPCTSTR) m_strName,
                 (LPCTSTR) m_pDoc->m_mush_name);
 
-    m_pDoc->m_CurrentPlugin = this;
     m_pDoc->Save_World_XML (*ar, XML_VARIABLES, strComment);
 
     bError = false;
