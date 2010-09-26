@@ -1404,6 +1404,7 @@
     <ClInclude Include="luacom\tLuaVector.h" />
     <ClInclude Include="luacom\tStringBuffer.h" />
     <ClInclude Include="luacom\tUtil.h" />
+	<ClInclude Include="themeglue.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\cursor1.cur" />
