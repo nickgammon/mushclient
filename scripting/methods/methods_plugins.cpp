@@ -3,9 +3,9 @@
 // Plugins management
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\errors.h"
 
 // gets our own plugin id
 

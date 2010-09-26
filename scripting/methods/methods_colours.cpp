@@ -3,11 +3,11 @@
 // To do with colour management
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\errors.h"
 
-#include "..\dialogs\ColourPickerDlg.h"
+#include "..\..\dialogs\ColourPickerDlg.h"
 
 long CMUSHclientDoc::ColourNameToRGB(LPCTSTR Name) 
 {

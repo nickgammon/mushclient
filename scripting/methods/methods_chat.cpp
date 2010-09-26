@@ -3,17 +3,17 @@
 // Stuff for the chat system
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
+#include "..\..\MUSHclient.h"
 
 //=============================================================
 // IMPORTANT - when adding methods here remember to add the 'glue'
 //             routine in lua_methods.cpp and add it to the library table
 //   - see comments at the end of methods.cpp
 //=============================================================
-#include "..\doc.h"
-#include "..\MUSHview.h"
-#include "..\mainfrm.h"
-#include "errors.h"
+#include "..\..\doc.h"
+#include "..\..\MUSHview.h"
+#include "..\..\mainfrm.h"
+#include "..\errors.h"
 
 
 #define CHATO(arg) offsetof (CChatSocket, arg), sizeof (((CChatSocket *)NULL)->arg)

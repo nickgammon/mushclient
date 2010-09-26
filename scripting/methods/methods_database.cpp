@@ -3,10 +3,10 @@
 // Stuff for SQLite3 database management
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "..\MUSHview.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\..\MUSHview.h"
+#include "..\errors.h"
 
 
 //  Flags For File Open Operations

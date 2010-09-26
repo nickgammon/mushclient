@@ -3,11 +3,11 @@
 // Spellchecker and related helper functions
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "errors.h"
-#include "..\sendvw.h"
-#include "..\dmetaph.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\errors.h"
+#include "..\..\sendvw.h"
+#include "..\..\dmetaph.h"
 
 
 VARIANT CMUSHclientDoc::SpellCheck(LPCTSTR Text) 

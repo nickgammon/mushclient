@@ -3,12 +3,12 @@
 // Related to triggers
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "..\MUSHview.h"
-#include "..\mainfrm.h"
-#include "..\flags.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\..\MUSHview.h"
+#include "..\..\mainfrm.h"
+#include "..\..\flags.h"
+#include "..\errors.h"
 
 
 // ******************************************************************************

@@ -3,10 +3,10 @@
 // Stuff for writing to the output window (notes, colour notes etc.)
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "..\MUSHview.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\..\MUSHview.h"
+#include "..\errors.h"
 
 
 // world.note - makes a comment in the output buffer (with newline)

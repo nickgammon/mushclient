@@ -4,7 +4,7 @@
 //   (now effectively replaced by miniwindows)
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
+#include "..\..\MUSHclient.h"
 
 
 #ifdef PANE

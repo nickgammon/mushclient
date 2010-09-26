@@ -3,8 +3,8 @@
 // XML load/save stuff
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
 
 extern CString strMacroDescriptions [MACRO_COUNT];
 extern CString strKeypadNames [eKeypad_Max_Items];

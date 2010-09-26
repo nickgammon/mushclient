@@ -3,12 +3,12 @@
 // Various utility functions
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "..\mainfrm.h"
-#include "errors.h"
-#include "..\childfrm.h"
-#include "..\sendvw.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\..\mainfrm.h"
+#include "..\errors.h"
+#include "..\..\childfrm.h"
+#include "..\..\sendvw.h"
 #include <direct.h>
 
 

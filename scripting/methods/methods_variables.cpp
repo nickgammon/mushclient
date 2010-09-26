@@ -3,9 +3,9 @@
 // Related to variables
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\errors.h"
 
 // ******************************************************************************
 // **************************** VARIABLES ***************************************

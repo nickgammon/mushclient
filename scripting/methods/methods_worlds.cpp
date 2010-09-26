@@ -3,9 +3,9 @@
 // World management (finding other open world files)
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\errors.h"
 
 
 LPDISPATCH CMUSHclientDoc::GetWorld(LPCTSTR WorldName) 

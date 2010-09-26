@@ -3,12 +3,12 @@
 // Methods for miniwindows - main implementation in miniwindows.cpp
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "..\MUSHview.h"
-#include "errors.h"
-#include "..\blending.h"
-#include "..\color.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\..\MUSHview.h"
+#include "..\..\blending.h"
+#include "..\..\color.h"
+#include "..\errors.h"
 
 /* positions: 
 

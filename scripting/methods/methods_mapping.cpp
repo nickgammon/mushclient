@@ -3,9 +3,9 @@
 // For "mapping" (capturing speedwalks as you walk around)
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\errors.h"
 
 
 long CMUSHclientDoc::AddToMapper(LPCTSTR Direction, LPCTSTR Reverse) 

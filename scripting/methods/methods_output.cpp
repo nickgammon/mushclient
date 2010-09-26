@@ -3,16 +3,16 @@
 // General output (and frame) window management
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "..\MUSHview.h"
-#include "..\mainfrm.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\..\MUSHview.h"
+#include "..\..\mainfrm.h"
+#include "..\errors.h"
 
-#include "..\childfrm.h"
-#include "..\sendvw.h"
-#include "..\winplace.h"
-#include "..\MakeWindowTransparent.h"
+#include "..\..\childfrm.h"
+#include "..\..\sendvw.h"
+#include "..\..\winplace.h"
+#include "..\..\MakeWindowTransparent.h"
 
 
 void CMUSHclientDoc::Redraw() 

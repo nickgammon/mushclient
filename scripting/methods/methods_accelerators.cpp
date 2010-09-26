@@ -1,20 +1,20 @@
 // methods_accelerators.cpp - stuff for the Accelerator command and variants
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
+#include "..\..\MUSHclient.h"
 
 //=============================================================
 // IMPORTANT - when adding methods here remember to add the 'glue'
 //             routine in lua_methods.cpp and add it to the library table
 //   - see comments at the end of methods.cpp
 //=============================================================
-#include "..\doc.h"
-#include "..\MUSHview.h"
-#include "..\mainfrm.h"
-#include "..\flags.h"
-#include "errors.h"
-#include "..\childfrm.h"
-#include "..\sendvw.h"
+#include "..\..\doc.h"
+#include "..\..\MUSHview.h"
+#include "..\..\mainfrm.h"
+#include "..\..\flags.h"
+#include "..\errors.h"
+#include "..\..\childfrm.h"
+#include "..\..\sendvw.h"
 
 
 

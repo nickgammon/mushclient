@@ -3,14 +3,14 @@
 // Stuff for the internal notepad window
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\errors.h"
 
-#include "..\TextDocument.h"
-#include "..\dialogs\ChooseNotepadDlg.h"
-#include "..\TextView.h"
-#include "..\winplace.h"
+#include "..\..\TextDocument.h"
+#include "..\..\dialogs\ChooseNotepadDlg.h"
+#include "..\..\TextView.h"
+#include "..\..\winplace.h"
 
 bool CMUSHclientDoc::SwitchToNotepad (void)
   {

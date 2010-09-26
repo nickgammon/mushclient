@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\MUSHclient.h"
+#include "..\..\MUSHclient.h"
 
 //=============================================================
 // IMPORTANT - when adding methods here remember to add the 'glue'

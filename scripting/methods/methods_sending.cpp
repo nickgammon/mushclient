@@ -3,11 +3,11 @@
 // Stuff for sending things to the MUD
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "..\MUSHview.h"
-#include "..\sendvw.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\..\MUSHview.h"
+#include "..\..\sendvw.h"
+#include "..\errors.h"
 
 
 // world.Send - sends the text to the world

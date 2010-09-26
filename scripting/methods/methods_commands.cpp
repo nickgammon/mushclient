@@ -3,12 +3,12 @@
 // Command window  /  command handling
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "..\mainfrm.h"
-#include "..\sendvw.h"
-#include "..\childfrm.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\..\mainfrm.h"
+#include "..\..\sendvw.h"
+#include "..\..\childfrm.h"
+#include "..\errors.h"
 
 extern tCommandIDMapping CommandIDs [];
 

@@ -4,10 +4,10 @@
 
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "..\UDPsocket.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\..\UDPsocket.h"
+#include "..\errors.h"
 
 
 // /UdpSend ("10.0.0.3", 4111, "m,textcolour,5555")

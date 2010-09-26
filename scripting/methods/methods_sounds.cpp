@@ -3,9 +3,9 @@
 // Relating to playing sounds
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\errors.h"
 
 
 // world.Sound - plays a sound

@@ -3,10 +3,10 @@
 // Stuff for drawing in the "info" bar
 
 #include "stdafx.h"
-#include "..\MUSHclient.h"
-#include "..\doc.h"
-#include "..\mainfrm.h"
-#include "errors.h"
+#include "..\..\MUSHclient.h"
+#include "..\..\doc.h"
+#include "..\..\mainfrm.h"
+#include "..\errors.h"
 
 
 void CMUSHclientDoc::ShowInfoBar(BOOL Visible) 
