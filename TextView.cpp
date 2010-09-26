@@ -238,9 +238,42 @@ void CTextView::SerializeRaw(CArchive& ar)
 	{
 		CFile* pFile = ar.GetFile();
 		ASSERT(pFile->GetPosition() == 0);
-		DWORD nFileSize = pFile->GetLength(); 
+		DWORD nLen = pFile->GetLength(); 
 		// ReadFromArchive takes the number of characters as argument
-		ReadFromArchive(ar, (UINT)nFileSize/sizeof(TCHAR));
+
+    // REPLACING: 		ReadFromArchive(ar, (UINT)nFileSize/sizeof(TCHAR));
+
+    // with this (we got garbage at times):
+
+    LPVOID hText = LocalAlloc(LMEM_MOVEABLE, (nLen+1)*sizeof(TCHAR));
+    if (hText == NULL)
+	    AfxThrowMemoryException();
+
+    LPTSTR lpszText = (LPTSTR)LocalLock(hText);
+    ASSERT(lpszText != NULL);
+    if (ar.Read(lpszText, nLen*sizeof(TCHAR)) != nLen*sizeof(TCHAR))
+    {
+	    LocalUnlock(hText);
+	    LocalFree(hText);
+	    AfxThrowArchiveException(CArchiveException::endOfFile);
+    }
+    // Replace the editing edit buffer with the newly loaded data
+    lpszText[nLen] = '\0';
+
+	  // set the text with SetWindowText, then free
+	  BOOL bResult = ::SetWindowText(m_hWnd, lpszText);
+	  LocalUnlock(hText);
+	  LocalFree(hText);
+
+	  // make sure that SetWindowText was successful
+	  if (!bResult || ::GetWindowTextLength(m_hWnd) < (int)nLen)
+		  AfxThrowMemoryException();
+
+	  // remove old shadow buffer
+	  delete[] m_pShadowBuffer;
+	  m_pShadowBuffer = NULL;
+	  m_nShadowSize = 0;
+
 	}
 	ASSERT_VALID(this);
 } /* end of CTextView::SerializeRaw */

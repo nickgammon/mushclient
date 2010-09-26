@@ -115,7 +115,7 @@ void CTextDocument::Dump(CDumpContext& dc) const
 void CTextDocument::Serialize(CArchive& ar)
 {
 	// CEditView contains an edit control which handles all serialization
-	((CEditView*)m_viewList.GetHead())->SerializeRaw(ar);
+	((CTextView*)m_viewList.GetHead())->SerializeRaw(ar);
 
   if (ar.IsLoading ())
     CreateMonitoringThread (ar.GetFile ()->GetFilePath ());
