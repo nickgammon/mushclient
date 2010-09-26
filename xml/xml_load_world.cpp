@@ -2342,10 +2342,11 @@ void CMUSHclientDoc::Load_Plugin_XML (CXMLelement & parent)
           }  // end of not archive
         } // end of try
 
-      catch(CFileException*)
+      catch(CFileException* e)
         {
         // silently ignore no state file :)
 //          HandleLoadException ("plugin state file not found, assuming empty", e);
+        e->Delete ();
         }
 
       catch(CException*)
