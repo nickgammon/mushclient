@@ -16,6 +16,7 @@
 //   utils.functionlist
 //   utils.getfontfamilies
 //   utils.info
+//   utils.infotypes
 //   utils.inputbox
 //   utils.listbox
 //   utils.metaphone
@@ -50,6 +51,7 @@
 #include <direct.h>
 
 extern char working_dir [_MAX_PATH];
+extern tInfoTypeMapping InfoTypes [];
 
 // recursive node outputter
 static void xmlOuputNode (lua_State *L, CXMLelement & node) 
@@ -894,7 +896,7 @@ CDC dc;
   return 1;    // one table
   }  // end of fontpicker
 
-int edit_distance (lua_State *L) 
+static int edit_distance (lua_State *L) 
   {
   lua_pushinteger (L, EditDistance (luaL_checkstring (L, 1), luaL_checkstring (L, 2)));
   return 1;
@@ -1607,7 +1609,7 @@ static int shell_execute (lua_State *L)
 // arg4 is "no sort" boolean
 // arg5 is filter function
 
-int filterpicker (lua_State *L) 
+static int filterpicker (lua_State *L) 
   {
   const char * filtertitle   = luaL_optstring (L, 2, "Filter");
   const char * initialfilter = luaL_optstring (L, 3, "");
@@ -1691,7 +1693,7 @@ CFunctionListDlg dlg;
 
 } // end of filterpicker
 
-int timer (lua_State *L) 
+static int timer (lua_State *L) 
   {
   if (App.m_iCounterFrequency)
     {
@@ -1707,7 +1709,23 @@ int timer (lua_State *L)
     }
 
   return 1;   // 1 result
-  }
+  }  // end timer
+
+
+// returns table of GetInfo selectors and their descriptions
+static int infotypes (lua_State *L) 
+  {
+  lua_newtable(L);
+
+  for (int iCount = 0; InfoTypes [iCount].iInfoType; iCount++)
+    {
+    lua_pushstring (L, InfoTypes [iCount].sDescription);
+    lua_rawseti(L, -2, InfoTypes [iCount].iInfoType); 
+    }
+
+  return 1;   // 1 table
+  } // end of infotypes
+
 
 // table of operations
 static const struct luaL_reg xmllib [] = 
@@ -1727,6 +1745,7 @@ static const struct luaL_reg xmllib [] =
   {"functionlist",      functionlist},
   {"getfontfamilies",   getfontfamilies},
   {"info",              info},
+  {"infotypes",         infotypes},
   {"inputbox",          inputbox},
   {"listbox",           listbox},
   {"metaphone",         metaphone},
