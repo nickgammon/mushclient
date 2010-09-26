@@ -7650,3 +7650,104 @@ void CMUSHclientDoc::EditFileWithEditor (CString strName)
 
   }
 
+
+
+
+void CMUSHclientDoc::OnGameEditscriptfile() 
+{
+
+if (m_bEditScriptWithNotepad)
+  {
+  CTextDocument * pNewDoc =
+    (CTextDocument *) App.OpenDocumentFile (m_strScriptFilename);
+
+  if (pNewDoc)
+    {
+    pNewDoc->m_pRelatedWorld         = this;
+    pNewDoc->m_iUniqueDocumentNumber = m_iUniqueDocumentNumber;   
+    pNewDoc->SetTheFont ();
+    }
+  else
+    ::TMessageBox("Unable to edit the script file.", 
+                    MB_ICONEXCLAMATION);
+  return;
+  }   // end of using inbuilt notepad
+
+  EditFileWithEditor (m_strScriptFilename);
+
+
+	
+}
+
+void CMUSHclientDoc::OnUpdateGameEditscriptfile(CCmdUI* pCmdUI) 
+{
+  DoFixMenus (pCmdUI);  // remove accelerators from menus
+  pCmdUI->Enable (!m_strScriptFilename.IsEmpty ());
+	
+}
+
+void CMUSHclientDoc::OnUpdateGameConfigureMudaddress(CCmdUI* pCmdUI) 
+{
+  DoFixMenus (pCmdUI);  // remove accelerators from menus
+  pCmdUI->Enable (m_iConnectPhase == eConnectNotConnected ||
+                  m_iConnectPhase == eConnectConnectedToMud);   // no changing of address whilst connecting	
+}
+
+
+void CMUSHclientDoc::OnLogNotesChanged() 
+{
+  m_bLogNotes = m_bLogNotes != 0;   // make boolean
+}
+
+
+void CMUSHclientDoc::OnLogInputChanged() 
+{
+  m_log_input = m_log_input != 0;   // make boolean
+}
+
+
+void CMUSHclientDoc::OnLogOutputChanged() 
+{
+	// TODO: Add notification handler code
+}
+
+void CMUSHclientDoc::OnMappingChanged() 
+{
+	// TODO: Add notification handler code
+
+}  // end of CMUSHclientDoc::OnMappingChanged
+
+void CMUSHclientDoc::OnRemoveMapReversesChanged() 
+{
+	// TODO: Add notification handler code
+
+}  // end of CMUSHclientDoc::OnRemoveMapReversesChanged
+
+
+void CMUSHclientDoc::OnGameTrace() 
+{
+
+  if (m_bTrace)
+    {
+    Trace ("Trace off");
+    m_bTrace = false;
+    }
+  else
+    {
+    // if half-filled line, flush it out
+    if (m_pCurrentLine && m_pCurrentLine->len > 0)
+       StartNewLine (true, m_pCurrentLine->flags);
+    m_bTrace = true;
+    Trace ("Trace on");
+    }
+
+	
+}
+
+void CMUSHclientDoc::OnUpdateGameTrace(CCmdUI* pCmdUI) 
+{	
+  DoFixMenus (pCmdUI);  // remove accelerators from menus
+  pCmdUI->Enable ();
+  pCmdUI->SetCheck (m_bTrace);
+}
+

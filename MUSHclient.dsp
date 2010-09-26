@@ -994,6 +994,138 @@ SOURCE=.\paneline.cpp
 # Begin Group "scripting"
 
 # PROP Default_Filter ""
+# Begin Group "Methods"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\scripting\methods.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_accelerators.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_aliases.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_arrays.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_chat.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_clipboard.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_colours.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_commands.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_database.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_defaults.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_info.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_infobar.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_logging.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_mapping.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_miniwindows.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_notepad.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_noting.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_output.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_panes.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_plugins.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_sending.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_sounds.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_speedwalks.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_spellchecker.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_timers.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_tracing.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_triggers.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_udp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_utilities.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_variables.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_worlds.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scripting\methods_xml.cpp
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\scripting\bits.c
@@ -1043,10 +1175,6 @@ SOURCE=.\scripting\lua_utils.cpp
 
 SOURCE=.\scripting\md5.c
 # SUBTRACT CPP /YX /Yc /Yu
-# End Source File
-# Begin Source File
-
-SOURCE=.\scripting\methods.cpp
 # End Source File
 # Begin Source File
 
@@ -1432,22 +1560,6 @@ SOURCE=.\using_git.txt
 # End Source File
 # End Target
 # End Project
-# Section MUSHclient : {00000000-0001-0000-0000-000000000000}
-# 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
-# End Section
-# Section MUSHclient : {F3B1306C-16CC-11D0-B7D0-00A0247B3BFD}
-# 	0:8:Splash.h:D:\SOURCE\MUSHclient\Splash.h
-# 	0:10:Splash.cpp:D:\SOURCE\MUSHclient\Splash.cpp
-# 	1:10:IDB_SPLASH:102
-# 	2:10:ResHdrName:resource.h
-# 	2:11:ProjHdrName:stdafx.h
-# 	2:10:WrapperDef:_SPLASH_SCRN_
-# 	2:12:SplClassName:CSplashWnd
-# 	2:21:SplashScreenInsertKey:4.0
-# 	2:10:HeaderName:Splash.h
-# 	2:10:ImplemName:Splash.cpp
-# 	2:7:BmpID16:IDB_SPLASH
-# End Section
 # Section MUSHclient : {F3B13065-16CC-11D0-B7D0-00A0247B3BFD}
 # 	0:8:TipDlg.h:D:\SOURCE\MUSHclient\TipDlg.h
 # 	0:10:TipDlg.cpp:D:\SOURCE\MUSHclient\TipDlg.cpp
@@ -1473,6 +1585,19 @@ SOURCE=.\using_git.txt
 # 	2:18:CG_IDS_FILE_ABSENT:CG_IDS_FILE_ABSENT
 # 	2:10:TipDlg.cpp:TipDlg.cpp
 # End Section
+# Section MUSHclient : {F3B1306C-16CC-11D0-B7D0-00A0247B3BFD}
+# 	0:8:Splash.h:D:\SOURCE\MUSHclient\Splash.h
+# 	0:10:Splash.cpp:D:\SOURCE\MUSHclient\Splash.cpp
+# 	1:10:IDB_SPLASH:102
+# 	2:10:ResHdrName:resource.h
+# 	2:11:ProjHdrName:stdafx.h
+# 	2:10:WrapperDef:_SPLASH_SCRN_
+# 	2:12:SplClassName:CSplashWnd
+# 	2:21:SplashScreenInsertKey:4.0
+# 	2:10:HeaderName:Splash.h
+# 	2:10:ImplemName:Splash.cpp
+# 	2:7:BmpID16:IDB_SPLASH
+# End Section
 # Section MUSHclient : {00000000-0000-0000-0000-000000000000}
 # 	1:22:CG_IDR_POPUP_SEND_VIEW:124
 # End Section
@@ -1481,4 +1606,7 @@ SOURCE=.\using_git.txt
 # End Section
 # Section MUSHclient : {00000000-000C-0000-0C00-00004944445F}
 # 	1:26:CG_IDR_POPUP_ACTIVITY_VIEW:127
+# End Section
+# Section MUSHclient : {00000000-0001-0000-0000-000000000000}
+# 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
 # End Section

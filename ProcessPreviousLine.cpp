@@ -29,10 +29,6 @@ static inline unsigned short get_style (int style)
   return style & 0x0F;
   } // end of get_style
 
-static inline CString AnsiCode (short Code) 
-{
-return CFormat ("%c[%dm", ESC, Code); 
-}
 
 // shared stuff for logging in colour
 

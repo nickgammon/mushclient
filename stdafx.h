@@ -824,6 +824,10 @@ long LoadPngMemory (unsigned char * Buffer, const size_t Length, HBITMAP & hbmp,
 void ChangeToFileBrowsingDirectory ();
 void ChangeToStartupDirectory ();
 
+CString AnsiCode (short Code);
+CString StripAnsi (const CString strMessage);
+void windowPositionHelper (CString & str, const RECT & r);
+
 #define SCRIPTERRORFORECOLOUR "orangered"  // "darkorange"
 #define SCRIPTERRORBACKCOLOUR "black"
 #define SCRIPTERRORCONTEXTFORECOLOUR "burlywood"
