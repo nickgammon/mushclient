@@ -63,10 +63,10 @@
 
 /* positions: 
 
-  0 = strech to output view size 
+  0 = stretch to output view size 
   1 = stretch with aspect ratio
 
-  2 = strech to owner size 
+  2 = stretch to owner size 
   3 = stretch with aspect ratio
   
   -- going clockwise here:

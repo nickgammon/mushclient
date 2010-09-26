@@ -442,12 +442,12 @@ long CMUSHclientDoc::AddFont(LPCTSTR PathName)
 
 /* modes: 
 
-  0 = strech to output view size 
+  0 = stretch to output view size 
   1 = stretch with aspect ratio
 
   -- next two will not be affected by command window size changes:
 
-  2 = strech to owner size 
+  2 = stretch to owner size 
   3 = stretch with aspect ratio
   
   -- going clockwise here:
