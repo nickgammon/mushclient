@@ -231,9 +231,11 @@ void CTextView::SerializeRaw(CArchive& ar)
 	ASSERT_VALID(this);
 
 	if (ar.IsStoring())
-	{
-		WriteToArchive(ar);
-	}
+	  {
+    CString strContents;
+    GetEditCtrl().GetWindowText (strContents);
+    ar.Write(strContents, strContents.GetLength ());
+	  }
 	else
 	{
 		CFile* pFile = ar.GetFile();
