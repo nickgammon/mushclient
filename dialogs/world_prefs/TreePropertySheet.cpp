@@ -212,7 +212,7 @@ void	 CTreePropertySheet::OnSelChanged(
 	if(pNotify->action==TVC_BYKEYBOARD)
 		m_cTreeCtrl.SetFocus();
 
-	InvalidateRect(&m_rcCaptionBar,FALSE);
+  InvalidateRect(NULL, FALSE);  /* invalidate entire control for redraw -JW */
 }
 
 void CTreePropertySheet::OnPaint() 
