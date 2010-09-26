@@ -53,6 +53,14 @@ FreeWare
 MUSHclient is distributed as FreeWare. There is no fee for using it.
 
 
+Source code
+-----------
+
+The source code for MUSHclient is available from:
+
+  http://github.com/nickgammon/mushclient/
+
+
 Operating System
 ----------------
 
