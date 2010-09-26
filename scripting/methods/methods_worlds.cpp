@@ -7,6 +7,13 @@
 #include "..\..\doc.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    GetWorld
+//    GetWorldById
+//    GetWorldIdList
+//    GetWorldList
+
 
 LPDISPATCH CMUSHclientDoc::GetWorld(LPCTSTR WorldName) 
 {

@@ -7,6 +7,29 @@
 #include "..\..\doc.h"
 #include "..\errors.h"
 
+
+// Implements:
+
+//    ArrayClear
+//    ArrayCount
+//    ArrayCreate
+//    ArrayDelete
+//    ArrayDeleteKey
+//    ArrayExists
+//    ArrayExport
+//    ArrayExportKeys
+//    ArrayGet
+//    ArrayGetFirstKey
+//    ArrayGetLastKey
+//    ArrayImport
+//    ArrayKeyExists
+//    ArrayListAll
+//    ArrayListKeys
+//    ArrayListValues
+//    ArraySet
+//    ArraySize
+
+
 /*
 
   arrays test:

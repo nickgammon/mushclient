@@ -39,3 +39,61 @@
 */
 
 
+
+/*
+
+-- Lua code to work out what functions are in what file:
+   
+
+require "commas"
+
+funcs = {}
+
+for _, v in ipairs (utils.functionlist ()) do
+  funcs [v] = true
+end -- for
+
+
+-- this function is called for every found file
+function load_file (name, stats)
+
+  print (string.rep ("-", 40))
+ 
+  local n = string.match (name, "[%w._]+$")
+  print (n)
+
+  print ""
+  print ("// Implements:")
+  print ""
+
+  local f = assert (io.open (name, "r"))  -- open it
+  local s = f:read ("*a")  -- read all of it
+  f:close ()  -- close it
+  
+  local t = {}
+
+  for w in string.gmatch (s, "CMUSHclientDoc::([%w_]+)") do
+    if funcs [w] then
+      table.insert (t, w)
+    end -- if a script function
+  end -- for
+
+  table.sort (t)
+
+  local done = {}
+
+  for _, name in ipairs (t) do
+     if not done [name] then
+       print ("//   ", name)
+     end -- if
+     done [name] = true
+  end -- for
+
+  print ""
+
+end -- load_file
+
+
+scan_dir ("\\source\\mushclient\\scripting\\methods", load_file)
+
+*/

@@ -7,6 +7,12 @@
 #include "..\..\doc.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    GetSoundStatus
+//    PlaySound
+//    Sound
+//    StopSound
 
 // world.Sound - plays a sound
 

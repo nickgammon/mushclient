@@ -8,6 +8,13 @@
 #include "..\..\mainfrm.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    GetCurrentValue
+//    GetDefaultValue
+//    GetLoadedValue
+
+
 extern tConfigurationNumericOption OptionsTable [];
 extern tConfigurationAlphaOption AlphaOptionsTable [];
 

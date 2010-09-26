@@ -9,6 +9,15 @@
 #include "..\..\sendvw.h"
 #include "..\..\dmetaph.h"
 
+// Implements:
+
+//    AddSpellCheckWord
+//    EditDistance
+//    Metaphone
+//    SpellCheck
+//    SpellCheckCommand
+//    SpellCheckDlg
+
 
 VARIANT CMUSHclientDoc::SpellCheck(LPCTSTR Text) 
 {

@@ -9,6 +9,14 @@
 #include "..\..\mainfrm.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    DiscardQueue
+//    EvaluateSpeedwalk
+//    Queue
+//    RemoveBacktracks
+//    ReverseSpeedwalk
+
 
 // rewritten 17th August 2002 to make it easier to follow and less buggy :)
 //  (and support comments)

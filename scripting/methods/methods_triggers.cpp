@@ -10,12 +10,22 @@
 #include "..\..\flags.h"
 #include "..\errors.h"
 
+// Implements:
 
-// ******************************************************************************
-// **************************** TRIGGERS ****************************************
-// ******************************************************************************
-
-
+//    AddTrigger
+//    AddTriggerEx
+//    DeleteTemporaryTriggers
+//    DeleteTrigger
+//    DeleteTriggerGroup
+//    EnableTrigger
+//    EnableTriggerGroup
+//    GetTrigger
+//    GetTriggerInfo
+//    GetTriggerList
+//    GetTriggerOption
+//    GetTriggerWildcard
+//    IsTrigger
+//    SetTriggerOption
 
 
 #define TO(arg) offsetof (CTrigger, arg), sizeof (((CTrigger *)NULL)->arg)

@@ -8,6 +8,29 @@
 #include "..\..\MUSHview.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    DatabaseChanges
+//    DatabaseClose
+//    DatabaseColumnName
+//    DatabaseColumnNames
+//    DatabaseColumnText
+//    DatabaseColumnType
+//    DatabaseColumnValue
+//    DatabaseColumnValues
+//    DatabaseColumns
+//    DatabaseError
+//    DatabaseExec
+//    DatabaseFinalize
+//    DatabaseInfo
+//    DatabaseLastInsertRowid
+//    DatabaseList
+//    DatabaseOpen
+//    DatabasePrepare
+//    DatabaseReset
+//    DatabaseStep
+//    DatabaseTotalChanges
+
 
 //  Flags For File Open Operations
 //  

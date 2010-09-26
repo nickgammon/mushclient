@@ -7,6 +7,18 @@
 #include "..\..\doc.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    AddMapperComment
+//    AddToMapper
+//    DeleteAllMapItems
+//    DeleteLastMapItem
+//    EnableMapping
+//    GetMappingCount
+//    GetMappingItem
+//    GetMappingString
+
+
 
 long CMUSHclientDoc::AddToMapper(LPCTSTR Direction, LPCTSTR Reverse) 
 {

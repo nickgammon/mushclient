@@ -8,6 +8,15 @@
 #include "..\..\mainfrm.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    Info
+//    InfoBackground
+//    InfoClear
+//    InfoColour
+//    InfoFont
+//    ShowInfoBar
+
 
 void CMUSHclientDoc::ShowInfoBar(BOOL Visible) 
 {

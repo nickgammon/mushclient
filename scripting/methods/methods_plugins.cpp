@@ -7,6 +7,32 @@
 #include "..\..\doc.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    BroadcastPlugin
+//    CallPlugin
+//    EnablePlugin
+//    GetPluginAliasInfo
+//    GetPluginAliasList
+//    GetPluginAliasOption
+//    GetPluginID
+//    GetPluginInfo
+//    GetPluginList
+//    GetPluginName
+//    GetPluginTimerInfo
+//    GetPluginTimerList
+//    GetPluginTimerOption
+//    GetPluginTriggerInfo
+//    GetPluginTriggerList
+//    GetPluginTriggerOption
+//    GetPluginVariable
+//    GetPluginVariableList
+//    IsPluginInstalled
+//    LoadPlugin
+//    PluginSupports
+//    ReloadPlugin
+//    SaveState
+
 // gets our own plugin id
 
 BSTR CMUSHclientDoc::GetPluginID() 

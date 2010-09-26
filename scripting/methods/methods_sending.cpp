@@ -9,6 +9,14 @@
 #include "..\..\sendvw.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    LogSend
+//    Send
+//    SendImmediate
+//    SendNoEcho
+//    SendPush
+//    SendSpecial
 
 // world.Send - sends the text to the world
 

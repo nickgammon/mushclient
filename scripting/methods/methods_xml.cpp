@@ -6,6 +6,16 @@
 #include "..\..\MUSHclient.h"
 #include "..\..\doc.h"
 
+// Implements:
+
+//    ExportXML
+//    GetEntity
+//    GetXMLEntity
+//    ImportXML
+//    Reset
+//    SetEntity
+
+
 extern CString strMacroDescriptions [MACRO_COUNT];
 extern CString strKeypadNames [eKeypad_Max_Items];
 

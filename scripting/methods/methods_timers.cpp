@@ -8,6 +8,27 @@
 #include "..\..\flags.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    AddTimer
+//    DeleteTemporaryTimers
+//    DeleteTimer
+//    DeleteTimerGroup
+//    DoAfter
+//    DoAfterNote
+//    DoAfterSpecial
+//    DoAfterSpeedWalk
+//    EnableTimer
+//    EnableTimerGroup
+//    GetTimer
+//    GetTimerInfo
+//    GetTimerList
+//    GetTimerOption
+//    IsTimer
+//    ResetTimer
+//    ResetTimers
+//    SetTimerOption
+
 
 #define TMRO(arg) offsetof (CTimer, arg), sizeof (((CTimer *)NULL)->arg)
 

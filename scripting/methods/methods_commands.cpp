@@ -10,6 +10,24 @@
 #include "..\..\childfrm.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    DeleteCommandHistory
+//    DoCommand
+//    Execute
+//    GetCommand
+//    GetCommandList
+//    GetInternalCommandsList
+//    GetQueue
+//    PasteCommand
+//    PushCommand
+//    SelectCommand
+//    SetCommand
+//    SetCommandSelection
+//    SetCommandWindowHeight
+//    SetInputFont
+//    ShiftTabCompleteItem
+
 extern tCommandIDMapping CommandIDs [];
 
 // world.GetCommandList - returns a variant array which is a list of "count" recent commands

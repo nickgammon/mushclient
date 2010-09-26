@@ -7,6 +7,14 @@
 #include "..\..\doc.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    CloseLog
+//    FlushLog
+//    IsLogOpen
+//    OpenLog
+//    WriteLog
+
 
 long CMUSHclientDoc::OpenLog(LPCTSTR LogFileName, BOOL Append) 
 {

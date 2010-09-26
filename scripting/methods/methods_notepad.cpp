@@ -12,6 +12,26 @@
 #include "..\..\TextView.h"
 #include "..\..\winplace.h"
 
+
+// Implements:
+
+//    ActivateNotepad
+//    AppendToNotepad
+//    CloseNotepad
+//    GetNotepadLength
+//    GetNotepadList
+//    GetNotepadText
+//    GetNotepadWindowPosition
+//    MoveNotepadWindow
+//    NotepadColour
+//    NotepadFont
+//    NotepadReadOnly
+//    NotepadSaveMethod
+//    ReplaceNotepad
+//    SaveNotepad
+//    SendToNotepad
+
+
 bool CMUSHclientDoc::SwitchToNotepad (void)
   {
   int iCount = 0;

@@ -14,6 +14,35 @@
 #include "..\..\winplace.h"
 #include "..\..\MakeWindowTransparent.h"
 
+// Implements:
+
+//    ActivateClient
+//    AddFont
+//    DeleteLines
+//    DeleteOutput
+//    FlashIcon
+//    GetFrame
+//    GetRecentLines
+//    GetWorldWindowPositionX
+//    MoveMainWindow
+//    MoveWorldWindow
+//    MoveWorldWindowX
+//    Pause
+//    Redraw
+//    Repaint
+//    ResetStatusTime
+//    SetBackgroundColour
+//    SetBackgroundImage
+//    SetCursor
+//    SetForegroundImage
+//    SetOutputFont
+//    SetScroll
+//    SetToolBarPosition
+//    SetWorldWindowStatus
+//    TextRectangle
+//    Transparency
+
+
 
 void CMUSHclientDoc::Redraw() 
 {

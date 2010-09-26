@@ -11,6 +11,44 @@
 #include "..\..\sendvw.h"
 #include <direct.h>
 
+// Implements:
+
+//    Activate
+//    Base64Decode
+//    Base64Encode
+//    ChangeDir
+//    Connect
+//    CreateGUID
+//    DeleteGroup
+//    Disconnect
+//    EnableGroup
+//    FixupEscapeSequences
+//    FixupHTML
+//    GenerateName
+//    GetUniqueID
+//    GetUniqueNumber
+//    Hash
+//    Help
+//    MakeRegularExpression
+//    MtRand
+//    MtSrand
+//    Open
+//    OpenBrowser
+//    ReadNamesFile
+//    Replace
+//    ResetIP
+//    Save
+//    SendPkt
+//    SetChanged
+//    SetNotes
+//    SetStatus
+//    Simulate
+//    StripANSI
+//    TranslateDebug
+//    TranslateGerman
+//    Trim
+
+
 
 extern char working_dir [_MAX_PATH];
 extern char file_browsing_dir [_MAX_PATH];

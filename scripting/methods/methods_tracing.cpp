@@ -2,11 +2,17 @@
 
 // Related to the tracing feature
 
-
 #include "stdafx.h"
 #include "..\..\MUSHclient.h"
 #include "..\..\doc.h"
 #include "..\errors.h"
+
+// Implements:
+
+//    Trace
+//    TraceOut
+
+
 
 // routine for doing traces
 

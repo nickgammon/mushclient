@@ -10,6 +10,57 @@
 #include "..\..\color.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    BlendPixel
+//    FilterPixel
+//    WindowAddHotspot
+//    WindowArc
+//    WindowBezier
+//    WindowBlendImage
+//    WindowCircleOp
+//    WindowCreate
+//    WindowCreateImage
+//    WindowDelete
+//    WindowDeleteAllHotspots
+//    WindowDeleteHotspot
+//    WindowDragHandler
+//    WindowDrawImage
+//    WindowDrawImageAlpha
+//    WindowFilter
+//    WindowFont
+//    WindowFontInfo
+//    WindowFontList
+//    WindowGetImageAlpha
+//    WindowGetPixel
+//    WindowGradient
+//    WindowHotspotInfo
+//    WindowHotspotList
+//    WindowHotspotTooltip
+//    WindowImageFromWindow
+//    WindowImageInfo
+//    WindowImageList
+//    WindowImageOp
+//    WindowInfo
+//    WindowLine
+//    WindowList
+//    WindowLoadImage
+//    WindowMenu
+//    WindowMergeImageAlpha
+//    WindowMoveHotspot
+//    WindowPolygon
+//    WindowPosition
+//    WindowRectOp
+//    WindowResize
+//    WindowScrollwheelHandler
+//    WindowSetPixel
+//    WindowShow
+//    WindowText
+//    WindowTextWidth
+//    WindowTransformImage
+//    WindowWrite
+
+
 /* positions: 
 
   0 = strech to output view size 

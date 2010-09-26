@@ -7,9 +7,14 @@
 #include "..\..\doc.h"
 #include "..\errors.h"
 
-// ******************************************************************************
-// **************************** VARIABLES ***************************************
-// ******************************************************************************
+// Implements:
+
+//    DeleteVariable
+//    GetVariable
+//    GetVariableList
+//    SetVariable
+
+
 
 // world.SetVariable (variable_name, new_contents) - sets the named variable's contents
 //                                                 - creating it if necessary

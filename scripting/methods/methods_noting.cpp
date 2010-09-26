@@ -8,6 +8,21 @@
 #include "..\..\MUSHview.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    AnsiNote
+//    ColourNote
+//    ColourTell
+//    GetNoteStyle
+//    Hyperlink
+//    Note
+//    NoteColourName
+//    NoteColourRGB
+//    NoteHr
+//    NoteStyle
+//    Tell
+
+
 
 // world.note - makes a comment in the output buffer (with newline)
 

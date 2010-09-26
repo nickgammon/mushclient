@@ -14,6 +14,39 @@
 #include "..\errors.h"
 #include <direct.h>
 
+// Implements:
+
+//    ErrorDesc
+//    GetConnectDuration
+//    GetDeviceCaps
+//    GetGlobalOption
+//    GetGlobalOptionList
+//    GetHostAddress
+//    GetHostName
+//    GetInfo
+//    GetLineCount
+//    GetLineInfo
+//    GetLinesInBufferCount
+//    GetMainWindowPosition
+//    GetNotes
+//    GetReceivedBytes
+//    GetScriptTime
+//    GetSelectionEndColumn
+//    GetSelectionEndLine
+//    GetSelectionStartColumn
+//    GetSelectionStartLine
+//    GetSentBytes
+//    GetStyleInfo
+//    GetSysColor
+//    GetSystemMetrics
+//    GetWorldID
+//    GetWorldWindowPosition
+//    IsConnected
+//    Version
+//    WorldAddress
+//    WorldName
+//    WorldPort
+
 extern char working_dir [_MAX_PATH];
 extern char file_browsing_dir [_MAX_PATH];
 

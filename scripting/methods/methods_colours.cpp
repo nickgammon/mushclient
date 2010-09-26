@@ -9,6 +9,21 @@
 
 #include "..\..\dialogs\ColourPickerDlg.h"
 
+
+// Implements:
+
+//    ANSI
+//    AdjustColour
+//    ColourNameToRGB
+//    GetCustomColourName
+//    GetMapColour
+//    MapColour
+//    MapColourList
+//    PickColour
+//    RGBColourToName
+//    SetCustomColourName
+
+
 long CMUSHclientDoc::ColourNameToRGB(LPCTSTR Name) 
 {
 COLORREF cValue;

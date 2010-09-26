@@ -6,6 +6,11 @@
 #include "..\..\MUSHclient.h"
 #include "..\..\doc.h"
 
+// Implements:
+
+//    GetClipboard
+//    SetClipboard
+
 
 BSTR CMUSHclientDoc::GetClipboard() 
 {

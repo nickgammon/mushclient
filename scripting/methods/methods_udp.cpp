@@ -9,6 +9,13 @@
 #include "..\..\UDPsocket.h"
 #include "..\errors.h"
 
+// Implements:
+
+//    GetUdpPort
+//    UdpListen
+//    UdpPortList
+//    UdpSend
+
 
 // /UdpSend ("10.0.0.3", 4111, "m,textcolour,5555")
 
