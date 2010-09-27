@@ -21,10 +21,8 @@ TIMESTAMP_OUTPUT_BACK_COLOUR
 TIMESTAMP_NOTES_BACK_COLOUR
 
 Special characters for date/time etc.
--------------------------------------
 
 General
--------
 
 %E - MUSHclient initial (startup) directory
 %F - world files directory
@@ -33,7 +31,6 @@ General
 %P - player name
 
 Date/time
----------
 
 %a - Abbreviated weekday name
 %A - Full weekday name
