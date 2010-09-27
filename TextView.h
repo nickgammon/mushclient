@@ -52,6 +52,11 @@ public:
                      CString & result,
                      int & count);
 
+
+  virtual void Serialize(CArchive& ar);
+  virtual void ReadFromArchive(CArchive& ar, UINT nLen);
+  virtual void WriteToArchive(CArchive& ar);
+  
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CTextView)
 	public:
