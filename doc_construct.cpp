@@ -26,6 +26,7 @@ int i;
   m_iUniqueDocumentNumber = App.GetUniqueNumber ();
 
   m_whenWorldStarted = CTime::GetCurrentTime();
+  QueryPerformanceCounter (&m_whenWorldStartedHighPrecision);
 
   AllocateConfigurationArrays ();
 
