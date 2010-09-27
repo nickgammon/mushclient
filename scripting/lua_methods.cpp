@@ -2827,8 +2827,26 @@ static int L_GetLineInfo (lua_State *L)
     MakeTableItem     (L, "styles",   pLine->styleList.GetCount ()); // 11
 
     // high-performance timer
-    double ticks = (double) pLine->m_lineHighPerformanceTime.QuadPart / (double) App.m_iCounterFrequency;
+    double ticks = 0;
+    
+    if (App.m_iCounterFrequency)
+      ticks = (double) pLine->m_lineHighPerformanceTime.QuadPart / (double) App.m_iCounterFrequency;
     MakeTableItem (L, "ticks", ticks);
+
+    LONGLONG iTimeTaken;
+    double fElapsedTime;
+
+    // elapsed time from when world started
+    iTimeTaken = pLine->m_lineHighPerformanceTime.QuadPart - 
+                 pDoc->m_whenWorldStartedHighPrecision.QuadPart;
+    
+    if (App.m_iCounterFrequency)
+     fElapsedTime = ((double) iTimeTaken) / 
+                    ((double) App.m_iCounterFrequency);
+    else
+     fElapsedTime = pLine->m_theTime.GetTime () - (double) pDoc->m_whenWorldStarted.GetTime ();
+
+    MakeTableItem (L, "elapsed", fElapsedTime);
 
     return 1;   // one table
     }     // end of returning a table

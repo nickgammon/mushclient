@@ -1198,6 +1198,24 @@ CLine * pLine = m_LineList.GetAt (GetLinePosition (LineNumber - 1));
       }
       break;
 
+    case 13:
+      {
+      LONGLONG iTimeTaken;
+      double fElapsedTime;
+
+      // elapsed time from when world started
+      iTimeTaken = pLine->m_lineHighPerformanceTime.QuadPart - 
+                   m_whenWorldStartedHighPrecision.QuadPart;
+    
+      if (App.m_iCounterFrequency)
+       fElapsedTime = ((double) iTimeTaken) / 
+                      ((double) App.m_iCounterFrequency);
+      else
+       fElapsedTime = pLine->m_theTime.GetTime () - (double) m_whenWorldStarted.GetTime ();
+      SetUpVariantDouble (vaResult, fElapsedTime);
+      }
+      break;
+
     default:
       vaResult.vt = VT_NULL;
       break;
