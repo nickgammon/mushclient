@@ -261,6 +261,38 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="scripting\methods\methods.cpp" />
+    <ClCompile Include="scripting\methods\methods_accelerators.cpp" />
+    <ClCompile Include="scripting\methods\methods_aliases.cpp" />
+    <ClCompile Include="scripting\methods\methods_arrays.cpp" />
+    <ClCompile Include="scripting\methods\methods_chat.cpp" />
+    <ClCompile Include="scripting\methods\methods_clipboard.cpp" />
+    <ClCompile Include="scripting\methods\methods_colours.cpp" />
+    <ClCompile Include="scripting\methods\methods_commands.cpp" />
+    <ClCompile Include="scripting\methods\methods_database.cpp" />
+    <ClCompile Include="scripting\methods\methods_defaults.cpp" />
+    <ClCompile Include="scripting\methods\methods_info.cpp" />
+    <ClCompile Include="scripting\methods\methods_infobar.cpp" />
+    <ClCompile Include="scripting\methods\methods_logging.cpp" />
+    <ClCompile Include="scripting\methods\methods_mapping.cpp" />
+    <ClCompile Include="scripting\methods\methods_miniwindows.cpp" />
+    <ClCompile Include="scripting\methods\methods_notepad.cpp" />
+    <ClCompile Include="scripting\methods\methods_noting.cpp" />
+    <ClCompile Include="scripting\methods\methods_output.cpp" />
+    <ClCompile Include="scripting\methods\methods_panes.cpp" />
+    <ClCompile Include="scripting\methods\methods_plugins.cpp" />
+    <ClCompile Include="scripting\methods\methods_sending.cpp" />
+    <ClCompile Include="scripting\methods\methods_sounds.cpp" />
+    <ClCompile Include="scripting\methods\methods_speedwalks.cpp" />
+    <ClCompile Include="scripting\methods\methods_spellchecker.cpp" />
+    <ClCompile Include="scripting\methods\methods_timers.cpp" />
+    <ClCompile Include="scripting\methods\methods_tracing.cpp" />
+    <ClCompile Include="scripting\methods\methods_triggers.cpp" />
+    <ClCompile Include="scripting\methods\methods_udp.cpp" />
+    <ClCompile Include="scripting\methods\methods_utilities.cpp" />
+    <ClCompile Include="scripting\methods\methods_variables.cpp" />
+    <ClCompile Include="scripting\methods\methods_worlds.cpp" />
+    <ClCompile Include="scripting\methods\methods_xml.cpp" />
     <ClCompile Include="serialize.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -912,10 +944,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="scripting\methods.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="scripting\mt19937ar.c">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -1384,6 +1412,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dialogs\global_prefs\GlobalPrefsSheet.h" />
+    <ClInclude Include="dialogs\world_prefs\themeglue.h" />
     <ClInclude Include="luacom\LuaAux.h" />
     <ClInclude Include="luacom\luabeans.h" />
     <ClInclude Include="luacom\luacom.h" />
@@ -1404,7 +1433,6 @@
     <ClInclude Include="luacom\tLuaVector.h" />
     <ClInclude Include="luacom\tStringBuffer.h" />
     <ClInclude Include="luacom\tUtil.h" />
-	<ClInclude Include="themeglue.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\cursor1.cur" />
