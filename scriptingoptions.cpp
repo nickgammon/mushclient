@@ -283,9 +283,9 @@ tConfigurationAlphaOption AlphaOptionsTable  [] =
 {"speed_walk_prefix",             "#",        A(m_speed_walk_prefix), OPT_KEEP_SPACES},
 {"tab_completion_defaults",       "",         A(m_strTabCompletionDefaults), OPT_MULTLINE},
 {"terminal_identification",       "mushclient", A(m_strTerminalIdentification)},
-{"timestamp_input",               "",         A(m_strOutputLinePreambleInput),  OPT_KEEP_SPACES},
-{"timestamp_notes",               "",         A(m_strOutputLinePreambleNotes),  OPT_KEEP_SPACES},
-{"timestamp_output",              "",         A(m_strOutputLinePreambleOutput), OPT_KEEP_SPACES},
+{"timestamp_input",               "",         A(m_strOutputLinePreambleInput),  OPT_KEEP_SPACES | OPT_UPDATE_VIEWS},
+{"timestamp_notes",               "",         A(m_strOutputLinePreambleNotes),  OPT_KEEP_SPACES | OPT_UPDATE_VIEWS},
+{"timestamp_output",              "",         A(m_strOutputLinePreambleOutput), OPT_KEEP_SPACES | OPT_UPDATE_VIEWS},
 {NULL}  // end of table marker
 };
 
