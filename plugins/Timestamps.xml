@@ -56,6 +56,9 @@ Date/time
 %z, %Z  - Time-zone name or abbreviation; no characters if time zone is unknown
 %% - Percent sign
 
+%e - Elapsed time in microseconds since world started
+%D - Delta time, in microseconds, since previous line
+
 -->
 
 <muclient>
