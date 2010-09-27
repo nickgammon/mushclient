@@ -49,7 +49,7 @@ UINT AFXAPI AfxGetFileTitle(LPCTSTR lpszPathName, LPTSTR lpszTitle, UINT nMax);
 #endif
 
 #ifdef _DEBUG
-//#define new DEBUG_NEW
+#define new DEBUG_NEW
 #undef THIS_FILE
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
@@ -635,10 +635,6 @@ static const IID IID_IMUSHclient =
 BEGIN_INTERFACE_MAP(CMUSHclientDoc, CDocument)
 	INTERFACE_PART(CMUSHclientDoc, IID_IMUSHclient, Dispatch)
 END_INTERFACE_MAP()
-
-
-//#define new DEBUG_NEW 
-
 
 
 // zlib helpers for memory allocation

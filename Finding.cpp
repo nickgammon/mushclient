@@ -9,7 +9,7 @@
 #include "dialogs\ProgDlg.h"
 
 #ifdef _DEBUG
-//#define new DEBUG_NEW
+#define new DEBUG_NEW
 #undef THIS_FILE
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif

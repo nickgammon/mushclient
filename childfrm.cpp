@@ -14,7 +14,7 @@
 #include "winplace.h"
 
 #ifdef _DEBUG
-//#define new DEBUG_NEW
+#define new DEBUG_NEW
 #undef THIS_FILE
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
@@ -31,8 +31,6 @@ BEGIN_MESSAGE_MAP(CChildFrame, CMDIChildWnd)
 	//}}AFX_MSG_MAP
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnToolTipNeedText)
 END_MESSAGE_MAP()
-
-//#define new DEBUG_NEW 
 
 /////////////////////////////////////////////////////////////////////////////
 // CChildFrame construction/destruction

@@ -43,7 +43,7 @@ COLORREF xterm_256_colours [256];
 #pragma comment( lib, "ws2_32.lib ")
 
 #ifdef _DEBUG
-//#define new DEBUG_NEW
+#define new DEBUG_NEW
 #undef THIS_FILE
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
@@ -176,7 +176,6 @@ IMPLEMENT_OLECREATE(CMUSHclientApp, "MUSHclient.Application",
 
   */
 
-//#define new DEBUG_NEW 
 
 /////////////////////////////////////////////////////////////////////////////
 // CMUSHclientApp construction
@@ -364,9 +363,11 @@ BOOL CMUSHclientApp::InitInstance()
     return FALSE;        // no resources, or Lua won't start up
 
 // as at version 3.13
-// int i = sizeof (CLine);     // 56 bytes
-// int j = sizeof (CStyle);    // 20 bytes
-// int k = sizeof (CAction);   // 28 bytes 
+//    {
+//   int i = sizeof (CLine);     // 80 bytes
+//   int j = sizeof (CStyle);    // 20 bytes
+//   int k = sizeof (CAction);   // 28 bytes 
+//    }
 
 // memory state tracking
 #ifdef _DEBUG

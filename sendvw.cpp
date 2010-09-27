@@ -31,7 +31,7 @@
 #include "scripting\errors.h"
 
 #ifdef _DEBUG
-//#define new DEBUG_NEW
+#define new DEBUG_NEW
 #undef THIS_FILE
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
@@ -250,8 +250,6 @@ BEGIN_MESSAGE_MAP(CSendView, CEditView)
 	ON_UPDATE_COMMAND_UI(ID_DISPLAY_TEXTATTRIBUTES, OnUpdateNeedOutputSel)
 
 END_MESSAGE_MAP()
-
-//#define new DEBUG_NEW 
 
 /////////////////////////////////////////////////////////////////////////////
 // CSendView construction/destruction

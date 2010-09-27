@@ -8,7 +8,7 @@
 #include "textchildfrm.h"
 
 #ifdef _DEBUG
-//#define new DEBUG_NEW
+#define new DEBUG_NEW
 #undef THIS_FILE
 static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
@@ -22,8 +22,6 @@ BEGIN_MESSAGE_MAP(CTextChildFrame, CMDIChildWnd)
 	//{{AFX_MSG_MAP(CTextChildFrame)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-//#define new DEBUG_NEW 
 
 /////////////////////////////////////////////////////////////////////////////
 // CTextChildFrame construction/destruction
