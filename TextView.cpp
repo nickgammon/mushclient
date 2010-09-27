@@ -1712,6 +1712,8 @@ pCmdUI->Enable ();
 }
 
 
+#if _MSC_VER <= 1400 
+
 #define VERSION_6		MAKELONG(0, 6)
 
 // from Worstje
@@ -1816,6 +1818,8 @@ void CTextView::WriteToArchive(CArchive& ar)
 	UnlockBuffer();
 	ASSERT_VALID(this);
 }
+
+#endif //  _MSC_VER <= 1400 
 
 void CTextView::SerializeRaw(CArchive& ar)
 	// Read/Write object as stand-alone file.
