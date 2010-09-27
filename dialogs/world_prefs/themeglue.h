@@ -22,8 +22,6 @@ extern "C" {
 
 #include <windows.h>
 
-HMODULE HModUXT = NULL;
-
 #define THEMEGLUE_FUNC(FuncStr, params, result, FuncName, formal_params) \
 result FuncName formal_params  \
 {   \
@@ -46,7 +44,6 @@ result FuncName formal_params  \
 /* THEMEGLUE_FUNC Format is: EntryPointString, SuppliedParameters, ResultType, FunctionName, FormalParameters */
 
 THEMEGLUE_FUNC("EnableThemeDialogTexture", (hwnd, dwFlags), HRESULT, ThemeGlue_EnableThemeDialogTexture, (HWND hwnd, DWORD dwFlags))
-
 
 /* 2010-09-26: Yes, all this work for a single function. =)
  * But we might need more in the future, so I made it relatively easy to expand upon.

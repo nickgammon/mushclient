@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "TreePropertySheet.h"
-#include "themeglue.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -17,6 +16,9 @@ static char THIS_FILE[] = __FILE__;
 #define SPACETOP		5
 #define SPACEBOTTOM	15
 #define CAPTIONHEIGHT 20
+
+HMODULE HModUXT = NULL;
+#include "themeglue.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CTreePropertySheet
