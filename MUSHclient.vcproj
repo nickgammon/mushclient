@@ -945,6 +945,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\timers.cpp"
+				>
+			</File>
+			<File
 				RelativePath="TimerWnd.cpp"
 				>
 				<FileConfiguration
@@ -3901,26 +3905,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="scripting\methods.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="scripting\mt19937ar.c"
 				>
 				<FileConfiguration
@@ -4048,6 +4032,138 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<Filter
+				Name="methods"
+				>
+				<File
+					RelativePath=".\scripting\methods\methods.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_accelerators.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_aliases.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_arrays.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_chat.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_clipboard.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_colours.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_commands.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_database.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_defaults.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_info.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_infobar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_logging.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_mapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_miniwindows.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_notepad.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_noting.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_output.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_panes.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_plugins.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_sending.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_sounds.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_speedwalks.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_spellchecker.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_timers.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_tracing.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_triggers.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_udp.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_utilities.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_variables.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_worlds.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\scripting\methods\methods_xml.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="pcre"
