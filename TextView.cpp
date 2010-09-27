@@ -14,7 +14,12 @@ Copyright (C) 2000 Nick Gammon.
 #include "sendvw.h"
 #include "mainfrm.h"
 #include "doc.h"
-#include <../src/afximpl.h>
+
+#if _MSC_VER >= 1400    // doesn't work with Visual Studio 6
+  #include <../src/mfc/afximpl.h>
+#else
+  #include <../src/afximpl.h>
+#endif
 
 #include "dialogs\GoToLineDlg.h"
 #include "dialogs\LuaGsubDlg.h"
