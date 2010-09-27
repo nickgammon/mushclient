@@ -1042,6 +1042,12 @@ COLORREF iBackColour = BLACK;
     style = COLOUR_CUSTOM;
     }
 
+LARGE_INTEGER previousLineHPtime;
+double previousLineTime = 0;
+previousLineHPtime.QuadPart = 0;
+previousLineHPtime.QuadPart = 0;
+
+
   for (line = startline; line < endline && pos; line++)
     {
 
@@ -1097,7 +1103,51 @@ COLORREF iBackColour = BLACK;
 
     // convert codes like %H:%M:%S
     if (!strPreamble.IsEmpty ())
+      {
+
+      LONGLONG iTimeTaken;
+      double fElapsedTime;
+      CString strElapsedTime;
+
+      // elapsed time from when world started
+      iTimeTaken = pLine->m_lineHighPerformanceTime.QuadPart - 
+                   pDoc->m_whenWorldStartedHighPrecision.QuadPart;
+      
+      if (App.m_iCounterFrequency)
+       fElapsedTime = ((double) iTimeTaken) / 
+                      ((double) App.m_iCounterFrequency);
+      else
+       fElapsedTime = pLine->m_theTime.GetTime () - (double) pDoc->m_whenWorldStarted.GetTime ();
+       
+      strElapsedTime.Format ("%0.6f", fElapsedTime);
+      
+      // %e = elapsed time
+      strPreamble.Replace ("%e", strElapsedTime);
+
+      // delta time (this line from previous line)
+
+      if (line == startline)
+        fElapsedTime = 0.0;
+      else
+        {
+        iTimeTaken = pLine->m_lineHighPerformanceTime.QuadPart - 
+                     previousLineHPtime.QuadPart;
+
+        if (App.m_iCounterFrequency)
+          fElapsedTime = ((double) iTimeTaken) / 
+                        ((double) App.m_iCounterFrequency);
+        else
+          fElapsedTime = pLine->m_theTime.GetTime () - (double) previousLineTime;
+        }
+       
+      strElapsedTime.Format ("%0.6f", fElapsedTime);
+      
+      // %D = elapsed time
+      strPreamble.Replace ("%D", strElapsedTime);
+
       strPreamble = pDoc->FormatTime (pLine->m_theTime, strPreamble, false);
+
+      }
 
     // Draw the background and then the text
 
@@ -1338,6 +1388,10 @@ COLORREF iBackColour = BLACK;
         } // end of doing horizontal rule 
 
       }   // end of doing background and then text
+
+    previousLineHPtime = pLine->m_lineHighPerformanceTime;
+    previousLineTime = pLine->m_theTime.GetTime ();
+
     }   // end of doing each line
 
 // make sure count (and title) is reset once we look at the view
