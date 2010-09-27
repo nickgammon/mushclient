@@ -115,7 +115,7 @@ int iColOrder [eColumnCount] = {0, 1, 2, 3, 4, 5, 6},
 // recover column sequence
 
   m_ctlPluginList.SendMessage (LVM_SETCOLUMNORDERARRAY, eColumnCount, (DWORD) iColOrder);
-	
+
   CWindowPlacement wp;
   wp.Restore ("Plugins List", this, false);
 

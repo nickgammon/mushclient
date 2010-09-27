@@ -1140,7 +1140,7 @@ previousLineHPtime.QuadPart = 0;
           fElapsedTime = pLine->m_theTime.GetTime () - (double) previousLineTime;
         }
        
-      strElapsedTime.Format ("%0.6f", fElapsedTime);
+      strElapsedTime.Format ("%10.6f", fElapsedTime);
       
       // %D = elapsed time
       strPreamble.Replace ("%D", strElapsedTime);

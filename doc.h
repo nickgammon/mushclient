@@ -984,6 +984,7 @@ public:
   CTime m_tLastPlayerInput;   // time the player last typed something (for <afk> )
   CTimeSpan m_tsConnectDuration;  // timespan we have been connected
   CTime m_whenWorldStarted;   // when world document started
+  LARGE_INTEGER m_whenWorldStartedHighPrecision;  
 
 
   CTime m_tStatusTime;    // time of line that mouse was over

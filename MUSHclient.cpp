@@ -389,7 +389,7 @@ BOOL CMUSHclientApp::InitInstance()
 
 // Set the debug-heap flag so that freed blocks are kept on the
    // linked list, to catch any inadvertent use of freed memory
-   SET_CRT_DEBUG_FIELD( _CRTDBG_DELAY_FREE_MEM_DF );
+//   SET_CRT_DEBUG_FIELD( _CRTDBG_DELAY_FREE_MEM_DF );
    SET_CRT_DEBUG_FIELD( _CRTDBG_LEAK_CHECK_DF );
 //   SET_CRT_DEBUG_FIELD( _CRTDBG_CHECK_ALWAYS_DF );
 // speed warning: see:   _ASSERTE( _CrtCheckMemory( ) );
@@ -505,7 +505,7 @@ BOOL CMUSHclientApp::InitInstance()
 
   // the activity window
 
-	m_pActivityDocTemplate = new CMultiDocTemplate(
+  m_pActivityDocTemplate = new CMultiDocTemplate(
 		IDR_ACTIVITYTYPE,
 		RUNTIME_CLASS(CActivityDoc),
 		RUNTIME_CLASS(CActivityChildFrame), // custom MDI child frame
