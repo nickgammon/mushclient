@@ -564,6 +564,10 @@ long CMUSHclientDoc::BroadcastPlugin(long Message, LPCTSTR Text)
     if (!(pPlugin->m_bEnabled))   // ignore disabled plugins
       continue;
 
+    // don't broadcast to ourselves - could cause indefinite loop
+    if (pPlugin == pSavedPlugin)
+      continue;
+
     CScriptCallInfo callinfo (ON_PLUGIN_BROADCAST, pPlugin->m_PluginCallbacks [ON_PLUGIN_BROADCAST]);
     m_CurrentPlugin = pPlugin;
 
