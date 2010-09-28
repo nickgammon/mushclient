@@ -543,7 +543,6 @@ GET_PLUGIN_STUFF (GetTimerOption (TimerName, OptionName))
 long CMUSHclientDoc::BroadcastPlugin(long Message, LPCTSTR Text) 
 {
   CPlugin * pSavedPlugin = m_CurrentPlugin;
-  m_CurrentPlugin = NULL;
   long iCount = 0;
 
   CString strCurrentID;
@@ -566,6 +565,7 @@ long CMUSHclientDoc::BroadcastPlugin(long Message, LPCTSTR Text)
       continue;
 
     CScriptCallInfo callinfo (ON_PLUGIN_BROADCAST, pPlugin->m_PluginCallbacks [ON_PLUGIN_BROADCAST]);
+    m_CurrentPlugin = pPlugin;
 
     // see what the plugin makes of this,
     pPlugin->ExecutePluginScript (callinfo,
