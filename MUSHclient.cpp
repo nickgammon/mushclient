@@ -248,7 +248,7 @@ BOOL CMUSHclientApp::InitInstance()
   // where we do file browsing from
   strcpy (file_browsing_dir, working_dir);
 
-//  bc_init_numbers();
+  bc_init_numbers();
 
 
   // First free the string that was allocated by MFC in the startup
@@ -396,7 +396,7 @@ BOOL CMUSHclientApp::InitInstance()
 
 // Set the debug-heap flag so that freed blocks are kept on the
    // linked list, to catch any inadvertent use of freed memory
-//   SET_CRT_DEBUG_FIELD( _CRTDBG_DELAY_FREE_MEM_DF );
+   SET_CRT_DEBUG_FIELD( _CRTDBG_DELAY_FREE_MEM_DF );
    SET_CRT_DEBUG_FIELD( _CRTDBG_LEAK_CHECK_DF );
 //   SET_CRT_DEBUG_FIELD( _CRTDBG_CHECK_ALWAYS_DF );
 // speed warning: see:   _ASSERTE( _CrtCheckMemory( ) );
@@ -1223,7 +1223,7 @@ int CMUSHclientApp::ExitInstance()
 
   THEMEGLUE_FREE ();
 
-//  bc_free_numbers ();  // free zero, one, two
+  bc_free_numbers ();  // free zero, one, two
 
   // free the resources DLL
   FreeLibrary (m_hInstDLL);

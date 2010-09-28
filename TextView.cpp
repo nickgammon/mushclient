@@ -59,6 +59,8 @@ CTextView::CTextView()
 CTextView::~CTextView()
 {
 delete m_font;
+if (m_backbr)
+  m_backbr->DeleteObject ();
 delete m_backbr;
 }
 
@@ -186,6 +188,10 @@ void CTextView::OnInitialUpdate()
 	
   SetTheFont ();
 	
+  if (m_backbr)
+    m_backbr->DeleteObject ();
+  delete m_backbr;
+
   m_backbr = new CBrush (pDoc->m_backColour);
   m_backcolour = pDoc->m_backColour;
 
@@ -757,6 +763,8 @@ CRect rect;
   // recreate background colour if necessary  
   if (m_backcolour != pDoc->m_backColour)
     {
+    if (m_backbr)
+      m_backbr->DeleteObject ();
     delete m_backbr;
     m_backbr = new CBrush (pDoc->m_backColour);
     m_backcolour = pDoc->m_backColour;

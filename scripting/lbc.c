@@ -274,7 +274,7 @@ static const luaL_reg R[] =
 
 LUALIB_API int luaopen_bc(lua_State *L)
 {
- bc_init_numbers();
+// bc_init_numbers();     // done once in MUSHclient.cpp
  lua_pushliteral(L,MYNAME);
  luaL_newmetatable(L,MYTYPE);
  luaL_openlib(L,NULL,R,0);

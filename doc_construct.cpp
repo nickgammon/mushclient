@@ -643,7 +643,7 @@ int i;
          delete dbit->second;      // now delete memory used by it
          }
 
-}
+}   // end of CMUSHclientDoc::~CMUSHclientDoc
 
 
 BOOL CMUSHclientDoc::OnNewDocument()
