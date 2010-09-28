@@ -52,11 +52,11 @@ public:
                      CString & result,
                      int & count);
 
-#if _MSC_VER <= 1400 
+#if _MSC_VER < 1400 
   virtual void Serialize(CArchive& ar);
   virtual void ReadFromArchive(CArchive& ar, UINT nLen);
   virtual void WriteToArchive(CArchive& ar);
-#endif //  _MSC_VER <= 1400 
+#endif //  _MSC_VER < 1400 
   
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CTextView)

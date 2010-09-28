@@ -15,9 +15,7 @@ Copyright (C) 2000 Nick Gammon.
 #include "mainfrm.h"
 #include "doc.h"
 
-#if _MSC_VER >= 1400    // doesn't work with Visual Studio 6
-  #include <../src/mfc/afximpl.h>
-#else
+#if _MSC_VER < 1400    // doesn't work with Visual Studio 6
   #include <../src/afximpl.h>
 #endif
 
@@ -1720,7 +1718,7 @@ pCmdUI->Enable ();
 }
 
 
-#if _MSC_VER <= 1400 
+#if _MSC_VER < 1400 
 
 #define VERSION_6		MAKELONG(0, 6)
 
@@ -1827,7 +1825,7 @@ void CTextView::WriteToArchive(CArchive& ar)
 	ASSERT_VALID(this);
 }
 
-#endif //  _MSC_VER <= 1400 
+#endif //  _MSC_VER < 1400 
 
 void CTextView::SerializeRaw(CArchive& ar)
 	// Read/Write object as stand-alone file.
