@@ -30,6 +30,11 @@
 
 #include "dialogs\Splash.h"
 #include "direct.h"
+extern "C" 
+  {
+  #include "scripting\number.h"
+  void bc_free_numbers ();
+  }
 
 COLORREF xterm_256_colours [256];
 
@@ -242,6 +247,8 @@ BOOL CMUSHclientApp::InitInstance()
 
   // where we do file browsing from
   strcpy (file_browsing_dir, working_dir);
+
+//  bc_init_numbers();
 
 
   // First free the string that was allocated by MFC in the startup
@@ -1216,6 +1223,8 @@ int CMUSHclientApp::ExitInstance()
 
   THEMEGLUE_FREE ();
 
+//  bc_free_numbers ();  // free zero, one, two
+
   // free the resources DLL
   FreeLibrary (m_hInstDLL);
 	return CWinApp::ExitInstance();
@@ -1361,17 +1370,18 @@ void CMUSHclientApp::OpenLuaDelayed ()
     return;         // can't open Lua
 
   luaL_openlibs (m_SpellChecker_Lua);    // new way of opening all libraries
-  luaopen_rex (m_SpellChecker_Lua);      // regular expression library
-  luaopen_bits (m_SpellChecker_Lua);     // bit manipulation library
-  luaopen_compress (m_SpellChecker_Lua); // compression (utils) library
-  luaopen_progress_dialog (m_SpellChecker_Lua);    // progress dialog
-  luaopen_bc (m_SpellChecker_Lua);   // open bc library 
-  luaopen_lsqlite3 (m_SpellChecker_Lua);   // open sqlite library
-  lua_pushcfunction(m_SpellChecker_Lua, luaopen_lpeg);   // open lpeg library
-  lua_call(m_SpellChecker_Lua, 0, 0);
+
+  CallLuaCFunction (m_SpellChecker_Lua, luaopen_rex);            // regular expression library
+  CallLuaCFunction (m_SpellChecker_Lua, luaopen_bits);           // bit manipulation library
+  CallLuaCFunction (m_SpellChecker_Lua, luaopen_compress);       // compression (utils) library
+  CallLuaCFunction (m_SpellChecker_Lua, luaopen_progress_dialog);// progress dialog
+  CallLuaCFunction (m_SpellChecker_Lua, luaopen_bc);             // open bc library   
+  CallLuaCFunction (m_SpellChecker_Lua, luaopen_lsqlite3);       // open sqlite library
+  CallLuaCFunction (m_SpellChecker_Lua, luaopen_lpeg);           // open lpeg library
 
   // add xml reader to utils lib
   luaL_register (m_SpellChecker_Lua, "utils", ptr_xmllib);
+
 
   lua_settop(m_SpellChecker_Lua, 0);   // clear stack
 
@@ -1711,13 +1721,12 @@ bool bSmallScreen = (iScreenX < 1024) || (iScreenY < 768);
 
     luaL_openlibs (m_Translator_Lua);    // new way of opening all libraries
 
-    luaopen_rex (m_Translator_Lua);      // regular expression library
-    luaopen_bits (m_Translator_Lua);     // bit manipulation library
-    luaopen_compress (m_Translator_Lua); // compression (utils) library
-    luaopen_bc (m_Translator_Lua);   // open bc library   
-    luaopen_lsqlite3 (m_Translator_Lua);   // open sqlite library
-    lua_pushcfunction(m_Translator_Lua, luaopen_lpeg);   // open lpeg library
-    lua_call(m_Translator_Lua, 0, 0);
+    CallLuaCFunction (m_Translator_Lua, luaopen_rex);            // regular expression library
+    CallLuaCFunction (m_Translator_Lua, luaopen_bits);           // bit manipulation library
+    CallLuaCFunction (m_Translator_Lua, luaopen_compress);       // compression (utils) library
+    CallLuaCFunction (m_Translator_Lua, luaopen_bc);             // open bc library   
+    CallLuaCFunction (m_Translator_Lua, luaopen_lsqlite3);       // open sqlite library
+    CallLuaCFunction (m_Translator_Lua, luaopen_lpeg);           // open lpeg library
 
     // add xml reader (and other stuff) to utils lib
     luaL_register (m_Translator_Lua, "utils", ptr_xmllib);

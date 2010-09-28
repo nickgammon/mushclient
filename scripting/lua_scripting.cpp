@@ -188,16 +188,13 @@ void CScriptEngine::OpenLuaDelayed ()
   lua_pushlightuserdata(L, (void *)m_pDoc);    /* push value */
   lua_call(L, 2, 0);
 
-  luaopen_rex (L);    // regular expression library
-  luaopen_bits (L);   // bit manipulation library
-  luaopen_compress (L);  // compression (utils) library
-  luaopen_progress_dialog (L);    // progress dialog
-//  luaopen_trie (L);   // open trie library
-  luaopen_bc (L);   // open bc library   
-  luaopen_lsqlite3 (L);   // open sqlite library
-
-  lua_pushcfunction (L, luaopen_lpeg);   // open lpeg library
-  lua_call (L, 0, 0);
+  CallLuaCFunction (L, luaopen_rex);            // regular expression library
+  CallLuaCFunction (L, luaopen_bits);           // bit manipulation library
+  CallLuaCFunction (L, luaopen_compress);       // compression (utils) library
+  CallLuaCFunction (L, luaopen_progress_dialog);// progress dialog
+  CallLuaCFunction (L, luaopen_bc);             // open bc library   
+  CallLuaCFunction (L, luaopen_lsqlite3);       // open sqlite library
+  CallLuaCFunction (L, luaopen_lpeg);           // open lpeg library
 
   lua_settop(L, 0);   // clear stack
 
@@ -773,3 +770,11 @@ int CallLuaWithTraceBack (lua_State *L, const int iArguments, const int iReturn)
   return error;
   }  // end of CallLuaWithTraceBack
 
+
+// the more correct way of registering a Lua library -
+// this does a lua_call so we get the Lua environment in the C function
+void CallLuaCFunction (lua_State * L, lua_CFunction fn)
+  {
+  lua_pushcfunction (L, fn); 
+  lua_call (L, 0, 0);
+  }  // end of CallLuaCFunction

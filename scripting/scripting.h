@@ -153,3 +153,5 @@ class CKeyValuePair
 
   };   // end of class  CStringValuePair
 
+// call a C function with the Lua environment
+void CallLuaCFunction (lua_State * L, lua_CFunction fn);
