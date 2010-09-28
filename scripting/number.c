@@ -100,6 +100,19 @@ bc_free_num (num)
   *num = NULL;
 }
 
+/* Frees the memory allocated in the memory-recycling list.
+ * Primary use is to deafen memory leak warnings. -JW */
+
+void
+bc_free_freed_list ()
+{
+	while (_bc_Free_list != NULL)
+	{
+		bc_num next = _bc_Free_list->n_next;
+		free(_bc_Free_list);
+		_bc_Free_list = next;
+	}
+}
 
 /* Intitialize the number package! */
 
@@ -121,6 +134,8 @@ bc_free_numbers ()
   bc_free_num (&_zero_);
   bc_free_num (&_one_);
   bc_free_num (&_two_);
+
+  bc_free_freed_list();
   }
 
 /* Make a copy of a number!  Just increments the reference count! */
