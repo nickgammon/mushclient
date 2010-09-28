@@ -1855,3 +1855,79 @@ LRESULT CGlobalPrefsP13::OnKickIdle(WPARAM, LPARAM)
   UpdateDialogControls (AfxGetApp()->m_pMainWnd, false);
   return 0;
   } // end of CGlobalPrefsP13::OnKickIdle
+
+/////////////////////////////////////////////////////////////////////////////
+//  Sometimes it is useful to know when we become the active page
+//  Copied the structure from World Properties.
+
+BOOL CGlobalPrefsP1::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}
+
+BOOL CGlobalPrefsP2::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}
+
+BOOL CGlobalPrefsP3::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}
+
+BOOL CGlobalPrefsP4::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}
+
+BOOL CGlobalPrefsP5::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}
+
+BOOL CGlobalPrefsP6::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}
+
+BOOL CGlobalPrefsP7::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}
+
+BOOL CGlobalPrefsP9::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}
+
+BOOL CGlobalPrefsP10::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}
+
+BOOL CGlobalPrefsP11::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}
+
+BOOL CGlobalPrefsP12::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}
+
+BOOL CGlobalPrefsP13::OnSetActive()
+{
+	((CGlobalPrefsSheet *) GetParent ())->PageHasChanged (this);
+	return CPropertyPage::OnSetActive();
+}

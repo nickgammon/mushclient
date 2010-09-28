@@ -36,6 +36,7 @@ public:
 	//{{AFX_VIRTUAL(CGlobalPrefsP1)
 	public:
 	virtual void OnOK();
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -106,6 +107,8 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CGlobalPrefsP2)
+	public:
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -145,6 +148,8 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CGlobalPrefsP3)
+	public:
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -187,6 +192,8 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CGlobalPrefsP4)
+	public:
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -228,6 +235,8 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CGlobalPrefsP5)
+	public:
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -265,6 +274,8 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CGlobalPrefsP6)
+	public:
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -304,6 +315,8 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CGlobalPrefsP7)
+	public:
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -364,6 +377,8 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CGlobalPrefsP9)
+	public:
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -428,6 +443,7 @@ public:
 	//{{AFX_VIRTUAL(CGlobalPrefsP10)
 	public:
 	virtual void OnOK();
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -472,6 +488,8 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CGlobalPrefsP11)
+	public:
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -512,6 +530,7 @@ public:
 	//{{AFX_VIRTUAL(CGlobalPrefsP12)
 	public:
 	virtual void OnOK();
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -558,6 +577,8 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CGlobalPrefsP13)
+	public:
+	virtual BOOL OnSetActive();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
