@@ -73,3 +73,16 @@ BOOL CGlobalPrefsSheet::OnInitDialog()
 	return bResult;
 }
 
+void CGlobalPrefsSheet::PageHasChanged (CPropertyPage* pNewPage)
+{
+	/* Theming has these nice fades inbetween controls being disabled and enabled.
+	 * That is all nice and well, but switching a page for the _first_ time since
+	 * the dialog had been opened causes the dialog controls to be updated in plain
+	 * sight - a rather visible and eye-catching affair once you are aware of it.
+	 * Updating the dialog controls manually before switching to the active page
+	 * causes these updates to be done while the user cannot see it. -JW
+	 */
+	pNewPage->UpdateDialogControls(this, false);
+}
+
+

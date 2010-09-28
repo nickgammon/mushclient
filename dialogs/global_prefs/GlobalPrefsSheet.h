@@ -52,6 +52,7 @@ public:
 // Implementation
 public:
 	virtual ~CGlobalPrefsSheet();
+	void PageHasChanged (CPropertyPage* pPage);
 
 // Generated message map functions
 protected:
