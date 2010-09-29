@@ -1718,138 +1718,24 @@ pCmdUI->Enable ();
 }
 
 
-#if _MSC_VER < 1400 
-
-#define VERSION_6		MAKELONG(0, 6)
-
-// from Worstje
-
-void CTextView::Serialize(CArchive& ar)
-	// Read and write CTextView object to archive, with length prefix.
-{
-	ASSERT_VALID(this);
-	ASSERT(m_hWnd != NULL);
-	if (ar.IsStoring())
-	{
-		UINT nLen = GetBufferLength();
-		ar << (DWORD)nLen;
-		WriteToArchive(ar);
-	}
-	else
-	{
-		DWORD dwLen;
-		ar >> dwLen;
-		if (dwLen > GetEditCtrl().GetLimitText())
-			// Larger than edit control limit. Call SetLimitText() to set your own max size.
-			// Refer to documentation for EM_LIMITTEXT for max sizes for your target OS.
-			AfxThrowArchiveException(CArchiveException::badIndex);
-		UINT nLen = (UINT)dwLen;
-		ReadFromArchive(ar, nLen);
-	}
-	ASSERT_VALID(this);
-}
-
-void CTextView::ReadFromArchive(CArchive& ar, UINT nLen)
-	// Read certain amount of text from the file, assume at least nLen
-	// characters (not bytes) are in the file.
-{
-	ASSERT_VALID(this);
-
-  LPVOID hText = LocalAlloc(LMEM_MOVEABLE, (nLen+1)*sizeof(TCHAR));
-
-	//LPVOID hText = LocalAlloc(LMEM_MOVEABLE, static_cast<UINT>(::ATL::AtlMultiplyThrow(static_cast<UINT>(nLen+1),static_cast<UINT>(sizeof(TCHAR)))));
-	if (hText == NULL)
-		AfxThrowMemoryException();
-
-	LPTSTR lpszText = (LPTSTR)LocalLock(hText);
-	ASSERT(lpszText != NULL);
-	if (ar.Read(lpszText, nLen*sizeof(TCHAR)) != nLen*sizeof(TCHAR))
-	{
-		LocalUnlock(hText);
-		LocalFree(hText);
-		AfxThrowArchiveException(CArchiveException::endOfFile);
-	}
-	// Replace the editing edit buffer with the newly loaded data
-	lpszText[nLen] = '\0';
-
-	
-#ifndef _UNICODE
-	if (_AfxGetComCtlVersion() >= VERSION_6)
-	{
-		// set the text with SetWindowText, then free
-		BOOL bResult = ::SetWindowText(m_hWnd, lpszText);
-		LocalUnlock(hText);
-		LocalFree(hText);
-
-		// make sure that SetWindowText was successful
-		if (!bResult || ::GetWindowTextLength(m_hWnd) < (int)nLen)
-			AfxThrowMemoryException();
-
-		// remove old shadow buffer
-		delete[] m_pShadowBuffer;
-		m_pShadowBuffer = NULL;
-		m_nShadowSize = 0;
-
-		ASSERT_VALID(this);
-		return;
-	}
-#endif
-
-	LocalUnlock(hText);
-	HLOCAL hOldText = GetEditCtrl().GetHandle();
-	ASSERT(hOldText != NULL);
-	LocalFree(hOldText);
-	GetEditCtrl().SetHandle((HLOCAL)hText);
-	Invalidate();
-	ASSERT_VALID(this);
-}
-
-void CTextView::WriteToArchive(CArchive& ar)
-	// Write just the text to an archive, no length prefix.
-{
-	ASSERT_VALID(this);
-	LPCTSTR lpszText = LockBuffer();
-	ASSERT(lpszText != NULL);
-	UINT nLen = GetBufferLength();
-	TRY
-	{
-		ar.Write(lpszText, nLen*sizeof(TCHAR));
-	}
-	CATCH_ALL(e)
-	{
-		UnlockBuffer();
-		THROW_LAST();
-	}
-	END_CATCH_ALL
-	UnlockBuffer();
-	ASSERT_VALID(this);
-}
-
-#endif //  _MSC_VER < 1400 
-
 void CTextView::SerializeRaw(CArchive& ar)
-	// Read/Write object as stand-alone file.
+       // Read/Write object as stand-alone file.
 {
-	ASSERT_VALID(this);
-	if (ar.IsStoring())
-	{
-		WriteToArchive(ar);
-	}
-	else
-	{
-		CFile* pFile = ar.GetFile();
-		ASSERT(pFile->GetPosition() == 0);
-		ULONGLONG nFileSize = pFile->GetLength();
-		if (nFileSize/sizeof(TCHAR) > GetEditCtrl().GetLimitText())
-		{
-			// Larger than edit control limit. Call SetLimitText() to set your own max size.
-			// Refer to documentation for EM_LIMITTEXT for max sizes for your target OS.
-			AfxMessageBox(AFX_IDP_FILE_TOO_LARGE);
-			AfxThrowUserException();
-		}
-		// ReadFromArchive takes the number of characters as argument
-		ReadFromArchive(ar, (UINT)nFileSize/sizeof(TCHAR));
-	}
-	ASSERT_VALID(this);
-}
+       ASSERT_VALID(this);
+
+       if (ar.IsStoring())
+       {
+               WriteToArchive(ar);
+       }
+       else
+       {
+               CFile* pFile = ar.GetFile();
+               ASSERT(pFile->GetPosition() == 0);
+               DWORD nFileSize = pFile->GetLength();
+               // ReadFromArchive takes the number of characters as argument
+               ReadFromArchive(ar, (UINT)nFileSize/sizeof(TCHAR));
+       }
+       ASSERT_VALID(this);
+} /* end of CTextView::SerializeRaw */
+
 

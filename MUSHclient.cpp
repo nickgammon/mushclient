@@ -1184,9 +1184,6 @@ void CMUSHclientApp::RestoreColumnConfiguration (LPCTSTR strName,
 
   } // end of RestoreColumnConfiguration
 
-extern HMODULE HModUXT;
-#define THEMEGLUE_FREE() if (HModUXT != NULL) { FreeLibrary(HModUXT); HModUXT = NULL; }
-
 int CMUSHclientApp::ExitInstance() 
 {
   if (!bWine)
@@ -1220,8 +1217,6 @@ int CMUSHclientApp::ExitInstance()
   // close SQLite database
   if (db)
     sqlite3_close(db);
-
-  THEMEGLUE_FREE ();
 
   bc_free_numbers ();  // free zero, one, two
 

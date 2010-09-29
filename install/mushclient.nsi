@@ -85,7 +85,8 @@ Section "-MUSHclient program (required)"
   File "Readme.txt" ; in install directory
 
   File "..\WinRel\mushclient.exe"
-  File "..\MUSHclient.exe.manifest"
+  ; File "..\MUSHclient.exe.manifest"
+
   File "..\WinRel\lua5.1.dll"
   File "..\lua5.1.lib"
   File "..\mushclient.HLP"
@@ -501,7 +502,7 @@ Section Uninstall
 
   ; program
   Delete "$INSTDIR\MUSHclient.exe"
-  Delete "$INSTDIR\MUSHclient.exe.manifest"
+  ; Delete "$INSTDIR\MUSHclient.exe.manifest"
   Delete "$INSTDIR\StatusBar.exe"
   Delete "$INSTDIR\lua5.1.dll"
   Delete "$INSTDIR\lua5.1.lib"

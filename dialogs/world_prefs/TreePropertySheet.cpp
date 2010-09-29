@@ -17,8 +17,6 @@ static char THIS_FILE[] = __FILE__;
 #define SPACEBOTTOM	15
 #define CAPTIONHEIGHT 20
 
-HMODULE HModUXT = NULL;
-#include "themeglue.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CTreePropertySheet
@@ -274,8 +272,6 @@ BOOL CTreePropertySheet::OnInitDialog()
 {
 	CPropertySheet::OnInitDialog();
 	
-  ThemeGlue_EnableThemeDialogTexture(m_hWnd, ETDT_ENABLETAB);
-
 	if(m_bSpecialCaption) {
 		CRect	rcWindow;
 
