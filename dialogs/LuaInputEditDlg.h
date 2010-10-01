@@ -41,6 +41,10 @@ public:
   int m_iReplyWidth;
   int m_iReplyHeight;
   int m_iMaxReplyLength;
+  CString m_strOKbuttonLabel;
+  CString m_strCancelbuttonLabel;
+
+  lua_State *m_L;   // for validating
 
 // Overrides
 	// ClassWizard generated virtual function overrides

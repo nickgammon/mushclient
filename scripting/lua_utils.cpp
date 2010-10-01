@@ -263,7 +263,7 @@ static int umsgbox (lua_State *L)
   }  // end of umsgbox
 
 
-static int get_extra_field (lua_State *L, const int narg, const char * name)
+static int get_extra_integer (lua_State *L, const int narg, const char * name)
   {
   int iResult;
 
@@ -272,7 +272,18 @@ static int get_extra_field (lua_State *L, const int narg, const char * name)
   lua_pop (L, 1);
 
   return iResult;
-  }  // end of get_extra_field
+  }  // end of get_extra_integer
+
+static CString get_extra_string (lua_State *L, const int narg, const char * name)
+  {
+  CString strResult;
+
+  lua_getfield (L, narg, name);
+  strResult = luaL_optstring (L, -1, "");
+  lua_pop (L, 1);
+
+  return strResult;
+  }  // end of get_extra_string
 
 // input-box display routine
 // arg1 = message to display
@@ -281,13 +292,16 @@ static int get_extra_field (lua_State *L, const int narg, const char * name)
 // arg4 = input font
 // arg5 = input font size
 // arg6 = table of extra stuff:
-//          box_width         --> width of message box in pixels (min 180)
-//          box_height        --> height of message box in pixels (min 125)
-//          prompt_width      --> width of prompt text in pixels (min 10)
-//          prompt_height     --> height of prompt text in pixels (min 12)
-//          reply_width       --> width of reply in pixels (min 10)
-//          reply_height      --> height of reply in pixels (min 10)
-//          max_length        --> max characters they can type (min 1)
+//          box_width           --> width of message box in pixels (min 180)
+//          box_height          --> height of message box in pixels (min 125)
+//          prompt_width        --> width of prompt text in pixels (min 10)
+//          prompt_height       --> height of prompt text in pixels (min 12)
+//          reply_width         --> width of reply in pixels (min 10)
+//          reply_height        --> height of reply in pixels (min 10)
+//          max_length          --> max characters they can type (min 1)
+//          validate            --> validation function
+//          ok_button           --> what to put on the OK button (default: OK)
+//          cancel_button       --> what to put on the Cancel button (default: Cancel)
 //
 // returns: what they typed, or nil if cancelled
 
@@ -309,18 +323,38 @@ static int gen_inputbox (lua_State *L, T & msg)
   int iReplyWidth   = 0;
   int iReplyHeight  = 0;
   int iMaxReplyLength = 0;
+  CString strOKbuttonLabel;
+  CString strCancelbuttonLabel;
+
+
 
   // if arg6 present, and a table, grab extra stuff
   if (lua_istable (L, nExtraStuffArg))
     {
-    iBoxWidth       = get_extra_field (L, nExtraStuffArg, "box_width");
-    iBoxHeight      = get_extra_field (L, nExtraStuffArg, "box_height");
-    iPromptWidth    = get_extra_field (L, nExtraStuffArg, "prompt_width");
-    iPromptHeight   = get_extra_field (L, nExtraStuffArg, "prompt_height");
-    iReplyWidth     = get_extra_field (L, nExtraStuffArg, "reply_width");
-    iReplyHeight    = get_extra_field (L, nExtraStuffArg, "reply_height");
-    iMaxReplyLength = get_extra_field (L, nExtraStuffArg, "max_length");
-    }
+    iBoxWidth             = get_extra_integer (L, nExtraStuffArg, "box_width");
+    iBoxHeight            = get_extra_integer (L, nExtraStuffArg, "box_height");
+    iPromptWidth          = get_extra_integer (L, nExtraStuffArg, "prompt_width");
+    iPromptHeight         = get_extra_integer (L, nExtraStuffArg, "prompt_height");
+    iReplyWidth           = get_extra_integer (L, nExtraStuffArg, "reply_width");
+    iReplyHeight          = get_extra_integer (L, nExtraStuffArg, "reply_height");
+    iMaxReplyLength       = get_extra_integer (L, nExtraStuffArg, "max_length");
+    strOKbuttonLabel      = get_extra_string  (L, nExtraStuffArg, "ok_button");
+    strCancelbuttonLabel  = get_extra_string  (L, nExtraStuffArg, "cancel_button");
+
+
+    // see if validation function there - do this last so we can leave it on the stack
+    lua_getfield (L, nExtraStuffArg, "validate");
+
+    if (!lua_isnil (L, -1))
+      {
+      if (!lua_isfunction (L, -1))
+        luaL_error (L, "inputbox argument 6 value for 'validate' must be a function");
+
+      lua_pushvalue (L, -1);    // function is now on top of stack   
+      msg.m_L = L;             // non-NULL indicates we have function there
+      } // validate function there
+
+    }  // table of extra stuff there
 
   // if we leave in & it will make the next letter underlined
   string sInputMsg = FindAndReplace (inputmsg, "&", "&&");
@@ -338,13 +372,15 @@ static int gen_inputbox (lua_State *L, T & msg)
   msg.m_iFontSize   = inputsize;
 
   // extra stuff from table which is argument 6 (if present)
-  msg.m_iBoxWidth        = iBoxWidth    ;
-  msg.m_iBoxHeight       = iBoxHeight   ;
-  msg.m_iPromptWidth     = iPromptWidth ;
-  msg.m_iPromptHeight    = iPromptHeight;
-  msg.m_iReplyWidth      = iReplyWidth  ;
-  msg.m_iReplyHeight     = iReplyHeight ;
-  msg.m_iMaxReplyLength  = iMaxReplyLength;
+  msg.m_iBoxWidth             = iBoxWidth    ;
+  msg.m_iBoxHeight            = iBoxHeight   ;
+  msg.m_iPromptWidth          = iPromptWidth ;
+  msg.m_iPromptHeight         = iPromptHeight;
+  msg.m_iReplyWidth           = iReplyWidth  ;
+  msg.m_iReplyHeight          = iReplyHeight ;
+  msg.m_iMaxReplyLength       = iMaxReplyLength;
+  msg.m_strOKbuttonLabel      = strOKbuttonLabel ;
+  msg.m_strCancelbuttonLabel  = strCancelbuttonLabel;
 
   if (msg.DoModal () != IDOK)
     lua_pushnil (L);

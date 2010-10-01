@@ -11,6 +11,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#pragma warning (disable : 4800)  // forcing value to bool 'true' or 'false' (performance warning)
+
 /////////////////////////////////////////////////////////////////////////////
 // CLuaInputEditDlg dialog
 
@@ -45,7 +47,40 @@ void CLuaInputEditDlg::DoDataExchange(CDataExchange* pDX)
    {
    if (!m_strFont.IsEmpty () && m_iFontSize > 3)
       FixFont (m_font, m_ctlReply, m_strFont, m_iFontSize, FW_NORMAL, DEFAULT_CHARSET);
+   return;
    }
+
+ if (m_L && lua_type (m_L, -1) == LUA_TFUNCTION)
+  {
+  bool bWanted = false;
+
+  // Lua validation:  function f (value)  ... end
+
+  // validate function (make copy)
+  lua_pushvalue (m_L, -1);       
+  // what they have currently typed
+  lua_pushlstring (m_L, m_strReply, m_strReply.GetLength ());
+
+  // call the function: arg1: what they typed
+  if (lua_pcall (m_L, 1, 1, 0))   // call with 1 arg and 1 result
+    {
+    LuaError (m_L);    // note that this clears the stack, so we won't call it again
+    lua_settop (m_L, 0);   // clear stack, just in case LuaError changes behaviour
+    pDX->Fail();
+    }   // end of error
+  else
+    {
+    bWanted = lua_toboolean (m_L, -1);
+    lua_pop (m_L, 1);  // pop result
+    }  // end of no error
+
+  if (!bWanted)
+    {
+    DDX_Text(pDX, IDC_INPUT_BOX_REPLY, m_strReply);
+    pDX->Fail();
+    }
+
+  }  // end of Lua validation function available
 
 }
 
@@ -84,6 +119,18 @@ BOOL CLuaInputEditDlg::OnInitDialog()
 
   if (m_iMaxReplyLength > 0)
     ::SendMessage(m_ctlReply, EM_LIMITTEXT, m_iMaxReplyLength, 0);
+
+  // limit text entry length if desired
+  if (m_iMaxReplyLength > 0)
+    ::SendMessage(m_ctlReply, EM_LIMITTEXT, m_iMaxReplyLength, 0);
+
+  // new OK button label
+  if (!m_strOKbuttonLabel.IsEmpty ())
+     GetDlgItem (IDOK)->SetWindowText (m_strOKbuttonLabel);
+
+  // new Cancel button label
+  if (!m_strCancelbuttonLabel.IsEmpty ())
+     GetDlgItem (IDCANCEL)->SetWindowText (m_strCancelbuttonLabel);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
