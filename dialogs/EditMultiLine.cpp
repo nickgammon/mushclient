@@ -72,7 +72,7 @@ END_MESSAGE_MAP()
 
 // helpful macro for adjusting button positions
 #define ADJUST_BUTTON(ctl, item) \
-  ctl.MoveWindow          (iBorder + (iWidth * (item - 1)) + (iGap * (item - 1)), \
+  (ctl).MoveWindow          (iBorder + (iWidth * (item - 1)) + (iGap * (item - 1)), \
                            iTopOfRow, iWidth, iHeight)
 
 

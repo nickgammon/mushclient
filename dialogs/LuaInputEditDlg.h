@@ -34,6 +34,14 @@ public:
 
   CFont * m_font;
 
+  int m_iBoxWidth;
+  int m_iBoxHeight;
+  int m_iPromptWidth;
+  int m_iPromptHeight;
+  int m_iReplyWidth;
+  int m_iReplyHeight;
+  int m_iMaxReplyLength;
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CLuaInputEditDlg)

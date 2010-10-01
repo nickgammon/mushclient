@@ -33,6 +33,14 @@ public:
 
   CFont * m_font;
 
+  int m_iBoxWidth;
+  int m_iBoxHeight;
+  int m_iPromptWidth;
+  int m_iPromptHeight;
+  int m_iReplyWidth;
+  int m_iReplyHeight;
+  int m_iMaxReplyLength;
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CLuaInputBox)
@@ -46,6 +54,7 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CLuaInputBox)
 	virtual BOOL OnInitDialog();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 	//}}AFX_MSG
 	afx_msg void OnRemoveSelection();
 

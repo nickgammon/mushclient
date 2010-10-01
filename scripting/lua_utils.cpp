@@ -255,18 +255,39 @@ static int generic_msgbox (lua_State *L, const bool bUnicode)
 static int msgbox (lua_State *L) 
   {
   return generic_msgbox (L, false);  // not Unicode
-  }
+  }   // end of msgbox
 
 static int umsgbox (lua_State *L) 
   {
   return generic_msgbox (L, true);  // Unicode
-  }
+  }  // end of umsgbox
 
+
+static int get_extra_field (lua_State *L, const int narg, const char * name)
+  {
+  int iResult;
+
+  lua_getfield (L, narg, name);
+  iResult = luaL_optinteger (L, -1, 0);
+  lua_pop (L, 1);
+
+  return iResult;
+  }  // end of get_extra_field
 
 // input-box display routine
 // arg1 = message to display
 // arg2 = title of box - if nil, defaults to "MUSHclient"
 // arg3 = default text
+// arg4 = input font
+// arg5 = input font size
+// arg6 = table of extra stuff:
+//          box_width         --> width of message box in pixels (min 180)
+//          box_height        --> height of message box in pixels (min 125)
+//          prompt_width      --> width of prompt text in pixels (min 10)
+//          prompt_height     --> height of prompt text in pixels (min 12)
+//          reply_width       --> width of reply in pixels (min 10)
+//          reply_height      --> height of reply in pixels (min 10)
+//          max_length        --> max characters they can type (min 1)
 //
 // returns: what they typed, or nil if cancelled
 
@@ -278,6 +299,28 @@ static int gen_inputbox (lua_State *L, T & msg)
   const char * inputdefault = luaL_optstring (L, 3, "");
   const char * inputfont    = luaL_optstring (L, 4, "");
   const int    inputsize    = luaL_optnumber (L, 5, 9);
+  const int    nExtraStuffArg = 6;  // arg 6 is extra stuff
+
+  // zero means take dialog default
+  int iBoxWidth     = 0;
+  int iBoxHeight    = 0;
+  int iPromptWidth  = 0;
+  int iPromptHeight = 0;
+  int iReplyWidth   = 0;
+  int iReplyHeight  = 0;
+  int iMaxReplyLength = 0;
+
+  // if arg6 present, and a table, grab extra stuff
+  if (lua_istable (L, nExtraStuffArg))
+    {
+    iBoxWidth       = get_extra_field (L, nExtraStuffArg, "box_width");
+    iBoxHeight      = get_extra_field (L, nExtraStuffArg, "box_height");
+    iPromptWidth    = get_extra_field (L, nExtraStuffArg, "prompt_width");
+    iPromptHeight   = get_extra_field (L, nExtraStuffArg, "prompt_height");
+    iReplyWidth     = get_extra_field (L, nExtraStuffArg, "reply_width");
+    iReplyHeight    = get_extra_field (L, nExtraStuffArg, "reply_height");
+    iMaxReplyLength = get_extra_field (L, nExtraStuffArg, "max_length");
+    }
 
   // if we leave in & it will make the next letter underlined
   string sInputMsg = FindAndReplace (inputmsg, "&", "&&");
@@ -293,6 +336,15 @@ static int gen_inputbox (lua_State *L, T & msg)
   msg.m_strReply    = inputdefault;
   msg.m_strFont     = inputfont;
   msg.m_iFontSize   = inputsize;
+
+  // extra stuff from table which is argument 6 (if present)
+  msg.m_iBoxWidth        = iBoxWidth    ;
+  msg.m_iBoxHeight       = iBoxHeight   ;
+  msg.m_iPromptWidth     = iPromptWidth ;
+  msg.m_iPromptHeight    = iPromptHeight;
+  msg.m_iReplyWidth      = iReplyWidth  ;
+  msg.m_iReplyHeight     = iReplyHeight ;
+  msg.m_iMaxReplyLength  = iMaxReplyLength;
 
   if (msg.DoModal () != IDOK)
     lua_pushnil (L);
