@@ -64,7 +64,6 @@ BEGIN_MESSAGE_MAP(CCommandOptionsDlg, CDialog)
 	ON_BN_CLICKED(IDC_DOUBLE_CLICK_INSERTS, OnDoubleClickInserts)
 	//}}AFX_MSG_MAP
   ON_MESSAGE(WM_KICKIDLE, OnKickIdle)
-  ON_UPDATE_COMMAND_UI(IDC_SAVE_DELETED, OnUpdateNeedEscapeDeletesTyping)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -76,10 +75,6 @@ LRESULT CCommandOptionsDlg::OnKickIdle(WPARAM, LPARAM)
   return 0;
   } // end of CCommandOptionsDlg::OnKickIdle
 
-void CCommandOptionsDlg::OnUpdateNeedEscapeDeletesTyping(CCmdUI* pCmdUI)
-  {
-  pCmdUI->Enable (m_ctlEscapeDeletesTypeing.GetCheck ());
-  } // end of CCommandOptionsDlg::OnUpdateNeedEscapeDeletesTyping
 
 BOOL CCommandOptionsDlg::OnInitDialog() 
 {

@@ -1280,14 +1280,20 @@ bool CSendView::CheckTyping (CMUSHclientDoc* pDoc, CString strReplacement)
   {
 const int iLimit = 200;
 
-  if (!pDoc->m_bConfirmBeforeReplacingTyping)
+  // they didn't personally type anything, so accept it
+  if (!m_bChanged)
     return false;
 
 CString strCurrent;
 
   GetEditCtrl().GetWindowText (strCurrent);
 
-  if (strCurrent.GetLength () != 0 && m_bChanged)
+  // nothing there? who cares?
+  if (strCurrent.GetLength () == 0)
+    return false;
+
+  // if they want confirmation, do it
+  if (pDoc->m_bConfirmBeforeReplacingTyping)
     {
 
 // don't echo ridiculous amounts of text
@@ -1317,31 +1323,33 @@ CString strCurrent;
         return true;
       }
 
-    // preserve what we are about to delete, if requested to do so
 
-    if (pDoc->m_bSaveDeletedCommand)
+    }  // end if confirmation wanted
+
+
+  // preserve what we are about to delete, if requested to do so
+
+  if (pDoc->m_bSaveDeletedCommand)
+    {
+    CString str = GetText (GetEditCtrl());
+
+  // do not record null commands, or ones identical to the previous one
+
+    if (!str.IsEmpty () && str != m_last_command)
       {
-      CString str = GetText (GetEditCtrl());
-
-    // do not record null commands, or ones identical to the previous one
-
-      if (!str.IsEmpty () && str != m_last_command)
+      if (m_inputcount >= pDoc->m_nHistoryLines)
         {
-        if (m_inputcount >= pDoc->m_nHistoryLines)
-          {
-          m_msgList.RemoveHead ();   // keep max of "m_nHistoryLines" previous commands
-          m_HistoryFindInfo.m_nCurrentLine--;     // adjust for a "find again"
-          if (m_HistoryFindInfo.m_nCurrentLine < 0)
-            m_HistoryFindInfo.m_nCurrentLine = 0;
-          }
-        else
-          m_inputcount++;
-        m_msgList.AddTail (str);
-        m_last_command = str;
+        m_msgList.RemoveHead ();   // keep max of "m_nHistoryLines" previous commands
+        m_HistoryFindInfo.m_nCurrentLine--;     // adjust for a "find again"
+        if (m_HistoryFindInfo.m_nCurrentLine < 0)
+          m_HistoryFindInfo.m_nCurrentLine = 0;
         }
-      }
-
-    }
+      else
+        m_inputcount++;
+      m_msgList.AddTail (str);
+      m_last_command = str;
+      }  // end command different
+    }     // end if save deleted command
 
   return false;
   }

@@ -54,7 +54,6 @@ protected:
 	afx_msg void OnDoubleClickInserts();
 	//}}AFX_MSG
   afx_msg LRESULT OnKickIdle(WPARAM, LPARAM);
-  afx_msg void OnUpdateNeedEscapeDeletesTyping(CCmdUI* pCmdUI);
 	DECLARE_MESSAGE_MAP()
 };
 
