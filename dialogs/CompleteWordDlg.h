@@ -22,11 +22,10 @@ public:
 	CListBox	m_ctlFunctions;
 	//}}AFX_DATA
 
-  const char * m_sFunctionsPtr;
-  int m_nFunctions;
   CString m_strResult;
   CString m_strArgs;
 	CString	m_strFilter;
+  CString m_strDefault;
   CPoint m_pt;  // where to put it
 
   bool m_bLua;

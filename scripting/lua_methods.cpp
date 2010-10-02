@@ -3031,6 +3031,21 @@ static int L_GetMappingString (lua_State *L)
   return pushVariant (L, v);
   } // end of L_GetMappingString
 
+//----------------------------------------
+//  world.Menu
+//----------------------------------------
+static int L_Menu (lua_State *L)
+  {
+  BSTR str;  
+
+  CMUSHclientDoc *pDoc = doc (L);
+  str = pDoc->Menu (
+      my_checkstring (L, 1),    // Items
+      my_optstring (L, 2, "")   // Default
+     );
+
+  return pushBstr (L, str);  // number of result fields
+  } // end of L_Menu
 
 //----------------------------------------
 //  world.GetNotepadLength
@@ -6686,6 +6701,7 @@ static const struct luaL_reg worldlib [] =
   {"MakeRegularExpression", L_MakeRegularExpression},
   {"MapColour", L_MapColour},
   {"MapColourList", L_MapColourList},
+  {"Menu", L_Menu},
   {"Metaphone", L_Metaphone},
   {"GetMapping", L_GetMapping},
   {"SetMapping", L_SetMapping},

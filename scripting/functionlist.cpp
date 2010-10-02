@@ -272,6 +272,7 @@ tInternalFunctionsTable InternalFunctionsTable [] = {
 { "MapColour" ,                  "( Original , Replacement )" } ,
 { "MapColourList" ,              "( )" } ,
 { "Mapping" ,                    "( )" } ,
+{ "Menu" ,                       "( Items , Default )" },
 { "Metaphone" ,                  "( Word , Length )" } ,
 { "MoveMainWindow" ,             "( Left , Top , Width , Height )" } ,
 { "MoveNotepadWindow" ,          "( Title , Left , Top , Width , Height )" } ,

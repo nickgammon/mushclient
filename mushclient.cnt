@@ -413,6 +413,7 @@
 3 MakeRegularExpression=FNC_MakeRegularExpression 
 3 MapColour=FNC_MapColour 
 3 MapColourList=FNC_MapColourList 
+3 Menu=FNC_Menu
 3 Mapping=FNC_Mapping 
 3 MoveMainWindow=FNC_MoveMainWindow 
 3 MoveNotepadWindow=FNC_MoveNotepadWindow 

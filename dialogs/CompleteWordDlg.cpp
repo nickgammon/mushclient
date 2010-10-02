@@ -149,7 +149,10 @@ void CCompleteWordDlg::ReloadList ()
 
   // select the exact match, if any (so, if they highlight world.Note then it is selected)
 
-  m_ctlFunctions.SelectString (-1, m_strFilter);
+  if (!m_strFilter.IsEmpty ())
+    m_ctlFunctions.SelectString (-1, m_strFilter);
+  else if (!m_strDefault.IsEmpty ())
+    m_ctlFunctions.SelectString (-1, m_strDefault);
 
   if (iCount == 0)
     {
