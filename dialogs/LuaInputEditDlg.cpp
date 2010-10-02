@@ -27,6 +27,7 @@ CLuaInputEditDlg::CLuaInputEditDlg(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 
   m_font = NULL;
+  m_L = NULL;
 
 }
 
