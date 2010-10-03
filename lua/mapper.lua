@@ -5,6 +5,7 @@
 Author: Nick Gammon
 Date:   11th March 2010
 Amended: 15th August 2010
+Amended: 2nd October 2010
 
 Generic MUD mapper.
 
@@ -61,7 +62,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 2.0   -- for querying by plugins
+VERSION = 2.1   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -230,25 +231,54 @@ local function check_connected ()
   return true
 end -- check_connected
 
-local function get_number_from_user (msg, title, current, min, max)
-  local n =  utils.inputbox (msg, title, current)
+local function make_number_checker (title, min, max, decimals)
+  return function (s)
+    local n = tonumber (s)
+    if not n then
+      utils.msgbox (title .. " must be a number", "Incorrect input", "ok", "!", 1)
+      return false  -- bad input
+    end -- if
+    
+    if n < min or n > max then
+      utils.msgbox (title .. " must be in range " .. min .. " to " .. max, "Incorrect input", "ok", "!", 1)
+      return false  -- bad input
+    end -- if
       
-  if not n then
-    return nil
-  end -- if dismissed
+    if not decimals then
+      if string.match (s, "%.") then
+        utils.msgbox (title .. " cannot have decimal places", "Incorrect input", "ok", "!", 1)
+        return false  -- bad input
+      end -- if
+    end -- no decimals
+    
+    return true  -- good input
+  end -- generated function
   
-  n = tonumber (n)
-  if not n then
-    utils.msgbox ("You must enter a number", "Incorrect input", "ok", "!", 1)
-    return nil
-  end -- if
-  
-  if n < min or n > max then
-    utils.msgbox (title .. " must be in range " .. min .. " to " .. max, "Incorrect input", "ok", "!", 1)
-    return nil
-  end -- if
+end -- make_number_checker
 
-  return n
+ 
+local function get_number_from_user (msg, title, current, min, max, decimals)
+  local max_length = math.ceil (math.log10 (max) + 1)
+  
+  -- if decimals allowed, allow room for them
+  if decimals then
+    max_length = max_length + 2  -- allow for 0.x
+  end -- if
+  
+  -- if can be negative, allow for minus sign
+  if min < 0 then
+    max_length = max_length + 1
+  end -- if can be negative
+  
+  return tonumber (utils.inputbox (msg, title, current, nil, nil, 
+                      { validate = make_number_checker (title, min, max, decimals), 
+                        prompt_height = 14,
+                        box_height = 130,
+                        box_width = 300,
+                        reply_width = 150,
+                        max_length = max_length,
+                      }  -- end extra stuff
+                   ))
 end -- get_number_from_user
 
 local function draw_configuration ()
@@ -1452,7 +1482,7 @@ end -- mouseup_change_depth
 
 function mouseup_change_delay (flags, hotspot_id)
   
-  local delay = get_number_from_user ("Choose speedwalk delay time (0 to 10 seconds)", "Delay in seconds", config.DELAY.time, 0, 10)
+  local delay = get_number_from_user ("Choose speedwalk delay time (0 to 10 seconds)", "Delay in seconds", config.DELAY.time, 0, 10, true)
       
   if not delay then
     return
