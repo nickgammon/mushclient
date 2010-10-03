@@ -1504,14 +1504,13 @@ void CTextView::OpenLuaDelayed ()
 
   luaL_openlibs (L);           // open all standard Lua libraries
 
-  luaopen_rex (L);             // regular expression library
-  luaopen_bits (L);            // bit manipulation library
-  luaopen_compress (L);  // compression (utils) library
-  luaopen_progress_dialog (L); // progress dialog
-  luaopen_bc (L);   // open bc library   
-  luaopen_lsqlite3 (L);   // open sqlite library
-  lua_pushcfunction(L, luaopen_lpeg);   // open lpeg library
-  lua_call(L, 0, 0);
+  CallLuaCFunction (L, luaopen_rex);            // regular expression library
+  CallLuaCFunction (L, luaopen_bits);           // bit manipulation library
+  CallLuaCFunction (L, luaopen_compress);       // compression (utils) library
+  CallLuaCFunction (L, luaopen_progress_dialog);// progress dialog
+  CallLuaCFunction (L, luaopen_bc);             // open bc library   
+  CallLuaCFunction (L, luaopen_lsqlite3);       // open sqlite library
+  CallLuaCFunction (L, luaopen_lpeg);           // open lpeg library
 
   // add xml reader to utils lib
   luaL_register (L, "utils", ptr_xmllib);

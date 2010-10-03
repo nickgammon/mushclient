@@ -44,6 +44,7 @@ public:
   CString m_strCancelbuttonLabel;
 
   lua_State *m_L;   // for validating
+  int m_iValidationIndex;  // where validation function is
 
 // Overrides
 	// ClassWizard generated virtual function overrides

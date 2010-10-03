@@ -26,6 +26,7 @@ CFunctionListDlg::CFunctionListDlg(CWnd* pParent /*=NULL*/)
   m_bFunctions = false;
   m_bNoSort = false;
   m_L = NULL;
+  m_iFilterIndex = LUA_NOREF;
 }
 
 
@@ -84,13 +85,13 @@ BOOL CFunctionListDlg::ReloadList ()
     string sValue = kv.sValue_;
     bool bWanted = false;
 
-    if (m_L && lua_type (m_L, 1) == LUA_TFUNCTION)
+   if (m_L && m_iFilterIndex != LUA_NOREF)
       {
+
+      lua_rawgeti (m_L, LUA_REGISTRYINDEX, m_iFilterIndex);
 
       // Lua filter:  function f (filter, key, value)  ... end
 
-      // filter function (make copy)
-      lua_pushvalue (m_L, 1);       
       // what they have currently typed
       lua_pushlstring (m_L, sFilter.c_str (), sFilter.size ());
 

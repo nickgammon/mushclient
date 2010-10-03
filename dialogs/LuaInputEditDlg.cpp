@@ -28,6 +28,7 @@ CLuaInputEditDlg::CLuaInputEditDlg(CWnd* pParent /*=NULL*/)
 
   m_font = NULL;
   m_L = NULL;
+  m_iValidationIndex = LUA_NOREF;
 
 }
 
@@ -51,14 +52,14 @@ void CLuaInputEditDlg::DoDataExchange(CDataExchange* pDX)
    return;
    }
 
- if (m_L && lua_type (m_L, -1) == LUA_TFUNCTION)
+ if (m_L && m_iValidationIndex != LUA_NOREF)
   {
   bool bWanted = false;
 
+  lua_rawgeti (m_L, LUA_REGISTRYINDEX, m_iValidationIndex);
+
   // Lua validation:  function f (value)  ... end
 
-  // validate function (make copy)
-  lua_pushvalue (m_L, -1);       
   // what they have currently typed
   lua_pushlstring (m_L, m_strReply, m_strReply.GetLength ());
 

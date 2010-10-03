@@ -326,8 +326,6 @@ static int gen_inputbox (lua_State *L, T & msg)
   CString strOKbuttonLabel;
   CString strCancelbuttonLabel;
 
-
-
   // if arg6 present, and a table, grab extra stuff
   if (lua_istable (L, nExtraStuffArg))
     {
@@ -348,10 +346,15 @@ static int gen_inputbox (lua_State *L, T & msg)
     if (!lua_isnil (L, -1))
       {
       if (!lua_isfunction (L, -1))
-        luaL_error (L, "inputbox argument 6 value for 'validate' must be a function");
+        luaL_error (L, "inputbox argument #6 value for 'validate' must be a function");
 
       lua_pushvalue (L, -1);    // function is now on top of stack   
       msg.m_L = L;             // non-NULL indicates we have function there
+
+      // we can't leave the function on the stack, that gets cleared from time to time
+      // while the dialog box is running - so we store it in the registry and get the
+      // unique index back
+      msg.m_iValidationIndex = luaL_ref (L, LUA_REGISTRYINDEX);
       } // validate function there
 
     }  // table of extra stuff there
@@ -382,10 +385,15 @@ static int gen_inputbox (lua_State *L, T & msg)
   msg.m_strOKbuttonLabel      = strOKbuttonLabel ;
   msg.m_strCancelbuttonLabel  = strCancelbuttonLabel;
 
+  lua_settop (L, 0);
+
   if (msg.DoModal () != IDOK)
     lua_pushnil (L);
   else
     lua_pushstring (L, msg.m_strReply);
+
+  // free up registry entry  (is OK with LUA_NOREF)
+  luaL_unref(L, LUA_REGISTRYINDEX, msg.m_iValidationIndex);
 
   return 1;
 } // end of gen_inputbox
@@ -1754,11 +1762,15 @@ CFunctionListDlg dlg;
     if (!lua_isnil (L, 5))
       {
       luaL_checktype (L, 5, LUA_TFUNCTION);
-      lua_remove (L, 1);   // get rid of bottom 4 items
-      lua_remove (L, 1);
-      lua_remove (L, 1);
-      lua_remove (L, 1);
-      dlg.m_L = L;   // function is now at stack item 1
+      lua_pushvalue (L, 5);    // function is now on top of stack   
+
+      dlg.m_L = L; 
+
+      // we can't leave the function on the stack, that gets cleared from time to time
+      // while the dialog box is running - so we store it in the registry and get the
+      // unique index back
+      dlg.m_iFilterIndex = luaL_ref (L, LUA_REGISTRYINDEX);
+
       }
     }
 
@@ -1777,6 +1789,9 @@ CFunctionListDlg dlg;
       }
     }
   
+  // free up registry entry  (is OK with LUA_NOREF)
+  luaL_unref(L, LUA_REGISTRYINDEX, dlg.m_iFilterIndex);
+
   return 1;   // 1 result
 
 } // end of filterpicker

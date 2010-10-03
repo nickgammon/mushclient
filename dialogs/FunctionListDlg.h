@@ -39,6 +39,7 @@ public:
 
   // Lua state for filter function
   lua_State * m_L;
+  int m_iFilterIndex;
 
 // Overrides
 	// ClassWizard generated virtual function overrides
