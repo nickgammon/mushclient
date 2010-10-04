@@ -621,7 +621,7 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
 
     if (lua_gettop (L) > 0)
       {
-      if (lua_type (L, 1) == LUA_TBOOLEAN)
+      if (lua_isboolean (L, 1))
         *result = lua_toboolean (L, 1);
       else
         *result = lua_tonumber (L, 1);  // I use number rather than boolean

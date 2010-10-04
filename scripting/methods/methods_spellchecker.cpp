@@ -305,7 +305,7 @@ unsigned char cAction = ActionCode [0];
       }  
 
     // if it returns false, there was a problem
-    if (lua_type (App.m_SpellChecker_Lua, -1) == LUA_TBOOLEAN)
+    if (lua_isboolean (App.m_SpellChecker_Lua, -1))
       {
       int ok = lua_toboolean (App.m_SpellChecker_Lua, -1);
       if (!ok)

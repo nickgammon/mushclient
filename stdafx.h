@@ -37,6 +37,13 @@
   #define _INC_MALLOC	     // exclude standard memory alloc procedures
 #endif
 
+// disable memory checking for speed
+//  comment out to re-enable
+#ifdef _DEBUG
+  #undef DEBUG_NEW
+  #define DEBUG_NEW new
+#endif
+
 #define USE_PYTHON    // Nick's "use Python" extension ;)
 #define USE_TCL       // Nick's "use TCL" extension ;)
 #define USE_PHP       // Nick's "use PHP" extension ;)
