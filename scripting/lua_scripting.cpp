@@ -677,7 +677,7 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,          // dispatch ID, will b
     return true;    // error return
     }
 
-  lua_pushstring (L, strParam);    // the solitary argument
+  lua_pushlstring (L, strParam, strParam.GetLength ());    // the solitary argument
 
   if (iReason != eDontChangeAction)
     m_pDoc->m_iCurrentActionSource = iReason;
