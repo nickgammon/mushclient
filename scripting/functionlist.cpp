@@ -102,6 +102,7 @@ tInternalFunctionsTable InternalFunctionsTable [] = {
 { "DatabaseError" ,              "( DbName )" } ,
 { "DatabaseExec" ,               "( DbName , Sql )" } ,
 { "DatabaseFinalize" ,           "( DbName )" } ,
+{ "DatabaseGetField",            "( DbName , Sql )" } ,
 { "DatabaseInfo" ,               "( DbName , InfoType )" } ,
 { "DatabaseLastInsertRowid" ,    "( DbName )" } ,
 { "DatabaseList" ,               "( )" } ,

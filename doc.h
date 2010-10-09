@@ -2716,6 +2716,7 @@ public:
 	afx_msg long WindowTransformImage(LPCTSTR Name, LPCTSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy);
 	afx_msg long SetScroll(long Position, BOOL Visible);
 	afx_msg BSTR Menu(LPCTSTR Items, LPCTSTR Default);
+	afx_msg VARIANT DatabaseGetField(LPCTSTR Name, LPCTSTR Sql);
 	afx_msg long GetNormalColour(short WhichColour);
 	afx_msg void SetNormalColour(short WhichColour, long nNewValue);
 	afx_msg long GetBoldColour(short WhichColour);

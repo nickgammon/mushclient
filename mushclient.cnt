@@ -242,6 +242,7 @@
 3 DatabaseError=FNC_DatabaseError
 3 DatabaseExec=FNC_DatabaseExec
 3 DatabaseFinalize=FNC_DatabaseFinalize
+3 DatabaseGetField=FNC_DatabaseGetField
 3 DatabaseInfo=FNC_DatabaseInfo
 3 DatabaseLastInsertRowid=FNC_DatabaseLastInsertRowid
 3 DatabaseList=FNC_DatabaseList

@@ -22,6 +22,7 @@
 //    DatabaseError
 //    DatabaseExec
 //    DatabaseFinalize
+//    DatabaseGetField
 //    DatabaseInfo
 //    DatabaseLastInsertRowid
 //    DatabaseList
@@ -618,4 +619,32 @@ long CMUSHclientDoc::DatabaseReset(LPCTSTR Name)
 
 }  // end of  CMUSHclientDoc::DatabaseReset
 
+
+
+VARIANT CMUSHclientDoc::DatabaseGetField(LPCTSTR Name, LPCTSTR Sql) 
+{
+	VARIANT vaResult;
+	VariantInit(&vaResult);
+
+
+  // prepare the SQL statement
+  long rc = DatabasePrepare (Name, Sql);
+
+  if (rc != 0)
+    return vaResult;  // could not prepare statement, give up
+
+  // step to get one row
+  rc = DatabaseStep (Name);
+
+  // if we got one, extract the value from column 1
+  if (rc == SQLITE_ROW)
+    vaResult = DatabaseColumnValue (Name, 1);
+
+  // finalize the current statement
+  DatabaseFinalize (Name);
+
+  // return the result
+	return vaResult;
+
+}  // end of CMUSHclientDoc::DatabaseGetField
 

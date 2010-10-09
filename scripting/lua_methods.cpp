@@ -1844,6 +1844,18 @@ static int L_DatabaseChanges (lua_State *L)
   return 1;  // number of result fields
   } // end of L_DatabaseChanges
 
+//----------------------------------------
+//  world.DatabaseGetField
+//----------------------------------------
+static int L_DatabaseGetField (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  VARIANT v = pDoc->DatabaseGetField (
+      my_checkstring (L, 1),  // Name
+      my_checkstring (L, 2)   // Sql
+      );
+  return pushVariant (L, v);  // number of result fields
+  } // end of L_DatabaseGetField
 
 //----------------------------------------
 //  world.DatabaseLastInsertRowid
@@ -6536,6 +6548,7 @@ static const struct luaL_reg worldlib [] =
   {"DatabaseExec", L_DatabaseExec},
   {"DatabaseColumnNames", L_DatabaseColumnNames},
   {"DatabaseColumnValues", L_DatabaseColumnValues},
+  {"DatabaseGetField", L_DatabaseGetField},
   {"DatabaseReset", L_DatabaseReset},
   {"Debug", L_Debug},
   {"DeleteAlias", L_DeleteAlias},

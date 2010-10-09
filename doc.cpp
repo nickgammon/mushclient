@@ -607,6 +607,7 @@ BEGIN_DISPATCH_MAP(CMUSHclientDoc, CDocument)
 	DISP_FUNCTION(CMUSHclientDoc, "WindowTransformImage", WindowTransformImage, VT_I4, VTS_BSTR VTS_BSTR VTS_R4 VTS_R4 VTS_I2 VTS_R4 VTS_R4 VTS_R4 VTS_R4)
 	DISP_FUNCTION(CMUSHclientDoc, "SetScroll", SetScroll, VT_I4, VTS_I4 VTS_BOOL)
 	DISP_FUNCTION(CMUSHclientDoc, "Menu", Menu, VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION(CMUSHclientDoc, "DatabaseGetField", DatabaseGetField, VT_VARIANT, VTS_BSTR VTS_BSTR)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "NormalColour", GetNormalColour, SetNormalColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "BoldColour", GetBoldColour, SetBoldColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "CustomColourText", GetCustomColourText, SetCustomColourText, VT_I4, VTS_I2)
@@ -7747,4 +7748,5 @@ void CMUSHclientDoc::OnUpdateGameTrace(CCmdUI* pCmdUI)
   pCmdUI->Enable ();
   pCmdUI->SetCheck (m_bTrace);
 }
+
 
