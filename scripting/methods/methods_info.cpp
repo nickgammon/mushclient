@@ -206,6 +206,8 @@ tInfoTypeMapping InfoTypes [] =
 { 119, "Script engine active" },
 { 120, "Scroll bar visible" },
 { 121, "High-resolution timer available" },
+{ 122, "SQLite3 is thread-safe" },
+
 
 
 // (numbers (longs) - calculated at runtime)
@@ -307,6 +309,7 @@ tInfoTypeMapping InfoTypes [] =
 { 295, "Times output window redrawn" },
 { 296, "Output window scroll bar position" },
 { 297, "High-resolution timer frequency" },
+{ 298, "SQLite3 version number" },
    
 
 // (dates - calculated at runtime)
@@ -567,7 +570,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case  119: SetUpVariantBool (vaResult, m_ScriptEngine != NULL); break;
     case  120: SetUpVariantBool (vaResult, m_bScrollBarWanted); break;
     case  121: SetUpVariantBool (vaResult, App.m_iCounterFrequency != 0); break;
-
+    case  122: SetUpVariantBool (vaResult, sqlite3_threadsafe() != 0); break;
 
     case  201: SetUpVariantLong (vaResult, m_total_lines); break;
     case  202: SetUpVariantLong (vaResult, m_new_lines); break;
@@ -1059,6 +1062,10 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case 297:
        SetUpVariantDouble (vaResult, App.m_iCounterFrequency); 
        break;
+
+    case 298:
+        SetUpVariantLong (vaResult, sqlite3_libversion_number()); 
+        break;
 
     case  301: 
       if (m_tConnectTime.GetTime ())     // only if non-zero, otherwise return empty
