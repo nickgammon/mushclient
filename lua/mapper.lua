@@ -6,6 +6,7 @@ Author: Nick Gammon
 Date:   11th March 2010
 Amended: 15th August 2010
 Amended: 2nd October 2010
+Amended: 18th October 2010 to added find callback
 
 Generic MUD mapper.
 
@@ -62,7 +63,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 2.1   -- for querying by plugins
+VERSION = 2.2   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -1152,12 +1153,18 @@ end -- save_state
 
 -- if 'walk' is true, we walk to the first match rather than displaying hyperlinks
 
-function find (f, show_uid, expected_count, walk)
+-- if fcb is a function, it is called back after displaying each line
+
+function find (f, show_uid, expected_count, walk, fcb)
  
   if not check_we_can_find () then
     return
   end -- if
 
+  if fcb then
+    assert (type (fcb) == "function")
+  end -- if
+  
   local start_time = GetInfo (232)
   local paths, count, depth = find_paths (current_room, f)
   local end_time = GetInfo (232)
@@ -1221,6 +1228,11 @@ function find (f, show_uid, expected_count, walk)
         info = " [" .. paths [uid].reason .. "]"
       end -- if
       mapprint (" - " .. distance .. info) -- new line
+      
+      -- callback to display extra stuff (like find context, room description)
+      if fcb then
+        fcb (uid)
+      end -- if callback
       hyperlink_paths [hash] = paths [uid].path
     end -- if
   end -- for each room
