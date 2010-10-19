@@ -3714,9 +3714,22 @@ CString strResult;
   Left += m_rect.left;
   Top  += m_rect.top;
 
+  // can't have empty string
+  if (Items [0] == 0)
+    return strResult;
+
+  LPCTSTR p = Items;
+  bool bReturnNumber = false;
+
+  if (*p == '!')
+    {
+    bReturnNumber = true;
+    p++;
+    }
+
   vector<string> v;
 
-  StringToVector (Items, v, "|");
+  StringToVector (p, v, "|");
 
   int iCount = v.size ();
 
@@ -3831,7 +3844,12 @@ CPoint menupoint (Left, Top);
   Frame.m_bAutoMenuEnable  = TRUE;
 
   if (iResult > 0)
-    strResult = strMXP_menu_item [iResult - MXP_FIRST_MENU];
+    {
+    if (bReturnNumber)
+      strResult = CFormat ("%i", iResult - MXP_FIRST_MENU + 1);
+    else
+      strResult = strMXP_menu_item [iResult - MXP_FIRST_MENU];
+    }
 
   vPopup.front ()->DestroyMenu ();   // clean up
 
