@@ -3292,7 +3292,7 @@ void CPrefsP7::OnUpdateHaveDefaults(CCmdUI* pCmdUI)
 void CPrefsP7::OnUpdateNeedSelection(CCmdUI* pCmdUI)
   {
 
-  pCmdUI->Enable (GetSelectedItemCount () != 0  &&
+  pCmdUI->Enable ((GetSelectedItemCount () != 0 || GetSelectedGroupCount () != 0) &&
                   (m_ctlUseDefaultAliases.GetCheck () == 0 ||
                   App.m_strDefaultAliasesFile.IsEmpty ()));
   } // end of CPrefsP7::OnUpdateNeedSelection
@@ -4452,7 +4452,7 @@ void CPrefsP8::OnUpdateHaveDefaults(CCmdUI* pCmdUI)
 
 void CPrefsP8::OnUpdateNeedSelection(CCmdUI* pCmdUI)
   {
-  pCmdUI->Enable (GetSelectedItemCount () != 0   &&
+  pCmdUI->Enable ((GetSelectedItemCount () != 0 || GetSelectedGroupCount () != 0) &&
                   (m_ctlUseDefaultTriggers.GetCheck () == 0 ||
                   App.m_strDefaultTriggersFile.IsEmpty ()));
   } // end of CGenPropertyPage::OnUpdateNeedSelection
@@ -6825,7 +6825,7 @@ void CPrefsP16::OnUpdateHaveDefaults(CCmdUI* pCmdUI)
 
 void CPrefsP16::OnUpdateNeedSelection(CCmdUI* pCmdUI)
   {
-  pCmdUI->Enable (GetSelectedItemCount () != 0   &&
+  pCmdUI->Enable ((GetSelectedItemCount () != 0 || GetSelectedGroupCount () != 0) &&
                   (m_ctlUseDefaultTimers.GetCheck () == 0 ||
                   App.m_strDefaultTimersFile.IsEmpty ()));
   } // end of CPrefsP16::OnUpdateNeedSelection

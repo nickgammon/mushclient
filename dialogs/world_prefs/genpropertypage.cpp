@@ -15,6 +15,9 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
 // CGenPropertyPage property page
 IMPLEMENT_DYNAMIC(CGenPropertyPage, CPropertyPage)
 
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+
 CGenPropertyPage::CGenPropertyPage(const UINT nID) : 
                                    CPropertyPage(nID)
 {
@@ -31,7 +34,10 @@ CGenPropertyPage::CGenPropertyPage(const UINT nID) :
   m_iColumnCount        = 0;
   m_bWantTreeControl    = false;
 
-}
+}   // end of CGenPropertyPage::CGenPropertyPage
+
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
 
 CGenPropertyPage::~CGenPropertyPage()
 {
@@ -40,7 +46,7 @@ CGenPropertyPage::~CGenPropertyPage()
   delete [] m_strColumnHeadings;    
   delete [] m_iColJust;            
 
-}
+}   // end of CGenPropertyPage::~CGenPropertyPage
 
 void CGenPropertyPage::DoDataExchange(CDataExchange* pDX)
 {
@@ -62,6 +68,9 @@ END_MESSAGE_MAP()
 // CGenPropertyPage message handlers
 
 
+/////////////////////////////////////////////////////////////////////////////
+// OnAddItem
+
 void CGenPropertyPage::SetUpPage (CString strObjectType,
                                   CObjectMap * ObjectMap,
                                   CListCtrl * ctlList,
@@ -81,8 +90,10 @@ void CGenPropertyPage::SetUpPage (CString strObjectType,
   m_iMask = iMask;
   m_bWantTreeControl = bWantTreeControl;
 
-  }
+  }  // end of CGenPropertyPage::SetUpPage 
 
+/////////////////////////////////////////////////////////////////////////////
+// GetSelectedItemCount
 
 int CGenPropertyPage::GetSelectedItemCount () const
   {
@@ -114,6 +125,39 @@ int CGenPropertyPage::GetSelectedItemCount () const
   return m_ctlList->GetSelectedCount ();
 
   } // end of CGenPropertyPage::GetSelectedItemCount 
+
+/////////////////////////////////////////////////////////////////////////////
+// GetSelectedGroupCount
+
+int CGenPropertyPage::GetSelectedGroupCount () const
+  {
+
+  int iCount = 0;
+
+  if (m_bWantTreeControl)
+    {
+
+    for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
+         hGroup;
+         hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
+      {
+
+      if (m_cTreeCtrl.GetItemState (hGroup, TVIS_SELECTED) & TVIS_SELECTED)
+        {
+        for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+            hItem;
+            hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+              iCount++;
+        return iCount;
+        } // end of group selected
+      }  // end for each group
+    } // end of tree control
+
+  return 0;
+  }
+
+/////////////////////////////////////////////////////////////////////////////
+// GetItemCount
 
 int CGenPropertyPage::GetItemCount () const
   {
@@ -569,27 +613,29 @@ void CGenPropertyPage::OnDeleteItem()
 {
 
 int iCount =  GetSelectedItemCount ();
+int iGroupCount = GetSelectedGroupCount ();
+
 int nItem,
     i,
     iIncluded = 0,
     iExecuting = 0;
 
 
-  if (iCount == 0)
+  if ((iCount + iGroupCount) == 0)
     return;
 
   if (App.m_bTriggerRemoveCheck)
     {
     // mucking around to make it plural properly
     CString sName =  m_strObjectType;
-    if (iCount > 1)
+    if ((iCount + iGroupCount) > 1)
       if (sName == "alias")
         sName += "es";
       else
         sName += "s";
 
     if (::UMessageBox (TFormat ("Delete %i %s - are you sure?",
-        iCount, sName), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2)
+        iCount + iGroupCount, sName), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2)
         != IDYES )
         return;
     } // end of wanting to confirm
@@ -603,31 +649,28 @@ int nItem,
          hGroup;
          hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
       {
+      bool bGroupSelected = m_cTreeCtrl.GetItemState (hGroup, TVIS_SELECTED) & TVIS_SELECTED;
+
+      // remember which we deleted
+      list<HTREEITEM> deletedItems;
 
       // find selected items
       for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
           hItem;
           hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
-            {
-            UINT iState = m_cTreeCtrl.GetItemState (hItem, TVIS_SELECTED);
+            if (bGroupSelected || m_cTreeCtrl.GetItemState (hItem, TVIS_SELECTED) & TVIS_SELECTED)
+              if (!DeleteOneItem ((CString *) m_cTreeCtrl.GetItemData (hItem), iIncluded, iExecuting))
+                deletedItems.push_back (hItem);
 
-            if (iState & TVIS_SELECTED)
-              {
-              CString * pstrObjectName = (CString *) m_cTreeCtrl.GetItemData (hItem);
+      // loop doesn't work if we delete while going through it, so do it now
+      for (list<HTREEITEM>::const_iterator it =  deletedItems.begin ();
+           it != deletedItems.end ();
+           ++it)
+          m_cTreeCtrl.DeleteItem (*it);
 
-              if (!DeleteOneItem (pstrObjectName, iIncluded, iExecuting))
-                {
-                HTREEITEM hdlParent = m_cTreeCtrl.GetParentItem (hItem);
-                m_cTreeCtrl.DeleteItem (hItem);
-                CheckParentHasChildren (hdlParent);
-                }
-
-              }  // end if selected
-
-            }   // end for each item
+      CheckParentHasChildren (hGroup);
 
       }  // end for each group
-
     }   // end of tree control
   else
     // list control ................
@@ -1296,7 +1339,7 @@ BOOL CGenPropertyPage::OnInitDialog()
     wndpl.rcNormalPosition.left =  wndpl.rcNormalPosition.right - 100;
   
 
-    m_cUseTreeViewCtrl.Create(Translate ("Tree View"), 
+    m_cUseTreeViewCtrl.Create(Translate ("Tree Vie&w"), 
               BS_CHECKBOX | BS_AUTOCHECKBOX | BS_NOTIFY | WS_VISIBLE | WS_CHILD, 
               wndpl.rcNormalPosition, 
               this, 
@@ -1471,22 +1514,25 @@ try
          hGroup;
          hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
       {
+      bool bGroupSelected = m_cTreeCtrl.GetItemState (hGroup, TVIS_SELECTED) & TVIS_SELECTED;
+
+      // remember which we deleted
+      list<HTREEITEM> deletedItems;
 
       for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
           hItem;
           hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
-            {
-            UINT iState = m_cTreeCtrl.GetItemState (hItem, TVIS_SELECTED);
-
-            if (iState & TVIS_SELECTED)
-              {
+            if (bGroupSelected || m_cTreeCtrl.GetItemState (hItem, TVIS_SELECTED) & TVIS_SELECTED)
               if (CopyOneItem ((CString *) m_cTreeCtrl.GetItemData (hItem), ar))
-                {
-                m_cTreeCtrl.DeleteItem (hItem);
-                }
-              }  // end if selected
+                 deletedItems.push_back (hItem);    // not there any more
 
-            }   // end for each item
+      // loop doesn't work if we delete while going through it, so do it now
+      for (list<HTREEITEM>::const_iterator it =  deletedItems.begin ();
+           it != deletedItems.end ();
+           ++it)
+          m_cTreeCtrl.DeleteItem (*it);
+
+      CheckParentHasChildren (hGroup);
 
       }  // end for each group
 

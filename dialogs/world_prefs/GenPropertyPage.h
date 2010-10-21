@@ -113,6 +113,7 @@ public:
   void SortItems (void);                 // sort the tree/list control
   int GetSelectedItemCount () const;     // how many items are selected?
   int GetItemCount () const;             // how many items are there in the list/tree?
+  int GetSelectedGroupCount () const;    // count of selected items in a group in the tree view
   void CheckParentHasChildren (HTREEITEM hdlParent); // if this group is empty, delete it
   
   
