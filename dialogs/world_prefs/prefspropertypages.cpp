@@ -2576,6 +2576,7 @@ BEGIN_MESSAGE_MAP(CPrefsP7, CGenPropertyPage)
   ON_UPDATE_COMMAND_UI(IDC_USE_DEFAULT_ALIASES, OnUpdateHaveDefaults)
   ON_UPDATE_COMMAND_UI(IDC_MOVE_UP, OnUpdateCanSequence)
   ON_UPDATE_COMMAND_UI(IDC_MOVE_DOWN, OnUpdateCanSequence)
+	ON_NOTIFY(NM_DBLCLK, ID_TREEVIEW, OnDblclkAliasesList)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2744,6 +2745,55 @@ CString CPrefsP7::GetLabel (CObject * pItem) const
   return alias_item->strLabel;
 
   } // end of CPrefsP7::GetLabel 
+
+CString CPrefsP7::GetGroup (CObject * pItem) const
+  {
+  CAlias * alias_item = (CAlias *) pItem;
+
+  ASSERT_VALID (alias_item);
+  ASSERT( alias_item->IsKindOf( RUNTIME_CLASS( CAlias ) ) );
+
+  return alias_item->strGroup;
+
+  } // end of CPrefsP7::GetGroup 
+
+CString CPrefsP7::GetDescription (CObject * pItem) const
+  {
+  CAlias * alias_item = (CAlias *) pItem;
+
+  ASSERT_VALID (alias_item);
+  ASSERT( alias_item->IsKindOf( RUNTIME_CLASS( CAlias ) ) );
+
+  return alias_item->name;
+
+  } // end of CPrefsP7::GetDescription 
+
+int CPrefsP7::GetSequence (CObject * pItem) const
+  {
+  CAlias * alias_item = (CAlias *) pItem;
+
+  ASSERT_VALID (alias_item);
+  ASSERT( alias_item->IsKindOf( RUNTIME_CLASS( CAlias ) ) );
+
+  return alias_item->iSequence;
+
+  } // end of CPrefsP7::GetSequence 
+
+CString CPrefsP7::GetFindText (CObject * pItem) const 
+  {
+  CAlias * alias_item = (CAlias *) pItem;
+
+  ASSERT_VALID (alias_item);
+  ASSERT( alias_item->IsKindOf( RUNTIME_CLASS( CAlias ) ) );
+
+
+  CString strResult = alias_item->name;
+  
+  strResult += "\t" + alias_item->contents + "\t" +  alias_item->strLabel + "\t" + alias_item->strGroup;
+
+  return strResult;
+
+  }   // end of CPrefsP7::GetFindText 
 
 void CPrefsP7::SetDispatchID (CObject * pItem, const DISPID dispid)
   {
@@ -2976,7 +3026,7 @@ int nItem;
 
   return nItem;
 
-  } // end of CPrefsP7::add_item
+  } // end of CPrefsP7::AddItem
 
 
 BOOL CPrefsP7::OnInitDialog() 
@@ -3067,18 +3117,26 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    add_item (pItem, pstrObjectName, nItem, FALSE);
+
+    if (m_bWantTreeControl)
+      {
+    //  m_cTreeCtrl.DeleteItem (hdlItem);
+    //  HTREEITEM hItem = add_tree_item (pItem, pstrObjectName); 
+      }
+    else
+      add_list_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
   }   // end of dealing with each selected item
 
   // resort the list
-  t_gen_sort_param sort_param (m_ObjectMap, m_last_col, m_reverse, m_CompareObjects);
-  m_ctlList->SortItems (CompareFunc, (LPARAM) &sort_param); 
-  m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+  SortItems ();
+
+  if (!m_bWantTreeControl)
+    m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
 	
-}
+}    // end of CPrefsP7::OnMoveUp
 
 void CPrefsP7::OnMoveDown() 
 {
@@ -3151,19 +3209,26 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    add_item (pItem, pstrObjectName, nItem, FALSE);
+    if (m_bWantTreeControl)
+      {
+    //  m_cTreeCtrl.DeleteItem (hdlItem);
+    //  HTREEITEM hItem = add_tree_item (pItem, pstrObjectName); 
+      }
+    else
+      add_list_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
   }   // end of dealing with each selected item
 
   // resort the list
-  t_gen_sort_param sort_param (m_ObjectMap, m_last_col, m_reverse, m_CompareObjects);
-  m_ctlList->SortItems (CompareFunc, (LPARAM) &sort_param); 
-  m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+  SortItems ();
+
+  if (!m_bWantTreeControl)
+    m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
 	
 	
-}
+}   // end of CPrefsP7::OnMoveDown
 
 void CPrefsP7::OnUpdateNotUsingDefaults(CCmdUI* pCmdUI)
   {
@@ -3179,14 +3244,16 @@ void CPrefsP7::OnUpdateHaveDefaults(CCmdUI* pCmdUI)
 
 void CPrefsP7::OnUpdateNeedSelection(CCmdUI* pCmdUI)
   {
-  pCmdUI->Enable (m_ctlList->GetSelectedCount () != 0   &&
+
+  pCmdUI->Enable (GetSelectedItemCount () != 0  &&
                   (m_ctlUseDefaultAliases.GetCheck () == 0 ||
                   App.m_strDefaultAliasesFile.IsEmpty ()));
   } // end of CPrefsP7::OnUpdateNeedSelection
 
 void CPrefsP7::OnUpdateNeedOneSelection(CCmdUI* pCmdUI)
   {
-  pCmdUI->Enable (m_ctlList->GetSelectedCount () == 1   &&
+
+  pCmdUI->Enable (GetSelectedItemCount () == 1   &&
                   (m_ctlUseDefaultAliases.GetCheck () == 0 ||
                   App.m_strDefaultAliasesFile.IsEmpty ()));
   } // end of CPrefsP7::OnUpdateNeedOneSelection
@@ -3426,6 +3493,7 @@ BEGIN_MESSAGE_MAP(CPrefsP8, CGenPropertyPage)
   ON_UPDATE_COMMAND_UI(IDC_ADD_TRIGGER, OnUpdateNotUsingDefaults)
   ON_UPDATE_COMMAND_UI(IDC_LOAD_TRIGGER, OnUpdateNotUsingDefaults)
   ON_UPDATE_COMMAND_UI(IDC_USE_DEFAULT_TRIGGERS, OnUpdateHaveDefaults)
+	ON_NOTIFY(NM_DBLCLK, ID_TREEVIEW, OnDblclkTriggersList)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -3729,6 +3797,55 @@ CString CPrefsP8::GetLabel (CObject * pItem) const
   return trigger_item->strLabel;
 
   } // end of CPrefsP8::GetLabel 
+
+CString CPrefsP8::GetGroup (CObject * pItem) const
+  {
+  CTrigger * trigger_item = (CTrigger *) pItem;
+
+  ASSERT_VALID (trigger_item);
+  ASSERT( trigger_item->IsKindOf( RUNTIME_CLASS( CTrigger ) ) );
+
+  return trigger_item->strGroup;
+
+  } // end of CPrefsP8::GetGroup 
+
+CString CPrefsP8::GetDescription (CObject * pItem) const
+  {
+  CTrigger * trigger_item = (CTrigger *) pItem;
+
+  ASSERT_VALID (trigger_item);
+  ASSERT( trigger_item->IsKindOf( RUNTIME_CLASS( CTrigger ) ) );
+
+  return trigger_item->trigger;
+
+  } // end of CPrefsP8::GetDescription 
+
+int CPrefsP8::GetSequence (CObject * pItem) const
+  {
+  CTrigger * trigger_item = (CTrigger *) pItem;
+
+  ASSERT_VALID (trigger_item);
+  ASSERT( trigger_item->IsKindOf( RUNTIME_CLASS( CTrigger ) ) );
+
+  return trigger_item->iSequence;
+
+  } // end of CPrefsP8::GetSequence 
+
+CString CPrefsP8::GetFindText (CObject * pItem) const 
+  {
+  CTrigger * trigger_item = (CTrigger *) pItem;
+
+  ASSERT_VALID (trigger_item);
+  ASSERT( trigger_item->IsKindOf( RUNTIME_CLASS( CTrigger ) ) );
+
+
+  CString strResult = trigger_item->trigger;
+  
+  strResult += "\t" + trigger_item->contents + "\t" +  trigger_item->strLabel + "\t" +  trigger_item->strGroup;
+
+  return strResult;
+
+  }   // end of CPrefsP8::GetFindText 
 
 void CPrefsP8::SetDispatchID (CObject * pItem, const DISPID dispid)
   {
@@ -4034,7 +4151,7 @@ int nItem;
 
   return nItem;
 
-  } // end of CPrefsP8::add_item
+  } // end of CPrefsP8::AddItem
 
 void CPrefsP8::OnMoveUp() 
 {
@@ -4106,18 +4223,25 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    add_item (pItem, pstrObjectName, nItem, FALSE);
+    if (m_bWantTreeControl)
+      {
+    //  m_cTreeCtrl.DeleteItem (hdlItem);
+    //  HTREEITEM hItem = add_tree_item (pItem, pstrObjectName); 
+      }
+    else
+      add_list_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
   }   // end of dealing with each selected item
 
   // resort the list
-  t_gen_sort_param sort_param (m_ObjectMap, m_last_col, m_reverse, m_CompareObjects);
-  m_ctlList->SortItems (CompareFunc, (LPARAM) &sort_param); 
-  m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+  SortItems ();
+
+  if (!m_bWantTreeControl)
+    m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
 	
-}
+}  // end of CPrefsP8::OnMoveUp
 
 void CPrefsP8::OnMoveDown() 
 {
@@ -4190,19 +4314,26 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    add_item (pItem, pstrObjectName, nItem, FALSE);
+    if (m_bWantTreeControl)
+      {
+    //  m_cTreeCtrl.DeleteItem (hdlItem);
+    //  HTREEITEM hItem = add_tree_item (pItem, pstrObjectName); 
+      }
+    else
+      add_list_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
 
   }   // end of dealing with each selected item
 
   // resort the list
-  t_gen_sort_param sort_param (m_ObjectMap, m_last_col, m_reverse, m_CompareObjects);
-  m_ctlList->SortItems (CompareFunc, (LPARAM) &sort_param); 
-  m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+  SortItems ();
+
+  if (!m_bWantTreeControl)
+    m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
 	
 	
-}
+}  // end of CPrefsP8::OnMoveDown
 
 void CPrefsP8::OnUpdateCanSequence(CCmdUI* pCmdUI)
   {
@@ -4227,14 +4358,14 @@ void CPrefsP8::OnUpdateHaveDefaults(CCmdUI* pCmdUI)
 
 void CPrefsP8::OnUpdateNeedSelection(CCmdUI* pCmdUI)
   {
-  pCmdUI->Enable (m_ctlList->GetSelectedCount () != 0   &&
+  pCmdUI->Enable (GetSelectedItemCount () != 0   &&
                   (m_ctlUseDefaultTriggers.GetCheck () == 0 ||
                   App.m_strDefaultTriggersFile.IsEmpty ()));
   } // end of CGenPropertyPage::OnUpdateNeedSelection
 
 void CPrefsP8::OnUpdateNeedOneSelection(CCmdUI* pCmdUI)
   {
-  pCmdUI->Enable (m_ctlList->GetSelectedCount () == 1  &&
+  pCmdUI->Enable (GetSelectedItemCount () == 1  &&
                   (m_ctlUseDefaultTriggers.GetCheck () == 0 ||
                   App.m_strDefaultTriggersFile.IsEmpty ()));
   } // end of CGenPropertyPage::OnUpdateNeedOneSelection
@@ -5986,6 +6117,7 @@ BEGIN_MESSAGE_MAP(CPrefsP16, CGenPropertyPage)
   ON_UPDATE_COMMAND_UI(IDC_FIND_NEXT, OnUpdateNeedEntries)
   ON_UPDATE_COMMAND_UI(IDC_LOAD_TIMERS, OnUpdateNotUsingDefaults)
   ON_UPDATE_COMMAND_UI(IDC_USE_DEFAULT_TIMERS, OnUpdateHaveDefaults)
+	ON_NOTIFY(NM_DBLCLK, ID_TREEVIEW, OnDblclkTimersList)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -6128,7 +6260,95 @@ CString CPrefsP16::GetLabel (CObject * pItem) const
   return timer_item->strLabel;
 
   } // end of CPrefsP16::GetLabel 
+
+CString CPrefsP16::GetGroup (CObject * pItem) const
+  {
+  CTimer * timer_item = (CTimer *) pItem;
+
+  ASSERT_VALID (timer_item);
+  ASSERT( timer_item->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
+
+  return timer_item->strGroup;
+
+  } // end of CPrefsP16::GetGroup 
  
+CString CPrefsP16::GetDescription (CObject * pItem) const
+  {
+  CTimer * timer_item = (CTimer *) pItem;
+
+  ASSERT_VALID (timer_item);
+  ASSERT( timer_item->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
+
+CString strType;
+CString strWhen;
+
+  switch (timer_item->iType)
+    {
+    case CTimer::eAtTime:
+                          strType = "At: "; 
+                          strWhen.Format ("%02i:%02i:%04.2f",
+                                          timer_item->iAtHour, 
+                                          timer_item->iAtMinute, 
+                                          timer_item->fAtSecond);
+                          break;
+
+    case CTimer::eInterval: 
+                          strType = "Every: "; 
+                          if (timer_item->iOffsetHour || 
+                              timer_item->iOffsetMinute ||
+                              timer_item->fOffsetSecond != 0.0)
+                            strWhen.Format ("%02i:%02i:%04.2f offset %02i:%02i:%04.2f",
+                                            timer_item->iEveryHour, 
+                                            timer_item->iEveryMinute, 
+                                            timer_item->fEverySecond,
+                                            timer_item->iOffsetHour, 
+                                            timer_item->iOffsetMinute, 
+                                            timer_item->fOffsetSecond);
+                          else
+                            strWhen.Format ("%02i:%02i:%04.2f",
+                                            timer_item->iEveryHour, 
+                                            timer_item->iEveryMinute, 
+                                            timer_item->fEverySecond);
+
+                          break;
+
+    default:              strType = "Unknown: "; 
+                          strWhen = "00:00:00.00";
+                          break;
+    }
+
+  strType = strType + strWhen;
+  return strType;
+
+  } // end of CPrefsP16::GetDescription 
+
+int CPrefsP16::GetSequence (CObject * pItem) const
+  {
+  CTimer * timer_item = (CTimer *) pItem;
+
+  ASSERT_VALID (timer_item);
+  ASSERT( timer_item->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
+
+  return 0;
+
+  } // end of CPrefsP16::GetSequence 
+
+CString CPrefsP16::GetFindText (CObject * pItem) const 
+  {
+  CTimer * timer_item = (CTimer *) pItem;
+
+  ASSERT_VALID (timer_item);
+  ASSERT( timer_item->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
+
+
+  CString strResult = timer_item->strContents;
+  
+  strResult += timer_item->strLabel + "\t" + timer_item->strGroup;
+
+  return strResult;
+
+  }   // end of CPrefsP16::GetFindText 
+
 void CPrefsP16::SetDispatchID (CObject * pItem, const DISPID dispid)
   {
   CTimer * timer_item = (CTimer *) pItem;
@@ -6461,7 +6681,7 @@ CString strWhen;
 
   return nItem;
 
-  } // end of CPrefsP16::add_item
+  } // end of CPrefsP16::AddItem
 
 
 BOOL CPrefsP16::OnInitDialog() 
@@ -6499,14 +6719,14 @@ void CPrefsP16::OnUpdateHaveDefaults(CCmdUI* pCmdUI)
 
 void CPrefsP16::OnUpdateNeedSelection(CCmdUI* pCmdUI)
   {
-  pCmdUI->Enable (m_ctlList->GetSelectedCount () != 0   &&
+  pCmdUI->Enable (GetSelectedItemCount () != 0   &&
                   (m_ctlUseDefaultTimers.GetCheck () == 0 ||
                   App.m_strDefaultTimersFile.IsEmpty ()));
   } // end of CPrefsP16::OnUpdateNeedSelection
 
 void CPrefsP16::OnUpdateNeedOneSelection(CCmdUI* pCmdUI)
   {
-  pCmdUI->Enable (m_ctlList->GetSelectedCount () == 1   &&
+  pCmdUI->Enable (GetSelectedItemCount () == 1   &&
                   (m_ctlUseDefaultTimers.GetCheck () == 0 ||
                   App.m_strDefaultTimersFile.IsEmpty ()));
   } // end of CPrefsP16::OnUpdateNeedOneSelection
@@ -7403,7 +7623,7 @@ int nItem;
 
   return nItem;
 
-  } // end of CPrefsP18::add_item
+  } // end of CPrefsP18::AddItem
 
 void CPrefsP18::OnFind() 
 {

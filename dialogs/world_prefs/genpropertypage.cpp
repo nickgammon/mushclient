@@ -26,9 +26,10 @@ CGenPropertyPage::CGenPropertyPage(const UINT nID) :
   m_reverse = FALSE;
 
   m_iColWidth           = NULL;
-  m_iColJust           = NULL;
+  m_iColJust            = NULL;
   m_strColumnHeadings   = NULL;
-  m_iColumnCount = 0;
+  m_iColumnCount        = 0;
+  m_bWantTreeControl    = false;
 
 }
 
@@ -67,7 +68,8 @@ void CGenPropertyPage::SetUpPage (CString strObjectType,
                                   CStatic * ctlSummary,
                                   t_CompareObjects CompareObjects,
                                   CFindInfo * pFindInfo,
-                                  const unsigned long iMask)
+                                  const unsigned long iMask,
+                                  const bool bWantTreeControl)
   {
   m_strObjectType = strObjectType;
   m_ObjectMap = ObjectMap;
@@ -77,8 +79,70 @@ void CGenPropertyPage::SetUpPage (CString strObjectType,
   m_pObjectFindInfo = pFindInfo;
   m_nUpdateNumber = App.GetUniqueNumber ();
   m_iMask = iMask;
+  m_bWantTreeControl = bWantTreeControl;
 
   }
+
+
+int CGenPropertyPage::GetSelectedItemCount () const
+  {
+
+  int iCount = 0;
+
+  if (m_bWantTreeControl)
+    {
+
+    for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
+         hGroup;
+         hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
+      {
+
+      for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+          hItem;
+          hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+            {
+            if (m_cTreeCtrl.GetItemState (hItem, TVIS_SELECTED) & TVIS_SELECTED)
+              iCount++;
+            }   // end for each item
+
+      }  // end for each group
+
+
+    return iCount;
+    } // end of tree control
+
+  return m_ctlList->GetSelectedCount ();
+
+  } // end of CGenPropertyPage::GetSelectedItemCount 
+
+int CGenPropertyPage::GetItemCount () const
+  {
+
+  int iCount = 0;
+
+  if (m_bWantTreeControl)
+    {
+
+    for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
+         hGroup;
+         hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
+      {
+
+      for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+          hItem;
+          hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+            iCount++;
+
+      }  // end for each group
+
+
+    return iCount;
+    } // end of tree control
+
+  return m_ctlList->GetItemCount ();
+
+  } // end of CGenPropertyPage::GetSelectedItemCount 
+
 
 /////////////////////////////////////////////////////////////////////////////
 // OnAddItem
@@ -134,13 +198,16 @@ void CGenPropertyPage::OnAddItem(CDialog & dlg)
   CString * pstrObjectName = new CString (strObjectName);
 
   // add this item to the list view
-  add_item (pItem, pstrObjectName, 0, TRUE);
+  if (m_bWantTreeControl)
+    add_tree_item (pItem, pstrObjectName);
+  else
+    add_list_item (pItem, pstrObjectName, 0, TRUE);
 
   SetInternalName (pItem, strObjectName);  // set name so we can delete one-shot items
 
   // resort the list
-  t_gen_sort_param sort_param (m_ObjectMap, m_last_col, m_reverse, m_CompareObjects);
-  m_ctlList->SortItems (CompareFunc, (LPARAM) &sort_param); 
+
+  SortItems ();
 
   // redraw the list
   if (GetFilterFlag ())
@@ -162,19 +229,35 @@ void CGenPropertyPage::OnAddItem(CDialog & dlg)
 }    // end of CGenPropertyPage::OnAddItem
 
 /////////////////////////////////////////////////////////////////////////////
-// OnChangeItem
+// CheckParentHasChildren
 
-void CGenPropertyPage::OnChangeItem(CDialog & dlg) 
-{
-CString strMsg;
-
-// iterate through list in case we implement multiple selection one day
-for (int nItem = -1;
-      (nItem = m_ctlList->GetNextItem(nItem, LVNI_SELECTED)) != -1;)
+void CGenPropertyPage::CheckParentHasChildren (HTREEITEM hdlParent)
   {
+  if (m_cTreeCtrl.GetChildItem (hdlParent) == NULL)
+    {
+    // get (old) group name
+    CString strParent = m_cTreeCtrl.GetItemText (hdlParent);
 
-  // get the lower-case name of this item's object
-  CString * pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
+    // delete group from tree view
+    m_cTreeCtrl.DeleteItem (hdlParent);
+
+    // find parent in map
+    map<CString, HTREEITEM>::iterator it = m_GroupsMap.find (strParent);
+    // delete from map of parents (groups) as well
+    if (it != m_GroupsMap.end ())
+      m_GroupsMap.erase (it);
+
+    }   // end of no children
+
+  }  // end of CGenPropertyPage::CheckParentHasChildren
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ChangeOneItem
+
+bool CGenPropertyPage::ChangeOneItem (CDialog & dlg, CString * pstrObjectName, const int nItem, HTREEITEM hdlItem)
+  {
+CString strMsg;
 
   ASSERT (pstrObjectName != NULL);
 
@@ -183,8 +266,17 @@ for (int nItem = -1;
   // check object is still there (it might have gone while we looked at the list box)
   if (!m_ObjectMap->Lookup (*pstrObjectName, pItem))
     {
-    m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
-    m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+    if (hdlItem)
+      {
+      HTREEITEM hdlParent = m_cTreeCtrl.GetParentItem (hdlItem);
+      m_cTreeCtrl.DeleteItem (hdlItem);
+      CheckParentHasChildren (hdlParent);
+      }
+    else
+      {
+      m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
+      m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+      }
 
     // in the case of one-shot timers, unnamed items might be removed from the list
     if (pstrObjectName->Left (1) == "*")
@@ -200,7 +292,7 @@ for (int nItem = -1;
     ::UMessageBox (strMsg);
 
     delete pstrObjectName;                 // and get rid of its name string
-    continue;
+    return false;
     }
 
   ASSERT_VALID (pItem);
@@ -212,13 +304,22 @@ for (int nItem = -1;
 
   // put up the dialog, give up if they cancel
   if (dlg.DoModal () != IDOK)
-    continue;
+    return false;
 
   // lookup this object, to make sure it still exists
   if (!m_ObjectMap->Lookup (*pstrObjectName, pItem))
     {
-    m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
-    m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+    if (hdlItem)
+      {
+      HTREEITEM hdlParent = m_cTreeCtrl.GetParentItem (hdlItem);
+      m_cTreeCtrl.DeleteItem (hdlItem);
+      CheckParentHasChildren (hdlParent);
+      }
+    else
+      {
+      m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
+      m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+      }
     
     // in the case of one-shot timers, unnamed items might be removed from the list
     if (pstrObjectName->Left (1) == "*")
@@ -233,7 +334,7 @@ for (int nItem = -1;
 
     delete pstrObjectName;                 // and get rid of its name string
     ::UMessageBox (strMsg);
-    continue;
+    return false;
     }
 
   ASSERT_VALID (pItem);
@@ -245,7 +346,7 @@ for (int nItem = -1;
                   (LPCTSTR) m_strObjectType,
                   (LPCTSTR) *pstrObjectName);
     ::UMessageBox (strMsg);
-    return; // can't modify included items
+    return true; // can't modify included items
     }
 
   // check object still has the same modification number
@@ -256,7 +357,7 @@ for (int nItem = -1;
                   (LPCTSTR) m_strObjectType,
                   (LPCTSTR) *pstrObjectName);
     ::UMessageBox (strMsg);
-    continue;
+    return false;
     }
 
   // check for name change 
@@ -279,7 +380,7 @@ for (int nItem = -1;
                     (LPCTSTR) strObjectName,
                     (LPCTSTR) m_strObjectType);
       ::UMessageBox (strMsg);
-      continue;
+      return false;
       }
 
     // remove old entry and re-add under new name
@@ -293,7 +394,10 @@ for (int nItem = -1;
     pstrObjectName = new CString (strObjectName);
 
     // record item's new name as the list object data
-    m_ctlList->SetItemData(nItem, (DWORD) pstrObjectName);
+    if (hdlItem)
+      m_cTreeCtrl.SetItemData (hdlItem, (DWORD) pstrObjectName);
+    else
+      m_ctlList->SetItemData (nItem, (DWORD) pstrObjectName);
     }   // end of label changing
 
   // see if the user changed anything, anyway
@@ -308,10 +412,32 @@ for (int nItem = -1;
     if (!CheckIfTemporary (pItem))
       m_doc->SetModifiedFlag (TRUE);
 
-    // re-setup list with amended details
-    int nNewItem = add_item (pItem, pstrObjectName, nItem, FALSE);
 
-    m_ctlList->RedrawItems (nNewItem, nNewItem);
+    if (m_bWantTreeControl)
+      {
+      // group may have changed, delete and re-add
+      HTREEITEM hdlParent = m_cTreeCtrl.GetParentItem (hdlItem);
+      m_cTreeCtrl.DeleteItem (hdlItem);
+      HTREEITEM hItem = add_tree_item (pItem, pstrObjectName); 
+
+      // if deleting item deletes only one in group, remove group as well
+      CheckParentHasChildren (hdlParent);
+
+      SortItems ();
+
+      // get its new parent
+      hdlParent = m_cTreeCtrl.GetParentItem (hItem);
+      m_cTreeCtrl.SetItemState (hdlParent, TVIS_EXPANDED, TVIS_EXPANDED); // expand group (parent)
+      // select the new item
+      m_cTreeCtrl.SelectItem (hItem);
+      m_cTreeCtrl.EnsureVisible (hItem);  // may have changed groups
+      }
+    else
+      {
+      // re-setup list with amended details
+      int nNewItem = add_list_item (pItem, pstrObjectName, nItem, FALSE);  // replace
+      m_ctlList->RedrawItems (nNewItem, nNewItem);
+      }
 
     }   // end of item changing
 
@@ -330,72 +456,79 @@ for (int nItem = -1;
       ::UMessageBox (strMessage, MB_ICONINFORMATION);
     }
 
-  }   // end of dealing with each selected item
+  return false;
+  } // end of CGenPropertyPage::ChangeOneItem
+
+/////////////////////////////////////////////////////////////////////////////
+// OnChangeItem
+
+void CGenPropertyPage::OnChangeItem(CDialog & dlg) 
+{
+
+  if (m_bWantTreeControl)
+    {
+
+    for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
+         hGroup;
+         hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
+      {
+
+      for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+          hItem;
+          hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+            {
+            UINT iState = m_cTreeCtrl.GetItemState (hItem, TVIS_SELECTED);
+
+            if (iState & TVIS_SELECTED)
+              {
+              if (ChangeOneItem (dlg, (CString *) m_cTreeCtrl.GetItemData (hItem), 0, hItem))
+                break;
+              }  // end if selected
+
+            }   // end for each item
+
+      }  // end for each group
+
+
+    } // end of tree control
+  else
+    {
+    // iterate through list in case we implement multiple selection one day
+    for (int nItem = -1;
+          (nItem = m_ctlList->GetNextItem(nItem, LVNI_SELECTED)) != -1;)
+      {
+
+      if (ChangeOneItem (dlg, (CString *) m_ctlList->GetItemData (nItem), nItem, NULL))
+        break;
+
+      }   // end of dealing with each selected item
+
+  }   // end of list control
 
   // redraw the list
   if (GetFilterFlag ())
     LoadList ();       // full reload because it may have changed filter requirements
 
   // resort the list
-  t_gen_sort_param sort_param (m_ObjectMap, m_last_col, m_reverse, m_CompareObjects);
-  m_ctlList->SortItems (CompareFunc, (LPARAM) &sort_param); 
+
+  SortItems ();
 
 }   // end of CGenPropertyPage::OnChangeItem
 
 
 /////////////////////////////////////////////////////////////////////////////
-// OnDeleteItem
+// DeleteOneItem
 
-void CGenPropertyPage::OnDeleteItem() 
-{
-
-CUIntArray arySelected;
-int iCount =  m_ctlList->GetSelectedCount ();
-int nItem,
-    i,
-    iIncluded = 0,
-    iExecuting = 0;
-
-  arySelected.SetSize (iCount);
-
-  // first, remember selected items
-for (nItem = -1, i = 0;
-      (nItem = m_ctlList->GetNextItem(nItem, LVNI_SELECTED)) != -1;)
-       arySelected [i++] = nItem;
-
-if (iCount == 0)
-  return;
-
-if (App.m_bTriggerRemoveCheck)
+bool CGenPropertyPage::DeleteOneItem(CString * pstrObjectName, int & iIncluded, int & iExecuting)
   {
-  // mucking around to make it plural properly
-  CString sName =  m_strObjectType;
-  if (iCount > 1)
-    if (sName == "alias")
-      sName += "es";
-    else
-      sName += "s";
 
-  if (::UMessageBox (TFormat ("Delete %i %s - are you sure?",
-      iCount, sName), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2)
-      != IDYES )
-      return;
-  } // end of wanting to confirm
-
-// we do it this way because deleting items buggers up the position in the array
-for (i = iCount - 1; i >= 0; i--)
-  {
-  nItem = arySelected [i];
-
-  // get the lower-case name of this item's object
-  CString * pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
   ASSERT (pstrObjectName != NULL);
 
   CObject * pItem;
 
   // see if in the map
   if (!m_ObjectMap->Lookup (*pstrObjectName, pItem))
-    continue;   // already deleted!
+    return true;   // already deleted!
 
   ASSERT_VALID (pItem);
   ASSERT( pItem->IsKindOf( RUNTIME_CLASS( CObject ) ) );
@@ -403,13 +536,13 @@ for (i = iCount - 1; i >= 0; i--)
   if (CheckIfIncluded (pItem))
     {
     iIncluded++;    // don't do message here in case hundreds of them
-    continue;
+    return true;
     }
 
   if (CheckIfExecuting (pItem))
     {
     iExecuting++;    // don't do message here in case hundreds of them
-    continue;
+    return true;
     }
 
   // They can no longer cancel the property sheet, the document has changed
@@ -422,14 +555,105 @@ for (i = iCount - 1; i >= 0; i--)
 
   // delete the item itself
   delete pItem;
-  
-  // and remove from the dialog list control
-  m_ctlList->DeleteItem (nItem);
 
   // delete its item string
   delete pstrObjectName;
 
-  }   // end of dealing with each selected item
+  return false; // OK return
+  }
+
+/////////////////////////////////////////////////////////////////////////////
+// OnDeleteItem
+
+void CGenPropertyPage::OnDeleteItem() 
+{
+
+int iCount =  GetSelectedItemCount ();
+int nItem,
+    i,
+    iIncluded = 0,
+    iExecuting = 0;
+
+
+  if (iCount == 0)
+    return;
+
+  if (App.m_bTriggerRemoveCheck)
+    {
+    // mucking around to make it plural properly
+    CString sName =  m_strObjectType;
+    if (iCount > 1)
+      if (sName == "alias")
+        sName += "es";
+      else
+        sName += "s";
+
+    if (::UMessageBox (TFormat ("Delete %i %s - are you sure?",
+        iCount, sName), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2)
+        != IDYES )
+        return;
+    } // end of wanting to confirm
+
+
+  // tree control ................
+  if (m_bWantTreeControl)
+    {
+    // go through entire tree control
+    for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
+         hGroup;
+         hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
+      {
+
+      // find selected items
+      for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+          hItem;
+          hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+            {
+            UINT iState = m_cTreeCtrl.GetItemState (hItem, TVIS_SELECTED);
+
+            if (iState & TVIS_SELECTED)
+              {
+              CString * pstrObjectName = (CString *) m_cTreeCtrl.GetItemData (hItem);
+
+              if (!DeleteOneItem (pstrObjectName, iIncluded, iExecuting))
+                {
+                HTREEITEM hdlParent = m_cTreeCtrl.GetParentItem (hItem);
+                m_cTreeCtrl.DeleteItem (hItem);
+                CheckParentHasChildren (hdlParent);
+                }
+
+              }  // end if selected
+
+            }   // end for each item
+
+      }  // end for each group
+
+    }   // end of tree control
+  else
+    // list control ................
+    {
+    CUIntArray arySelected;
+    arySelected.SetSize (iCount);
+
+      // first, remember selected items
+    for (nItem = -1, i = 0;
+          (nItem = m_ctlList->GetNextItem(nItem, LVNI_SELECTED)) != -1;)
+           arySelected [i++] = nItem;
+
+    // we do it this way because deleting items buggers up the position in the array
+    for (i = iCount - 1; i >= 0; i--)
+      {
+      nItem = arySelected [i];
+
+      // get the lower-case name of this item's object
+      CString * pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
+
+      if (!DeleteOneItem (pstrObjectName, iIncluded, iExecuting))
+        m_ctlList->DeleteItem (nItem);
+
+      }   // end of dealing with each selected item
+
+    }  // end of list control
 
   if (iIncluded)
     {
@@ -453,6 +677,118 @@ for (i = iCount - 1; i >= 0; i--)
 
 }   // end of CGenPropertyPage::OnDeleteItem
 
+
+/////////////////////////////////////////////////////////////////////////////
+// OnColumnclickItemList
+
+void CGenPropertyPage::OnColumnclickItemList(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+
+int col = pNMListView->iSubItem;
+
+  if (col == m_last_col)
+    m_reverse = !m_reverse;
+  else
+    m_reverse = FALSE;
+
+  m_last_col = col;
+
+  t_gen_sort_param sort_param (m_ObjectMap, m_last_col, m_reverse, m_CompareObjects);
+
+  m_ctlList->SortItems (CompareFunc, (LPARAM) &sort_param); 
+	
+	*pResult = 0;
+}    // end of CGenPropertyPage::OnColumnclickItemList
+
+
+/////////////////////////////////////////////////////////////////////////////
+// add_list_item
+
+int CGenPropertyPage::add_list_item (CObject * pItem, 
+               const CString  * pstrObjectName,
+               const int nItem,
+               const BOOL bInsert)
+  {
+
+  ASSERT_VALID (pItem);
+  ASSERT( pItem->IsKindOf( RUNTIME_CLASS( CObject ) ) );
+  ASSERT (pstrObjectName != NULL);
+
+  // add to control
+  int nNewItem = AddItem (pItem, nItem, bInsert);
+
+  // record item's name as the list object data
+  m_ctlList->SetItemData(nNewItem, (DWORD) pstrObjectName);
+
+  // stamp with a number so we know if it was updated without our knowledge
+  SetModificationNumber (pItem, m_nUpdateNumber);
+
+  return nNewItem;
+
+  } // end of CGenPropertyPage::add_list_item
+
+
+/////////////////////////////////////////////////////////////////////////////
+// add_tree_item
+
+HTREEITEM CGenPropertyPage::add_tree_item (CObject * pItem, 
+                                           const CString  * pstrObjectName)
+  {
+  ASSERT_VALID (pItem);
+  ASSERT( pItem->IsKindOf( RUNTIME_CLASS( CObject ) ) );
+  ASSERT (pstrObjectName != NULL);
+
+  // get group name
+  CString strGroup = GetGroup (pItem);
+  if (strGroup.IsEmpty ())
+    strGroup = Translate ("(ungrouped)");
+
+  // see if group exists already
+  map<CString, HTREEITEM>::const_iterator it;
+
+  it = m_GroupsMap.find (strGroup);
+
+  HTREEITEM hParent;
+
+  // if it exists, find the group tree item (the parent)
+  // if not, create it
+  if (it == m_GroupsMap.end ())
+    {
+    hParent = m_cTreeCtrl.InsertItem (strGroup,TVI_ROOT);
+    m_GroupsMap [strGroup] = hParent;
+    }
+  else
+    hParent = it->second;
+
+  // get the description for the tree control
+  CString strDescription = GetDescription  (pItem);
+
+  // truncate if ridiculously long
+  if (strDescription.GetLength () > 100)
+    strDescription = strDescription.Left (100) + " ...";
+
+  CString strLabel = GetLabel (pItem);
+
+  // add the label if it exists
+  if (!strLabel.IsEmpty ())
+    {
+    strDescription = strDescription + " [";
+    strDescription = strDescription + strLabel;
+    strDescription = strDescription + "]";
+    }
+
+  // insert it
+  HTREEITEM hNewItem = m_cTreeCtrl.InsertItem (strDescription, hParent);
+
+  // record item's name as the list object data
+  m_cTreeCtrl.SetItemData (hNewItem, (DWORD) pstrObjectName);
+
+  // stamp with a number so we know if it was updated without our knowledge
+  SetModificationNumber (pItem, m_nUpdateNumber);
+
+  return hNewItem;
+  }  // end of CGenPropertyPage::add_tree_item
 
 /////////////////////////////////////////////////////////////////////////////
 // CompareFunc
@@ -500,53 +836,38 @@ int iResult = (*pCompare) (psort_param->sortkey, item1, item2);
 
 
 /////////////////////////////////////////////////////////////////////////////
-// OnColumnclickItemList
+// SortItems
 
-void CGenPropertyPage::OnColumnclickItemList(NMHDR* pNMHDR, LRESULT* pResult) 
-{
-	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
-
-int col = pNMListView->iSubItem;
-
-  if (col == m_last_col)
-    m_reverse = !m_reverse;
-  else
-    m_reverse = FALSE;
-
-  m_last_col = col;
+void CGenPropertyPage::SortItems (void)                 
+  {
 
   t_gen_sort_param sort_param (m_ObjectMap, m_last_col, m_reverse, m_CompareObjects);
 
-  m_ctlList->SortItems (CompareFunc, (LPARAM) &sort_param); 
-	
-	*pResult = 0;
-}    // end of CGenPropertyPage::OnColumnclickItemList
+  if (m_bWantTreeControl)
+    {
+    // sort root level into groups
+    m_cTreeCtrl.SortChildren (TVI_ROOT);
+
+    TVSORTCB cbinfo;
+    cbinfo.lpfnCompare = CompareFunc;
+    cbinfo.lParam = (LPARAM) &sort_param;
+
+    // now sort each child
+    HTREEITEM hdlItem = m_cTreeCtrl.GetNextItem (NULL, TVGN_ROOT);
+
+    while (hdlItem)
+      {
+      cbinfo.hParent = hdlItem;
+      m_cTreeCtrl.SortChildrenCB (&cbinfo );
+      hdlItem = m_cTreeCtrl.GetNextItem (hdlItem, TVGN_NEXT);
+      }
+
+    }
+  else
+    m_ctlList->SortItems (CompareFunc, (LPARAM) &sort_param); 
 
 
-/////////////////////////////////////////////////////////////////////////////
-// add_item
-
-int CGenPropertyPage::add_item (CObject * pItem, 
-               const CString  * pstrObjectName,
-               const int nItem,
-               const BOOL bInsert)
-  {
-
-  ASSERT_VALID (pItem);
-  ASSERT( pItem->IsKindOf( RUNTIME_CLASS( CObject ) ) );
-  ASSERT (pstrObjectName != NULL);
-
-  int nNewItem = AddItem (pItem, nItem, bInsert);
-
-  // record item's name as the list object data
-  m_ctlList->SetItemData(nNewItem, (DWORD) pstrObjectName);
-
-  // stamp with a number so we know if it was updated without our knowledge
-  SetModificationNumber (pItem, m_nUpdateNumber);
-
-  return nNewItem;
-
-  } // end of CGenPropertyPage::add_item
+  } // end of  CGenPropertyPage::SortItems
 
 /////////////////////////////////////////////////////////////////////////////
 // LoadList
@@ -602,13 +923,34 @@ void CGenPropertyPage::LoadList (void)
         bFiltering = false;
     }
 
-  // remove all old items (we used the item data to key to the item)
+  // we delete from both the list and the tree in case we are switching
+  // from list view to tree view or vice-versa
+
+  // remove all old list items (we used the item data to key to the item)
 
   for (int nItem = 0; nItem < m_ctlList->GetItemCount (); nItem++)
     delete (CString *) m_ctlList->GetItemData (nItem);
 
    m_ctlList->DeleteAllItems ();
   
+
+  // and now all old tree items
+  for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
+       hGroup;
+       hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
+    {
+
+    for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+        hItem;
+        hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+      delete (CString *) m_cTreeCtrl.GetItemData (hItem);
+
+    }  // end for each group
+
+   m_cTreeCtrl.DeleteAllItems ();
+   // since all is deleted, we don't have any groups any more
+   m_GroupsMap.erase (m_GroupsMap.begin (), m_GroupsMap.end ());
+
    CString strObjectName;
    CObject * pItem;
 
@@ -646,14 +988,15 @@ void CGenPropertyPage::LoadList (void)
      if (bUse)  // add to list if passed filter
        {
        CString * pstrObjectName = new CString (strObjectName);
-       add_item (pItem, pstrObjectName, 0, TRUE); 
+       if (m_bWantTreeControl)
+         add_tree_item (pItem, pstrObjectName); 
+       else
+         add_list_item (pItem, pstrObjectName, 0, TRUE); 
        iCount++;
        }
      }
 
-  t_gen_sort_param sort_param (m_ObjectMap, m_last_col, m_reverse, m_CompareObjects);
-
-  m_ctlList->SortItems (CompareFunc, (LPARAM) &sort_param); 
+  SortItems ();
 
 // set the 1st item to be selected - we do this here because sorting the
 // list means our first item is not necessarily the 1st item in the list
@@ -687,7 +1030,7 @@ LRESULT CGenPropertyPage::OnKickIdle(WPARAM, LPARAM)
 
 void CGenPropertyPage::OnUpdateNeedSelection(CCmdUI* pCmdUI)
   {
-  pCmdUI->Enable (m_ctlList->GetSelectedCount () != 0);
+    pCmdUI->Enable (GetSelectedItemCount () != 0);
   } // end of CGenPropertyPage::OnUpdateNeedSelection
 
 /////////////////////////////////////////////////////////////////////////////
@@ -695,9 +1038,42 @@ void CGenPropertyPage::OnUpdateNeedSelection(CCmdUI* pCmdUI)
 
 void CGenPropertyPage::OnUpdateNeedEntries(CCmdUI* pCmdUI)
   {
-  pCmdUI->Enable (m_ctlList->GetItemCount () != 0);
+  pCmdUI->Enable (GetItemCount () > 0);
   } // end of CGenPropertyPage::OnUpdateNeedEntries
 
+
+/////////////////////////////////////////////////////////////////////////////
+// get_tree_item
+
+HTREEITEM CGenPropertyPage::get_tree_item (CTreeCtrl * pTree, const int n)
+  {
+  HTREEITEM hItem = NULL;
+  int iCount = 0;
+  bool bFound = false;
+
+  for (HTREEITEM hGroup = pTree->GetRootItem ();
+       hGroup && !bFound;
+       hGroup = pTree->GetNextSiblingItem (hGroup))
+    {
+    for (hItem = pTree->GetChildItem (hGroup);
+        hItem && !bFound;
+        hItem = pTree->GetNextSiblingItem (hItem))
+          {
+          if (iCount == n)
+            {
+            bFound = true;
+            break;
+            }
+          iCount++;
+          }
+    }  // end for each group
+
+  if (bFound)
+    return hItem;
+
+  return NULL;
+
+  }  // end of CGenPropertyPage::get_tree_item
 
 /////////////////////////////////////////////////////////////////////////////
 // DoFind
@@ -706,55 +1082,100 @@ void CGenPropertyPage::DoFind (bool bAgain)
   {
 
 m_pObjectFindInfo->m_bAgain = bAgain;
-m_pObjectFindInfo->m_nTotalLines = m_ctlList->GetItemCount ();
+m_pObjectFindInfo->m_nTotalLines = GetItemCount ();
 
-bool found = FindRoutine (m_ctlList,       // passed back to callback routines
+bool found;
+
+  if (m_bWantTreeControl)
+    {
+
+    found = FindRoutine (this,       // passed back to callback routines
+                        *m_pObjectFindInfo,   // finding structure
+                        InitiateSearch,        // how to re-initiate a find
+                        GetNextTreeLine);          // get the next line
+    // unselect everything first
+    for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
+         hGroup;
+         hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
+      {
+      for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+          hItem;
+          hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+            m_cTreeCtrl.SetItemState (hItem, 0, TVIS_SELECTED);
+      }  // end for each group
+
+    if (found)
+      {
+
+      HTREEITEM hItem = get_tree_item (&m_cTreeCtrl, m_pObjectFindInfo->m_nCurrentLine);
+
+      if (!hItem)
+        return;
+
+      // select the new item
+      m_cTreeCtrl.SelectItem (hItem);
+      m_cTreeCtrl.EnsureVisible (hItem);    
+
+      }
+
+    } // end of tree control
+  else
+    {
+    found = FindRoutine (this,       // passed back to callback routines
                           *m_pObjectFindInfo,   // finding structure
                           InitiateSearch,        // how to re-initiate a find
-                          GetNextLine);          // get the next line
+                          GetNextListLine);          // get the next line
+    // unselect everything first
+    for (int i = 0; i < m_ctlList->GetItemCount (); i++)
+      m_ctlList->SetItemState (i, 0, LVIS_FOCUSED | LVIS_SELECTED);
 
-// unselect everything first
+    if (found)
+      {
+       m_ctlList->SetItemState (m_pObjectFindInfo->m_nCurrentLine, 
+                                       LVIS_FOCUSED | LVIS_SELECTED, 
+                                       LVIS_FOCUSED | LVIS_SELECTED);
+       m_ctlList->EnsureVisible (m_pObjectFindInfo->m_nCurrentLine, false);
+       m_ctlList->RedrawItems (m_pObjectFindInfo->m_nCurrentLine, 
+                              m_pObjectFindInfo->m_nCurrentLine);
 
-for (int i = 0; i < m_ctlList->GetItemCount (); i++)
-  m_ctlList->SetItemState (i, 0, LVIS_FOCUSED | LVIS_SELECTED);
+      }
 
-if (found)
-  {
-   m_ctlList->SetItemState (m_pObjectFindInfo->m_nCurrentLine, 
-                                   LVIS_FOCUSED | LVIS_SELECTED, 
-                                   LVIS_FOCUSED | LVIS_SELECTED);
-   m_ctlList->EnsureVisible (m_pObjectFindInfo->m_nCurrentLine, false);
-   m_ctlList->RedrawItems (m_pObjectFindInfo->m_nCurrentLine, 
-                          m_pObjectFindInfo->m_nCurrentLine);
+    }
 
-  }
+
 
   } // end of CGenPropertyPage::DoFind
 
 
+/////////////////////////////////////////////////////////////////////////////
+// InitiateSearch
+
 void CGenPropertyPage::InitiateSearch (const CObject * pObject,
                                       CFindInfo & FindInfo)
   {
-CListCtrl* pList = (CListCtrl*) pObject;
-
   if (FindInfo.m_bAgain)
     FindInfo.m_pFindPosition = (POSITION) FindInfo.m_nCurrentLine;
   else
     if (FindInfo.m_bForwards)
       FindInfo.m_pFindPosition = 0;
     else
-      FindInfo.m_pFindPosition = (POSITION) pList->GetItemCount () - 1;
+      FindInfo.m_pFindPosition = (POSITION) FindInfo.m_nTotalLines - 1;
 
   } // end of CGenPropertyPage::InitiateSearch
 
-bool CGenPropertyPage::GetNextLine (const CObject * pObject,
-                             CFindInfo & FindInfo, 
-                             CString & strLine)
+/////////////////////////////////////////////////////////////////////////////
+// GetNextListLine
+
+bool CGenPropertyPage::GetNextListLine (const CObject * pObject,
+                                       CFindInfo & FindInfo, 
+                                       CString & strLine)
   {
-CListCtrl* pList = (CListCtrl*) pObject;
+CGenPropertyPage * pPropPage = (CGenPropertyPage *) pObject;
+
+CListCtrl* pList = pPropPage->m_ctlList;
 
   if ((long) FindInfo.m_pFindPosition < 0 ||
-      (long) FindInfo.m_pFindPosition >= pList->GetItemCount ())
+      (long) FindInfo.m_pFindPosition >= FindInfo.m_nTotalLines)
     return true;
 
 
@@ -774,12 +1195,87 @@ CListCtrl* pList = (CListCtrl*) pObject;
     FindInfo.m_pFindPosition--;
 
   return false;
-  } // end of CGenPropertyPage::GetNextLine
+  } // end of CGenPropertyPage::GetNextListLine
 
+/////////////////////////////////////////////////////////////////////////////
+// GetNextTreeLine
+
+bool CGenPropertyPage::GetNextTreeLine (const CObject * pObject,
+                                       CFindInfo & FindInfo, 
+                                       CString & strLine)
+  {
+CGenPropertyPage * pPropPage = (CGenPropertyPage *) pObject;
+
+CTreeCtrl* pTree = &pPropPage->m_cTreeCtrl;
+
+  if ((long) FindInfo.m_pFindPosition < 0 ||
+      (long) FindInfo.m_pFindPosition >= FindInfo.m_nTotalLines)
+    return true;
+
+
+  HTREEITEM hItem = get_tree_item (pTree, (int) FindInfo.m_pFindPosition);
+
+  if (!hItem)
+    return true;
+
+
+  CString * pstrObjectName = (CString *) pTree->GetItemData (hItem);
+
+  
+  ASSERT (pstrObjectName != NULL);
+
+  CObject * pItem;
+
+  if (!pPropPage->m_ObjectMap->Lookup (*pstrObjectName, pItem))
+    return true;
+
+  ASSERT_VALID (pItem);
+  ASSERT( pItem->IsKindOf( RUNTIME_CLASS( CObject ) ) );
+
+  strLine = pPropPage->GetFindText (pItem);
+
+  if (FindInfo.m_bForwards)
+    FindInfo.m_pFindPosition++;
+  else
+    FindInfo.m_pFindPosition--;
+
+  return false;
+  } // end of CGenPropertyPage::GetNextTreeLine
+
+
+/////////////////////////////////////////////////////////////////////////////
+// OnInitDialog
 
 BOOL CGenPropertyPage::OnInitDialog() 
 {
 	CPropertyPage::OnInitDialog();
+
+  // Tree View stuff
+
+  WINDOWPLACEMENT wndpl;        // where original control is
+  m_ctlList->GetWindowPlacement (&wndpl);
+  
+  // add in the tree control
+	m_cTreeCtrl.CWnd::CreateEx(WS_EX_CLIENTEDGE,
+							 WC_TREEVIEW, 
+							 NULL, 
+							 WS_CHILD|WS_VISIBLE|WS_TABSTOP|TVS_SHOWSELALWAYS|
+							 TVS_HASLINES|TVS_LINESATROOT|TVS_HASBUTTONS, 
+               wndpl.rcNormalPosition.left,
+               wndpl.rcNormalPosition.top,
+               wndpl.rcNormalPosition.right - wndpl.rcNormalPosition.left,
+               wndpl.rcNormalPosition.bottom - wndpl.rcNormalPosition.top,
+							 GetSafeHwnd(), 
+							 (HMENU)ID_TREEVIEW);
+
+  
+  // now hide one of the controls
+  if (m_bWantTreeControl)
+    m_ctlList->ShowWindow (SW_HIDE);
+  else
+    m_cTreeCtrl.ShowWindow (SW_HIDE);
+
+  // end tree view stuff
 
   CString strDescription = m_strObjectType;
   strDescription += " list";
@@ -809,6 +1305,9 @@ BOOL CGenPropertyPage::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// OnDestroy
+
 void CGenPropertyPage::OnDestroy() 
 {
 
@@ -818,10 +1317,20 @@ void CGenPropertyPage::OnDestroy()
 // delete the object names which we stored as the item data
 
   for (int nItem = 0; nItem < m_ctlList->GetItemCount (); nItem++)
+    delete (CString *) m_ctlList->GetItemData (nItem);
+
+  // and now all old tree items
+  for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
+       hGroup;
+       hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
     {
-    CString * pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
-    delete pstrObjectName;
-    }
+
+    for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+        hItem;
+        hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+      delete (CString *) m_cTreeCtrl.GetItemData (hItem);
+
+    }  // end for each group
 
   App.SaveColumnConfiguration (strDescription, m_iColumnCount, *m_ctlList, 
                                 m_last_col, m_reverse);
@@ -830,16 +1339,71 @@ void CGenPropertyPage::OnDestroy()
 		
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// OnFind
+
 void CGenPropertyPage::OnFind() 
 {
   DoFind (false);
 }    // end of CGenPropertyPage::OnFind
+
+/////////////////////////////////////////////////////////////////////////////
+// OnFindNext
 
 void CGenPropertyPage::OnFindNext() 
 {
   DoFind (true);
 }   // end of CGenPropertyPage::OnFindNext
 
+
+/////////////////////////////////////////////////////////////////////////////
+// CopyOneItem
+
+bool CGenPropertyPage::CopyOneItem(CString * pstrObjectName, CArchive & ar)
+  {
+  ASSERT (pstrObjectName != NULL);
+
+  CObject * pItem;
+
+  // check object is still there (it might have gone while we looked at the list box)
+  if (!m_ObjectMap->Lookup (*pstrObjectName, pItem))
+    {
+    CString strMsg;
+
+    // in the case of one-shot timers, unnamed items might be removed from the list
+    if (pstrObjectName->Left (1) == "*")
+      strMsg = TFormat ("The %s you selected is no longer in the %s list",
+                    (LPCTSTR) m_strObjectType,
+                    (LPCTSTR) m_strObjectType);
+    else
+      strMsg = TFormat ("The %s named \"%s\" is no longer in the %s list",
+                    (LPCTSTR) m_strObjectType,
+                    (LPCTSTR) *pstrObjectName,
+                    (LPCTSTR) m_strObjectType);
+
+    ::UMessageBox (strMsg);
+
+    delete pstrObjectName;                 // and get rid of its name string
+    return true;
+    }
+
+  ASSERT_VALID (pItem);
+  ASSERT( pItem->IsKindOf( RUNTIME_CLASS( CObject ) ) );
+
+  // turn into XML
+
+  if (m_strObjectType == "trigger")
+    m_doc->Save_One_Trigger_XML (ar, (CTrigger *) pItem);
+  else if (m_strObjectType == "alias")
+    m_doc->Save_One_Alias_XML (ar, (CAlias *) pItem);
+  else if (m_strObjectType == "timer")
+    m_doc->Save_One_Timer_XML (ar, (CTimer *) pItem);
+  else if (m_strObjectType == "variable")
+    m_doc->Save_One_Variable_XML (ar, (CVariable *) pItem);
+
+  return false;
+
+  } // end of CGenPropertyPage::CopyOneItem
 
 /////////////////////////////////////////////////////////////////////////////
 // OnCopyItem
@@ -860,56 +1424,46 @@ try
   else
     m_doc->Save_Header_XML (ar, m_strObjectType + "s", false);   // timers, triggers etc.
 
-  for (int nItem = -1;
-        (nItem = m_ctlList->GetNextItem(nItem, LVNI_SELECTED)) != -1;)
-    {
-
-    // get the lower-case name of this item's object
-    CString * pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
-    ASSERT (pstrObjectName != NULL);
-
-    CObject * pItem;
-
-    // check object is still there (it might have gone while we looked at the list box)
-    if (!m_ObjectMap->Lookup (*pstrObjectName, pItem))
+  if (m_bWantTreeControl)
+    { 
+    for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
+         hGroup;
+         hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
       {
-      CString strMsg;
 
-      m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
-      m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+      for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+          hItem;
+          hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+            {
+            UINT iState = m_cTreeCtrl.GetItemState (hItem, TVIS_SELECTED);
 
-      // in the case of one-shot timers, unnamed items might be removed from the list
-      if (pstrObjectName->Left (1) == "*")
-        strMsg = TFormat ("The %s you selected is no longer in the %s list",
-                      (LPCTSTR) m_strObjectType,
-                      (LPCTSTR) m_strObjectType);
-      else
-        strMsg = TFormat ("The %s named \"%s\" is no longer in the %s list",
-                      (LPCTSTR) m_strObjectType,
-                      (LPCTSTR) *pstrObjectName,
-                      (LPCTSTR) m_strObjectType);
+            if (iState & TVIS_SELECTED)
+              {
+              if (CopyOneItem ((CString *) m_cTreeCtrl.GetItemData (hItem), ar))
+                {
+                m_cTreeCtrl.DeleteItem (hItem);
+                }
+              }  // end if selected
 
-      ::UMessageBox (strMsg);
+            }   // end for each item
 
-      delete pstrObjectName;                 // and get rid of its name string
-      continue;
-      }
+      }  // end for each group
 
-    ASSERT_VALID (pItem);
-    ASSERT( pItem->IsKindOf( RUNTIME_CLASS( CObject ) ) );
 
-    // turn into XML
-
-    if (m_strObjectType == "trigger")
-      m_doc->Save_One_Trigger_XML (ar, (CTrigger *) pItem);
-    else if (m_strObjectType == "alias")
-      m_doc->Save_One_Alias_XML (ar, (CAlias *) pItem);
-    else if (m_strObjectType == "timer")
-      m_doc->Save_One_Timer_XML (ar, (CTimer *) pItem);
-    else if (m_strObjectType == "variable")
-      m_doc->Save_One_Variable_XML (ar, (CVariable *) pItem);
-
-    }   // end of dealing with each selected item
+    } // end of tree control
+  else
+    {   // list control
+    for (int nItem = -1;
+          (nItem = m_ctlList->GetNextItem(nItem, LVNI_SELECTED)) != -1;)
+      {
+      if (CopyOneItem ((CString *) m_ctlList->GetItemData (nItem), ar))
+        {
+        m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
+        m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+        }
+  
+      }   // end of dealing with each selected item
+    }  // end of list control
 
   if (m_strObjectType == "alias")
     m_doc->Save_Footer_XML (ar, "aliases");
@@ -939,6 +1493,9 @@ catch (CException* e)
 	}
 
 }   // end of CGenPropertyPage::OnCopyItem
+
+/////////////////////////////////////////////////////////////////////////////
+// OnPasteItem
 
 void CGenPropertyPage::OnPasteItem() 
   {
@@ -974,6 +1531,8 @@ CString strContents;
 
   } // end of CGenPropertyPage::OnPasteItem
 
+/////////////////////////////////////////////////////////////////////////////
+// EditFilterText
 
 bool CGenPropertyPage::EditFilterText (CString & sText)// edit the filter text
   {
@@ -995,5 +1554,5 @@ CEditMultiLine dlg;
   sText = dlg.m_strText;
 
   return true;
-  }
+  }   // end of CGenPropertyPage::EditFilterText
 

@@ -11,6 +11,8 @@ typedef CTypedPtrMap <CMapStringToPtr, CString, CObject*> CObjectMap;
 
 typedef int (* t_CompareObjects) (const int iColumn, const CObject * item1, const CObject * item2);
 
+#define ID_TREEVIEW (WM_USER + 1004)
+
 typedef struct t_gen_sort_param
   {  
   // initialise via constructor - makes sure we don't leave something out!
@@ -61,6 +63,7 @@ public:
   CFindInfo * m_pObjectFindInfo;    // the findinfo structure
   CListCtrl * m_ctlList;            // the list control which displays the items
   CStatic   * m_ctlSummary;         // count of items shown
+  bool m_bWantTreeControl;          // true if it wants to show a tree control instead of a list control
 
   // count of columns is used for arrays below
   int m_iColumnCount;               // how many columns there are
@@ -76,27 +79,39 @@ public:
   BOOL m_reverse;                   // if true, reverse sort
   t_CompareObjects  m_CompareObjects;   // for comparing when sorting
 
+ 	CTreeCtrl			m_cTreeCtrl;        // for the tree views
+  map<CString, HTREEITEM> m_GroupsMap;   // for inserting into groups
+
   // set up variables for use later on
 
-void CGenPropertyPage::SetUpPage (CString strObjectType,
-                                  CObjectMap * ObjectMap,
-                                  CListCtrl * ctlList,
-                                  CStatic * ctlSummary,
-                                  t_CompareObjects CompareObjects,
-                                  CFindInfo * pFindInfo,
-                                  const unsigned long iMask);
+  void CGenPropertyPage::SetUpPage (CString strObjectType,
+                                    CObjectMap * ObjectMap,
+                                    CListCtrl * ctlList,
+                                    CStatic * ctlSummary,
+                                    t_CompareObjects CompareObjects,
+                                    CFindInfo * pFindInfo,
+                                    const unsigned long iMask,
+                                    const bool bWantTreeControl);
 
   // add an new item
 
   void OnAddItem(CDialog & dlg);        // adds a new item to the list
   void OnChangeItem(CDialog & dlg);     // changes an existing item
+  bool ChangeOneItem(CDialog & dlg, CString * pstrObjectName, const int nItem, HTREEITEM hdlItem);  // changes one existing item
+  bool DeleteOneItem(CString * pstrObjectName, int & iIncluded, int & iExecuting);  // deletes one existing item
   void OnDeleteItem() ;                 // delete an item from the list
   void OnCopyItem() ;                   // copy an item to the clipboard in XML
+  bool CopyOneItem(CString * pstrObjectName, CArchive & ar) ;                   // copy an item to the clipboard in XML
   void OnPasteItem() ;                  // paste an item from the clipboard in XML
   void OnColumnclickItemList(NMHDR* pNMHDR, LRESULT* pResult);
   void LoadList (void);                 // load up list initially or after load from file
   bool EditFilterText (CString & sText); // edit the filter text
-
+  void SortItems (void);                 // sort the tree/list control
+  int GetSelectedItemCount () const;     // how many items are selected?
+  int GetItemCount () const;             // how many items are there in the list/tree?
+  void CheckParentHasChildren (HTREEITEM hdlParent); // if this group is empty, delete it
+  
+  
   // ================== start of virtual functions =======================
 
   // dialog management - initialise, load, unload, check if changed, get name
@@ -121,6 +136,10 @@ void CGenPropertyPage::SetUpPage (CString strObjectType,
   virtual __int64 GetModificationNumber (CObject * pItem) const = 0;   // get modification number
   virtual CString GetScriptName (CObject * pItem) const = 0;    // get script subroutine name
   virtual CString GetLabel (CObject * pItem) const = 0;    // get item label
+  virtual CString GetGroup (CObject * pItem) const = 0;    // get item group
+  virtual CString GetDescription (CObject * pItem) const = 0;  // get item description for tree control
+  virtual int     GetSequence (CObject * pItem) const = 0;     // get item sequence for sorting
+  virtual CString GetFindText (CObject * pItem) const = 0;     // get text for searching on
 
   // list management - add the item to the list control
   virtual int AddItem (CObject * pItem,                  // add one item to the list control
@@ -139,12 +158,18 @@ void CGenPropertyPage::SetUpPage (CString strObjectType,
 
   // ================== end of virtual functions =======================
 
-  // add a single item - returns new item number
+  // add a single list control item - returns new item number
 
-  int add_item (CObject * pItem, 
-                const CString  * pstrObjectName,
-                const int nItem,
-                const BOOL bInsert);
+  int add_list_item (CObject * pItem, 
+                      const CString  * pstrObjectName,
+                      const int nItem,
+                      const BOOL bInsert);
+
+  // add a single tree control item - returns new item number
+
+  HTREEITEM add_tree_item (CObject * pItem, 
+                          const CString  * pstrObjectName);
+
 
 // Overrides
 	// ClassWizard generate virtual function overrides
@@ -173,12 +198,20 @@ protected:
   
 // for finding
 
+  // finds item n in the tree control
+  static HTREEITEM get_tree_item (CTreeCtrl * pTree, const int n);
+
   static void InitiateSearch (const CObject * pObject,
                               CFindInfo & FindInfo);
  
-  static bool GetNextLine (const CObject * pObject,
-                           CFindInfo & FindInfo, 
-                           CString & strLine);
+  static bool GetNextListLine (const CObject * pObject,
+                               CFindInfo & FindInfo, 
+                               CString & strLine);
+
+
+  static bool GetNextTreeLine (const CObject * pObject,
+                               CFindInfo & FindInfo, 
+                               CString & strLine);
 
   void DoFind (bool bAgain);
 

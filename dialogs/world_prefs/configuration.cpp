@@ -205,7 +205,8 @@ void CMUSHclientDoc:: LoadPrefsP7  (CPrefsP7  &page7)
                   &page7.m_ctlSummary,
                   page7.CompareObjects,
                   &m_AliasesFindInfo,
-                  XML_ALIASES);
+                  XML_ALIASES,
+                  true);  // tree control
 
   page7.m_iColumnCount      = CPrefsP7::eColumnCount;
   page7.m_iColWidth         = new int [CPrefsP7::eColumnCount];
@@ -246,7 +247,8 @@ void CMUSHclientDoc:: LoadPrefsP8  (CPrefsP8  &page8)
                   &page8.m_ctlSummary,
                   page8.CompareObjects,
                   &m_TriggersFindInfo,
-                  XML_TRIGGERS);
+                  XML_TRIGGERS,
+                  true);  // tree control
 
   page8.m_iColumnCount      = CPrefsP8::eColumnCount;
   page8.m_iColWidth         = new int [CPrefsP8::eColumnCount];
@@ -582,7 +584,9 @@ void CMUSHclientDoc:: LoadPrefsP16 (CPrefsP16 &page16)
                   &page16.m_ctlSummary,
                   page16.CompareObjects,
                   &m_TimersFindInfo,
-                  XML_TIMERS);
+                  XML_TIMERS,
+                  true);  // tree control
+
 
   page16.m_iColumnCount      = CPrefsP16::eColumnCount;
   page16.m_iColWidth         = new int [CPrefsP16::eColumnCount];
@@ -672,7 +676,9 @@ void CMUSHclientDoc:: LoadPrefsP18 (CPrefsP18 &page18)
                   &page18.m_ctlSummary,
                   page18.CompareObjects,
                   &m_VariablesFindInfo,
-                  XML_VARIABLES);
+                  XML_VARIABLES,
+                  false);  // NOT tree control
+
 
   page18.m_iColumnCount      = CPrefsP18::eColumnCount;
   page18.m_iColWidth         = new int [CPrefsP18::eColumnCount];
