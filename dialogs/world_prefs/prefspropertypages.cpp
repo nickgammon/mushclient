@@ -2511,6 +2511,7 @@ CPrefsP7::CPrefsP7() : CGenPropertyPage(CPrefsP7::IDD)
 	//}}AFX_DATA_INIT
   m_doc = NULL;
   m_last_col = eColumnSequence;
+  m_reverse = false;
 
 }
 
@@ -2817,6 +2818,12 @@ void CPrefsP7::SetInternalName (CObject * pItem, const CString strName)
 
   } // end of CPrefsP7::SetInternalName
 
+void CPrefsP7::SetDefaultSequence ()
+  {
+  m_last_col = eColumnSequence;
+  m_reverse = false;
+  }  // end of CPrefsP7::SetDefaultSequence
+
 CObject * CPrefsP7::MakeNewObject (void)
   {
   return (CObject *) new CAlias;
@@ -3050,14 +3057,29 @@ BOOL CPrefsP7::OnInitDialog()
 void CPrefsP7::OnMoveUp() 
 {
 CString strMsg;
+int nItem = 0;
+HTREEITEM hdlItem = NULL;
 
-// iterate through list in case we implement multiple selection one day
-for (int nItem = -1;
-      (nItem = m_ctlList->GetNextItem(nItem, LVNI_SELECTED)) != -1;)
-  {
+CString * pstrObjectName;
 
-  // get the lower-case name of this item's object
-  CString * pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
+  if (m_bWantTreeControl)
+    {
+    hdlItem = m_cTreeCtrl.GetSelectedItem ();
+    if (hdlItem == NULL)
+      return;     // no selection!
+
+    pstrObjectName = (CString *) m_cTreeCtrl.GetItemData (hdlItem);
+
+    }  // end tree control
+  else
+    {
+    nItem = m_ctlList->GetNextItem (-1, LVNI_SELECTED);
+    if (nItem == -1)
+      return;     // no selection!
+
+    pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
+
+    }  // end list control
 
   ASSERT (pstrObjectName != NULL);
 
@@ -3066,8 +3088,17 @@ for (int nItem = -1;
   // check object is still there (it might have gone while we looked at the list box)
   if (!m_ObjectMap->Lookup (*pstrObjectName, pItem))
     {
-    m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
-    m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+    if (hdlItem)
+      {
+      HTREEITEM hdlParent = m_cTreeCtrl.GetParentItem (hdlItem);
+      m_cTreeCtrl.DeleteItem (hdlItem);
+      CheckParentHasChildren (hdlParent);
+      }
+    else
+      {
+      m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
+      m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+      }
 
     strMsg = TFormat ("The %s named \"%s\" is no longer in the %s list",
                   (LPCTSTR) m_strObjectType,
@@ -3077,7 +3108,7 @@ for (int nItem = -1;
     ::UMessageBox (strMsg);
 
     delete pstrObjectName;                 // and get rid of its name string
-    continue;
+    return;
     }
 
   ASSERT_VALID (pItem);
@@ -3118,17 +3149,10 @@ for (int nItem = -1;
 
     // re-setup list with amended details
 
-    if (m_bWantTreeControl)
-      {
-    //  m_cTreeCtrl.DeleteItem (hdlItem);
-    //  HTREEITEM hItem = add_tree_item (pItem, pstrObjectName); 
-      }
-    else
+    if (!m_bWantTreeControl)
       add_list_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
-
-  }   // end of dealing with each selected item
 
   // resort the list
   SortItems ();
@@ -3141,14 +3165,29 @@ for (int nItem = -1;
 void CPrefsP7::OnMoveDown() 
 {
 CString strMsg;
+int nItem = 0;
+HTREEITEM hdlItem = NULL;
 
-// iterate through list in case we implement multiple selection one day
-for (int nItem = -1;
-      (nItem = m_ctlList->GetNextItem(nItem, LVNI_SELECTED)) != -1;)
-  {
+CString * pstrObjectName;
 
-  // get the lower-case name of this item's object
-  CString * pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
+  if (m_bWantTreeControl)
+    {
+    hdlItem = m_cTreeCtrl.GetSelectedItem ();
+    if (hdlItem == NULL)
+      return;     // no selection!
+
+    pstrObjectName = (CString *) m_cTreeCtrl.GetItemData (hdlItem);
+
+    }  // end tree control
+  else
+    {
+    nItem = m_ctlList->GetNextItem (-1, LVNI_SELECTED);
+    if (nItem == -1)
+      return;     // no selection!
+
+    pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
+
+    }  // end list control
 
   ASSERT (pstrObjectName != NULL);
 
@@ -3157,8 +3196,17 @@ for (int nItem = -1;
   // check object is still there (it might have gone while we looked at the list box)
   if (!m_ObjectMap->Lookup (*pstrObjectName, pItem))
     {
-    m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
-    m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+    if (hdlItem)
+      {
+      HTREEITEM hdlParent = m_cTreeCtrl.GetParentItem (hdlItem);
+      m_cTreeCtrl.DeleteItem (hdlItem);
+      CheckParentHasChildren (hdlParent);
+      }
+    else
+      {
+      m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
+      m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+      }
 
     strMsg = TFormat ("The %s named \"%s\" is no longer in the %s list",
                   (LPCTSTR) m_strObjectType,
@@ -3168,7 +3216,7 @@ for (int nItem = -1;
     ::UMessageBox (strMsg);
 
     delete pstrObjectName;                 // and get rid of its name string
-    continue;
+    return;
     }
 
   ASSERT_VALID (pItem);
@@ -3219,7 +3267,6 @@ for (int nItem = -1;
 
     }
 
-  }   // end of dealing with each selected item
 
   // resort the list
   SortItems ();
@@ -3307,7 +3354,7 @@ bool CPrefsP7::CheckIfExecuting (CObject * pItem)
 void CPrefsP7::OnUpdateCanSequence(CCmdUI* pCmdUI)
   {
   pCmdUI->Enable (m_last_col == eColumnSequence && !m_reverse  &&
-                  m_ctlList->GetSelectedCount () == 1  &&
+                  GetSelectedItemCount () == 1  &&
                   (m_ctlUseDefaultAliases.GetCheck () == 0 ||
                   App.m_strDefaultAliasesFile.IsEmpty ()));
   } // end of CPrefsP7::OnUpdateCanSequence
@@ -3869,6 +3916,12 @@ void CPrefsP8::SetInternalName (CObject * pItem, const CString strName)
 
   } // end of CPrefsP8::SetInternalName
 
+void CPrefsP8::SetDefaultSequence ()
+  {
+  m_last_col = eColumnSequence;
+  m_reverse = false;
+  }  // end of CPrefsP8::SetDefaultSequence
+
 CObject * CPrefsP8::MakeNewObject (void)
   {
   return (CObject *) new CTrigger;
@@ -4156,14 +4209,29 @@ int nItem;
 void CPrefsP8::OnMoveUp() 
 {
 CString strMsg;
+int nItem = 0;
+HTREEITEM hdlItem = NULL;
 
-// iterate through list in case we implement multiple selection one day
-for (int nItem = -1;
-      (nItem = m_ctlList->GetNextItem(nItem, LVNI_SELECTED)) != -1;)
-  {
+CString * pstrObjectName;
 
-  // get the lower-case name of this item's object
-  CString * pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
+  if (m_bWantTreeControl)
+    {
+    hdlItem = m_cTreeCtrl.GetSelectedItem ();
+    if (hdlItem == NULL)
+      return;     // no selection!
+
+    pstrObjectName = (CString *) m_cTreeCtrl.GetItemData (hdlItem);
+
+    }  // end tree control
+  else
+    {
+    nItem = m_ctlList->GetNextItem (-1, LVNI_SELECTED);
+    if (nItem == -1)
+      return;     // no selection!
+
+    pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
+
+    }  // end list control
 
   ASSERT (pstrObjectName != NULL);
 
@@ -4172,8 +4240,17 @@ for (int nItem = -1;
   // check object is still there (it might have gone while we looked at the list box)
   if (!m_ObjectMap->Lookup (*pstrObjectName, pItem))
     {
-    m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
-    m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+    if (hdlItem)
+      {
+      HTREEITEM hdlParent = m_cTreeCtrl.GetParentItem (hdlItem);
+      m_cTreeCtrl.DeleteItem (hdlItem);
+      CheckParentHasChildren (hdlParent);
+      }
+    else
+      {
+      m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
+      m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+      }
 
     strMsg = TFormat ("The %s named \"%s\" is no longer in the %s list",
                   (LPCTSTR) m_strObjectType,
@@ -4183,7 +4260,7 @@ for (int nItem = -1;
     ::UMessageBox (strMsg);
 
     delete pstrObjectName;                 // and get rid of its name string
-    continue;
+    return;
     }
 
   ASSERT_VALID (pItem);
@@ -4223,17 +4300,10 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    if (m_bWantTreeControl)
-      {
-    //  m_cTreeCtrl.DeleteItem (hdlItem);
-    //  HTREEITEM hItem = add_tree_item (pItem, pstrObjectName); 
-      }
-    else
+    if (!m_bWantTreeControl)
       add_list_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
-
-  }   // end of dealing with each selected item
 
   // resort the list
   SortItems ();
@@ -4246,14 +4316,29 @@ for (int nItem = -1;
 void CPrefsP8::OnMoveDown() 
 {
 CString strMsg;
+int nItem = 0;
+HTREEITEM hdlItem = NULL;
 
-// iterate through list in case we implement multiple selection one day
-for (int nItem = -1;
-      (nItem = m_ctlList->GetNextItem(nItem, LVNI_SELECTED)) != -1;)
-  {
+CString * pstrObjectName;
 
-  // get the lower-case name of this item's object
-  CString * pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
+  if (m_bWantTreeControl)
+    {
+    hdlItem = m_cTreeCtrl.GetSelectedItem ();
+    if (hdlItem == NULL)
+      return;     // no selection!
+
+    pstrObjectName = (CString *) m_cTreeCtrl.GetItemData (hdlItem);
+
+    }  // end tree control
+  else
+    {
+    nItem = m_ctlList->GetNextItem (-1, LVNI_SELECTED);
+    if (nItem == -1)
+      return;     // no selection!
+
+    pstrObjectName = (CString *) m_ctlList->GetItemData (nItem);
+
+    }  // end list control
 
   ASSERT (pstrObjectName != NULL);
 
@@ -4262,8 +4347,17 @@ for (int nItem = -1;
   // check object is still there (it might have gone while we looked at the list box)
   if (!m_ObjectMap->Lookup (*pstrObjectName, pItem))
     {
-    m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
-    m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+    if (hdlItem)
+      {
+      HTREEITEM hdlParent = m_cTreeCtrl.GetParentItem (hdlItem);
+      m_cTreeCtrl.DeleteItem (hdlItem);
+      CheckParentHasChildren (hdlParent);
+      }
+    else
+      {
+      m_ctlList->DeleteItem (nItem);    // it's gone, so delete it from the list view
+      m_ctlList->RedrawItems (0, m_ctlList->GetItemCount () - 1);    // redraw the list
+      }
 
     strMsg = TFormat ("The %s named \"%s\" is no longer in the %s list",
                   (LPCTSTR) m_strObjectType,
@@ -4273,7 +4367,7 @@ for (int nItem = -1;
     ::UMessageBox (strMsg);
 
     delete pstrObjectName;                 // and get rid of its name string
-    continue;
+    return;
     }
 
   ASSERT_VALID (pItem);
@@ -4314,17 +4408,10 @@ for (int nItem = -1;
     m_doc->SetModifiedFlag (TRUE);
 
     // re-setup list with amended details
-    if (m_bWantTreeControl)
-      {
-    //  m_cTreeCtrl.DeleteItem (hdlItem);
-    //  HTREEITEM hItem = add_tree_item (pItem, pstrObjectName); 
-      }
-    else
+    if (!m_bWantTreeControl)
       add_list_item (pItem, pstrObjectName, nItem, FALSE);
 
     }
-
-  }   // end of dealing with each selected item
 
   // resort the list
   SortItems ();
@@ -4338,7 +4425,7 @@ for (int nItem = -1;
 void CPrefsP8::OnUpdateCanSequence(CCmdUI* pCmdUI)
   {
   pCmdUI->Enable (m_last_col == eColumnSequence && !m_reverse  &&
-                  m_ctlList->GetSelectedCount () == 1  &&
+                  GetSelectedItemCount () == 1  &&
                   (m_ctlUseDefaultTriggers.GetCheck () == 0 ||
                   App.m_strDefaultTriggersFile.IsEmpty ()));
   } // end of CPrefsP8::OnUpdateCanSequence
@@ -6365,6 +6452,11 @@ void CPrefsP16::SetInternalName (CObject * pItem, const CString strName)
   {
   // timers don't have internal names
   } // end of CPrefsP16::SetInternalName
+
+void CPrefsP16::SetDefaultSequence ()
+  {
+  // timers don't have sequences
+  }  // end of CPrefsP16::SetDefaultSequence
 
 CObject * CPrefsP16::MakeNewObject (void)
   {

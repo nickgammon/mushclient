@@ -131,6 +131,7 @@ public:
   virtual void SetDispatchID (CObject * pItem, const DISPID dispid) = 0;         // set script dispatch ID
 
   virtual void SetInternalName (CObject * pItem, const CString strName) = 0;    // name after creation
+  virtual void SetDefaultSequence () = 0;   // make sequencing by sequence number, ascending
 
   // get info about the object
   virtual __int64 GetModificationNumber (CObject * pItem) const = 0;   // get modification number

@@ -589,6 +589,7 @@ public:
                                       __int64 m_nUpdateNumber);   // set modification number
   virtual void SetDispatchID (CObject * pItem, const DISPID dispid);         // set script dispatch ID
   virtual void SetInternalName (CObject * pItem, const CString strName);    // name after creation
+  virtual void SetDefaultSequence ();   // make sequencing by sequence number, ascending
 
   // get info about the object
   virtual __int64 GetModificationNumber (CObject * pItem) const;   // get modification number
@@ -716,6 +717,7 @@ public:
                                       __int64 m_nUpdateNumber);   // set modification number
   virtual void SetDispatchID (CObject * pItem, const DISPID dispid);         // set script dispatch ID
   virtual void SetInternalName (CObject * pItem, const CString strName);    // name after creation
+  virtual void SetDefaultSequence ();   // make sequencing by sequence number, ascending
 
   // get info about the object
   virtual __int64 GetModificationNumber (CObject * pItem) const;   // get modification number
@@ -1307,6 +1309,7 @@ public:
                                       __int64 m_nUpdateNumber);   // set modification number
   virtual void SetDispatchID (CObject * pItem, const DISPID dispid);         // set script dispatch ID
   virtual void SetInternalName (CObject * pItem, const CString strName);    // name after creation
+  virtual void SetDefaultSequence ();   // make sequencing by sequence number, ascending
 
   // get info about the object
   virtual __int64 GetModificationNumber (CObject * pItem) const;   // get modification number
@@ -1520,6 +1523,7 @@ public:
                                       __int64 m_nUpdateNumber);   // set modification number
   virtual void SetDispatchID (CObject * pItem, const DISPID dispid);         // set script dispatch ID
   virtual void SetInternalName (CObject * pItem, const CString strName);    // name after creation
+  virtual void SetDefaultSequence () {};   // make sequencing by sequence number, ascending
 
   // get info about the object
   virtual __int64 GetModificationNumber (CObject * pItem) const;   // get modification number

@@ -877,6 +877,11 @@ void CGenPropertyPage::LoadList (void)
   long iCount = 0;
   long iNotShown = 0;
 
+
+  // some stuff won't work if tree controls aren't in column sequence
+  if (m_bWantTreeControl)
+    SetDefaultSequence ();
+
   // for filtering
 
   CScriptEngine * m_ScriptEngine = NULL;    // for the filtering checks
@@ -1179,15 +1184,19 @@ CListCtrl* pList = pPropPage->m_ctlList;
     return true;
 
 
-// append each column contents to the find string
+  CString * pstrObjectName = (CString *) pList->GetItemData ((long) FindInfo.m_pFindPosition);
+  
+  ASSERT (pstrObjectName != NULL);
 
-  strLine.Empty ();
-  for (int i = 0; i < FindInfo.m_iControlColumns; i++)
-    {
-    if (i != 0)
-      strLine += '\t';
-    strLine += pList->GetItemText((long) FindInfo.m_pFindPosition, i);
-    }
+  CObject * pItem;
+
+  if (!pPropPage->m_ObjectMap->Lookup (*pstrObjectName, pItem))
+    return true;
+
+  ASSERT_VALID (pItem);
+  ASSERT( pItem->IsKindOf( RUNTIME_CLASS( CObject ) ) );
+
+  strLine = pPropPage->GetFindText (pItem);
   
   if (FindInfo.m_bForwards)
     FindInfo.m_pFindPosition++;
