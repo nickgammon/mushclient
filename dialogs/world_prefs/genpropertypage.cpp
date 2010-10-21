@@ -1295,12 +1295,12 @@ BOOL CGenPropertyPage::OnInitDialog()
     wndpl.rcNormalPosition.right = iRight;
     wndpl.rcNormalPosition.left =  wndpl.rcNormalPosition.right - 100;
   
+
     m_cUseTreeViewCtrl.Create(Translate ("Tree View"), 
-              BS_CHECKBOX | WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX, 
+              BS_CHECKBOX | BS_AUTOCHECKBOX | BS_NOTIFY | WS_VISIBLE | WS_CHILD, 
               wndpl.rcNormalPosition, 
               this, 
               ID_USE_TREEVIEW);
-
 
     // bloody hell! so much work ...
     LOGFONT logFont;

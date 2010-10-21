@@ -2543,7 +2543,6 @@ void CPrefsP7::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_USE_DEFAULT_ALIASES, m_bUseDefaultAliases);
 	//}}AFX_DATA_MAP
 
-
 }
 
 
