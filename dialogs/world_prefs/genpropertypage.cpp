@@ -1316,12 +1316,6 @@ BOOL CGenPropertyPage::OnInitDialog()
 
     }   // end of adding "treeview" checkbox
 
-  // now hide one of the controls
-  if (m_bWantTreeControl)
-    m_ctlList->ShowWindow (SW_HIDE);
-  else
-    m_cTreeCtrl.ShowWindow (SW_HIDE);
-
   // end tree view stuff
 
   CString strDescription = m_strObjectType;
