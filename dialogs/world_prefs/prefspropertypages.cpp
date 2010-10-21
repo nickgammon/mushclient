@@ -2578,6 +2578,7 @@ BEGIN_MESSAGE_MAP(CPrefsP7, CGenPropertyPage)
   ON_UPDATE_COMMAND_UI(IDC_MOVE_UP, OnUpdateCanSequence)
   ON_UPDATE_COMMAND_UI(IDC_MOVE_DOWN, OnUpdateCanSequence)
 	ON_NOTIFY(NM_DBLCLK, ID_TREEVIEW, OnDblclkAliasesList)
+	ON_BN_CLICKED(ID_USE_TREEVIEW, OnUseTreeViewChecked)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -3380,6 +3381,12 @@ if (EditFilterText (m_doc->m_strAliasesFilter))
   LoadList ();  // need to reload the list now	
 }
 
+void CPrefsP7::OnUseTreeViewChecked()
+  {
+  m_bWantTreeControl = ((CButton *) GetDlgItem (ID_USE_TREEVIEW))->GetCheck () != 0;
+  LoadList ();
+  } // end of CPrefsP7::OnUseTreeViewChecked
+
 void CPrefsP7::GetFilterInfo (CObject * pItem, lua_State * L)
   {
   CAlias * alias = (CAlias *) pItem;
@@ -3541,6 +3548,7 @@ BEGIN_MESSAGE_MAP(CPrefsP8, CGenPropertyPage)
   ON_UPDATE_COMMAND_UI(IDC_LOAD_TRIGGER, OnUpdateNotUsingDefaults)
   ON_UPDATE_COMMAND_UI(IDC_USE_DEFAULT_TRIGGERS, OnUpdateHaveDefaults)
 	ON_NOTIFY(NM_DBLCLK, ID_TREEVIEW, OnDblclkTriggersList)
+	ON_BN_CLICKED(ID_USE_TREEVIEW, OnUseTreeViewChecked)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -4507,6 +4515,12 @@ void CPrefsP8::OnEditFilter()
 if (EditFilterText (m_doc->m_strTriggersFilter))
   LoadList ();  // need to reload the list now	
 }
+
+void CPrefsP8::OnUseTreeViewChecked()
+  {
+  m_bWantTreeControl = ((CButton *) GetDlgItem (ID_USE_TREEVIEW))->GetCheck () != 0;
+  LoadList ();
+  } // end of CPrefsP8::OnUseTreeViewChecked
 
 void CPrefsP8::OnFilter() 
 {
@@ -6205,6 +6219,7 @@ BEGIN_MESSAGE_MAP(CPrefsP16, CGenPropertyPage)
   ON_UPDATE_COMMAND_UI(IDC_LOAD_TIMERS, OnUpdateNotUsingDefaults)
   ON_UPDATE_COMMAND_UI(IDC_USE_DEFAULT_TIMERS, OnUpdateHaveDefaults)
 	ON_NOTIFY(NM_DBLCLK, ID_TREEVIEW, OnDblclkTimersList)
+	ON_BN_CLICKED(ID_USE_TREEVIEW, OnUseTreeViewChecked)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -6888,6 +6903,12 @@ void CPrefsP16::OnEditFilter()
 if (EditFilterText (m_doc->m_strTimersFilter))
   LoadList ();  // need to reload the list now	
 }
+
+void CPrefsP16::OnUseTreeViewChecked()
+  {
+  m_bWantTreeControl = ((CButton *) GetDlgItem (ID_USE_TREEVIEW))->GetCheck () != 0;
+  LoadList ();
+  } // end of CPrefsP16::OnUseTreeViewChecked
 
 void CPrefsP16::GetFilterInfo (CObject * pItem, lua_State * L)
   {

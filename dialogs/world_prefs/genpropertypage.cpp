@@ -1018,6 +1018,17 @@ void CGenPropertyPage::LoadList (void)
 
   delete m_ScriptEngine;
 
+  if (m_bWantTreeControl)
+    {
+    m_cTreeCtrl.ShowWindow (SW_SHOW);
+    m_ctlList->ShowWindow (SW_HIDE);
+    }
+  else
+    {
+    m_ctlList->ShowWindow (SW_SHOW);
+    m_cTreeCtrl.ShowWindow (SW_HIDE);
+    }
+
   }  // end of CGenPropertyPage::LoadList
 
 
@@ -1277,7 +1288,34 @@ BOOL CGenPropertyPage::OnInitDialog()
 							 GetSafeHwnd(), 
 							 (HMENU)ID_TREEVIEW);
 
+  if (m_strObjectType != "variable")
+    {
+    int iRight = wndpl.rcNormalPosition.right;
+    GetDlgItem (IDC_COUNT)->GetWindowPlacement (&wndpl);
+    wndpl.rcNormalPosition.right = iRight;
+    wndpl.rcNormalPosition.left =  wndpl.rcNormalPosition.right - 100;
   
+    m_cUseTreeViewCtrl.Create(Translate ("Tree View"), 
+              BS_CHECKBOX | WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX, 
+              wndpl.rcNormalPosition, 
+              this, 
+              ID_USE_TREEVIEW);
+
+
+    // bloody hell! so much work ...
+    LOGFONT logFont;
+    CFont * pFont = GetDlgItem (IDC_COPY)->GetFont();
+    pFont->GetLogFont(&logFont);
+
+    // fix up the font
+    m_checkboxFont.CreateFontIndirect(&logFont);
+    m_cUseTreeViewCtrl.SetFont(&m_checkboxFont);
+
+    // set check state appropriately
+    m_cUseTreeViewCtrl.SetCheck (m_bWantTreeControl);
+
+    }   // end of adding "treeview" checkbox
+
   // now hide one of the controls
   if (m_bWantTreeControl)
     m_ctlList->ShowWindow (SW_HIDE);

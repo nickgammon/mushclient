@@ -654,6 +654,7 @@ protected:
   afx_msg void OnUpdateNeedOneSelection(CCmdUI* pCmdUI);
   afx_msg void OnUpdateNeedXMLClipboard(CCmdUI* pCmdUI);
   afx_msg void OnUpdateCanSequence(CCmdUI* pCmdUI);
+	afx_msg void OnUseTreeViewChecked();
 	DECLARE_MESSAGE_MAP()
 
 };
@@ -781,6 +782,7 @@ protected:
   afx_msg void OnUpdateNeedSelection(CCmdUI* pCmdUI);
   afx_msg void OnUpdateNeedOneSelection(CCmdUI* pCmdUI);
   afx_msg void OnUpdateNeedXMLClipboard(CCmdUI* pCmdUI);
+	afx_msg void OnUseTreeViewChecked();
   DECLARE_MESSAGE_MAP()
 
 };
@@ -1384,6 +1386,7 @@ protected:
   afx_msg void OnUpdateNotUsingDefaults(CCmdUI* pCmdUI);
   afx_msg void OnUpdateHaveDefaults(CCmdUI* pCmdUI);
   afx_msg void OnUpdateNeedXMLClipboard(CCmdUI* pCmdUI);
+	afx_msg void OnUseTreeViewChecked();
 	DECLARE_MESSAGE_MAP()
 
 };

@@ -12,6 +12,7 @@ typedef CTypedPtrMap <CMapStringToPtr, CString, CObject*> CObjectMap;
 typedef int (* t_CompareObjects) (const int iColumn, const CObject * item1, const CObject * item2);
 
 #define ID_TREEVIEW (WM_USER + 1004)
+#define ID_USE_TREEVIEW (WM_USER + 1005)
 
 typedef struct t_gen_sort_param
   {  
@@ -81,6 +82,9 @@ public:
 
  	CTreeCtrl			m_cTreeCtrl;        // for the tree views
   map<CString, HTREEITEM> m_GroupsMap;   // for inserting into groups
+
+  CButton   m_cUseTreeViewCtrl;     // button for turning on/off tree views
+  CFont     m_checkboxFont;         // font for it
 
   // set up variables for use later on
 
