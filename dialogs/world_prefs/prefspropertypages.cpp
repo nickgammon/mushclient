@@ -3049,7 +3049,7 @@ BOOL CPrefsP7::OnInitDialog()
                                 GetSystemMetrics (SM_CXVSCROLL) -   // minus vertical scroll bar
                                 m_iColWidth [eColumnAlias];           // minus width of other items
 	
-	return TRUE;  // return TRUE unless you set the focus to a control
+	return FALSE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }   // end of CPrefsP7::OnInitDialog
 
@@ -6808,7 +6808,7 @@ BOOL CPrefsP16::OnInitDialog()
                                 m_iColWidth [eColumnType] -           // minus existing column
                                 m_iColWidth [eColumnWhen];            // minus existing column
 	
-	return TRUE;  // return TRUE unless you set the focus to a control
+	return FALSE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }   // end of CPrefsP16::OnInitDialog
 
@@ -7765,7 +7765,7 @@ BOOL CPrefsP18::OnInitDialog()
                                 GetSystemMetrics (SM_CXVSCROLL) -   // minus vertical scroll bar
                                 m_iColWidth [eColumnName];           // minus width of other items
 	
-	return TRUE;  // return TRUE unless you set the focus to a control
+	return FALSE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }   // end of CPrefsP18::OnInitDialog
 

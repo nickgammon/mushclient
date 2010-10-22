@@ -69,7 +69,7 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// OnAddItem
+// SetUpPage
 
 void CGenPropertyPage::SetUpPage (CString strObjectType,
                                   CObjectMap * ObjectMap,
@@ -243,11 +243,23 @@ void CGenPropertyPage::OnAddItem(CDialog & dlg)
 
   // add this item to the list view
   if (m_bWantTreeControl)
-    add_tree_item (pItem, pstrObjectName);
+    {
+    HTREEITEM hItem = add_tree_item (pItem, pstrObjectName);
+    m_cTreeCtrl.SelectItem (hItem);
+    m_cTreeCtrl.EnsureVisible (hItem);    
+    }
   else
-    add_list_item (pItem, pstrObjectName, 0, TRUE);
+    {
+    int nItem = add_list_item (pItem, pstrObjectName, 0, TRUE);
+    m_ctlList->SetItemState (nItem, LVIS_FOCUSED | LVIS_SELECTED, 
+                                    LVIS_FOCUSED | LVIS_SELECTED);
+    m_ctlList->EnsureVisible (nItem, FALSE);    
+    }
+
 
   SetInternalName (pItem, strObjectName);  // set name so we can delete one-shot items
+
+  m_strSelectedItem = strObjectName;      // so it gets selected next time
 
   // resort the list
 
@@ -558,7 +570,7 @@ void CGenPropertyPage::OnChangeItem(CDialog & dlg)
   }   // end of list control
 
   // redraw the list
-//  if (GetFilterFlag ())
+ if (GetFilterFlag ())
     LoadList ();       // full reload because it may have changed filter requirements
 
   // resort the list
