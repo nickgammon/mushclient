@@ -65,6 +65,7 @@ public:
   CListCtrl * m_ctlList;            // the list control which displays the items
   CStatic   * m_ctlSummary;         // count of items shown
   bool m_bWantTreeControl;          // true if it wants to show a tree control instead of a list control
+  bool m_bReloadList;               // true to reload the list in the idle loop
 
   // count of columns is used for arrays below
   int m_iColumnCount;               // how many columns there are

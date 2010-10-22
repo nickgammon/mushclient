@@ -874,6 +874,12 @@ public:
   COLORREF m_OutputLinePreambleNotesTextColour;  // text colour - Note preamble 
   COLORREF m_OutputLinePreambleNotesBackColour;  // back colour - Note preamble 
 
+  // version 4.65
+
+  unsigned short m_bTreeviewTriggers;         // show triggers in tree view?
+  unsigned short m_bTreeviewAliases;          // show aliases in tree view?
+  unsigned short m_bTreeviewTimers;           // show timers in tree view?
+
   // end of stuff saved to disk **************************************************************
 
   // stuff from pre version 11, read from disk but not saved

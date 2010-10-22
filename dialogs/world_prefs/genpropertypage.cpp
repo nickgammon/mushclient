@@ -33,6 +33,8 @@ CGenPropertyPage::CGenPropertyPage(const UINT nID) :
   m_strColumnHeadings   = NULL;
   m_iColumnCount        = 0;
   m_bWantTreeControl    = false;
+  m_bReloadList = false;
+
 
 }   // end of CGenPropertyPage::CGenPropertyPage
 
@@ -267,7 +269,7 @@ void CGenPropertyPage::OnAddItem(CDialog & dlg)
 
   // redraw the list
   if (GetFilterFlag ())
-    LoadList ();       // full reload because it may have changed filter requirements
+    m_bReloadList = true;      // full reload because it may have changed filter requirements
 
 // get dispatch id from the script and put it into the item
 
@@ -571,7 +573,7 @@ void CGenPropertyPage::OnChangeItem(CDialog & dlg)
 
   // redraw the list
  if (GetFilterFlag ())
-    LoadList ();       // full reload because it may have changed filter requirements
+    m_bReloadList = true;       // full reload because it may have changed filter requirements
 
   // resort the list
 
@@ -831,6 +833,11 @@ HTREEITEM CGenPropertyPage::add_tree_item (CObject * pItem,
   if (strDescription.GetLength () > 100)
     strDescription = strDescription.Left (100) + " ...";
 
+
+  /*  
+
+  // looks a bit wanky
+
   CString strLabel = GetLabel (pItem);
 
   // add the label if it exists
@@ -840,6 +847,8 @@ HTREEITEM CGenPropertyPage::add_tree_item (CObject * pItem,
     strDescription = strDescription + strLabel;
     strDescription = strDescription + "]";
     }
+
+  */
 
   // insert it
   HTREEITEM hNewItem = m_cTreeCtrl.InsertItem (strDescription, hParent);
@@ -1068,6 +1077,8 @@ void CGenPropertyPage::LoadList (void)
 
   SortItems ();
 
+  bool bSelected = false;
+
   // put selected item back
   if (!m_strSelectedItem.IsEmpty ())
     {
@@ -1087,11 +1098,14 @@ void CGenPropertyPage::LoadList (void)
                 {
                 // select the new item
                 m_cTreeCtrl.SelectItem (hItem);
-                m_cTreeCtrl.EnsureVisible (hItem);    
+                m_cTreeCtrl.EnsureVisible (hItem); 
+                bSelected = true;
                 break;
                 }
               }   // end for each item
 
+          if (bSelected)
+            break;
         }  // end for each group
 
       } // end of tree control
@@ -1107,24 +1121,23 @@ void CGenPropertyPage::LoadList (void)
           {
           m_ctlList->SetItemState (nItem, LVIS_FOCUSED | LVIS_SELECTED, 
                                           LVIS_FOCUSED | LVIS_SELECTED);
-          m_ctlList->EnsureVisible (nItem, FALSE);    
+          m_ctlList->EnsureVisible (nItem, FALSE);   
+          bSelected = true;
           break;
           }
 
         }   // end of dealing with each item
 
-      // set the 1st item to be selected - we do this here because sorting the
-      // list means our first item is not necessarily the 1st item in the list
-      if (nItem == -1)
-        {
-        if (!m_ObjectMap->IsEmpty ())    // provided we have any
-         m_ctlList->SetItemState (0, LVIS_FOCUSED | LVIS_SELECTED, 
-                                     LVIS_FOCUSED | LVIS_SELECTED);
-        }
-
       } //  end of list control
     } // end of having a previously-selected item
 
+
+  // set the 1st item to be selected - we do this here because sorting the
+  // list means our first item is not necessarily the 1st item in the list
+  if (!bSelected && !m_bWantTreeControl)
+    if (!m_ObjectMap->IsEmpty ())    // provided we have any
+      m_ctlList->SetItemState (0, LVIS_FOCUSED | LVIS_SELECTED, 
+                                  LVIS_FOCUSED | LVIS_SELECTED);
 
   CString strSummary = TFormat ("%i item%s.", PLURAL (iCount));
 
@@ -1155,6 +1168,22 @@ void CGenPropertyPage::LoadList (void)
 
 LRESULT CGenPropertyPage::OnKickIdle(WPARAM, LPARAM)
   {
+  /*
+
+   Note: I was getting access violations at times, in particular when you
+   double-clicked to edit an entry in tree-view. I think now that this is because
+   LoadList deleted all items and re-added them, which meant that the tree item
+   which was being edited got yanked out while the Windows message was still being
+   processed by the system, and so it got a missing or NULL CWnd item when it didn't
+   expect it. I now defer reloading the list to the idle loop.
+  */
+
+  if (m_bReloadList)
+    {
+    m_bReloadList = false;
+    LoadList ();
+    }
+
   UpdateDialogControls (AfxGetApp()->m_pMainWnd, false);
   return 0;
   } // end of CGenPropertyPage::OnKickIdle
@@ -1465,10 +1494,10 @@ BOOL CGenPropertyPage::OnInitDialog()
 // recover column sequence
 
   m_ctlList->SendMessage (LVM_SETCOLUMNORDERARRAY, m_iColumnCount, (DWORD) iColOrder);
-
-  LoadList ();
-  
+ 
   delete [] iColOrder;
+
+  m_bReloadList = true;   // defer so focus gets set correctly
 
 	return FALSE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -1742,7 +1771,7 @@ CString strContents;
   m_doc->SetModifiedFlag (TRUE);
 
   // reload the list - we don't know how many were added, and indeed, what they were
-  LoadList ();
+  m_bReloadList = true;       // full reload because it may have changed filter requirements
 
   } // end of CGenPropertyPage::OnPasteItem
 

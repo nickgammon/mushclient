@@ -186,7 +186,11 @@ tConfigurationNumericOption OptionsTable [] = {
 {"timestamp_notes_back_colour",         RGB (0, 0, 0),        O(m_OutputLinePreambleNotesBackColour), 0, 0xFFFFFF, OPT_RGB_COLOUR | OPT_UPDATE_VIEWS},
 {"timestamp_output_back_colour",        RGB (0, 0, 0),        O(m_OutputLinePreambleOutputBackColour),0, 0xFFFFFF, OPT_RGB_COLOUR | OPT_UPDATE_VIEWS},
 {"translate_backslash_sequences",       false, O(m_bTranslateBackslashSequences)},      
-{"translate_german",                    false, O(m_bTranslateGerman)},                                      
+{"translate_german",                    false, O(m_bTranslateGerman)},  
+{"treeview_triggers",                   true,  O(m_bTreeviewTriggers)},  
+{"treeview_aliases",                    true,  O(m_bTreeviewAliases)},  
+{"treeview_timers",                     true,  O(m_bTreeviewTimers)},  
+                                    
 {"underline_hyperlinks",                true,  O(m_bUnderlineHyperlinks), 0, 0, OPT_SERVER_CAN_WRITE},              
 {"unpause_on_send",                     true,  O(m_bUnpauseOnSend)},                    
 {"use_custom_link_colour",              true,  O(m_bUseCustomLinkColour), 0, 0, OPT_SERVER_CAN_WRITE},              

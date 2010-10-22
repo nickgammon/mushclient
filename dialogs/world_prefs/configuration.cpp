@@ -206,7 +206,7 @@ void CMUSHclientDoc:: LoadPrefsP7  (CPrefsP7  &page7)
                   page7.CompareObjects,
                   &m_AliasesFindInfo,
                   XML_ALIASES,
-                  true);  // tree control
+                  m_bTreeviewAliases);  // tree control
 
   page7.m_iColumnCount      = CPrefsP7::eColumnCount;
   page7.m_iColWidth         = new int [CPrefsP7::eColumnCount];
@@ -248,7 +248,7 @@ void CMUSHclientDoc:: LoadPrefsP8  (CPrefsP8  &page8)
                   page8.CompareObjects,
                   &m_TriggersFindInfo,
                   XML_TRIGGERS,
-                  true);  // tree control
+                  m_bTreeviewTriggers);  // tree control
 
   page8.m_iColumnCount      = CPrefsP8::eColumnCount;
   page8.m_iColWidth         = new int [CPrefsP8::eColumnCount];
@@ -585,7 +585,7 @@ void CMUSHclientDoc:: LoadPrefsP16 (CPrefsP16 &page16)
                   page16.CompareObjects,
                   &m_TimersFindInfo,
                   XML_TIMERS,
-                  true);  // tree control
+                  m_bTreeviewAliases);  // tree control
 
 
   page16.m_iColumnCount      = CPrefsP16::eColumnCount;
@@ -2179,6 +2179,11 @@ Frame.DelayDebugStatus ("World config - loading pages");
   m_strLastSelectedTrigger  =  page8.m_strSelectedItem  ;
   m_strLastSelectedTimer    =  page16.m_strSelectedItem ;
   m_strLastSelectedVariable =  page18.m_strSelectedItem ;
+
+  // remember whether they are using tree or list controls
+  m_bTreeviewAliases = page7.m_bWantTreeControl;
+  m_bTreeviewTriggers = page8.m_bWantTreeControl;
+  m_bTreeviewTimers = page16.m_bWantTreeControl;
 
   if (iResult != IDOK)
     {

@@ -420,6 +420,10 @@ int i;
 
   m_iOutputWindowRedrawCount = 0;
 
+  m_bTreeviewTriggers = true;      
+  m_bTreeviewAliases = true;       
+  m_bTreeviewTimers = true;        
+
   // set up some default triggers for MUSHes
 
   /*
