@@ -1449,13 +1449,25 @@ BOOL CGenPropertyPage::OnInitDialog()
     {
     int iRight = wndpl.rcNormalPosition.right;
     GetDlgItem (IDC_COUNT)->GetWindowPlacement (&wndpl);
-    wndpl.rcNormalPosition.right = iRight;
-    wndpl.rcNormalPosition.left =  wndpl.rcNormalPosition.right - 100;
-  
+    CRect rCountText (wndpl.rcNormalPosition);
+    CRect rCheckBox (wndpl.rcNormalPosition);
+    // adjust checkbox size
+    rCheckBox.right = iRight;
+    rCheckBox.left =  rCheckBox.right - 80;
 
+    // no overlap
+    rCountText.right = rCheckBox.left;
+
+    // size down count window so it doesn't overlap checkbox
+    GetDlgItem (IDC_COUNT)->MoveWindow (rCountText.left, 
+                                        rCountText.top,
+                                        rCountText.right - rCountText.left,
+                                        rCountText.bottom - rCountText.top);
+  
+    // make checkbox
     m_cUseTreeViewCtrl.Create(Translate ("Tree Vie&w"), 
               BS_CHECKBOX | BS_AUTOCHECKBOX | BS_NOTIFY | WS_VISIBLE | WS_CHILD, 
-              wndpl.rcNormalPosition, 
+              rCheckBox, 
               this, 
               ID_USE_TREEVIEW);
 
