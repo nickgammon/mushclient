@@ -1093,7 +1093,9 @@ void CGenPropertyPage::LoadList (void)
 
         if (* ((CString *) m_ctlList->GetItemData (nItem)) == m_strSelectedItem)
           {
-          m_ctlList->SetItemState (nItem, TVIS_SELECTED, TVIS_SELECTED);
+          m_ctlList->SetItemState (nItem, LVIS_FOCUSED | LVIS_SELECTED, 
+                                          LVIS_FOCUSED | LVIS_SELECTED);
+          m_ctlList->EnsureVisible (nItem, FALSE);    
           break;
           }
 
