@@ -2158,7 +2158,7 @@ for (int nItem = -1;
 void CPrefsP6::OnDblclkMacrosList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
   OnEditMacro ();
-	*pResult = 0;
+	*pResult = 1;
 }
 
 typedef struct
@@ -2927,7 +2927,7 @@ void CPrefsP7::OnDblclkAliasesList(NMHDR* pNMHDR, LRESULT* pResult)
 {
   
   OnChangeAlias ();	
-	*pResult = 0;
+	*pResult = 1;
 }   // end of CPrefsP7::OnDblclkAliasesList
 
 int CPrefsP7::CompareObjects (const int iColumn, const CObject * item1, const CObject * item2)
@@ -3382,6 +3382,7 @@ if (EditFilterText (m_doc->m_strAliasesFilter))
 
 void CPrefsP7::OnUseTreeViewChecked()
   {
+  GetSelectedItem (); // remember old selection
   m_bWantTreeControl = ((CButton *) GetDlgItem (ID_USE_TREEVIEW))->GetCheck () != 0;
   LoadList ();
   } // end of CPrefsP7::OnUseTreeViewChecked
@@ -4105,7 +4106,8 @@ void CPrefsP8::OnDblclkTriggersList(NMHDR* pNMHDR, LRESULT* pResult)
 {
   
   OnChangeTrigger ();	
-	*pResult = 0;
+	*pResult = 1;     // well it seems to access violate without this
+
 }   // end of CPrefsP8::OnDblclkTriggersList
 
 int CPrefsP8::CompareObjects (const int iColumn, const CObject * item1, const CObject * item2)
@@ -4517,6 +4519,7 @@ if (EditFilterText (m_doc->m_strTriggersFilter))
 
 void CPrefsP8::OnUseTreeViewChecked()
   {
+  GetSelectedItem (); // remember old selection
   m_bWantTreeControl = ((CButton *) GetDlgItem (ID_USE_TREEVIEW))->GetCheck () != 0;
   LoadList ();
   } // end of CPrefsP8::OnUseTreeViewChecked
@@ -6574,7 +6577,7 @@ void CPrefsP16::OnDblclkTimersList(NMHDR* pNMHDR, LRESULT* pResult)
 {
   
   OnChangeTimer ();	
-	*pResult = 0;
+	*pResult = 1;
 }   // end of CPrefsP16::OnDblclkTimersList
 
 int CPrefsP16::CompareObjects (const int iColumn, const CObject * item1, const CObject * item2)
@@ -6905,6 +6908,7 @@ if (EditFilterText (m_doc->m_strTimersFilter))
 
 void CPrefsP16::OnUseTreeViewChecked()
   {
+  GetSelectedItem (); // remember old selection
   m_bWantTreeControl = ((CButton *) GetDlgItem (ID_USE_TREEVIEW))->GetCheck () != 0;
   LoadList ();
   } // end of CPrefsP16::OnUseTreeViewChecked
@@ -7673,7 +7677,7 @@ void CPrefsP18::OnDblclkVariablesList(NMHDR* pNMHDR, LRESULT* pResult)
 {
   
   OnChangeVariable ();	
-	*pResult = 0;
+	*pResult = 1;
 }   // end of CPrefsP18::OnDblclkVariableesList
 
 int CPrefsP18::CompareObjects (const int iColumn, const CObject * item1, const CObject * item2)

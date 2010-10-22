@@ -346,6 +346,8 @@ CString strMsg;
   // load dialog with values from the found item
   LoadDialog (&dlg, pItem);
 
+  CString strOldObjectName = GetObjectName (&dlg);
+
   // put up the dialog, give up if they cancel
   if (dlg.DoModal () != IDOK)
     return false;
@@ -406,14 +408,16 @@ CString strMsg;
 
   // check for name change 
   CString strObjectName = GetObjectName (&dlg);
-  if (strObjectName.IsEmpty ())
+
+  // they deleted the label - make one up for them
+  if (strObjectName.IsEmpty () && !strOldObjectName.IsEmpty ())
     strObjectName.Format ("*%s%s", 
                           (LPCTSTR) m_strObjectType,
                           (LPCTSTR) App.GetUniqueString ());
   else
     strObjectName.MakeLower ();
       
-  if (strObjectName != *pstrObjectName)     // has name changed?
+  if (strObjectName != strOldObjectName)     // has name changed?
     {
     // here if label has changed
     CObject * new_pItem;
@@ -462,19 +466,17 @@ CString strMsg;
       // group may have changed, delete and re-add
       HTREEITEM hdlParent = m_cTreeCtrl.GetParentItem (hdlItem);
       m_cTreeCtrl.DeleteItem (hdlItem);
-      HTREEITEM hItem = add_tree_item (pItem, pstrObjectName); 
+      hdlItem = add_tree_item (pItem, pstrObjectName); 
 
       // if deleting item deletes only one in group, remove group as well
       CheckParentHasChildren (hdlParent);
 
-      SortItems ();
-
       // get its new parent
-      hdlParent = m_cTreeCtrl.GetParentItem (hItem);
+      hdlParent = m_cTreeCtrl.GetParentItem (hdlItem);
       m_cTreeCtrl.SetItemState (hdlParent, TVIS_EXPANDED, TVIS_EXPANDED); // expand group (parent)
       // select the new item
-      m_cTreeCtrl.SelectItem (hItem);
-      m_cTreeCtrl.EnsureVisible (hItem);  // may have changed groups
+      m_cTreeCtrl.SelectItem (hdlItem);
+      m_cTreeCtrl.EnsureVisible (hdlItem);  // may have changed groups
       }
     else
       {
@@ -509,8 +511,12 @@ CString strMsg;
 void CGenPropertyPage::OnChangeItem(CDialog & dlg) 
 {
 
+  GetSelectedItem (); // in case we re-load list
+
   if (m_bWantTreeControl)
     {
+
+    bool bFoundIt = false;
 
     for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
          hGroup;
@@ -525,12 +531,15 @@ void CGenPropertyPage::OnChangeItem(CDialog & dlg)
 
             if (iState & TVIS_SELECTED)
               {
-              if (ChangeOneItem (dlg, (CString *) m_cTreeCtrl.GetItemData (hItem), 0, hItem))
-                break;
+              ChangeOneItem (dlg, (CString *) m_cTreeCtrl.GetItemData (hItem), 0, hItem);
+              bFoundIt = true;
+              break;  // just change one, because handle may have changed
               }  // end if selected
 
             }   // end for each item
 
+        if (bFoundIt)
+          break;
       }  // end for each group
 
 
@@ -542,15 +551,14 @@ void CGenPropertyPage::OnChangeItem(CDialog & dlg)
           (nItem = m_ctlList->GetNextItem(nItem, LVNI_SELECTED)) != -1;)
       {
 
-      if (ChangeOneItem (dlg, (CString *) m_ctlList->GetItemData (nItem), nItem, NULL))
-        break;
-
+      ChangeOneItem (dlg, (CString *) m_ctlList->GetItemData (nItem), nItem, NULL);
+      break;  // for consistency
       }   // end of dealing with each selected item
 
   }   // end of list control
 
   // redraw the list
-  if (GetFilterFlag ())
+//  if (GetFilterFlag ())
     LoadList ();       // full reload because it may have changed filter requirements
 
   // resort the list
@@ -896,13 +904,13 @@ void CGenPropertyPage::SortItems (void)
     cbinfo.lParam = (LPARAM) &sort_param;
 
     // now sort each child
-    HTREEITEM hdlItem = m_cTreeCtrl.GetNextItem (NULL, TVGN_ROOT);
+    HTREEITEM hdlItem = m_cTreeCtrl.GetRootItem ();
 
     while (hdlItem)
       {
       cbinfo.hParent = hdlItem;
       m_cTreeCtrl.SortChildrenCB (&cbinfo );
-      hdlItem = m_cTreeCtrl.GetNextItem (hdlItem, TVGN_NEXT);
+      hdlItem = m_cTreeCtrl.GetNextSiblingItem (hdlItem);
       }
 
     }
@@ -977,9 +985,9 @@ void CGenPropertyPage::LoadList (void)
   // remove all old list items (we used the item data to key to the item)
 
   for (int nItem = 0; nItem < m_ctlList->GetItemCount (); nItem++)
-    delete (CString *) m_ctlList->GetItemData (nItem);
+    delete ((CString *) m_ctlList->GetItemData (nItem));
 
-   m_ctlList->DeleteAllItems ();
+  m_ctlList->DeleteAllItems ();
   
 
   // and now all old tree items
@@ -991,13 +999,14 @@ void CGenPropertyPage::LoadList (void)
     for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
         hItem;
         hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
-      delete (CString *) m_cTreeCtrl.GetItemData (hItem);
+          delete ((CString *) m_cTreeCtrl.GetItemData (hItem));
 
     }  // end for each group
 
    m_cTreeCtrl.DeleteAllItems ();
    // since all is deleted, we don't have any groups any more
    m_GroupsMap.erase (m_GroupsMap.begin (), m_GroupsMap.end ());
+
 
    CString strObjectName;
    CObject * pItem;
@@ -1036,6 +1045,7 @@ void CGenPropertyPage::LoadList (void)
      if (bUse)  // add to list if passed filter
        {
        CString * pstrObjectName = new CString (strObjectName);
+
        if (m_bWantTreeControl)
          add_tree_item (pItem, pstrObjectName); 
        else
@@ -1046,12 +1056,61 @@ void CGenPropertyPage::LoadList (void)
 
   SortItems ();
 
-// set the 1st item to be selected - we do this here because sorting the
-// list means our first item is not necessarily the 1st item in the list
+  // put selected item back
+  if (!m_strSelectedItem.IsEmpty ())
+    {
+    if (m_bWantTreeControl)
+      {
 
- if (!m_ObjectMap->IsEmpty ())    // provided we have any
-   m_ctlList->SetItemState (0, LVIS_FOCUSED | LVIS_SELECTED, 
-                               LVIS_FOCUSED | LVIS_SELECTED);
+      for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
+           hGroup;
+           hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
+        {
+
+        for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+            hItem;
+            hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+              {
+              if (* ((CString *) m_cTreeCtrl.GetItemData (hItem)) == m_strSelectedItem)
+                {
+                // select the new item
+                m_cTreeCtrl.SelectItem (hItem);
+                m_cTreeCtrl.EnsureVisible (hItem);    
+                break;
+                }
+              }   // end for each item
+
+        }  // end for each group
+
+      } // end of tree control
+    else
+      {
+      int nItem;
+
+      for (nItem = -1;
+            (nItem = m_ctlList->GetNextItem(nItem, LVNI_ALL )) != -1;)
+        {
+
+        if (* ((CString *) m_ctlList->GetItemData (nItem)) == m_strSelectedItem)
+          {
+          m_ctlList->SetItemState (nItem, TVIS_SELECTED, TVIS_SELECTED);
+          break;
+          }
+
+        }   // end of dealing with each item
+
+      // set the 1st item to be selected - we do this here because sorting the
+      // list means our first item is not necessarily the 1st item in the list
+      if (nItem == -1)
+        {
+        if (!m_ObjectMap->IsEmpty ())    // provided we have any
+         m_ctlList->SetItemState (0, LVIS_FOCUSED | LVIS_SELECTED, 
+                                     LVIS_FOCUSED | LVIS_SELECTED);
+        }
+
+      } //  end of list control
+    } // end of having a previously-selected item
+
 
   CString strSummary = TFormat ("%i item%s.", PLURAL (iCount));
 
@@ -1064,11 +1123,13 @@ void CGenPropertyPage::LoadList (void)
   if (m_bWantTreeControl)
     {
     m_cTreeCtrl.ShowWindow (SW_SHOW);
+    m_cTreeCtrl.SetFocus ();
     m_ctlList->ShowWindow (SW_HIDE);
     }
   else
     {
     m_ctlList->ShowWindow (SW_SHOW);
+    m_ctlList->SetFocus ();
     m_cTreeCtrl.ShowWindow (SW_HIDE);
     }
 
@@ -1331,6 +1392,16 @@ BOOL CGenPropertyPage::OnInitDialog()
 							 GetSafeHwnd(), 
 							 (HMENU)ID_TREEVIEW);
 
+
+  /*
+   m_cTreeCtrl.Create (WS_CHILD|WS_VISIBLE|WS_TABSTOP|TVS_SHOWSELALWAYS|
+							        TVS_HASLINES|TVS_LINESATROOT|TVS_HASBUTTONS,
+              wndpl.rcNormalPosition, 
+              this, 
+               ID_TREEVIEW
+               );
+  */
+
   if (m_strObjectType != "variable")
     {
     int iRight = wndpl.rcNormalPosition.right;
@@ -1385,15 +1456,58 @@ BOOL CGenPropertyPage::OnInitDialog()
   
   delete [] iColOrder;
 
-	return TRUE;  // return TRUE unless you set the focus to a control
+	return FALSE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
-}
+}  // end of  CGenPropertyPage::OnInitDialog
+
+/////////////////////////////////////////////////////////////////////////////
+// OnDestroy
+
+void CGenPropertyPage::GetSelectedItem ()
+  {
+  m_strSelectedItem.Empty ();
+  
+  // find first selected item
+  if (m_bWantTreeControl)
+    {
+
+    for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
+         hGroup;
+         hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
+      {
+
+      for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+          hItem;
+          hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+            {
+            if (m_cTreeCtrl.GetItemState (hItem, TVIS_SELECTED) & TVIS_SELECTED)
+              {
+              m_strSelectedItem = * ((CString *) m_cTreeCtrl.GetItemData (hItem));
+              break;
+              }
+            }   // end for each item
+
+      }  // end for each group
+
+
+    } // end of tree control
+  else
+    {
+    int nItem = m_ctlList->GetNextItem (-1, LVIS_SELECTED);
+    if (nItem != -1)
+      m_strSelectedItem = * ((CString *) m_ctlList->GetItemData (nItem));
+    } //  end of list control
+
+
+  } // end of  CGenPropertyPage::GetSelectedItem
 
 /////////////////////////////////////////////////////////////////////////////
 // OnDestroy
 
 void CGenPropertyPage::OnDestroy() 
 {
+  
+  GetSelectedItem ();
 
   CString strDescription = m_strObjectType;
   strDescription += " list";
@@ -1401,7 +1515,7 @@ void CGenPropertyPage::OnDestroy()
 // delete the object names which we stored as the item data
 
   for (int nItem = 0; nItem < m_ctlList->GetItemCount (); nItem++)
-    delete (CString *) m_ctlList->GetItemData (nItem);
+    delete ((CString *) m_ctlList->GetItemData (nItem));
 
   // and now all old tree items
   for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
@@ -1412,7 +1526,7 @@ void CGenPropertyPage::OnDestroy()
     for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
         hItem;
         hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
-      delete (CString *) m_cTreeCtrl.GetItemData (hItem);
+          delete ((CString *) m_cTreeCtrl.GetItemData (hItem));
 
     }  // end for each group
 
@@ -1502,7 +1616,7 @@ try
   CMemFile f;      // open memory file for writing
   CArchive ar(&f, CArchive::store);
 
-  // in case we do more than one (one day) the header comes before the batch
+  // The header comes before the batch  of items
   if (m_strObjectType == "alias")
     m_doc->Save_Header_XML (ar, "aliases", false);
   else

@@ -38,10 +38,10 @@
 #endif
 
 // disable memory checking for speed
-//  comment out to re-enable
+//  comment out (middle 2 lines) to re-enable
 #ifdef _DEBUG
-  #undef DEBUG_NEW
-  #define DEBUG_NEW new
+//  #undef DEBUG_NEW
+//  #define DEBUG_NEW new
 #endif
 
 #define USE_PYTHON    // Nick's "use Python" extension ;)

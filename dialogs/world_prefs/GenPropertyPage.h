@@ -80,8 +80,10 @@ public:
   BOOL m_reverse;                   // if true, reverse sort
   t_CompareObjects  m_CompareObjects;   // for comparing when sorting
 
+  CString m_strSelectedItem;        // key of last selected item
+
  	CTreeCtrl			m_cTreeCtrl;        // for the tree views
-  map<CString, HTREEITEM> m_GroupsMap;   // for inserting into groups
+  map<CString, HTREEITEM> m_GroupsMap;   // for inserting into groups (group names and their handles)
 
   CButton   m_cUseTreeViewCtrl;     // button for turning on/off tree views
   CFont     m_checkboxFont;         // font for it
@@ -115,6 +117,7 @@ public:
   int GetItemCount () const;             // how many items are there in the list/tree?
   int GetSelectedGroupCount () const;    // count of selected items in a group in the tree view
   void CheckParentHasChildren (HTREEITEM hdlParent); // if this group is empty, delete it
+  void GetSelectedItem ();               // retrieve selected item key
   
   
   // ================== start of virtual functions =======================

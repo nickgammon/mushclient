@@ -955,6 +955,12 @@ public:
   int m_last_prefs_page;
   unsigned short m_bConfigEnableTimers;   // used when doing world config
 
+  CString m_strLastSelectedTrigger;       // remember last item so we can reselect
+  CString m_strLastSelectedAlias;
+  CString m_strLastSelectedTimer;
+  CString m_strLastSelectedVariable;
+
+
   CSendView * m_pActiveCommandView;
   CMUSHView * m_pActiveOutputView;
 

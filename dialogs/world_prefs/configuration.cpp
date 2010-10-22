@@ -2068,6 +2068,11 @@ Frame.DelayDebugStatus ("World config - loading pages");
 //  page0000.m_doc = this;
   page00000.m_doc = this;
 
+  // put old selections back
+  page7.m_strSelectedItem   = m_strLastSelectedAlias;
+  page8.m_strSelectedItem   = m_strLastSelectedTrigger;
+  page16.m_strSelectedItem  = m_strLastSelectedTimer;
+  page18.m_strSelectedItem  = m_strLastSelectedVariable;
 
   Frame.DelayDebugStatus ("World config - adding pages to property sheet");
 
@@ -2168,6 +2173,12 @@ Frame.DelayDebugStatus ("World config - loading pages");
   
   // now put it back - bluurrrggghhh!!!
   App.m_bF1macro = bSavedF1Flag;
+
+  // remember what they had selected
+  m_strLastSelectedAlias    =  page7.m_strSelectedItem  ;
+  m_strLastSelectedTrigger  =  page8.m_strSelectedItem  ;
+  m_strLastSelectedTimer    =  page16.m_strSelectedItem ;
+  m_strLastSelectedVariable =  page18.m_strSelectedItem ;
 
   if (iResult != IDOK)
     {
