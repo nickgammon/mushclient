@@ -182,7 +182,7 @@ tInfoTypeMapping InfoTypes [] =
  { 83, "SQLite3 version" },
  { 84, "File browsing directory" },
  { 85, "State files path (directory)" },
- { 86, "Word under mouse on mouse menu" },
+ { 86, "Word under mouse on mouse menu click" },
 
 
 

@@ -471,7 +471,10 @@ CString strMsg;
                           (LPCTSTR) m_strObjectType,
                           (LPCTSTR) App.GetUniqueString ());
   else
+    {
     strObjectName.MakeLower ();
+    strOldObjectName.MakeLower ();
+    }
       
   // if name changed, delete and re-add it
   if (strObjectName != strOldObjectName)     // has name changed?
