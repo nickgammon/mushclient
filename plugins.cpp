@@ -1552,7 +1552,7 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const string & sName,
   if (bStopOnTrue)
     return false;
   else 
-    return !bStopOnFalse;  // if they wanted to stop on true, assume false and vice-versa
+    return true;  // if they wanted to stop on true, assume false and vice-versa
 
   }  // end of CMUSHclientDoc::SendToAllPluginCallbacks
 
@@ -1593,6 +1593,6 @@ bool CMUSHclientDoc::SendToAllPluginCallbacks (const string & sName,
   if (bStopOnTrue)
     return false;
   else 
-    return !bStopOnFalse;  // if they wanted to stop on true, assume false and vice-versa
+    return true;  // if they wanted to stop on true, assume false and vice-versa
 
   }  // end of CMUSHclientDoc::SendToAllPluginCallbacks
