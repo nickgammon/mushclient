@@ -1318,6 +1318,8 @@ public:
   long m_nCount_IAC_WONT;       // count of IAC WONT we got
   long m_nCount_IAC_SB;         // count of IAC SB x IAC SE we got
 
+  CString m_strWordUnderMenu;   // word under menu in output window
+
 #ifdef PANE
   // for pane windows
 

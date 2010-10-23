@@ -1891,6 +1891,49 @@ void CMUSHView::AliasMenu (CPoint point)
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
+  if (!pDoc->m_FontHeight)
+    return;
+
+  CPoint wordPoint (point);
+
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
+  CClientDC dc(this);
+  OnPrepareDC(&dc);
+  dc.DPtoLP(&wordPoint);
+
+  int line, start_col, end_col, col;
+
+  // find which line and column the mouse position is at
+            
+  calculate_line_and_column (wordPoint, dc, line, col, false);
+
+  POSITION pos = pDoc->GetLinePosition (line);
+
+  start_col = end_col = col;
+
+  // find word under mouse for GetInfo (86)
+
+  CLine * pLine = pDoc->m_LineList.GetAt (pos);
+  while (start_col >= 0 && 
+        !isspace ((unsigned char) pLine->text [start_col]) &&
+        strchr (App.m_strWordDelimitersDblClick, pLine->text [start_col]) == NULL)
+    start_col--;
+  start_col++;   // now onto the start of that word
+
+  // a word will end on a space, or whatever
+  while (end_col < pLine->len && 
+        !isspace ((unsigned char) pLine->text [end_col]) &&
+        strchr (App.m_strWordDelimitersDblClick, pLine->text [end_col]) == NULL)
+    end_col++;
+
+  if (end_col > start_col)
+      pDoc->m_strWordUnderMenu = CString (&pLine->text [start_col], 
+                                          end_col - start_col);
+  else
+      pDoc->m_strWordUnderMenu.Empty ();
+
 CPoint menupoint = point;
 
   CMenu menu;
@@ -1907,7 +1950,7 @@ CPoint menupoint = point;
   CAlias * pAlias;
   CString strAliasName;
 
-  for (POSITION pos = pDoc->m_AliasMap.GetStartPosition(); 
+  for (pos = pDoc->m_AliasMap.GetStartPosition(); 
        pos && i < MXP_MENU_COUNT; 
        )
      {

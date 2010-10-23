@@ -182,6 +182,8 @@ tInfoTypeMapping InfoTypes [] =
  { 83, "SQLite3 version" },
  { 84, "File browsing directory" },
  { 85, "State files path (directory)" },
+ { 86, "Word under mouse on mouse menu" },
+
 
 
  
@@ -538,6 +540,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case   83: SetUpVariantString (vaResult, sqlite3_libversion ()); break;
     case   84: SetUpVariantString (vaResult, file_browsing_dir); break;
     case   85: SetUpVariantString (vaResult, App.m_strDefaultStateFilesDirectory); break;
+    case   86: SetUpVariantString (vaResult, m_strWordUnderMenu); break;
 
 
     case  101: SetUpVariantBool (vaResult, m_bNoEcho); break;
