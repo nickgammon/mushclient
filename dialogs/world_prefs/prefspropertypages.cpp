@@ -6428,10 +6428,10 @@ CString strWhen;
 
 int CPrefsP16::GetSequence (CObject * pItem) const
   {
-  CTimer * timer_item = (CTimer *) pItem;
+//  CTimer * timer_item = (CTimer *) pItem;
 
-  ASSERT_VALID (timer_item);
-  ASSERT( timer_item->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
+//  ASSERT_VALID (timer_item);
+//  ASSERT( timer_item->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
 
   return 0;
 
