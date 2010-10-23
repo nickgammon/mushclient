@@ -1891,54 +1891,6 @@ void CMUSHView::AliasMenu (CPoint point)
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
-  do
-    {
-    if (!pDoc->m_FontHeight)
-      return;
-
-    CPoint wordPoint (point);
-
-    // CView changes the viewport origin and mapping mode.
-    // It's necessary to convert the point from device coordinates
-    // to logical coordinates, such as are stored in the document.
-    CClientDC dc(this);
-    OnPrepareDC(&dc);
-    dc.DPtoLP(&wordPoint);
-
-    int start_line, end_line, line,
-        start_col, end_col, col;
-
-  // find which line and column the mouse position is at
-              
-    calculate_line_and_column (wordPoint, dc, line, col, false);
-
-    POSITION pos = pDoc->GetLinePosition (line);
-
-    CString strCurrentLine;
-
-    start_col = end_col = col;
-    start_line = end_line = line;
-
-    CLine * pLine = pDoc->m_LineList.GetAt (pos);
-    while (start_col >= 0 && 
-          !isspace ((unsigned char) pLine->text [start_col]) &&
-          strchr (App.m_strWordDelimitersDblClick, pLine->text [start_col]) == NULL)
-      start_col--;
-    start_col++;   // now onto the start of that word
-
-    // a word will end on a space, or whatever
-    while (end_col < pLine->len && 
-          !isspace ((unsigned char) pLine->text [end_col]) &&
-          strchr (App.m_strWordDelimitersDblClick, pLine->text [end_col]) == NULL)
-      end_col++;
-
-    if (end_col > start_col)
-      strCurrentLine = CString (&pLine->text [start_col], 
-                                end_col - start_col);
-
-    } while (false);
-
-
 CPoint menupoint = point;
 
   CMenu menu;
