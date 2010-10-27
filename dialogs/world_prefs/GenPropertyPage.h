@@ -166,8 +166,6 @@ public:
 
   virtual bool CheckIfTemporary (CObject * pItem) = 0;    // is this a temporary item?
 
-//  virtual BOOL PreTranslateMessage(MSG*  msg );
-
   // ================== end of virtual functions =======================
 
   // add a single list control item - returns new item number

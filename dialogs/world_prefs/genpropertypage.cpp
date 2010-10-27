@@ -1492,7 +1492,7 @@ BOOL CGenPropertyPage::OnInitDialog()
   
     // make checkbox
     m_cUseTreeViewCtrl.Create(Translate ("Tree Vie&w"), 
-              BS_CHECKBOX | BS_AUTOCHECKBOX | BS_NOTIFY | WS_VISIBLE | WS_CHILD, 
+              BS_CHECKBOX | BS_AUTOCHECKBOX | BS_NOTIFY | WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
               rCheckBox, 
               this, 
               ID_USE_TREEVIEW);
@@ -1838,12 +1838,3 @@ CEditMultiLine dlg;
   return true;
   }   // end of CGenPropertyPage::EditFilterText
 
-/*
-BOOL CGenPropertyPage::PreTranslateMessage(MSG*  msg )
-{
-    if( IsDialogMessage( msg ) )
-        return TRUE;
-    else
-        return CWnd::PreTranslateMessage( msg );
-}
-*/
