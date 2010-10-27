@@ -1838,3 +1838,12 @@ CEditMultiLine dlg;
   return true;
   }   // end of CGenPropertyPage::EditFilterText
 
+/*
+BOOL CGenPropertyPage::PreTranslateMessage(MSG*  msg )
+{
+    if( IsDialogMessage( msg ) )
+        return TRUE;
+    else
+        return CWnd::PreTranslateMessage( msg );
+}
+*/
