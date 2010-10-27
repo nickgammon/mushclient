@@ -975,34 +975,28 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     Note (CTime::GetCurrentTime().Format (TranslateTime ("Time now: %A, %B %d, %Y, %#I:%M %p")));
 
     
-    OSVERSIONINFO ver;
-    // see which OS we are using
-    memset(&ver, 0, sizeof(ver));
-    ver.dwOSVersionInfoSize = sizeof(ver);
-    ::GetVersionEx (&ver);
-
     // work out operating system
 
     CString sVersion = TFormat ("Unknown (Platform %ld, Major %ld, Minor %ld)",
-                               ver.dwPlatformId, ver.dwMajorVersion, ver.dwMinorVersion);
+                               os_version.dwPlatformId, os_version.dwMajorVersion, os_version.dwMinorVersion);
 
-    if (ver.dwPlatformId == 1)  // Windows 95-style versions
+    if (os_version.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)  // Windows 95-style versions
       {
-      switch (ver.dwMinorVersion)
+      switch (os_version.dwMinorVersion)
         {
         case  0: sVersion = "Windows 95"; break;
         case 10: sVersion = "Windows 98"; break;
         case 90: sVersion = "Windows ME"; break;
         } // end of switch on dwMinorVersion
       }  // end of dwPlatformId == 1
-    else if  (ver.dwPlatformId == 2)  // Windows NT versions
+    else if  (os_version.dwPlatformId == VER_PLATFORM_WIN32_NT)  // Windows NT versions
       {
-      switch (ver.dwMajorVersion)
+      switch (os_version.dwMajorVersion)
         {
         case 3: sVersion = "Windows NT 3.51"; break;
         case 4: sVersion = "Windows NT";      break;
         case 5: 
-          switch (ver.dwMinorVersion)
+          switch (os_version.dwMinorVersion)
             {
             case 0: sVersion = "Windows 2000";        break;
             case 1: sVersion = "Windows XP";          break;
@@ -1011,7 +1005,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
           break;  // end case 5 of dwMinorVersion
 
         case 6: 
-          switch (ver.dwMinorVersion)
+          switch (os_version.dwMinorVersion)
             {
             case 0: sVersion = "Windows Vista"; break;
             case 1: sVersion = "Windows 7";     break;

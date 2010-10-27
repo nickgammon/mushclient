@@ -64,6 +64,8 @@ bool bWinNT;
 bool bWin95;
 bool bWin98;
 bool bWine;
+OSVERSIONINFO os_version;
+
 
 // memory state tracking
 #ifdef _DEBUG
@@ -641,15 +643,14 @@ BOOL CMUSHclientApp::InitInstance()
 
 
   // see which OS we are using
-  OSVERSIONINFO ver;
-  memset(&ver, 0, sizeof(ver));
-  ver.dwOSVersionInfoSize = sizeof(ver);
-  VERIFY(::GetVersionEx(&ver));
-  bWinNT = (ver.dwPlatformId == VER_PLATFORM_WIN32_NT);
-  bWin95 = (ver.dwPlatformId == 
-     VER_PLATFORM_WIN32_WINDOWS) && (ver.dwMinorVersion == 0);
-  bWin98 = (ver.dwPlatformId == 
-     VER_PLATFORM_WIN32_WINDOWS) && (ver.dwMinorVersion > 0);
+  memset(&os_version, 0, sizeof(os_version));
+  os_version.dwOSVersionInfoSize = sizeof(os_version);
+  VERIFY(::GetVersionEx(&os_version));
+  bWinNT = (os_version.dwPlatformId == VER_PLATFORM_WIN32_NT);
+  bWin95 = (os_version.dwPlatformId == 
+     VER_PLATFORM_WIN32_WINDOWS) && (os_version.dwMinorVersion == 0);
+  bWin98 = (os_version.dwPlatformId == 
+     VER_PLATFORM_WIN32_WINDOWS) && (os_version.dwMinorVersion > 0);
 
   // MXP initialisation
 

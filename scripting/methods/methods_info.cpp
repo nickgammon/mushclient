@@ -373,16 +373,6 @@ static void GetWindowHeight (CWnd * pWnd, VARIANT & vaResult, const bool client 
   vaResult.lVal = rect.bottom; 
   }   // end of GetWindowHeight
 
-OSVERSIONINFO ver;
-
-static void GetOSVersion (void)
-  {
-  // see which OS we are using
-  memset(&ver, 0, sizeof(ver));
-  ver.dwOSVersionInfoSize = sizeof(ver);
-  ::GetVersionEx (&ver);
-  } // GetOSVersion
-
 // helper function
 CMUSHView * CMUSHclientDoc::GetFirstOutputWindow ()
   {
@@ -524,13 +514,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case   74: SetUpVariantString (vaResult, ExtractDirectory (App.m_strMUSHclientFileName) + "sounds\\"); break;
     case   75: SetUpVariantString (vaResult, m_IAC_subnegotiation_data.c_str ()); break;
     case   76: SetUpVariantString (vaResult, m_strSpecialFontName); break;
-
-    case 77:
-      {
-      GetOSVersion ();
-      SetUpVariantString (vaResult, ver.szCSDVersion);  
-      break;
-      }
+    case   77: SetUpVariantString (vaResult, os_version.szCSDVersion);  break;
 
     case   78: SetUpVariantString (vaResult, m_strForegroundImageName); break;
     case   79: SetUpVariantString (vaResult, m_strBackgroundImageName); break;
@@ -874,33 +858,10 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
             break;
             }
 
-    case 265:
-      {
-      GetOSVersion ();
-      SetUpVariantLong (vaResult, ver.dwMajorVersion);  
-      break;
-      }
-
-    case 266:
-      {
-      GetOSVersion ();
-      SetUpVariantLong (vaResult, ver.dwMinorVersion);  
-      break;
-      }
-
-    case 267:
-      {
-      GetOSVersion ();
-      SetUpVariantLong (vaResult, ver.dwBuildNumber);  
-      break;
-      }
-
-    case 268:
-      {
-      GetOSVersion ();
-      SetUpVariantLong (vaResult, ver.dwPlatformId);  
-      break;
-      }
+    case 265: SetUpVariantLong (vaResult, os_version.dwMajorVersion); break;
+    case 266: SetUpVariantLong (vaResult, os_version.dwMinorVersion); break;
+    case 267: SetUpVariantLong (vaResult, os_version.dwBuildNumber);  break;
+    case 268: SetUpVariantLong (vaResult, os_version.dwPlatformId);   break;
 
     case 269: SetUpVariantLong (vaResult, m_iForegroundMode);  break;
     case 270: SetUpVariantLong (vaResult, m_iBackgroundMode);  break;

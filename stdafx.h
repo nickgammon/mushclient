@@ -321,6 +321,7 @@ extern bool bWinNT;
 extern bool bWin95;
 extern bool bWin98;
 extern bool bWine;
+extern OSVERSIONINFO os_version;
 
 BOOL Set_Up_Set_Strings (const int set_type,
                          CString & suggested_name,

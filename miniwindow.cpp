@@ -2525,160 +2525,6 @@ long CMiniWindow::ImageFromWindow(LPCTSTR ImageId, CMiniWindow * pSrcWindow)
   } // end of CMiniWindow::ImageFromWindow
 
 
-static void HorizontalLinearGradient (const COLORREF StartColour, 
-                                      const COLORREF EndColour, 
-                                      unsigned char * pBuffer,
-                                      const long iWidth,
-                                      const long iHeight)
-  {
-
-  if (iWidth < 1)
-    return;  // avoid divide by zero
-
-  double rdiff = GetRValue (EndColour) - GetRValue (StartColour),
-         gdiff = GetGValue (EndColour) - GetGValue (StartColour),
-         bdiff = GetBValue (EndColour) - GetBValue (StartColour);
-
-  double rval = GetRValue (StartColour),
-        gval = GetGValue (StartColour),
-        bval = GetBValue (StartColour);
-
-  double rinc = rdiff / (double) (iWidth - 1), 
-        ginc = gdiff / (double) (iWidth - 1), 
-        binc = bdiff / (double) (iWidth - 1);
-
-  long row, col;
-  uint8 r = 0, g = 0, b = 0;
-
-  int increment =  BytesPerLine (iWidth, 24);
-
-   // main loop is columns
-   for (col = 0; col < iWidth; col++)
-     {
-     r = (uint8) rval;
-     g = (uint8) gval;
-     b = (uint8) bval;
-     unsigned char * p = pBuffer + col * 3;
-     for (row = 0; row < iHeight; row++)
-       {
-       p [0] = b;
-       p [1] = g;
-       p [2] = r;
-       p += increment;
-       }  // end of each row
-     rval += rinc;
-     gval += ginc;
-     bval += binc;                      
-     }  // end of each column
-
-
-  }  // end of HorizontalLinearGradient
-
-static void HorizontalLinearGradientHSL (const CColor StartColour, 
-                                      const CColor EndColour, 
-                                      unsigned char * pBuffer,
-                                      const long iWidth,
-                                      const long iHeight)
-  {
-
-  if (iWidth < 1)
-    return;  // avoid divide by zero
-
-  double starthue = StartColour.GetHue ();
-  double endhue = EndColour.GetHue ();
-  double startlum = StartColour.GetLuminance ();
-  double endlum = EndColour.GetLuminance ();
-  double startsat = StartColour.GetSaturation ();
-  double endsat = EndColour.GetSaturation ();
-
-
-  double hinc = (endhue - starthue) / (double) (iWidth - 1), 
-         linc = (endlum - startlum) / (double) (iWidth - 1),
-         sinc = (endsat - startsat) / (double) (iWidth - 1);  
-
-  long row, col;
-  uint8 r = 0, g = 0, b = 0;
-
-  int increment =  BytesPerLine (iWidth, 24);
-
-   // main loop is columns
-   for (col = 0; col < iWidth; col++)
-     {
-     double h = starthue;
-     double l = startlum;
-     double s = startsat;
-
-     CColor c;
-     c.SetHLS (h, l, s);
-     r = c.GetRed ();
-     g = c.GetGreen ();
-     b = c.GetBlue ();
-
-     unsigned char * p = pBuffer + col * 3;
-     for (row = 0; row < iHeight; row++)
-       {
-       p [0] = b;
-       p [1] = g;
-       p [2] = r;
-       p += increment;
-       }  // end of each row
-     starthue += hinc;
-     startlum += linc;                      
-     startsat += sinc;
-     }  // end of each column
-
-
-  }  // end of HorizontalLinearGradient
-
-static void VerticalLinearGradient (const COLORREF StartColour, 
-                                    const COLORREF EndColour, 
-                                      unsigned char * pBuffer,
-                                      const long iWidth,
-                                      const long iHeight)
-  {
-
-  if (iHeight < 1)
-    return;  // avoid divide by zero
-
-  double rdiff = GetRValue (EndColour) - GetRValue (StartColour),
-         gdiff = GetGValue (EndColour) - GetGValue (StartColour),
-         bdiff = GetBValue (EndColour) - GetBValue (StartColour);
-
-  double rval = GetRValue (EndColour),
-         gval = GetGValue (EndColour),
-         bval = GetBValue (EndColour);
-
-  double rinc = - rdiff / (double) (iHeight - 1), 
-         ginc = - gdiff / (double) (iHeight - 1), 
-         binc = - bdiff / (double) (iHeight - 1);
-
-  long row, col;
-  uint8 r = 0, g = 0, b = 0;
-
-  int increment =  BytesPerLine (iWidth, 24);
-
-   // main loop is rows
-   for (row = 0; row < iHeight; row++)
-     {
-     r = (uint8) rval;
-     g = (uint8) gval;
-     b = (uint8) bval;
-     unsigned char * p = pBuffer + increment * row;
-     for (col = 0; col < iWidth; col++)
-       {
-       p [0] = b;
-       p [1] = g;
-       p [2] = r;
-       p += 3;
-       }  // end of each column
-     rval += rinc;
-     gval += ginc;
-     bval += binc;                      
-     }  // end of each row
-   
-  }  // end of VerticalLinearGradient
-
-
 static void MakeTexture (const COLORREF Multiplier, 
                          unsigned char * pBuffer,
                          const long iWidth,
@@ -2712,75 +2558,6 @@ static void MakeTexture (const COLORREF Multiplier,
   }  // end of MakeTexture
 
 
-// this is a load of old cobblers
-
-#if 0
-
-static void HorizontalLogGradient (const COLORREF StartColour, const double rdiff, const double gdiff, const double bdiff, 
-                                      unsigned char * pBuffer,
-                                      const long iWidth,
-                                      const long iHeight,
-                                      const bool rightToLeft)
-  {
-  double rval = GetRValue (StartColour),
-         gval = GetGValue (StartColour),
-         bval = GetBValue (StartColour);
-
-
-  double rfactor = pow (abs (rdiff), (double) 1.0 / (double) iWidth);
-  double gfactor = pow (abs (gdiff), (double) 1.0 / (double) iWidth);
-  double bfactor = pow (abs (bdiff), (double) 1.0 / (double) iWidth);
-
-
-  long row, col;
-  uint8 r = 0, g = 0, b = 0;
-
-  double rinc = rfactor, 
-         ginc = gfactor, 
-         binc = bfactor;
-
-  int increment =  BytesPerLine (iWidth, 24);
-
-   // main loop is columns
-   for (col = 0; col < iWidth; col++)
-     {
-
-
-     r = (uint8) rval;
-     g = (uint8) gval;
-     b = (uint8) bval;
-     unsigned char * p = pBuffer + col * 3;
-     for (row = 0; row < iHeight; row++)
-       {
-       p [0] = b;
-       p [1] = g;
-       p [2] = r;
-       p += increment;
-       }  // end of each row
-
-     rinc *= rfactor;
-     ginc *= gfactor;
-     binc *= bfactor;
-
-     if (rightToLeft)
-       {
-       rval = GetRValue (StartColour) - rinc;
-       gval = GetGValue (StartColour) - ginc;
-       bval = GetBValue (StartColour) - binc;
-       }
-     else
-       {
-       rval = GetRValue (StartColour) + rinc;
-       gval = GetGValue (StartColour) + ginc;
-       bval = GetBValue (StartColour) + binc;
-       }
-     }  // end of each column
-
-
-  }  // end of HorizontalLogGradient
-
-#endif // 0
-
 long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom, 
                       long StartColour, long EndColour, 
                       short Mode)
@@ -2792,75 +2569,150 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
   if (iWidth <= 0 || iHeight <= 0)   // sanity check
     return eOK;
 
-  // upper layer (from image id)
-  CDC gDC;
-  gDC.CreateCompatibleDC(&dc);
-  CBitmap gbmp;
+  // Texture Fill requires slower method
 
-  BITMAPINFO bmi;
-  ZeroMemory (&bmi, sizeof bmi);
+  if (Mode == 3)
+    {
 
-  bmi.bmiHeader.biSize = sizeof bmi;
-  bmi.bmiHeader.biWidth =          iWidth;       
-  bmi.bmiHeader.biHeight =         iHeight;
-  bmi.bmiHeader.biPlanes =         1;
-  bmi.bmiHeader.biBitCount =       24;
-  bmi.bmiHeader.biCompression =    BI_RGB;
-  bmi.bmiHeader.biSizeImage =      iHeight * BytesPerLine (iWidth, 24);
+    // upper layer (from image id)
+    CDC gDC;
+    gDC.CreateCompatibleDC(&dc);
+    CBitmap gbmp;
 
-  unsigned char * pA = NULL;
+    BITMAPINFO bmi;
+    ZeroMemory (&bmi, sizeof bmi);
 
-  HBITMAP hbmG = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**) &pA, NULL, 0);
+    bmi.bmiHeader.biSize = sizeof bmi;
+    bmi.bmiHeader.biWidth =          iWidth;       
+    bmi.bmiHeader.biHeight =         iHeight;
+    bmi.bmiHeader.biPlanes =         1;
+    bmi.bmiHeader.biBitCount =       24;
+    bmi.bmiHeader.biCompression =    BI_RGB;
+    bmi.bmiHeader.biSizeImage =      iHeight * BytesPerLine (iWidth, 24);
 
-  HBITMAP hOldAbmp = (HBITMAP) SelectObject(gDC.m_hDC, hbmG);
+    unsigned char * pA = NULL;
+
+    HBITMAP hbmG = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**) &pA, NULL, 0);
+
+    HBITMAP hOldAbmp = (HBITMAP) SelectObject(gDC.m_hDC, hbmG);
+
+    MakeTexture (StartColour, pA, iWidth, iHeight);
+
+    // copy result back
+
+    dc.BitBlt (Left, Top, iWidth, iHeight, &gDC, 0, 0, SRCCOPY);  
+
+
+    SelectObject(gDC.m_hDC, hOldAbmp);
+
+    DeleteObject (hbmG);
+
+    return eOK;
+
+    }  // end of texture fill
+
+            
+  // for Windows 2000 onwards, use faster GDI fill mode as suggested by Twisol
+  // See: http://msdn.microsoft.com/en-us/library/aa925212.aspx
+
+  if (os_version.dwPlatformId > VER_PLATFORM_WIN32_NT ||   // some future version?
+     (os_version.dwPlatformId == VER_PLATFORM_WIN32_NT &&  // NT upwards
+      os_version.dwMajorVersion >= 5))                     // Windows 2000 upwards
+    {
+
+    TRIVERTEX        vert[2] ;
+    GRADIENT_RECT    gRect;
+    DWORD            dwMode;
+
+    // first vertex
+    vert [0] .x      = Left;
+    vert [0] .y      = Top;
+    vert [0] .Red    = GetRValue (StartColour) << 8;  // higher resolution colours
+    vert [0] .Green  = GetGValue (StartColour) << 8;
+    vert [0] .Blue   = GetBValue (StartColour) << 8;
+    vert [0] .Alpha  = 0;
+
+    // second vertex
+    vert [1] .x      = Right;
+    vert [1] .y      = Bottom; 
+    vert [1] .Red    = GetRValue (EndColour) << 8;
+    vert [1] .Green  = GetGValue (EndColour) << 8;
+    vert [1] .Blue   = GetBValue (EndColour) << 8;
+    vert [1] .Alpha  = 0;
+
+    // rectange goes from first vertex to second one
+    gRect.UpperLeft  = 0;
+    gRect.LowerRight = 1;
+
+    switch (Mode)
+      {
+      case 1 : dwMode = GRADIENT_FILL_RECT_H; break;  // horizontal
+      case 2 : dwMode = GRADIENT_FILL_RECT_V; break;  // vertical
+      default: return eUnknownOption;
+      } // end of switch
+
+    // do the fill
+    GradientFill (dc.m_hDC, vert, 2, &gRect, 1, dwMode);
+       
+    return eOK;
+
+    }   // end of Windows 2000 or higher
+
+  // slower method (also suggested by Twisol rather than doing individual bytes):
+  double rdiff = GetRValue (EndColour) - GetRValue (StartColour),
+         gdiff = GetGValue (EndColour) - GetGValue (StartColour),
+         bdiff = GetBValue (EndColour) - GetBValue (StartColour);
+
+  double rval = GetRValue (StartColour),
+         gval = GetGValue (StartColour),
+         bval = GetBValue (StartColour);
+
+  double rinc = rdiff / (double) (iWidth - 1), 
+         ginc = gdiff / (double) (iWidth - 1), 
+         binc = bdiff / (double) (iWidth - 1);
+
+  COLORREF oldColour = dc.GetBkColor ();
+  dc.SetBkMode (TRANSPARENT);
+
 
   switch (Mode)
     {
     case 1 : // horizontal (left to right)
-       HorizontalLinearGradient (StartColour, EndColour, pA, iWidth, iHeight);
-       break;  // end of horizontal
 
+      {
+      for (long x = Left; x < Right; x++)
+        {
+        dc.FillSolidRect( x, Top, 1, Bottom - Top, RGB (rval, gval, bval) );
+        rval += rinc;
+        gval += ginc;
+        bval += binc;                      
+       }
+      }
+
+      break;  // end of horizontal
 
     case 2 : // vertical  (top to bottom)
-       VerticalLinearGradient (StartColour, EndColour, pA, iWidth, iHeight);
-       break;  // end of vertical
 
-    case 3 : // texture 
-       MakeTexture (StartColour, pA, iWidth, iHeight);
-       break;  // end of texture
+      {
+      for (long y = Top; y < Bottom; y++)
+        {
+        dc.FillSolidRect( Left, y, Right - Left, 1, RGB (rval, gval, bval) );
+        rval += rinc;
+        gval += ginc;
+        bval += binc;                      
+       }
+      }
+      
+      break;  // end of vertical
 
-    // forget it!
-
-#if 0
-    case 4 : // horizontal (left to right)
-       HorizontalLinearGradientHSL (CColor (StartColour), CColor (EndColour), pA, iWidth, iHeight);
-       break;  // end of horizontal
-
-    case 5 : // horizontal (left to right)
-       HorizontalLogGradient (StartColour, rdiff, gdiff, bdiff, pA, iWidth, iHeight, false);
-       break;  // end of horizontal
-
-    case 6 : // horizontal (right to left)
-       HorizontalLogGradient (EndColour, rdiff, gdiff, bdiff, pA, iWidth, iHeight, true);
-       break;  // end of horizontal
-
-#endif // 0
 
     default: return eUnknownOption;
 
     } // end of switch
 
 
-  // copy result back
-
-  dc.BitBlt (Left, Top, iWidth, iHeight, &gDC, 0, 0, SRCCOPY);  
-
-
-  SelectObject(gDC.m_hDC, hOldAbmp);
-
-  DeleteObject (hbmG);
-
-  return eOK;
+  dc.SetBkColor (oldColour);  // FillSolidRect changes the background colour
+  return eOK; // end of horizontal or vertical
 
   } // end of CMiniWindow::Gradient
 
