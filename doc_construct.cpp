@@ -522,25 +522,20 @@ int i;
        udpSocketIterator++)
       delete udpSocketIterator->second;
 
-// delete chat sessions
+  // delete chat sessions
 
   DELETE_LIST (m_ChatList);
 
-// delete plugins
-
-  PluginListIterator pit = m_PluginList.begin ();
+  // delete plugins
 
   // we have to do it this way, because otherwise if a plugin attempts to access the
   // plugin list (eg. BroadcastPlugin, Trace) during the delete operation, then it
   // may call a plugin that was deleted a moment ago, but is still in the list.
 
-   while (pit != m_PluginList.end ())
-    {
-    CPlugin * pPlugin = *pit;  // get this one
-    pit =  m_PluginList.erase (pit);  // remove from list, move onto next one
-    delete pPlugin;  // delete *this* one
-    }
-
+   for (PluginListIterator pit = m_PluginList.begin (); 
+        pit != m_PluginList.end ();
+        pit =  m_PluginList.erase (pit))    // erase from list and get next one
+    delete *pit;  // delete *this* one
 
   CloseLog ();    // this writes out the log file postamble as well
 
