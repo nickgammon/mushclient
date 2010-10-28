@@ -528,12 +528,19 @@ int i;
 
 // delete plugins
 
-  for (PluginListIterator pit = m_PluginList.begin (); 
-       pit != m_PluginList.end (); 
-       ++pit)
-    delete *pit;
+  PluginListIterator pit = m_PluginList.begin ();
 
-  m_PluginList.clear ();
+  // we have to do it this way, because otherwise if a plugin attempts to access the
+  // plugin list (eg. BroadcastPlugin, Trace) during the delete operation, then it
+  // may call a plugin that was deleted a moment ago, but is still in the list.
+
+   while (pit != m_PluginList.end ())
+    {
+    CPlugin * pPlugin = *pit;  // get this one
+    pit =  m_PluginList.erase (pit);  // remove from list, move onto next one
+    delete pPlugin;  // delete *this* one
+    }
+
 
   CloseLog ();    // this writes out the log file postamble as well
 
