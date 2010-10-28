@@ -1412,7 +1412,7 @@ previousLineHPtime.QuadPart = 0;
 
   Calculate_MiniWindow_Rectangles (pDoc, false);
 
-  // mini windows  - on bottom
+  // mini windows  - on top
   for (mwit = pDoc->m_MiniWindows.begin (); 
        mwit != pDoc->m_MiniWindows.end ();
        mwit++)

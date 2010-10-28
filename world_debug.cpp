@@ -1533,6 +1533,8 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
                 nFonts,
                 nImages
                 ));
+           if (pWindow->m_bTemporarilyHide)
+             Note (Translate ("        WARNING: temporarily hidden by auto-positioning (no room)"));
 
            }
 
