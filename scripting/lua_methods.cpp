@@ -1787,11 +1787,29 @@ static int L_DatabaseColumnName (lua_State *L)
 static int L_DatabaseColumnText (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  BSTR str = pDoc->DatabaseColumnText (
-      my_checkstring (L, 1),  // Name
-      my_checknumber (L, 2)   // Column
-      );
-  return pushBstr (L, str);  // number of result fields
+  
+  LPCTSTR Name = my_checkstring (L, 1);   // Name
+  int Column = my_checknumber (L, 2);     // Column
+
+  tDatabaseMapIterator it = pDoc->m_Databases.find (Name);
+    
+  if (it != pDoc->m_Databases.end () &&    // database exists
+      it->second->db != NULL &&      // and is open
+      it->second->pStmt != NULL &&   // and we have a prepared statement
+      it->second->bValidRow &&       // and we stepped to a valid row
+      Column >= 1 &&
+      Column <= it->second->iColumns)
+    {
+    const char * p = (const char *) sqlite3_column_text (it->second->pStmt, Column - 1);
+    if (p)
+      lua_pushstring (L, p);
+    else
+      lua_pushnil (L);
+    }
+  else
+    lua_pushnil (L);
+
+  return 1;    // number of result fields
   } // end of L_DatabaseColumnText
 
 //----------------------------------------
@@ -1800,11 +1818,51 @@ static int L_DatabaseColumnText (lua_State *L)
 static int L_DatabaseColumnValue (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  VARIANT v = pDoc->DatabaseColumnValue (
-      my_checkstring (L, 1),  // Name
-      my_checknumber (L, 2)   // Column
-      );
-  return pushVariant (L, v);  // number of result fields
+  LPCTSTR Name = my_checkstring (L, 1);   // Name
+  int Column = my_checknumber (L, 2);     // Column
+
+  tDatabaseMapIterator it = pDoc->m_Databases.find (Name);
+
+  if (it != pDoc->m_Databases.end () &&    // database exists
+      it->second->db != NULL &&      // and is open
+      it->second->pStmt != NULL &&   // and we have a prepared statement
+      it->second->bValidRow &&       // and we stepped to a valid row
+      Column >= 1 &&
+      Column <= it->second->iColumns)
+    {
+    // switch on type of column data
+    switch (sqlite3_column_type(it->second->pStmt, Column - 1))
+      {
+      case SQLITE3_TEXT:
+      case SQLITE_BLOB:
+      default:
+        {
+        const char * p = (const char *) sqlite3_column_text (it->second->pStmt, Column - 1);
+        if (p)
+          lua_pushstring (L, p);
+        else
+          lua_pushnil (L);
+        }
+        break;
+
+      case SQLITE_NULL:
+        lua_pushnil (L);
+        break;
+
+      case SQLITE_INTEGER:
+        lua_pushinteger (L, sqlite3_column_int  (it->second->pStmt, Column - 1));
+        break;
+
+      case SQLITE_FLOAT:
+        lua_pushnumber(L, sqlite3_column_double (it->second->pStmt, Column - 1));
+        break;
+
+      }  // end of switch
+    }
+  else
+    lua_pushnil (L);
+
+  return 1;    // number of result fields
   } // end of L_DatabaseColumnValue
 
 //----------------------------------------
@@ -1919,8 +1977,59 @@ static int L_DatabaseColumnNames (lua_State *L)
 //----------------------------------------
 static int L_DatabaseColumnValues (lua_State *L)
   {
-  VARIANT v = doc (L)->DatabaseColumnValues (my_checkstring (L, 1));
-  return pushVariant (L, v);  // number of result fields
+  CMUSHclientDoc *pDoc = doc (L);
+  LPCTSTR Name = my_checkstring (L, 1);  // Name
+  lua_newtable(L);    // table of results
+
+  tDatabaseMapIterator it = pDoc->m_Databases.find (Name);
+
+  if (it != pDoc->m_Databases.end () &&    // database exists
+      it->second->db != NULL &&      // and is open
+      it->second->pStmt != NULL &&   // and we have a prepared statement
+      it->second->bValidRow)         // and have a valid row
+    {
+
+    for (long i = 0; i < it->second->iColumns; i++)
+       {
+
+      // switch on type of column data
+      switch (sqlite3_column_type(it->second->pStmt, i))
+        {
+        case SQLITE3_TEXT:
+        case SQLITE_BLOB:
+        default:
+          {
+          const char * p = (const char *) sqlite3_column_text (it->second->pStmt, i);
+          if (p)
+            lua_pushstring (L, p);
+          else
+            lua_pushnil (L);
+          }
+          break;
+
+        case SQLITE_NULL:
+          lua_pushnil (L);
+          break;
+
+        case SQLITE_INTEGER:
+          lua_pushinteger (L, sqlite3_column_int  (it->second->pStmt, i));
+          break;
+
+        case SQLITE_FLOAT:
+          lua_pushnumber(L, sqlite3_column_double (it->second->pStmt, i));
+          break;
+
+        }  // end of switch
+
+      lua_rawseti (L, -2, i + 1);  // one-relative
+
+      }    // end of for
+
+    }
+  else
+    lua_pushnil (L);
+
+  return 1;    // number of result fields
   } // end of L_DatabaseColumnValues
 
 

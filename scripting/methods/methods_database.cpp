@@ -567,7 +567,7 @@ VARIANT CMUSHclientDoc::DatabaseColumnValues(LPCTSTR Name)
             const unsigned char * p = sqlite3_column_text (it->second->pStmt, i);
             if (p)
               strResult = p;
-            v = strResult; 
+            v = strResult;
             }
             break;
 
