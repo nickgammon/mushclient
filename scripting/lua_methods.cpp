@@ -1812,14 +1812,8 @@ static int L_DatabaseColumnText (lua_State *L)
   return 1;    // number of result fields
   } // end of L_DatabaseColumnText
 
-//----------------------------------------
-//  world.DatabaseColumnValue
-//----------------------------------------
-static int L_DatabaseColumnValue (lua_State *L)
+static void GetDatabaseColumnValue (lua_State *L, CMUSHclientDoc *pDoc, LPCTSTR Name, int Column)
   {
-  CMUSHclientDoc *pDoc = doc (L);
-  LPCTSTR Name = my_checkstring (L, 1);   // Name
-  int Column = my_checknumber (L, 2);     // Column
 
   tDatabaseMapIterator it = pDoc->m_Databases.find (Name);
 
@@ -1861,6 +1855,19 @@ static int L_DatabaseColumnValue (lua_State *L)
     }
   else
     lua_pushnil (L);
+
+  }  // end of GetDatabaseColumnValue
+
+//----------------------------------------
+//  world.DatabaseColumnValue
+//----------------------------------------
+static int L_DatabaseColumnValue (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  LPCTSTR Name = my_checkstring (L, 1);   // Name
+  int Column = my_checknumber (L, 2);     // Column
+
+  GetDatabaseColumnValue (L, pDoc, Name, Column);
 
   return 1;    // number of result fields
   } // end of L_DatabaseColumnValue
@@ -1908,11 +1915,30 @@ static int L_DatabaseChanges (lua_State *L)
 static int L_DatabaseGetField (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  VARIANT v = pDoc->DatabaseGetField (
-      my_checkstring (L, 1),  // Name
-      my_checkstring (L, 2)   // Sql
-      );
-  return pushVariant (L, v);  // number of result fields
+  LPCTSTR Name = my_checkstring (L, 1);  // Name
+  LPCTSTR Sql  = my_checkstring (L, 2);   // Sql
+
+  // prepare the SQL statement
+  long rc = pDoc->DatabasePrepare (Name, Sql);
+
+  if (rc != SQLITE_OK)
+    lua_pushnil (L);  // could not prepare statement, give up
+  else
+    {
+    // step to get one row
+    rc = pDoc->DatabaseStep (Name);
+
+    // if we got one, extract the value from column 1
+    if (rc == SQLITE_ROW)
+      GetDatabaseColumnValue (L, pDoc, Name, 1);
+    else
+      lua_pushnil (L);  // did not get a row
+
+    // finalize the current statement
+    pDoc->DatabaseFinalize (Name);
+    } // end of if could prepare SQL
+
+  return 1;  // number of result fields
   } // end of L_DatabaseGetField
 
 //----------------------------------------

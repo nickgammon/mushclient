@@ -51,6 +51,20 @@
 //  #define SQLITE_OPEN_FULLMUTEX        0x00010000
 
 
+// MUSHclient database error codes (negative to not clash with SQLite)
+
+#define DATABASE_ERROR_ID_NOT_FOUND             -1   // unknown database ID
+#define DATABASE_ERROR_NOT_OPEN                 -2   // not opened
+#define DATABASE_ERROR_HAVE_PREPARED_STATEMENT  -3   // already have a prepared statement
+#define DATABASE_ERROR_NO_PREPARED_STATEMENT    -4   // no prepared statement yet
+#define DATABASE_ERROR_NO_VALID_ROW             -5   // have not stepped to valid row
+#define DATABASE_ERROR_DATABASE_ALREADY_EXISTS  -6   // already have a database of that disk name
+#define DATABASE_ERROR_COLUMN_OUT_OF_RANGE      -7   // requested column out of range
+
+
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseOpen  - open a database
+
 // Note: filename ":memory:" opens an in-memory database
 
 long CMUSHclientDoc::DatabaseOpen(LPCTSTR Name, LPCTSTR Filename, long Flags) 
@@ -75,7 +89,7 @@ long CMUSHclientDoc::DatabaseOpen(LPCTSTR Name, LPCTSTR Filename, long Flags)
     if (it->second->db_name == Filename)
       return SQLITE_OK;      // OK to re-use same database
     else
-      return -6;   // database already exists under this id but a different disk name
+      return DATABASE_ERROR_DATABASE_ALREADY_EXISTS;   // database already exists under this id but a different disk name
     }
 
 	int rc = sqlite3_open_v2 (Filename, &pDatabase->db, Flags, NULL);
@@ -89,16 +103,18 @@ long CMUSHclientDoc::DatabaseOpen(LPCTSTR Name, LPCTSTR Filename, long Flags)
   return rc;
 }   // end of CMUSHclientDoc::DatabaseOpen
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseClose  - close a database
 
 long CMUSHclientDoc::DatabaseClose(LPCTSTR Name) 
 {
   tDatabaseMapIterator it = m_Databases.find (Name);
     
   if (it == m_Databases.end ())
-    return -1;              // database not found
+    return DATABASE_ERROR_ID_NOT_FOUND;      // database not found
 
   if  (it->second->db == NULL)
-    return -2;              // database not open
+    return DATABASE_ERROR_NOT_OPEN;          // database not open
 
   if (it->second->pStmt)        // finalize any outstanding statement
     sqlite3_finalize(it->second->pStmt);
@@ -112,18 +128,21 @@ long CMUSHclientDoc::DatabaseClose(LPCTSTR Name)
   return rc;               // return code from close
 }   // end of CMUSHclientDoc::DatabaseClose
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabasePrepare  - prepare (compile) an SQL statement
+
 long CMUSHclientDoc::DatabasePrepare(LPCTSTR Name, LPCTSTR Sql) 
 {
   tDatabaseMapIterator it = m_Databases.find (Name);
     
   if (it == m_Databases.end ())
-    return -1;                  // database not found
+    return DATABASE_ERROR_ID_NOT_FOUND;       // database not found
 
   if  (it->second->db == NULL)
-    return -2;                  // database not open
+    return DATABASE_ERROR_NOT_OPEN;           // database not open
 
   if  (it->second->pStmt != NULL)
-    return -3;                  // already have prepared statement
+    return DATABASE_ERROR_HAVE_PREPARED_STATEMENT;     // already have prepared statement
 
   const char *pzTail;
 
@@ -140,18 +159,21 @@ long CMUSHclientDoc::DatabasePrepare(LPCTSTR Name, LPCTSTR Sql)
 
 }   // end of CMUSHclientDoc::DatabasePrepare
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseFinalize  - finalize (discard) an SQL statement
+
 long CMUSHclientDoc::DatabaseFinalize(LPCTSTR Name) 
 {
   tDatabaseMapIterator it = m_Databases.find (Name);
     
   if (it == m_Databases.end ())
-    return -1;                // database not found
+    return DATABASE_ERROR_ID_NOT_FOUND;       // database not found
 
   if  (it->second->db == NULL)
-    return -2;               // database not open
+    return DATABASE_ERROR_NOT_OPEN;           // database not open
 
   if  (it->second->pStmt == NULL)
-    return -4;               // do not have prepared statement
+    return DATABASE_ERROR_NO_PREPARED_STATEMENT;  // do not have prepared statement
 
   int rc = sqlite3_finalize(it->second->pStmt);  // finished with statement
 
@@ -164,37 +186,42 @@ long CMUSHclientDoc::DatabaseFinalize(LPCTSTR Name)
 }    // end of CMUSHclientDoc::DatabaseFinalize
 
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseColumns  - find column count from a prepared SQL statement
+
 // note: don't need to step first, the prepare gives us the count
 long CMUSHclientDoc::DatabaseColumns(LPCTSTR Name) 
 {
   tDatabaseMapIterator it = m_Databases.find (Name);
     
   if (it == m_Databases.end ())
-    return -1;                // database not found
+    return DATABASE_ERROR_ID_NOT_FOUND;           // database not found
 
   if  (it->second->db == NULL)
-    return -2;               // database not open
+    return DATABASE_ERROR_NOT_OPEN;               // database not open
 
   if  (it->second->pStmt == NULL)
-    return -4;               // do not have prepared statement
+    return DATABASE_ERROR_NO_PREPARED_STATEMENT;  // do not have prepared statement
 
   return sqlite3_column_count(it->second->pStmt);  // column count
 
 }   // end of CMUSHclientDoc::DatabaseColumns
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseStep  - step through (execute) a prepared SQL statement
 
 long CMUSHclientDoc::DatabaseStep(LPCTSTR Name) 
 {
   tDatabaseMapIterator it = m_Databases.find (Name);
     
   if (it == m_Databases.end ())
-    return -1;                // database not found
+    return DATABASE_ERROR_ID_NOT_FOUND;           // database not found
 
   if  (it->second->db == NULL)
-    return -2;               // database not open
+    return DATABASE_ERROR_NOT_OPEN;               // database not open
 
   if  (it->second->pStmt == NULL)
-    return -4;               // do not have prepared statement
+    return DATABASE_ERROR_NO_PREPARED_STATEMENT;  // do not have prepared statement
 
   int rc = sqlite3_step (it->second->pStmt);  // step into next row
 
@@ -203,6 +230,9 @@ long CMUSHclientDoc::DatabaseStep(LPCTSTR Name)
   return rc;
 }    // end of CMUSHclientDoc::DatabaseStep
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseError  - return English code from last database error
+
 BSTR CMUSHclientDoc::DatabaseError(LPCTSTR Name) 
 {
 	CString strResult;
@@ -210,23 +240,48 @@ BSTR CMUSHclientDoc::DatabaseError(LPCTSTR Name)
   tDatabaseMapIterator it = m_Databases.find (Name);
     
   if (it == m_Databases.end ())
-    strResult = "database id not found";           // database not found
+    strResult = Translate ("database id not found");   // database not found
   else if (it->second->db == NULL)
-    strResult = "database not open";       // database not open
+    strResult = Translate ("database not open");       // database not open
   else
     {
     switch (sqlite3_errcode (it->second->db))
       {
-      case SQLITE_ROW:  strResult = "row ready";             break;
-      case SQLITE_DONE: strResult = "finished";              break;
+      case SQLITE_ROW:  
+            strResult = Translate ("row ready");   
+            break;
 
-      case -1: strResult = "database id not found";          break;
-      case -2: strResult = "database not open";              break;
-      case -3: strResult = "already have prepared statement";break;
-      case -4: strResult = "do not have prepared statement"; break;
-      case -5: strResult = "do not have a valid row";        break;
-      case -6: strResult = "database already exists under a different disk name"; break;
-      case -7: strResult = "column count out of valid range"; break;
+      case SQLITE_DONE: 
+            strResult = Translate ("finished");    
+            break;
+
+      case DATABASE_ERROR_ID_NOT_FOUND: 
+            strResult = Translate ("database id not found");          
+            break;
+
+      case DATABASE_ERROR_NOT_OPEN: 
+            strResult = Translate ("database not open");              
+            break;
+
+      case DATABASE_ERROR_HAVE_PREPARED_STATEMENT: 
+            strResult = Translate ("already have prepared statement");
+            break;
+
+      case DATABASE_ERROR_NO_PREPARED_STATEMENT: 
+            strResult = Translate ("do not have prepared statement"); 
+            break;
+
+      case DATABASE_ERROR_NO_VALID_ROW: 
+            strResult = Translate ("do not have a valid row");        
+            break;
+
+      case DATABASE_ERROR_DATABASE_ALREADY_EXISTS: 
+            strResult = Translate ("database already exists under a different disk name"); 
+            break;
+
+      case DATABASE_ERROR_COLUMN_OUT_OF_RANGE: 
+            strResult = Translate ("column count out of valid range"); 
+            break;
 
       default:
           strResult = sqlite3_errmsg (it->second->db);
@@ -237,6 +292,9 @@ BSTR CMUSHclientDoc::DatabaseError(LPCTSTR Name)
 	return strResult.AllocSysString();
 }   // end of CMUSHclientDoc::DatabaseError
 
+
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseColumnName  - find column name from a prepared SQL statement
 
 // note: don't need to step first, the prepare gives us the names
 BSTR CMUSHclientDoc::DatabaseColumnName(LPCTSTR Name, long Column) 
@@ -260,6 +318,11 @@ BSTR CMUSHclientDoc::DatabaseColumnName(LPCTSTR Name, long Column)
 	return strResult.AllocSysString();
 }  // end of CMUSHclientDoc::DatabaseColumnName
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseColumnText  - find column data (as text) from last step
+
+// WARNING: Lua version implemented separately in lua_methods.cpp
+//          due to conversion problems with BSTR and some code pages
 
 BSTR CMUSHclientDoc::DatabaseColumnText(LPCTSTR Name, long Column) 
 {
@@ -282,6 +345,12 @@ BSTR CMUSHclientDoc::DatabaseColumnText(LPCTSTR Name, long Column)
 
 	return strResult.AllocSysString();
 }   // end of CMUSHclientDoc::DatabaseColumnText
+
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseColumnText  - find column value from last step
+
+// WARNING: Lua version implemented separately in lua_methods.cpp
+//          due to conversion problems with BSTR and some code pages
 
 VARIANT CMUSHclientDoc::DatabaseColumnValue(LPCTSTR Name, long Column) 
 {
@@ -342,6 +411,9 @@ VARIANT CMUSHclientDoc::DatabaseColumnValue(LPCTSTR Name, long Column)
 }     // end of CMUSHclientDoc::DatabaseColumnValue
 
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseColumnType  - find column type from last step
+
 
 // #define SQLITE_INTEGER  1
 // #define SQLITE_FLOAT    2
@@ -355,52 +427,61 @@ long CMUSHclientDoc::DatabaseColumnType(LPCTSTR Name, long Column)
   tDatabaseMapIterator it = m_Databases.find (Name);
     
   if (it == m_Databases.end ())
-    return -1;                // database not found
+    return DATABASE_ERROR_ID_NOT_FOUND;           // database not found
 
   if  (it->second->db == NULL)
-    return -2;               // database not open
+    return DATABASE_ERROR_NOT_OPEN;               // database not open
 
   if  (it->second->pStmt == NULL)
-    return -4;               // do not have prepared statement
+    return DATABASE_ERROR_NO_PREPARED_STATEMENT;  // do not have prepared statement
 
   if  (!it->second->bValidRow)
-    return -5;               // do not have a valid row
+    return DATABASE_ERROR_NO_VALID_ROW;           // do not have a valid row
 
   if  (Column < 1 || Column > it->second->iColumns)
-    return -7;               // column count out of valid range
+    return DATABASE_ERROR_COLUMN_OUT_OF_RANGE;    // column count out of valid range
 
   return sqlite3_column_type(it->second->pStmt, Column - 1);  // column type
 }     // end of CMUSHclientDoc::DatabaseColumnType
 
+
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseTotalChanges  - find total changes to the database
 
 long CMUSHclientDoc::DatabaseTotalChanges(LPCTSTR Name) 
 {
   tDatabaseMapIterator it = m_Databases.find (Name);
     
   if (it == m_Databases.end ())
-    return -1;                // database not found
+    return DATABASE_ERROR_ID_NOT_FOUND;       // database not found
 
   if  (it->second->db == NULL)
-    return -2;               // database not open
+    return DATABASE_ERROR_NOT_OPEN;           // database not open
 
   return sqlite3_total_changes(it->second->db); 
 
 }    // end of CMUSHclientDoc::DatabaseTotalChanges
 
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseChanges  - find last changes to the database
+
 long CMUSHclientDoc::DatabaseChanges(LPCTSTR Name) 
 {
   tDatabaseMapIterator it = m_Databases.find (Name);
     
   if (it == m_Databases.end ())
-    return -1;                // database not found
+    return DATABASE_ERROR_ID_NOT_FOUND;      // database not found
 
   if  (it->second->db == NULL)
-    return -2;               // database not open
+    return DATABASE_ERROR_NOT_OPEN;          // database not open
 
   return sqlite3_changes(it->second->db); 
 }   // end of CMUSHclientDoc::DatabaseChanges
 
+
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseLastInsertRowid  - find last row ID inserted (converted to string)
 
 BSTR CMUSHclientDoc::DatabaseLastInsertRowid(LPCTSTR Name) 
 {
@@ -416,6 +497,9 @@ BSTR CMUSHclientDoc::DatabaseLastInsertRowid(LPCTSTR Name)
 
 	return strResult.AllocSysString();
 }    // end of CMUSHclientDoc::DatabaseLastInsertRowid
+
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseList  - find list of databases
 
 VARIANT CMUSHclientDoc::DatabaseList() 
 {
@@ -443,6 +527,8 @@ VARIANT CMUSHclientDoc::DatabaseList()
 	return sa.Detach ();
 }    // end of CMUSHclientDoc::DatabaseList
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseInfo  - find info about a database
 
 VARIANT CMUSHclientDoc::DatabaseInfo(LPCTSTR Name, long InfoType) 
 {
@@ -476,24 +562,30 @@ VARIANT CMUSHclientDoc::DatabaseInfo(LPCTSTR Name, long InfoType)
 }   // end of CMUSHclientDoc::DatabaseInfo
 
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseExec  - execute an SQL statement
+
 long CMUSHclientDoc::DatabaseExec(LPCTSTR Name, LPCTSTR Sql) 
 {
   tDatabaseMapIterator it = m_Databases.find (Name);
     
   if (it == m_Databases.end ())
-    return -1;                  // database not found
+    return DATABASE_ERROR_ID_NOT_FOUND;              // database not found
 
   if  (it->second->db == NULL)
-    return -2;                  // database not open
+    return DATABASE_ERROR_NOT_OPEN;                  // database not open
 
   if  (it->second->pStmt != NULL)
-    return -3;                  // already have prepared statement
+    return DATABASE_ERROR_HAVE_PREPARED_STATEMENT;   // already have prepared statement
 
   it->second->bValidRow = false;  // no valid row yet
   it->second->iColumns = 0;
 
   return sqlite3_exec (it->second->db, Sql, NULL, NULL, NULL);
 }   // end of CMUSHclientDoc::DatabaseExec
+
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseColumnNames  - get table of column names from last prepared statement
 
 // returns an array of column names
 VARIANT CMUSHclientDoc::DatabaseColumnNames(LPCTSTR Name) 
@@ -532,6 +624,12 @@ VARIANT CMUSHclientDoc::DatabaseColumnNames(LPCTSTR Name)
 
 	return sa.Detach ();
 }  // end of CMUSHclientDoc::DatabaseColumnNames
+
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseColumnValues  - get table of column values from last step
+
+// WARNING: Lua version implemented separately in lua_methods.cpp
+//          due to conversion problems with BSTR and some code pages
 
 // returns an array of column values
 VARIANT CMUSHclientDoc::DatabaseColumnValues(LPCTSTR Name) 
@@ -602,24 +700,32 @@ VARIANT CMUSHclientDoc::DatabaseColumnValues(LPCTSTR Name)
 }  // end of  CMUSHclientDoc::DatabaseColumnNames
 
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseReset  - reset a prepared statement (go back to start)
+
 long CMUSHclientDoc::DatabaseReset(LPCTSTR Name) 
 {
   tDatabaseMapIterator it = m_Databases.find (Name);
     
   if (it == m_Databases.end ())
-    return -1;                // database not found
+    return DATABASE_ERROR_ID_NOT_FOUND;           // database not found
 
   if  (it->second->db == NULL)
-    return -2;               // database not open
+    return DATABASE_ERROR_NOT_OPEN;               // database not open
 
   if  (it->second->pStmt == NULL)
-    return -4;               // do not have prepared statement
+    return DATABASE_ERROR_NO_PREPARED_STATEMENT;  // do not have prepared statement
 
   return sqlite3_reset(it->second->pStmt);  // reset statement
 
 }  // end of  CMUSHclientDoc::DatabaseReset
 
 
+/////////////////////////////////////////////////////////////////////////////
+// DatabaseGetField  - get row 1 column 1 corresponding to an SQL statement
+
+// WARNING: Lua version implemented separately in lua_methods.cpp
+//          due to conversion problems with BSTR and some code pages
 
 VARIANT CMUSHclientDoc::DatabaseGetField(LPCTSTR Name, LPCTSTR Sql) 
 {
@@ -630,7 +736,7 @@ VARIANT CMUSHclientDoc::DatabaseGetField(LPCTSTR Name, LPCTSTR Sql)
   // prepare the SQL statement
   long rc = DatabasePrepare (Name, Sql);
 
-  if (rc != 0)
+  if (rc != SQLITE_OK)
     return vaResult;  // could not prepare statement, give up
 
   // step to get one row
