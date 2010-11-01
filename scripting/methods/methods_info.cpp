@@ -312,6 +312,9 @@ tInfoTypeMapping InfoTypes [] =
 { 296, "Output window scroll bar position" },
 { 297, "High-resolution timer frequency" },
 { 298, "SQLite3 version number" },
+{ 299, "ANSI code-page number" },
+{ 300, "OEM code-page number" },
+
    
 
 // (dates - calculated at runtime)
@@ -1030,6 +1033,15 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case 298:
         SetUpVariantLong (vaResult, sqlite3_libversion_number()); 
         break;
+
+    case 299:
+        SetUpVariantLong (vaResult, GetACP());    // ANSI code page
+        break;
+
+    case 300:
+        SetUpVariantLong (vaResult, GetOEMCP());  // OEM code page
+        break;
+
 
     case  301: 
       if (m_tConnectTime.GetTime ())     // only if non-zero, otherwise return empty
