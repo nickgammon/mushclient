@@ -22,6 +22,7 @@
 //   utils.metaphone
 //   utils.msgbox
 //   utils.multilistbox
+//   utils.reload_global_prefs
 //   utils.sendtofront
 //   utils.shellexecute
 //   utils.showdebugstatus
@@ -1829,6 +1830,14 @@ static int infotypes (lua_State *L)
   return 1;   // 1 table
   } // end of infotypes
 
+// reloads global preferences
+static int reload_global_prefs (lua_State *L) 
+  {
+  App.LoadGlobalsFromDatabase ();
+
+  return 0;   // no results
+  } // end of reload_global_prefs
+
 
 // table of operations
 static const struct luaL_reg xmllib [] = 
@@ -1854,6 +1863,7 @@ static const struct luaL_reg xmllib [] =
   {"metaphone",         metaphone},
   {"msgbox",            msgbox},       // msgbox - not Unicode
   {"multilistbox",      multilistbox},
+  {"reload_global_prefs", reload_global_prefs},
   {"showdebugstatus",   showdebugstatus},
   {"sendtofront",       send_to_front},
   {"shellexecute",      shell_execute},
