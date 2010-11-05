@@ -1310,6 +1310,7 @@ bool found;
         return;
 
       // select the new item
+      m_cTreeCtrl.SetFocus ();
       m_cTreeCtrl.SelectItem (hItem);
       m_cTreeCtrl.EnsureVisible (hItem);    
 
@@ -1328,6 +1329,7 @@ bool found;
 
     if (found)
       {
+       m_ctlList->SetFocus ();
        m_ctlList->SetItemState (m_pObjectFindInfo->m_nCurrentLine, 
                                        LVIS_FOCUSED | LVIS_SELECTED, 
                                        LVIS_FOCUSED | LVIS_SELECTED);

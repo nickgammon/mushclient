@@ -2790,7 +2790,10 @@ CString CPrefsP7::GetFindText (CObject * pItem) const
 
   CString strResult = alias_item->name;
   
-  strResult += "\t" + alias_item->contents + "\t" +  alias_item->strLabel + "\t" + alias_item->strGroup;
+  strResult += "\t" + alias_item->contents + 
+               "\t" + alias_item->strLabel + 
+               "\t" + alias_item->strGroup +
+               "\t" + alias_item->strProcedure;
 
   return strResult;
 
@@ -3896,7 +3899,10 @@ CString CPrefsP8::GetFindText (CObject * pItem) const
 
   CString strResult = trigger_item->trigger;
   
-  strResult += "\t" + trigger_item->contents + "\t" +  trigger_item->strLabel + "\t" +  trigger_item->strGroup;
+  strResult += "\t" + trigger_item->contents + 
+               "\t" + trigger_item->strLabel + 
+               "\t" + trigger_item->strGroup + 
+               "\t" + trigger_item->strProcedure;
 
   return strResult;
 
@@ -6447,7 +6453,9 @@ CString CPrefsP16::GetFindText (CObject * pItem) const
 
   CString strResult = timer_item->strContents;
   
-  strResult += timer_item->strLabel + "\t" + timer_item->strGroup;
+  strResult += "\t" + timer_item->strLabel + 
+               "\t" + timer_item->strGroup +
+               "\t" + timer_item->strProcedure;
 
   return strResult;
 
