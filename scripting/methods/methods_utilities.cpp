@@ -31,7 +31,8 @@
 //    Hash
 //    Help
 //    MakeRegularExpression
-//    Menu//    MtRand
+//    Menu
+//    MtRand
 //    MtSrand
 //    Open
 //    OpenBrowser

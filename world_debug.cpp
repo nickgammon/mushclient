@@ -1286,8 +1286,14 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       Hyperlink (CFormat ("!!" DEBUG_PLUGIN_ID ":editplugin(_%s_)",(LPCTSTR) pPlugin->m_strID), 
                  pPlugin->m_strName, "Click to edit plugin", "cyan", "", 0);
 
-      ColourTell (strColour, "", TFormat ("', %8s", 
-            pActive));
+      CString strLanguage = pPlugin->m_strLanguage;
+      if (strLanguage.IsEmpty ())
+        strLanguage = "none";
+      else
+        strLanguage.SetAt (0, toupper (strLanguage [0]));
+
+      ColourTell (strColour, "", TFormat ("', (%s) %s", 
+            (LPCSTR) strLanguage, pActive));
 
       // no quick way of finding variables count
       int nTotalVariables = 0;
