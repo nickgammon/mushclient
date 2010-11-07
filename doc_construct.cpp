@@ -483,6 +483,7 @@ int i;
     {
 	  m_pTimerWnd->DestroyWindow();
 	  delete m_pTimerWnd;
+    m_pTimerWnd = NULL;
     }
 
   for (i = 0; i < 8; i++)  

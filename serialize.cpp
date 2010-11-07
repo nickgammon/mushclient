@@ -92,7 +92,8 @@ void CMUSHclientDoc::Serialize(CArchive& ar)
     } // end compiling regular expression
 
   // kick off speed walk timer
-  m_pTimerWnd->ChangeTimerRate (m_iSpeedWalkDelay);
+  if (m_pTimerWnd)
+    m_pTimerWnd->ChangeTimerRate (m_iSpeedWalkDelay);
 
   // remember loaded option values
 
