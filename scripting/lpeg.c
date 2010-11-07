@@ -3,6 +3,7 @@
 
 // Implements:
 
+//   lpeg.B
 //   lpeg.C
 //   lpeg.Carg
 //   lpeg.Cb
@@ -20,6 +21,7 @@
 //   lpeg.locale
 //   lpeg.match
 //   lpeg.print
+//   lpeg.setmaxstack
 //   lpeg.span
 //   lpeg.type
 //   lpeg.version

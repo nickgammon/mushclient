@@ -16,9 +16,33 @@ Caption "MUSHclient Installer"
 ; BGGradient FE8100 FCFC04  771F0E 
 ; InstallColors FF8080 000030
 
+; Use compression
+SetCompressor /SOLID lzma
+
 
 ; The file to write
 OutFile mushclient40x.exe
+
+; Modern interface settings
+!include "MUI.nsh"
+
+!define MUI_ABORTWARNING
+!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install-colorful.ico"
+!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall-colorful.ico"
+
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_LICENSE "..\docs\agreement.txt"
+!insertmacro MUI_PAGE_DIRECTORY      
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+
+; Set languages (first is default language)
+!insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_RESERVEFILE_LANGDLL
+
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\MUSHclient
@@ -40,13 +64,7 @@ ShowInstDetails show
 SetOverwrite on
 ;SetOverwrite ifnewer
 SetCompress auto
-SetCompressor lzma
 SetDateSave on
-
-; license
-
-LicenseText "Please read the following agreement and click on 'Next' if you agree to it:"
-LicenseData "..\docs\agreement.txt"
 
 ; install types
 
@@ -248,6 +266,7 @@ Section "Documentation"
   File "..\docs\RegularExpressions.txt"
   File "..\docs\gpl.txt"
   File "..\docs\lpeg.html"
+  File "..\docs\lpeg-128.gif"
   File "..\docs\lsqlite3.html"
   File "..\docs\lua_license.txt"
   File "..\docs\luacom.pdf"
@@ -625,6 +644,8 @@ Section Uninstall
   Delete "$INSTDIR\docs\RegularExpressions.txt"
   Delete "$INSTDIR\docs\gpl.txt"
   Delete "$INSTDIR\docs\lpeg.html"
+  Delete "$INSTDIR\docs\lpeg-128.gif"
+
   Delete "$INSTDIR\docs\lsqlite3.html"
   Delete "$INSTDIR\docs\lua_license.txt"
   Delete "$INSTDIR\docs\luacom.pdf"
