@@ -1,16 +1,71 @@
--- $Id: re.lua,v 1.1 2009-02-21 19:49:19 nick Exp $
+-- $Id: re.lua,v 1.39 2010/11/04 19:44:18 roberto Exp $
 
-local m = require"lpeg"
-local _G = _G
+-- imported functions and modules
 local tonumber, type, print, error = tonumber, type, print, error
-local mt = getmetatable(m.P(0))
+local setmetatable = setmetatable
+local m = require"lpeg"
 
-module "re"
+-- 'm' will be used to parse expressions, and 'mm' will be used to
+-- create expressions; that is, 're' runs on 'm', creating patterns
+-- on 'mm'
+local mm = m
+
+-- pattern's metatable 
+local mt = getmetatable(mm.P(0))
+
+
+
+-- No more global accesses after this point
+local version = _VERSION
+if version == "Lua 5.2" then _ENV = nil end
+
 
 local any = m.P(1)
 
+
 -- Pre-defined names
-Predef = { nl = m.P"\n" }
+local Predef = { nl = m.P"\n" }
+
+
+local mem
+local fmem
+local gmem
+
+
+local function updatelocale ()
+  mm.locale(Predef)
+  Predef.a = Predef.alpha
+  Predef.c = Predef.cntrl
+  Predef.d = Predef.digit
+  Predef.g = Predef.graph
+  Predef.l = Predef.lower
+  Predef.p = Predef.punct
+  Predef.s = Predef.space
+  Predef.u = Predef.upper
+  Predef.w = Predef.alnum
+  Predef.x = Predef.xdigit
+  Predef.A = any - Predef.a
+  Predef.C = any - Predef.c
+  Predef.D = any - Predef.d
+  Predef.G = any - Predef.g
+  Predef.L = any - Predef.l
+  Predef.P = any - Predef.p
+  Predef.S = any - Predef.s
+  Predef.U = any - Predef.u
+  Predef.W = any - Predef.w
+  Predef.X = any - Predef.x
+  mem = {}    -- restart memoization
+  fmem = {}
+  gmem = {}
+  local mt = {__mode = "v"}
+  setmetatable(mem, mt)
+  setmetatable(fmem, mt)
+  setmetatable(gmem, mt)
+end
+
+
+updatelocale()
+
 
 
 local I = m.P(function (s,i) print(i, s:sub(1, i-1)); return i end)
@@ -31,7 +86,7 @@ local function patt_error (s, i)
 end
 
 local function mult (p, n)
-  local np = m.P(true)
+  local np = mm.P(true)
   while n >= 1 do
     if n%2 >= 1 then np = np * p end
     p = p * p
@@ -47,11 +102,13 @@ local function equalcap (s, i, c)
 end
 
 
-local S = (m.S(" \t\n") + "--" * (any - m.S"\n")^0)^0
+local S = (m.S(" \f\n\r\t\v") + "--" * (any - Predef.nl)^0)^0
 
-local name = m.R("AZ", "az") * m.R("AZ", "az", "09")^0
+local name = m.R("AZ", "az") * m.R("AZ", "az", "__", "09")^0
 
-local exp_follow = m.P"/" + ")" + "}" + ":}" + "~}" + name + -1
+local arrow = S * "<-"
+
+local exp_follow = m.P"/" + ")" + "}" + ":}" + "~}" + (name * arrow) + -1
 
 name = m.C(name)
 
@@ -65,15 +122,15 @@ local String = "'" * m.C((any - "'")^0) * "'" +
                '"' * m.C((any - '"')^0) * '"'
 
 
-local Cat = "%" * Identifier / function (c,Defs)
+local defined = "%" * Identifier / function (c,Defs)
   local cat =  Defs and Defs[c] or Predef[c]
   if not cat then error ("name '" .. c .. "' undefined") end
   return cat
 end
 
-local Range = m.Cs(any * (m.P"-"/"") * (any - "]")) / m.R
+local Range = m.Cs(any * (m.P"-"/"") * (any - "]")) / mm.R
 
-local item = Cat + Range + m.C(any)
+local item = defined + Range + m.C(any)
 
 local Class =
     "["
@@ -118,39 +175,34 @@ local exp = m.P{ "Exp",
             ) * S
           )^0, function (a,b,f) return f(a,b) end );
   Primary = "(" * m.V"Exp" * ")"
-            + String / m.P
+            + String / mm.P
             + Class
-            + Cat
+            + defined
             + "{:" * (name * ":" + m.Cc(nil)) * m.V"Exp" * ":}" /
-                     function (n, p) return m.Cg(p, n) end
-            + "=" * name / function (n) return m.Cmt(m.Cb(n), equalcap) end
-            + m.P"{}" / m.Cp
-            + "{~" * m.V"Exp" * "~}" / m.Cs
-            + "{" * m.V"Exp" * "}" / m.C
+                     function (n, p) return mm.Cg(p, n) end
+            + "=" * name / function (n) return mm.Cmt(mm.Cb(n), equalcap) end
+            + m.P"{}" / mm.Cp
+            + "{~" * m.V"Exp" * "~}" / mm.Cs
+            + "{" * m.V"Exp" * "}" / mm.C
             + m.P"." * m.Cc(any)
-            + "<" * name * ">" / m.V;
-  Definition = Identifier * S * '<-' * m.V"Exp";
+            + name * -arrow / mm.V
+            + "<" * name * ">" / mm.V;
+  Definition = Identifier * arrow * m.V"Exp";
   Grammar = m.Cf(m.V"Definition" / firstdef * m.Cg(m.V"Definition")^0, adddef) /
-                m.P
+                mm.P
 }
 
-local pattern = S * exp / m.P * (-any + patt_error)
+local pattern = S * exp / mm.P * (-any + patt_error)
 
 
-function compile (p, defs)
-  if m.type(p) == "pattern" then return p end   -- already compiled
+local function compile (p, defs)
+  if mm.type(p) == "pattern" then return p end   -- already compiled
   local cp = pattern:match(p, 1, defs)
   if not cp then error("incorrect pattern", 3) end
   return cp
 end
 
-
-local mem
-local fmem
-local gmem
-local mt = {__mode = "v"}
-
-function match (s, p, i)
+local function match (s, p, i)
   local cp = mem[p]
   if not cp then
     cp = compile(p)
@@ -159,58 +211,38 @@ function match (s, p, i)
   return cp:match(s, i or 1)
 end
 
-function find (s, p, i)
+local function find (s, p, i)
   local cp = fmem[p]
   if not cp then
     cp = compile(p)
-    cp = m.P{ m.Cp() * cp + 1 * m.V(1) }
+    cp = mm.P{ mm.Cp() * cp + 1 * mm.V(1) }
     fmem[p] = cp
   end
   return cp:match(s, i or 1)
 end
 
-function gsub (s, p, rep)
-  gmem[p] = gmem[p] or {}
-  local cp = gmem[p][rep]
+local function gsub (s, p, rep)
+  local g = gmem[p] or {}   -- ensure gmem[p] is not collected while here
+  gmem[p] = g
+  local cp = g[rep]
   if not cp then
     cp = compile(p)
-    cp = m.Cs((cp / rep + 1)^0)
-    gmem[p][rep] = cp
+    cp = mm.Cs((cp / rep + 1)^0)
+    g[rep] = cp
   end
   return cp:match(s)
 end
 
 
-function updatelocale ()
-  m.locale(Predef)
-  Predef.a = Predef.alpha
-  Predef.c = Predef.cntrl
-  Predef.d = Predef.digit
-  Predef.g = Predef.graph
-  Predef.l = Predef.lower
-  Predef.p = Predef.punct
-  Predef.s = Predef.space
-  Predef.u = Predef.upper
-  Predef.w = Predef.alnum
-  Predef.x = Predef.xdigit
-  Predef.A = any - Predef.a
-  Predef.C = any - Predef.c
-  Predef.D = any - Predef.d
-  Predef.G = any - Predef.g
-  Predef.L = any - Predef.l
-  Predef.P = any - Predef.p
-  Predef.S = any - Predef.s
-  Predef.U = any - Predef.u
-  Predef.W = any - Predef.w
-  Predef.X = any - Predef.x
-  mem = {}    -- restart memoization
-  fmem = {}
-  gmem = {}
-  _G.setmetatable(mem, mt)
-  _G.setmetatable(fmem, mt)
-  _G.setmetatable(gmem, mt)
-end
+-- exported names
+local re = {
+  compile = compile,
+  match = match,
+  find = find,
+  gsub = gsub,
+  updatelocale = updatelocale,
+}
 
+if version == "Lua 5.1" then _G.re = re end
 
-updatelocale()
-
+return re
