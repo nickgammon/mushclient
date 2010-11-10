@@ -2633,8 +2633,8 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
     vert [0] .Alpha  = 0;
 
     // second vertex
-    vert [1] .x      = Right;
-    vert [1] .y      = Bottom; 
+    vert [1] .x      = FixRight (Right);
+    vert [1] .y      = FixBottom (Bottom); 
     vert [1] .Red    = GetRValue (EndColour) << 8;
     vert [1] .Green  = GetGValue (EndColour) << 8;
     vert [1] .Blue   = GetBValue (EndColour) << 8;
@@ -2680,9 +2680,10 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
     case 1 : // horizontal (left to right)
 
       {
-      for (long x = Left; x < Right; x++)
+      long iRight = FixRight (Right);
+      for (long x = Left; x < iRight; x++)
         {
-        dc.FillSolidRect( x, Top, 1, Bottom - Top, RGB (rval, gval, bval) );
+        dc.FillSolidRect( x, Top, 1, iHeight, RGB (rval, gval, bval) );
         rval += rinc;
         gval += ginc;
         bval += binc;                      
@@ -2694,9 +2695,10 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
     case 2 : // vertical  (top to bottom)
 
       {
-      for (long y = Top; y < Bottom; y++)
+      long iBottom = FixBottom (Bottom);
+      for (long y = Top; y < iBottom; y++)
         {
-        dc.FillSolidRect( Left, y, Right - Left, 1, RGB (rval, gval, bval) );
+        dc.FillSolidRect( Left, y, iWidth, 1, RGB (rval, gval, bval) );
         rval += rinc;
         gval += ginc;
         bval += binc;                      
