@@ -259,6 +259,7 @@ class CFindInfo : public CObject
     m_nCurrentLine = 0;
     m_iControlColumns = 0;
     m_regexp = NULL;
+    m_bRepeatOnSameLine = false;
     };                 // constructor
 
   ~CFindInfo () { delete m_regexp; };
@@ -279,6 +280,7 @@ class CFindInfo : public CObject
   int  m_iControlColumns;       // number of columns in the control
   t_regexp * m_regexp;          // compiled regular expression
   CStringList m_strFindStringList;  // previous things we found
+  bool m_bRepeatOnSameLine;     // keep trying to match on same line
   };
 
 // prototype for "get next line" callback for find routine

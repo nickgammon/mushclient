@@ -66,12 +66,12 @@ bool FindRoutine (const CObject * pObject,       // passed back to callback rout
   {
 CFindDlg dlg (FindInfo.m_strFindStringList);
 
-  FindInfo.m_iStartColumn = -1;     // return consistent column number
 
 // find what the heck the user wants to do
 
   if (!FindInfo.m_bAgain || FindInfo.m_strFindStringList.IsEmpty ())
     {
+    FindInfo.m_iStartColumn = -1;     // return consistent column number
 
     if (!FindInfo.m_strFindStringList.IsEmpty ())
       dlg.m_strFindText = FindInfo.m_strFindStringList.GetHead ();
@@ -117,12 +117,20 @@ CFindDlg dlg (FindInfo.m_strFindStringList);
     }   // end of not repeating the last find
   else
     {
+    if (FindInfo.m_bRepeatOnSameLine)
+      FindInfo.m_iStartColumn++;   // skip previous match
+    else
+      FindInfo.m_iStartColumn = -1;     // return consistent column number
+
     // doing a "find again" - step past the line we were on
 
-    if (FindInfo.m_bForwards)
-      FindInfo.m_nCurrentLine++;
-    else
-      FindInfo.m_nCurrentLine--;
+    if (!FindInfo.m_bRepeatOnSameLine)
+      {
+      if (FindInfo.m_bForwards)
+        FindInfo.m_nCurrentLine++;
+      else
+        FindInfo.m_nCurrentLine--;
+      } // end of not repeating on same line
 
     // re-initiate the search - this will set up the POSITION parameter, if it wants to
 
@@ -214,7 +222,7 @@ CString strStatus = TFormat ("Finding: %s", (LPCTSTR) FindInfo.m_strFindStringLi
       if (FindInfo.m_bRegexp )
         {
 
-        if (regexec (FindInfo.m_regexp, strLine))
+        if (regexec (FindInfo.m_regexp, strLine, maximum (FindInfo.m_iStartColumn, 0)))
           {
           // work out what column it must have been at
           FindInfo.m_iStartColumn = FindInfo.m_regexp->m_vOffsets [0];
@@ -228,7 +236,7 @@ CString strStatus = TFormat ("Finding: %s", (LPCTSTR) FindInfo.m_strFindStringLi
         // if case-insensitive search wanted, force this line to lower case
         if (!FindInfo.m_bMatchCase)
           strLine.MakeLower ();
-        if ((FindInfo.m_iStartColumn = strLine.Find (strFindString)) != -1)
+        if ((FindInfo.m_iStartColumn = strLine.Find (strFindString, maximum (FindInfo.m_iStartColumn, 0))) != -1)
           {
           // work out ending column
           FindInfo.m_iEndColumn = FindInfo.m_iStartColumn + 
@@ -239,6 +247,8 @@ CString strStatus = TFormat ("Finding: %s", (LPCTSTR) FindInfo.m_strFindStringLi
         } // end of not regular expression
 
   // keep track of line count
+
+      FindInfo.m_iStartColumn = -1;  // back to start for next line
 
       if (FindInfo.m_bForwards)
         FindInfo.m_nCurrentLine++;

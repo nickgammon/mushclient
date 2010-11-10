@@ -1362,6 +1362,9 @@ ASSERT_VALID(pDoc);
 
 pDoc->m_DisplayFindInfo.m_bAgain = bAgain;
 
+// if finding forwards, we can find multiple instances on the same line
+pDoc->m_DisplayFindInfo.m_bRepeatOnSameLine = pDoc->m_DisplayFindInfo.m_bForwards;
+
 bool found = FindRoutine (pDoc,                    // passed back to callback routines
                           pDoc->m_DisplayFindInfo, // finding structure
                           InitiateSearch,          // how to re-initiate a find
