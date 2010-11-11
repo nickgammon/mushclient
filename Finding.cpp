@@ -289,43 +289,44 @@ CString strStatus = TFormat ("Finding: %s", (LPCTSTR) FindInfo.m_strFindStringLi
           WrapUpFind (FindInfo);
           return true;    // found it!
           }   // end if found
-        else
-          {
-          // nothing found, try previous line
-          FindInfo.m_nCurrentLine--;
-          continue;  // skip other testing
-          }   // end if not found
+
+        // nothing found, try previous line
+        FindInfo.m_nCurrentLine--;
+        continue;  // skip other testing
 
         }   // end of searching backwards with repeat on same line
 
   // if text found on this line, then we have done it!
 
-      if (FindInfo.m_bRegexp )
+      if (maximum (FindInfo.m_iStartColumn, 0) < strLine.GetLength ())
         {
-
-        if (regexec (FindInfo.m_regexp, strLine, maximum (FindInfo.m_iStartColumn, 0)))
+        if (FindInfo.m_bRegexp )
           {
-          // work out what column it must have been at
-          FindInfo.m_iStartColumn = FindInfo.m_regexp->m_vOffsets [0];
-          FindInfo.m_iEndColumn = FindInfo.m_regexp->m_vOffsets [1];
-          WrapUpFind (FindInfo);
-          return true;    // found it!
-          }
-        } // end of regular expression
-      else
-        { // not regular expression 
 
-        // if case-insensitive search wanted, force this line to lower case
-        if (!FindInfo.m_bMatchCase)
-          strLine.MakeLower ();
-        if ((FindInfo.m_iStartColumn = strLine.Find (strFindString, maximum (FindInfo.m_iStartColumn, 0))) != -1)
-          {
-          // work out ending column
-          FindInfo.m_iEndColumn = FindInfo.m_iStartColumn + strFindString.GetLength ();
-          WrapUpFind (FindInfo);
-          return true;    // found it!
-          } // end of found 
-        } // end of not regular expression
+          if (regexec (FindInfo.m_regexp, strLine, maximum (FindInfo.m_iStartColumn, 0)))
+            {
+            // work out what column it must have been at
+            FindInfo.m_iStartColumn = FindInfo.m_regexp->m_vOffsets [0];
+            FindInfo.m_iEndColumn = FindInfo.m_regexp->m_vOffsets [1];
+            WrapUpFind (FindInfo);
+            return true;    // found it!
+            }
+          } // end of regular expression
+        else
+          { // not regular expression 
+
+          // if case-insensitive search wanted, force this line to lower case
+          if (!FindInfo.m_bMatchCase)
+            strLine.MakeLower ();
+          if ((FindInfo.m_iStartColumn = strLine.Find (strFindString, maximum (FindInfo.m_iStartColumn, 0))) != -1)
+            {
+            // work out ending column
+            FindInfo.m_iEndColumn = FindInfo.m_iStartColumn + strFindString.GetLength ();
+            WrapUpFind (FindInfo);
+            return true;    // found it!
+            } // end of found 
+          } // end of not regular expression
+        }   // end of start column being inside the line
 
   // keep track of line count
 
