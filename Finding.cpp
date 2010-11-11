@@ -54,6 +54,8 @@ bool NotFound (CFindInfo & FindInfo)
                 FindInfo.m_bAgain ? " again." : " .");
   ::UMessageBox (strMsg, MB_ICONINFORMATION);
   FindInfo.m_iStartColumn = -1;
+  FindInfo.m_iLastLineSearched = -1;
+  FindInfo.m_MatchesOnLine.clear ();
   return false;
   } // end of NotFound
 
@@ -72,6 +74,8 @@ CFindDlg dlg (FindInfo.m_strFindStringList);
   if (!FindInfo.m_bAgain || FindInfo.m_strFindStringList.IsEmpty ())
     {
     FindInfo.m_iStartColumn = -1;     // return consistent column number
+    FindInfo.m_iLastLineSearched = -1;
+    FindInfo.m_MatchesOnLine.clear ();
 
     if (!FindInfo.m_strFindStringList.IsEmpty ())
       dlg.m_strFindText = FindInfo.m_strFindStringList.GetHead ();
@@ -118,7 +122,7 @@ CFindDlg dlg (FindInfo.m_strFindStringList);
   else
     {
     if (FindInfo.m_bRepeatOnSameLine)
-      FindInfo.m_iStartColumn++;   // skip previous match
+      FindInfo.m_iStartColumn = FindInfo.m_iEndColumn;   // skip previous match
     else
       FindInfo.m_iStartColumn = -1;     // return consistent column number
 
@@ -149,10 +153,6 @@ CFindDlg dlg (FindInfo.m_strFindStringList);
       FindInfo.m_nCurrentLine = FindInfo.m_nTotalLines - 1;
     return NotFound (FindInfo);
     }
-
-  // re-initiate the search - this will set up the POSITION parameter, if it wants to
-
-//  (*pInitiateSearch) (pObject, FindInfo);
 
 // loop until end of text, or text found
   
@@ -217,6 +217,87 @@ CString strStatus = TFormat ("Finding: %s", (LPCTSTR) FindInfo.m_strFindStringLi
           }
         } // end of having a progress control
 
+      // if searching backwards, and doing more than one, find all matches on this line
+
+      if (!FindInfo.m_bForwards && FindInfo.m_bRepeatOnSameLine)
+        {
+
+        if (FindInfo.m_nCurrentLine != FindInfo.m_iLastLineSearched)
+          {
+          FindInfo.m_iLastLineSearched = FindInfo.m_nCurrentLine;
+          FindInfo.m_MatchesOnLine.clear ();  // no matches yet
+          int iStartCol = 0;    // start at start of line
+
+          // if case-insensitive search wanted, force this line to lower case
+          if (!FindInfo.m_bMatchCase && !FindInfo.m_bRegexp )
+            strLine.MakeLower ();
+
+          // loop until we run out of matches
+          while (true)
+            {
+
+            if (FindInfo.m_bRegexp )
+              {
+              if (regexec (FindInfo.m_regexp, strLine, iStartCol))
+                {
+                FindInfo.m_MatchesOnLine.push_back (
+                  pair <int, int> (FindInfo.m_regexp->m_vOffsets [0],
+                                   FindInfo.m_regexp->m_vOffsets [1]));
+                iStartCol = FindInfo.m_regexp->m_vOffsets [1];
+                if (iStartCol >= strLine.GetLength ())
+                  break;
+                }  // end of regexp matched
+              else
+                break;  // no match, done searching
+        
+              }  // end regexp
+            else
+              {
+              if ((iStartCol = strLine.Find (strFindString, iStartCol)) != -1)
+                {
+                // work out ending column
+                int iEndCol =  iStartCol + strFindString.GetLength ();
+                FindInfo.m_MatchesOnLine.push_back (pair <int, int> (iStartCol, iEndCol));
+                iStartCol = iEndCol;
+                if (iStartCol >= strLine.GetLength ())
+                  break;
+                } // end of found 
+              else
+                break;  // no match, done searching
+
+              }  // end not regexp
+
+
+            } // end of while we found something
+
+
+          }  // end of different line to last time
+
+
+        // if m_MatchesOnLine is not empty we had a match (either this time or last time)
+
+        if (!FindInfo.m_MatchesOnLine.empty ())
+          {
+          // get last match
+          pair<int, int> result = FindInfo.m_MatchesOnLine.back ();
+          // don't want it any more
+          FindInfo.m_MatchesOnLine.pop_back ();
+          // copy first and last column
+          FindInfo.m_iStartColumn = result.first;
+          FindInfo.m_iEndColumn = result.second;
+          // all done!
+          WrapUpFind (FindInfo);
+          return true;    // found it!
+          }   // end if found
+        else
+          {
+          // nothing found, try previous line
+          FindInfo.m_nCurrentLine--;
+          continue;  // skip other testing
+          }   // end if not found
+
+        }   // end of searching backwards with repeat on same line
+
   // if text found on this line, then we have done it!
 
       if (FindInfo.m_bRegexp )
@@ -233,14 +314,14 @@ CString strStatus = TFormat ("Finding: %s", (LPCTSTR) FindInfo.m_strFindStringLi
         } // end of regular expression
       else
         { // not regular expression 
+
         // if case-insensitive search wanted, force this line to lower case
         if (!FindInfo.m_bMatchCase)
           strLine.MakeLower ();
         if ((FindInfo.m_iStartColumn = strLine.Find (strFindString, maximum (FindInfo.m_iStartColumn, 0))) != -1)
           {
           // work out ending column
-          FindInfo.m_iEndColumn = FindInfo.m_iStartColumn + 
-                          FindInfo.m_strFindStringList.GetHead ().GetLength ();
+          FindInfo.m_iEndColumn = FindInfo.m_iStartColumn + strFindString.GetLength ();
           WrapUpFind (FindInfo);
           return true;    // found it!
           } // end of found 

@@ -1058,7 +1058,7 @@ void CGenPropertyPage::LoadList (void)
 
    m_cTreeCtrl.DeleteAllItems ();
    // since all is deleted, we don't have any groups any more
-   m_GroupsMap.erase (m_GroupsMap.begin (), m_GroupsMap.end ());
+   m_GroupsMap.clear ();
 
 
    CString strObjectName;
