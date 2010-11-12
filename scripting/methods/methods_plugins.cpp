@@ -508,6 +508,11 @@ CPlugin * pPlugin = GetPlugin (PluginID);
 
   pPlugin->m_bEnabled = Enabled != 0;
 
+  CPlugin * pSavedPlugin = m_CurrentPlugin;
+
+  // otherwise plugin won't know who itself is
+  m_CurrentPlugin = pPlugin;
+
   if (pPlugin->m_bEnabled)
     {
     CScriptCallInfo callinfo (ON_PLUGIN_ENABLE, pPlugin->m_PluginCallbacks [ON_PLUGIN_ENABLE]);
@@ -519,6 +524,7 @@ CPlugin * pPlugin = GetPlugin (PluginID);
     pPlugin->ExecutePluginScript (callinfo); 
     }
   
+  m_CurrentPlugin = pSavedPlugin;
 
   return eOK;
 }   // end of CMUSHclientDoc::EnablePlugin
