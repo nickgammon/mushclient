@@ -1,2 +1,4 @@
 Make Installer.lnk
 *.exe
+git_diff_output.txt
+git_log_output.txt

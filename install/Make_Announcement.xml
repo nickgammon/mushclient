@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="Make_Announcement"
+   author="Nick Gammon"
+   id="0aab03f457948d2a21141b50"
+   language="Lua"
+   purpose="Makes the announcement for a new version of MUSHclient"
+   date_written="2010-11-15"
+   requires="4.60"
+   version="1"
+   >
+<description trim="y">
+<![CDATA[
+
+Type: make_announcement
+
+]]>
+</description>
+
+</plugin>
+
+<!--  Aliases  -->
+
+<aliases>
+  <alias
+   name="make_announcement"
+   script="make_announcement"
+   match="make_announcement"
+   enabled="y"
+   sequence="100"
+  >
+  </alias>
+</aliases>
+
+
+
+
+<!--  Script  -->
+
+
+<script>
+<![CDATA[
+
+VERSION_URL = "http://www.mushclient.com/scripts/version.php"
+
+SOURCE = "c:\\source\\mushclient\\install\\"
+
+TEMPLATE      = "announcement_template.txt"      
+GIT_DIFF_FILE = "git_diff_output.txt"      
+GIT_LOG_FILE  = "git_log_output.txt"      
+
+GIT_HUB = "http://github.com/nickgammon/mushclient"
+
+function make_announcement ()
+  
+ 
+  -- grab updated MUSHclient info from web site
+  local http = require "socket.http" 
+  
+  SetStatus "Checking for latest MUSHclient version ..."
+  local page =  http.request (VERSION_URL)
+  SetStatus "Ready"
+  
+  if not page then return end -- page doesn't exist
+  
+  local s = string.match (page, "<pre>(.*)</pre>")
+  
+  if not s then return end  -- page in wrong format
+  
+  local t = {}  
+  setfenv (assert (loadstring (s)), t) () -- compile and load into t
+  
+  info = t.installer_info
+  
+  if not info then return end  -- installer_info not there
+  
+  -- grab version number and other stuff from that page
+  
+  new_version = tonumber (info.version)
+  previous_version = string.format ("%0.2f", new_version - 0.01)
+  installer_size = string.format ("%0.2f", info.installer_size / 1024 / 1024)
+  installer_file = string.match (info.installer_url, "[%w_.]+$")
+  description = string.gsub ("\n" .. FixupHTML (info.description), "\n%*", "<li>")
+  
+  -- remove any old interim files        
+  os.remove (SOURCE  .. GIT_DIFF_FILE)
+  os.remove (SOURCE  .. GIT_LOG_FILE)
+  
+  -- do the git diff for this version and the previous one
+  assert (utils.shellexecute ("git", 
+          string.format ("--no-pager diff v%s..v%s --stat > " 
+                         .. GIT_DIFF_FILE,
+             previous_version, info.version), 
+            SOURCE))
+           
+  -- do the git log for this version and the previous one
+  assert (utils.shellexecute ("git", 
+          string.format ("--no-pager log --pretty=oneline --reverse --abbrev-commit v%s..v%s > " 
+                          .. GIT_LOG_FILE,
+             previous_version, info.version), 
+            SOURCE))
+
+  -- give them time to finish            
+  utils.msgbox "press <OK> when DOS windows closed"
+                         
+  -- get template of announcement
+  local f = assert (io.open (SOURCE  .. TEMPLATE, "r"))  
+  local template = f:read ("*a")  
+  f:close ()  
+  
+  -- get git diff
+  local f = assert (io.open (SOURCE  .. GIT_DIFF_FILE, "r"))
+  local git_diff = FixupHTML (f:read ("*a"))
+  f:close ()  
+
+  -- get git log
+  local f = assert (io.open (SOURCE  .. GIT_LOG_FILE, "r"))
+  local git_raw_log = f:read ("*a")
+  f:close ()  
+    
+  -- fix up log to have hyperlinks
+  local t = {}
+  
+  for commit_code, desc in string.gmatch (git_raw_log, "(%x+) ([^\n]+)") do
+    table.insert (t, string.format (
+      '<a href="%s/commit/%s">%s</a> %s',
+          GIT_HUB, 
+          commit_code, 
+          commit_code, 
+          FixupHTML (desc)))
+  end -- for
+  
+  local git_log = table.concat (t, "\n")
+  
+  -- table of replacements
+  replacements = {
+      
+      ["<<version>>"]           = info.version,
+      ["<<previous_version>>"]  = previous_version,
+      ["<<installer_hash>>"]    = info.installer_hash,
+      ["<<installer_size>>"]    = installer_size,
+      ["<<installer_url>>"]     = info.installer_url,
+      ["<<installer_file>>"]    = installer_file,
+      ["<<description>>"]       = description,
+      ["<<git_diff>>"]          = git_diff,
+      ["<<git_log>>"]           = git_log,
+  
+  } -- end of replacements
+  
+  -- do the replacements
+  template = string.gsub (template, "<<[%w_]+>>", replacements)
+
+  -- output to MUSHclient window for checking  
+  print (string.rep ("-", 80))
+  ColourNote ("cyan", "", template)
+  print (string.rep ("-", 80))
+
+  -- fix up newlines
+  template = string.gsub (template, "\r", "")
+  template = string.gsub (template, "\n", "\r\n")
+ 
+  -- put onto clipboard
+  SetClipboard (template)
+  ColourNote ("green", "", "(Copied to clipboard)")  
+  
+end -- make_announcement
+
+
+ColourNote ("cyan", "", "Type: make_announcement")
+
+]]>
+</script>
+
+</muclient>

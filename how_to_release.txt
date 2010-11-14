@@ -74,25 +74,16 @@ UPLOAD INSTALLER
 
 DO ANNOUNCEMENT
 
-1. Copy previous announcement from forum and paste into Crimson Editor
-2. Change version number (eg. 4.53 to 4.54) and executable file name: (eg. 453 to 454)
-3. Near the end change the "git diff" and "git log" lines to update the *previous* version (eg. 4.52 to 4.53)
-4. Run the updated "git diff" and "git log" commands, pasting the results into the announcement (see below)
-5. Update the size of the installer (eg. from 2.79 Mb to 2.80 Mb)
-6. Update the MD5sum hex figure in the announcement
-7. Amend the "improvements" lines in the announcement to reflect the major changes
-8. Paste resulting message into a new forum message announcing the new release
-9. Find the post number of that new message and amend forum database table bbsection, record 1 (MUSHclient section) to show the latest release and forum post to read about it.
+1. Update the "version" table on the database (record ID 0) to have the release information.
+   Use "*" for bullet points in the description.
+ 
+2. Load the plugin Make_Announcement.xml from the source/install directory
 
+3. Type "make_announcement" to generate the announcement from the template with the hash etc. included
 
-Run this code in the Immediate window of MUSHclient to convert the "git log" lines to have hyperlinks:
-----------------------
-for x, desc in string.gmatch (GetClipboard (), "(%x+) ([^\n]+)") do
-  print (string.format (
-    '<a href="http://github.com/nickgammon/mushclient/commit/%s">%s</a> %s',
-    x, x, FixupHTML (desc)))
-end -- for
-----------------------
+4. Paste the resulting announcement into a new forum message announcing the new release
+
+5. Find the post number of that new message and amend forum database table bbsection, record 1 (MUSHclient section) to show the latest release and forum post to read about it.
 
 
 

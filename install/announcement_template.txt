@@ -1,0 +1,108 @@
+<p>I am pleased to release <a href="<<installer_url>>">version <<version>> of MUSHclient</a>. See the <a href="http://www.gammon.com.au/scripts/showrelnote.php?version=<<version>>&productid=0">release notes</a> for more details.</p>
+
+
+<p><b>Improvements</b></p>
+<ul>
+<<description>>
+</ul>
+
+<hr>
+<h3>Download</h3>
+
+<p>You can <a href="http://www.gammon.com.au/scripts/showrelnote.php?version=<<version>>&productid=0">view the release notes for version <<version>></a></p>
+
+<table border=0 cellpadding=10>
+  <tr valign=top><td bgcolor="#B9EF87">  
+
+<p>
+You can download MUSHclient <<version>> now from ...
+</p>
+
+<ul>
+  <li>
+<a href="<<installer_url>>"><<installer_url>></a>
+(<<installer_size>> Mb). 
+</ul>
+
+</td></tr>
+</table>
+
+<p>You are strongly advised to <b>backup</b> (make a copy of) your existing MUSHclient world files before upgrading. Just in case.</p>
+
+<p>
+If there are any problems, please post messages to the Bug Reports, Suggestions, or General parts of this forum.
+</p>
+
+
+
+<hr>
+
+<b>MD5 sum for the installer</b>
+
+<p>If you do an md5sum on <<installer_file>> you should get this result:</p>
+
+<p><mono>
+<<installer_hash>> 
+</mono></p>
+
+<p>The forum post <a href="http://www.gammon.com.au/forum/bbshowpost.php?bbsubject_id=7280">a small script to sumcheck the MUSHclient download</a> shows how you can write a small script in MUSHclient to do the sumcheck. It also lists some places you can download md5sum.exe to do the sumcheck (if this is the first time you have downloaded MUSHclient).</p>
+
+<p>One way of doing an md5sum is to download the <a href="http://www.gammon.com.au/mushclient/plugins/Installer_sumcheck.xml">Installer_sumcheck</a> plugin from the Plugins page (RH click that link and "save link as" to get the plugin). Then install the plugin (see the File menu -&gt; Plugins) and type "md5sum" which lets you browse to the installer file, load it, and display the sumcheck.</p>
+
+
+<hr>
+<font size=-2>
+<h3><font color="red">Message about "Failed to load resources file"</font></h3>
+
+<p>Some users are reporting getting a message like "Failed to load resources file: C:\Programme\MUSHclient\locale\DE.dll - trying English file" when starting MUSHclient (the DE.dll part might be another language like FR.dll).
+</p>
+
+<p>This will be because you have customized the "locale" of MUSHclient to other than EN (English).
+See the <a href="http://www.gammon.com.au/forum/?id=7953">How to localize MUSHclient messages into other languages</a> forum posting for more details about localization.</p>
+
+<p>To fix this, find the directory you installed MUSHclient into (eg. "C:\Program Files\MUSHclient\") and then locate the subdirectory "locale". In that you will find a file en.dll. Copy or rename that file to match the missing file in the message (eg. copy en.dll to de.dll).</p>
+
+<p><b>Alternative suggestion:</b> Go into the File menu -> Global Preferences -> General, and change the field "Locale code" back to "EN" (English) and then it should look for EN.DLL next time.</p>
+
+<hr>
+<h3><font color="red">Warning about Lua 5.1 upgrade (September 2006)</font></h3>
+
+<p>MUSHclient version 3.80 upgraded the Lua script engine from Lua 5.0.2 to 5.1.1. If you are upgrading to this version from an earlier version than 3.80, you should read <a href="http://www.gammon.com.au/forum/?id=7341">Version 3.80 released - with Lua 5.1 script engine</a> - this post has recommendations about what is required if you use Lua scripting or Lua plugins. <b>Note:</b> Since version 3.80 was released, the version of Lua has been upgraded. It is currently 5.1.4. Some versions (versions 4.49 to 4.52 of MUSHclient) may incorrectly report they are using Lua 5.1.1 when you open a world.</p>
+
+<hr>
+<h3><font color="red">Warning about upgrading from versions prior to 3.21 (May 2002)</font></h3>
+
+<p>MUSHclient version 3.85 (onwards) no longer reads the old "binary" world files produced by versions prior to 3.21. For more information about this please read the forum post <a href="http://www.gammon.com.au/forum/?id=7687">Versions 3.85 onwards no longer support world files created prior to version 3.21</a> - this post has recommendations about how to upgrade your world files if you are upgrading from a version earlier than 3.21.</p>
+
+<p>Note that version 3.21 was released quite a few years ago (May 2002), so people who have recently installed MUSHclient should not have any problems.</p>
+
+</font>
+<hr>
+<h3>Source code</h3>
+
+<p>The source code for this version is available from GitHub:</p>
+
+<p><a href="http://github.com/nickgammon/mushclient/tree/v<<version>>">http://github.com/nickgammon/mushclient/tree/v<<version>></a></p>
+
+<p>You can directly download the source from the Downloads page (<a href="http://github.com/nickgammon/mushclient/downloads">http://github.com/nickgammon/mushclient/downloads</a>), or preferably install Git and use the appropriate commands to clone or pull the source. For some suggestions about getting the source from Git see <a href="http://www.gammon.com.au/forum/?id=10019">MUSHclient source being made available on GitHub</a> forum posting.</p>
+
+<p>If you install Git, subsequent downloads (of new versions) will be much faster as it only needs to download the changes, not the whole source. Also by using Git you can find out exactly what has changed from version to the next.</p>
+
+<h4>Summary of changes in this version</h4>
+<code><pre>
+
+$ <b>git --no-pager diff v<<previous_version>>..v<<version>> --stat</b>
+
+<<git_diff>>
+   
+</pre></code>
+
+<h4>Commit log (date order)</h4>
+<code><pre>
+
+$ <b>git --no-pager log --pretty=oneline --reverse --abbrev-commit v<<previous_version>>..v<<version>></b>
+
+<<git_log>>
+
+</pre></code>
+
