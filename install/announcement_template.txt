@@ -1,6 +1,5 @@
 <p>I am pleased to release <a href="<<installer_url>>">version <<version>> of MUSHclient</a>. See the <a href="http://www.gammon.com.au/scripts/showrelnote.php?version=<<version>>&productid=0">release notes</a> for more details.</p>
 
-
 <p><b>Improvements</b></p>
 <ul>
 <<description>>

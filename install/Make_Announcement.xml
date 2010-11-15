@@ -10,7 +10,7 @@
    purpose="Makes the announcement for a new version of MUSHclient"
    date_written="2010-11-15"
    requires="4.60"
-   version="1"
+   version="1.1"
    >
 <description trim="y">
 <![CDATA[
@@ -153,6 +153,13 @@ function make_announcement ()
   -- do the replacements
   template = string.gsub (template, "<<[%w_]+>>", replacements)
 
+  -- check if we missed one
+  local extra = string.match (template, "<<[%w_]+>>")
+  if extra then
+    ColourNote ("red", "", "Un-substituted tag: " .. extra)
+    return
+  end -- if
+  
   -- output to MUSHclient window for checking  
   print (string.rep ("-", 80))
   ColourNote ("cyan", "", template)
