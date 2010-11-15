@@ -490,6 +490,7 @@ Section "Plugins"
   File "..\plugins\random_socials.xml"
   File "..\plugins\reverse_speedwalk.xml"
   File "..\plugins\scan.xml"
+  File "..\plugins\Version_Check.xml"
 
 
 SectionEnd
@@ -721,7 +722,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\random_socials.xml"
   Delete "$INSTDIR\worlds\plugins\reverse_speedwalk.xml"
   Delete "$INSTDIR\worlds\plugins\scan.xml"
-
+  Delete "$INSTDIR\worlds\Version_Check.xml"
   
   ; locale stuff
   

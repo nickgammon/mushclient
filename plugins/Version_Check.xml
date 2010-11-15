@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="Version_Check"
+   author="Nick Gammon"
+   id="2eb7301f3ac637b02a4467ef"
+   language="Lua"
+   purpose="Checks for a new version of MUSHclient"
+   date_written="2010-11-13 16:45:58"
+   requires="4.60"
+   version="1.4"
+   >
+<description trim="y">
+<![CDATA[
+This automatically checks every week for a new version of MUSHclient.
+
+It only checks when you load the plugin. You can change that by enabling the
+timer in the plugin (change to: enabled="y" )
+
+To check right now, type: version_check
+
+]]>
+</description>
+
+</plugin>
+
+<!--  Aliases  -->
+
+<aliases>
+  <alias
+   name="check_version_now"
+   script="do_version_check"
+   match="version_check"
+   enabled="y"
+   sequence="100"
+  >
+  </alias>
+</aliases>
+
+
+<!--  Timers  -->
+
+<timers>
+  <timer name="version_check" 
+         script="check_for_new_version" 
+         enabled="n" 
+         minute="30" 
+         active_closed="y" 
+   >
+
+  </timer>
+</timers>
+
+
+<!--  Script  -->
+
+
+<script>
+<![CDATA[
+
+-- interval
+
+CHECK_INTERVAL = 60 * 60 * 24 * 7  -- every 7 days
+
+-- font
+FONT_NAME = "Microsoft Sans Serif"
+FONT_SIZE = 10
+font_id = "f"
+font_id_bold = "fb"
+font_id_underline = "fu"
+
+MAX_WIDTH = 500
+GAP = 5
+
+TITLE = "A new version of MUSHclient is available."
+
+VERSION_URL       = "http://www.mushclient.com/scripts/version.php"
+
+ANNOUNCEMENTS_URL = "http://www.mushclient.com/scripts/?bbtopic_id=1"
+RELNOTES_URL      = "http://www.mushclient.com/relnotes"
+
+ 
+-- colours
+WINDOW_BACKGROUND_COLOUR = ColourNameToRGB ("khaki")
+WINDOW_TEXT_COLOUR = ColourNameToRGB ("black")
+WINDOW_FRAME_COLOUR = ColourNameToRGB ("saddlebrown")
+HYPERLINK_COLOUR = ColourNameToRGB ("mediumblue")
+
+win = "version_info_" .. GetPluginID ()  -- get a unique name
+
+-- find when we last checked the version number
+db = sqlite3.open(GetInfo (82))  -- open preferences
+          
+ for row in db:nrows('SELECT * FROM prefs WHERE name = "time_last_version_check"') do
+   last_check_time = tonumber (row.value)
+ end
+
+ -- if not in database, insert row
+ if not last_check_time then
+   db:exec 'INSERT INTO prefs (name, value) VALUES ("time_last_version_check", 0)'
+   last_check_time = 0
+ end -- if
+  
+db:close()  -- close
+
+function hyperlink_download ()
+   OpenBrowser (installer_url)
+end -- hyperlink_download 
+
+function hyperlink_announcements ()
+   OpenBrowser (ANNOUNCEMENTS_URL)
+end -- hyperlink_announcements 
+
+function hyperlink_relnotes ()
+   OpenBrowser (RELNOTES_URL)
+end -- hyperlink_relnotes 
+
+function hyperlink_close ()
+   WindowShow (win, false)
+end -- hyperlink_close 
+
+-- here if they click on the hyperlink
+function mouseup (flags, hotspotid)
+  local f = hyperlink_functions [hotspotid]
+  if f then
+    f ()
+  end -- function found
+end -- mouseup
+
+hyperlink_functions = {}
+
+function make_hyperlink (text, id, left, top, action, hint)
+
+  -- work out text rectangle size
+  local height = WindowFontInfo (win, font_id, 1)  
+  local right = left + WindowTextWidth (win, font_id, text)
+  local bottom = top + height
+
+  -- add the hotspot
+  WindowAddHotspot(win, id,  
+                   left, top, right, bottom, 
+                   "", -- mouseover (do nothing)
+                   "", -- cancelmouseover (do nothing)
+                   "", -- mousedown (do nothing)
+                   "", -- cancelmousedown (do nothing)
+                   "mouseup", -- mouseup
+                   hint,    -- hint text if they hover over it              
+                   miniwin.cursor_hand, 0)
+  
+
+  -- draw the hyperlink text in the rectangle                   
+  WindowText (win, font_id_underline, text, left, top, right, bottom, HYPERLINK_COLOUR)               
+  
+  -- remember action function
+  hyperlink_functions [id] = action  
+           
+end -- make_hyperlink    
+
+function do_version_check ()
+  
+  require "getlines"
+  require "movewindow"
+  
+  local http = require "socket.http" 
+  
+  SetStatus "Checking for latest MUSHclient version ..."
+  local page =  http.request (string.format ("%s?plat=%i,%i,%i&vers=%s",
+                              VERSION_URL, 
+                              GetInfo (268), GetInfo (265), GetInfo (266),
+                              Version ()))
+  SetStatus "Ready"
+  
+  if not page then return end -- page doesn't exist
+  
+  local s = string.match (page, "<pre>(.*)</pre>")
+  
+  if not s then return end  -- page in wrong format
+  
+  local t = {}  
+  setfenv (assert (loadstring (s)), t) () -- compile and load into t
+  
+  local info = t.installer_info
+  
+  if not info then return end  -- installer_info not there
+  
+  local new_version = tonumber (info.version)
+  local old_version = tonumber (Version ())
+  
+  -- naive version check (chuckle)
+  if new_version <= old_version then
+    ColourNote ("cyan", "", "You have version " .. Version () .. 
+                " of MUSHclient, which is the lastest version.")
+    return  -- have latest version
+  end -- if
+  
+  -- make the window to get font info
+  WindowCreate (win, 0, 0, 0, 0, -- very small
+                miniwin.pos_center_all, 0, 
+                WINDOW_BACKGROUND_COLOUR)  -- create window
+                 
+  local Charset = miniwin.font_charset_default
+  local PitchAndFamily = miniwin.font_family_swiss + miniwin.font_pitch_variable
+  
+  -- grab fonts
+  WindowFont (win, font_id,           FONT_NAME, FONT_SIZE, false, false, false, false, Charset, PitchAndFamily) 
+  WindowFont (win, font_id_bold,      FONT_NAME, FONT_SIZE, true,  false, false, false, Charset, PitchAndFamily )
+  WindowFont (win, font_id_underline, FONT_NAME, FONT_SIZE, false, false, true,  false, Charset, PitchAndFamily) 
+  
+  -- work out how high a font line is
+  font_height = WindowFontInfo (win, font_id, 1)   -- height of the font  
+  
+  -- interim window width
+  window_width = WindowTextWidth (win, font_id_bold, TITLE)
+  lines = {}
+  
+  -- wrap long lines
+  for line in getlines (info.description) do
+    local width = 0
+    local t = {}
+    
+    for word in string.gmatch (line, "%S+") do
+      word = word .. " "  -- put one space back
+      local word_width = WindowTextWidth (win, font_id, word)
+      
+      -- too wide with this word, finish off previous line, start new one
+      if (width + word_width) > MAX_WIDTH then
+        table.insert (lines, table.concat (t))
+        t = {}
+        table.insert (t, "   ")  -- indent wrapped line
+        width = WindowTextWidth (win, font_id, t [1])
+      end -- if
+      table.insert (t, word)
+      width = width + word_width
+    end -- for each word (ie. something not spaces)
+    
+    -- finish previous line
+    table.insert (lines, table.concat (t))
+  end -- for
+
+  -- find maximum line width
+  for _, line in ipairs (lines) do
+    window_width = math.max (window_width, WindowTextWidth (win, font_id, line))
+  end -- for
+    
+  -- 10 fixed lines, plus the description lines
+  window_height = 10 + (11 + #lines) * font_height 
+  window_width = window_width + GAP + GAP  -- 5 pixel margin each side
+  
+  -- install the window movement handler, get back the window position
+  windowinfo = movewindow.install (win, miniwin.pos_center_all)
+  
+  -- make the "real" window
+  WindowCreate (win, 0, 0, window_width, window_height, miniwin.pos_center_all, 0, 
+                           WINDOW_BACKGROUND_COLOUR)  -- create window
+  
+  -- title box
+  WindowRectOp (win, miniwin.rect_fill, 0, 0, 0, font_height + GAP, ColourNameToRGB "tan")
+  
+  -- frame it                           
+  WindowRectOp (win, miniwin.rect_frame, 0, 0, 0, 0, WINDOW_FRAME_COLOUR )
+  
+  -- add the drag handler so they can move the window around
+  movewindow.add_drag_handler (win, 0, 0, 0, font_height + GAP)
+  
+  -- left margin
+  x = GAP
+  
+  -- top margin
+  y = GAP
+  
+  WindowText (win, font_id_bold, TITLE, x, y, 0, 0, WINDOW_TEXT_COLOUR )
+  y = y + font_height
+  
+  WindowText (win, font_id, "Current version: " .. Version (), x, y, 0, 0, WINDOW_TEXT_COLOUR )
+  y = y + font_height
+  
+  WindowText (win, font_id, "Available version: " .. new_version, x, y, 0, 0, WINDOW_TEXT_COLOUR )
+  y = y + font_height
+  
+  WindowText (win, font_id, string.format ("Size: %0.2f Mb", info.installer_size / 1024 / 1024), x, y, 0, 0, WINDOW_TEXT_COLOUR )
+  y = y + font_height
+ 
+  installer_url = info.installer_url 
+  
+  -- link to download this version
+  make_hyperlink ("Download version " .. new_version, 
+                  "download", 
+                  x, y, hyperlink_download, "Download version " .. new_version)
+  y = y + font_height
+  
+  -- link to view announcements forum topic
+  make_hyperlink ("Visit announcements forum topic", "announcements", x, y, hyperlink_announcements, "View announcements")
+  y = y + font_height
+
+  -- link to view all release notes
+  make_hyperlink ("View all release notes", "relnotes", x, y, hyperlink_relnotes, "View release notes")
+  y = y + font_height
+
+  -- extra line 
+  y = y + font_height
+  
+  WindowText (win, font_id_bold, "Improvements:", x, y, 0, 0, WINDOW_TEXT_COLOUR )
+  y = y + font_height
+  
+  -- extra line
+  y = y + font_height
+  
+  -- show description  
+  for _, line in ipairs (lines) do
+    WindowText (win, font_id, line, x, y, 0, 0, WINDOW_TEXT_COLOUR )
+    y = y + font_height
+  end -- for
+  
+  make_hyperlink ("Close this window", "close", x, y, hyperlink_close, "Close notification window")
+  y = y + font_height
+
+  -- close box
+  local box_size = font_height - 2
+  x = GAP
+  y = GAP
+  local box_colour = 0x404040
+  WindowRectOp (win, miniwin.rect_frame, 
+                x + window_width - box_size - GAP * 2, 
+                y, 
+                x + window_width - GAP * 2, 
+                y + box_size, 
+                box_colour)
+  WindowLine (win, x + window_width - box_size - GAP * 2 + 3, 
+                   y + 3, 
+                   x + window_width - GAP * 2 - 3, 
+                   y - 3 + box_size, 
+                   box_colour, 
+                   miniwin.pen_solid, 1)
+  WindowLine (win, x - 4 + window_width - GAP * 2, 
+                   y + 3, 
+                   x - 1 + window_width - box_size - GAP * 2 + 3, 
+                   y - 3 + box_size, 
+                   box_colour, 
+                   miniwin.pen_solid, 1)
+  
+  -- close configuration hotspot               
+  WindowAddHotspot(win, "close_box",  
+                   x + window_width - box_size - GAP * 2, 
+                   y, 
+                   x + window_width - GAP * 2, 
+                   y + box_size,   
+                   "", "", "", "", 
+                   "hyperlink_close",  -- mouseup
+                   "Click to close",
+                   miniwin.cursor_hand, 0)  -- hand cursor
+  
+  -- show the window
+  WindowShow (win, true)
+    
+  -- we last checked: now
+  last_check_time = os.time ()
+  
+  -- remember when we checked last
+  db = sqlite3.open(GetInfo (82))  -- open preferences
+  db:exec (string.format ('UPDATE prefs SET value = %i WHERE name = "time_last_version_check"',
+            last_check_time))
+  db:close()  -- close
+
+end -- do_version_check
+
+function check_for_new_version (name)
+
+  -- don't check too often or it will slow us down
+  if os.time () < (last_check_time + CHECK_INTERVAL) then
+    return
+  end -- too soon
+     
+  do_version_check () -- check now
+  
+end -- check_for_new_version
+
+-- check for time to check for new version when loaded, 
+-- and then every 30 minutes if timer enabled
+check_for_new_version ()
+
+]]>
+</script>
+
+</muclient>
