@@ -25,7 +25,8 @@ CMiniWindow::CMiniWindow ()  :
           m_bTemporarilyHide (false),
           m_last_mouseposition (0, 0),
           m_last_mouse_update (0),
-          m_client_mouseposition (0, 0)
+          m_client_mouseposition (0, 0),
+          m_FlagsOnMouseDown (0)
   {
   dc.CreateCompatibleDC(NULL);
   dc.SetTextAlign (TA_LEFT | TA_TOP);

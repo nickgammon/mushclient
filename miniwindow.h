@@ -111,6 +111,7 @@ class CMiniWindow
 
   string  m_sMouseOverHotspot;    // last hotspot we moused over
   string  m_sMouseDownHotspot;    // last hotspot we mouse clicked in
+  long    m_FlagsOnMouseDown;     // which mouse-down we got
 
   string  m_sCallbackPlugin;      // plugin we are using
 

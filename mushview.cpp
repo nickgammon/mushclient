@@ -6530,7 +6530,8 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_MoveCallback,
                                       prev_mw->m_sCallbackPlugin,
                                       it->second->m_sMoveCallback, 
-                                      prev_mw->m_sMouseDownHotspot);
+                                      prev_mw->m_sMouseDownHotspot,
+                                      prev_mw->m_FlagsOnMouseDown);
         return true;  // that's all
 
         }   // we had previous hotspot
@@ -6724,6 +6725,7 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
     if (pHotspot)
       {
       mw->m_sMouseDownHotspot = sHotspotId;  // remember this is mousedown hotspot
+      mw->m_FlagsOnMouseDown = flags & 0x70; // remember mouse flags 
 
       Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseDown, 
                                   mw->m_sCallbackPlugin, 
@@ -6782,7 +6784,8 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_ReleaseCallback, 
                                       prev_mw->m_sCallbackPlugin,
                                       it->second->m_sReleaseCallback, 
-                                      prev_mw->m_sMouseDownHotspot);
+                                      prev_mw->m_sMouseDownHotspot,
+                                      prev_mw->m_FlagsOnMouseDown);
 
         }   // we had previous hotspot
 
@@ -6826,7 +6829,8 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseDown, 
                                       old_mw->m_sCallbackPlugin,
                                       it->second->m_sCancelMouseDown, 
-                                      old_mw->m_sMouseDownHotspot);
+                                      old_mw->m_sMouseDownHotspot,
+                                      old_mw->m_FlagsOnMouseDown);
         old_mw->m_sMouseDownHotspot.erase ();  // no mouse-down right now
         }   // we had previous hotspot
 
@@ -6859,7 +6863,8 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
         Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseDown, 
                                     mw->m_sCallbackPlugin,
                                     it->second->m_sCancelMouseDown, 
-                                    mw->m_sMouseDownHotspot);
+                                    mw->m_sMouseDownHotspot,
+                                    mw->m_FlagsOnMouseDown);
 
       mw->m_sMouseDownHotspot.erase ();  // no mouse-down right now
       } // previous one which isn't this one, or we are no longer on one
@@ -6871,7 +6876,7 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
                                   mw->m_sCallbackPlugin, 
                                   pHotspot->m_sMouseUp, 
                                   sHotspotId, 
-                                  flags);  // LH / RH mouse?
+                                  mw->m_FlagsOnMouseDown);  // LH / RH mouse?
 
       mw->m_sMouseDownHotspot.erase ();  // no mouse-down right now
       }
