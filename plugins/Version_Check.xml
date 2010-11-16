@@ -284,7 +284,7 @@ function do_version_check ()
   WindowText (win, font_id, "Current version: " .. Version (), x, y, 0, 0, WINDOW_TEXT_COLOUR )
   y = y + font_height
   
-  WindowText (win, font_id, "Available version: " .. new_version, x, y, 0, 0, WINDOW_TEXT_COLOUR )
+  WindowText (win, font_id, "Available version: " .. info.version, x, y, 0, 0, WINDOW_TEXT_COLOUR )
   y = y + font_height
   
   WindowText (win, font_id, string.format ("Size: %0.2f Mb", info.installer_size / 1024 / 1024), x, y, 0, 0, WINDOW_TEXT_COLOUR )
@@ -293,9 +293,9 @@ function do_version_check ()
   installer_url = info.installer_url 
   
   -- link to download this version
-  make_hyperlink ("Download version " .. new_version, 
+  make_hyperlink ("Download version " .. info.version, 
                   "download", 
-                  x, y, hyperlink_download, "Download version " .. new_version)
+                  x, y, hyperlink_download, "Download version " .. info.version)
   y = y + font_height
   
   -- link to view announcements forum topic
