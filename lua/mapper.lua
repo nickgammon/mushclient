@@ -7,6 +7,7 @@ Date:   11th March 2010
 Amended: 15th August 2010
 Amended: 2nd October 2010
 Amended: 18th October 2010 to added find callback
+Amended: 16th November 2010 to add symbolic constants (miniwin.xxxx)
 
 Generic MUD mapper.
 
@@ -63,7 +64,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 2.2   -- for querying by plugins
+VERSION = 2.3   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -312,7 +313,7 @@ local function draw_configuration ()
   local frame_width = GAP + width + GAP + rh_size + GAP  -- gap / text / gap / box / gap
 
   -- fill entire box with grey
-  WindowRectOp (win, 2, x, y, x + frame_width, y + font_height * lines + 10, 0xDCDCDC)
+  WindowRectOp (win, miniwin.rect_fill, x, y, x + frame_width, y + font_height * lines + 10, 0xDCDCDC)
   -- frame it
   draw_3d_box (win, x, y, frame_width, font_height * lines + 10)
   
@@ -323,19 +324,37 @@ local function draw_configuration ()
   WindowText   (win, FONT_ID, "Configuration", x, y, 0, 0, 0x808080, true)
   
   -- close box
-  WindowRectOp (win, 1, x + frame_width - box_size - GAP * 2, y + 1, 
-                        x + frame_width - GAP * 2, y + 1 + box_size, 0x808080)
-  WindowLine (win, x + frame_width - box_size - GAP * 2 + 3, y + 4, 
-                   x + frame_width - GAP * 2 - 3, y - 2 + box_size, 0x808080, 0, 1)
-  WindowLine (win, x - 4 + frame_width - GAP * 2, y + 4, 
-                   x - 1 + frame_width - box_size - GAP * 2 + 3, y - 2 + box_size, 0x808080, 0, 1)
+  WindowRectOp (win, 
+                miniwin.rect_frame, 
+                x + frame_width - box_size - GAP * 2, 
+                y + 1, 
+                x + frame_width - GAP * 2, 
+                y + 1 + box_size, 
+                0x808080)
+  WindowLine (win, 
+              x + frame_width - box_size - GAP * 2 + 3, 
+              y + 4, 
+              x + frame_width - GAP * 2 - 3, 
+              y - 2 + box_size, 
+              0x808080, 
+              miniwin.pen_solid, 1)
+  WindowLine (win, 
+              x - 4 + frame_width - GAP * 2, 
+              y + 4, 
+              x - 1 + frame_width - box_size - GAP * 2 + 3, 
+              y - 2 + box_size, 
+              0x808080, 
+              miniwin.pen_solid, 1)
   
   -- close configuration hotspot               
   WindowAddHotspot(win, "$<close_configure>",  
-                   x + frame_width - box_size - GAP * 2, y + 1, x + frame_width - GAP * 2, y + 1 + box_size,   -- rectangle
+                   x + frame_width - box_size - GAP * 2, 
+                   y + 1, 
+                   x + frame_width - GAP * 2, 
+                   y + 1 + box_size,   -- rectangle
                    "", "", "", "", "mapper.mouseup_close_configure",  -- mouseup
                    "Click to close",
-                   1, 0)  -- hand cursor
+                   miniwin.cursor_hand, 0)  -- hand cursor
     
   y = y + font_height
   
@@ -344,15 +363,31 @@ local function draw_configuration ()
     for k, v in pairsByKeys (config) do
       if v.colour then
         WindowText   (win, FONT_ID, v.name, x, y, 0, 0, 0x000000, true)
-        WindowRectOp (win, 2, x + width + rh_size / 2, y + 1, x + width + rh_size / 2 + box_size, y + 1 + box_size, v.colour)
-        WindowRectOp (win, 1, x + width + rh_size / 2, y + 1, x + width + rh_size / 2 + box_size, y + 1 + box_size, 0x000000)
+        WindowRectOp (win, 
+                      miniwin.rect_fill, 
+                      x + width + rh_size / 2, 
+                      y + 1, 
+                      x + width + rh_size / 2 + box_size, 
+                      y + 1 + box_size, 
+                      v.colour)
+        WindowRectOp (win, 
+                      miniwin.rect_frame, 
+                      x + width + rh_size / 2, 
+                      y + 1, 
+                      x + width + rh_size / 2 + box_size, 
+                      y + 1 + box_size, 
+                      0x000000)
         
         -- colour change hotspot               
-        WindowAddHotspot(win, "$colour:" .. k,  
-                         x + GAP, y + 1, x + width + rh_size / 2 + box_size, y + 1 + box_size,   -- rectangle
+        WindowAddHotspot(win, 
+                         "$colour:" .. k,  
+                         x + GAP, 
+                         y + 1, 
+                         x + width + rh_size / 2 + box_size, 
+                         y + 1 + box_size,   -- rectangle
                          "", "", "", "", "mapper.mouseup_change_colour",  -- mouseup
                          "Click to change colour",
-                         1, 0)  -- hand cursor
+                         miniwin.cursor_hand, 0)  -- hand cursor
                            
         y = y + font_height
       end -- a colour item
@@ -361,63 +396,83 @@ local function draw_configuration ()
   
   -- depth
   WindowText   (win, FONT_ID, "Depth", x, y, 0, 0, 0x000000, true)
-  WindowText   (win, FONT_ID_UL,   tostring (config.SCAN.depth), x + width + GAP, y, 0, 0, 0x808080, true)
+  WindowText   (win, FONT_ID_UL, tostring (config.SCAN.depth), x + width + GAP, y, 0, 0, 0x808080, true)
                                  
   -- depth hotspot               
-  WindowAddHotspot(win, "$<depth>",  
-                   x + GAP, y, x + frame_width, y + font_height,   -- rectangle
+  WindowAddHotspot(win, 
+                   "$<depth>",  
+                   x + GAP, 
+                   y, 
+                   x + frame_width, 
+                   y + font_height,   -- rectangle
                    "", "", "", "", "mapper.mouseup_change_depth",  -- mouseup
                    "Click to change scan depth",
-                   1, 0)  -- hand cursor
+                   miniwin.cursor_hand, 0)  -- hand cursor
   y = y + font_height
     
   -- font
   WindowText   (win, FONT_ID, "Font", x, y, 0, 0, 0x000000, true)
-  WindowText   (win, FONT_ID_UL,  config.FONT.name .. " " .. config.FONT.size, x + width + GAP, y, 0, 0, 0x808080, true)
+  WindowText   (win, FONT_ID_UL, config.FONT.name .. " " .. config.FONT.size, x + width + GAP, y, 0, 0, 0x808080, true)
                                  
   -- colour font hotspot               
-  WindowAddHotspot(win, "$<font>",  
-                   x + GAP, y, x + frame_width, y + font_height,   -- rectangle
+  WindowAddHotspot(win, 
+                   "$<font>",  
+                   x + GAP, 
+                   y, 
+                   x + frame_width, 
+                   y + font_height,   -- rectangle
                    "", "", "", "", "mapper.mouseup_change_font",  -- mouseup
                    "Click to change font",
-                   1, 0)  -- hand cursor
+                   miniwin.cursor_hand, 0)  -- hand cursor
   y = y + font_height
                    
                      
   -- width
   WindowText   (win, FONT_ID, "Width", x, y, 0, 0, 0x000000, true)
-  WindowText   (win, FONT_ID_UL,   tostring (config.WINDOW.width), x + width + GAP, y, 0, 0, 0x808080, true)
+  WindowText   (win, FONT_ID_UL, tostring (config.WINDOW.width), x + width + GAP, y, 0, 0, 0x808080, true)
                                  
   -- width hotspot               
-  WindowAddHotspot(win, "$<width>",  
-                   x + GAP, y, x + frame_width, y + font_height,   -- rectangle
+  WindowAddHotspot(win, 
+                   "$<width>",  
+                   x + GAP, 
+                   y, 
+                   x + frame_width, 
+                   y + font_height,   -- rectangle
                    "", "", "", "", "mapper.mouseup_change_width",  -- mouseup
                    "Click to change window width",
-                   1, 0)  -- hand cursor
+                   miniwin.cursor_hand, 0)  -- hand cursor
   y = y + font_height
                       
   -- height
   WindowText   (win, FONT_ID, "Height", x, y, 0, 0, 0x000000, true)
-  WindowText   (win, FONT_ID_UL,   tostring (config.WINDOW.height), x + width + GAP, y, 0, 0, 0x808080, true)
+  WindowText   (win, FONT_ID_UL, tostring (config.WINDOW.height), x + width + GAP, y, 0, 0, 0x808080, true)
                                  
   -- height hotspot               
-  WindowAddHotspot(win, "$<height>",  
-                   x + GAP, y, x + frame_width, y + font_height,   -- rectangle
+  WindowAddHotspot(win, 
+                   "$<height>",  
+                   x + GAP, 
+                   y, 
+                   x + frame_width, 
+                   y + font_height,   -- rectangle
                    "", "", "", "", "mapper.mouseup_change_height",  -- mouseup
                    "Click to change window height",
-                   1, 0)  -- hand cursor
+                   miniwin.cursor_hand, 0)  -- hand cursor
   y = y + font_height
                                       
   -- delay
   WindowText   (win, FONT_ID, "Walk delay", x, y, 0, 0, 0x000000, true)
-  WindowText   (win, FONT_ID_UL,   tostring (config.DELAY.time), x + width + GAP, y, 0, 0, 0x808080, true)
+  WindowText   (win, FONT_ID_UL, tostring (config.DELAY.time), x + width + GAP, y, 0, 0, 0x808080, true)
                                  
   -- height hotspot               
-  WindowAddHotspot(win, "$<delay>",  
-                   x + GAP, y, x + frame_width, y + font_height,   -- rectangle
+  WindowAddHotspot(win, 
+                   "$<delay>",  
+                   x + GAP, 
+                   y, 
+                   x + frame_width, 
+                   y + font_height,   -- rectangle
                    "", "", "", "", "mapper.mouseup_change_delay",  -- mouseup
                    "Click to change speedwalk delay",
-                   1, 0)  -- hand cursor
+                   miniwin.cursor_hand, 0)  -- hand cursor
   y = y + font_height
                                       
 end -- draw_configuration
@@ -519,7 +574,7 @@ local function draw_room (uid, path, x, y)
     end -- if down
         
     if exit_info then
-      local linetype = 0 -- unbroken
+      local linetype = miniwin.pen_solid -- unbroken
       local linewidth = 1 -- not recent
  
       -- try to cache room
@@ -528,7 +583,7 @@ local function draw_room (uid, path, x, y)
       end -- if
             
       if rooms [exit_uid].unknown then
-        linetype = 2 -- dots
+        linetype = miniwin.pen_dot -- dots
       end -- if
       
       local next_x = x + exit_info.at [1] * (ROOM_SIZE + DISTANCE_TO_NEXT_ROOM)
@@ -548,7 +603,7 @@ local function draw_room (uid, path, x, y)
       
         -- here if room leads back to itself
         exit_info = stub_exit_info
-        linetype = 1 -- dash
+        linetype = miniwin.pen_dash -- dash
       
       else
         if (not show_other_areas and rooms [exit_uid].area ~= current_area) or
@@ -559,7 +614,7 @@ local function draw_room (uid, path, x, y)
           if plan_to_draw [exit_uid] and plan_to_draw [exit_uid] ~= next_coords then
             -- here if room already going to be drawn
             exit_info = stub_exit_info
-            linetype = 1 -- dash
+            linetype = miniwin.pen_dash -- dash
           else            
             -- remember to draw room next iteration
             local new_path = copytable.deep (path)
@@ -579,7 +634,7 @@ local function draw_room (uid, path, x, y)
               end -- if
             end -- if
           end -- if
-        end -- f
+        end -- if
       end -- if drawn on this spot
 
       WindowLine (win, x + exit_info.x1, y + exit_info.y1, x + exit_info.x2, y + exit_info.y2, exit_line_colour, linetype, linewidth)
@@ -601,7 +656,10 @@ local function draw_room (uid, path, x, y)
               y + arrow [6])
               
           -- draw arrow
-          WindowPolygon(win, points, exit_line_colour, 0, 1, exit_line_colour, 0, true, true)
+          WindowPolygon(win, points, 
+                        exit_line_colour, miniwin.pen_solid, 1, 
+                        exit_line_colour, miniwin.brush_solid, 
+                        true, true)
         
         end -- one way
       
@@ -612,33 +670,33 @@ local function draw_room (uid, path, x, y)
 
   
   if room.unknown then
-    WindowCircleOp (win, 2, left, top, right, bottom, 
-                    config.UNKNOWN_ROOM_COLOUR.colour, 2, 1,  --  dotted single pixel pen
-                    -1, 1)  -- no brush
+    WindowCircleOp (win, miniwin.circle_rectangle, left, top, right, bottom, 
+                    config.UNKNOWN_ROOM_COLOUR.colour, miniwin.pen_dot, 1,  --  dotted single pixel pen
+                    -1, miniwin.brush_null)  -- opaque, no brush
   else
-    WindowCircleOp (win, 2, left, top, right, bottom, 
-                    0, 5, 0,  -- no pen
+    WindowCircleOp (win, miniwin.circle_rectangle, left, top, right, bottom, 
+                    0, miniwin.pen_null, 0,  -- no pen
                     room.fillcolour, room.fillbrush)  -- brush
   
-    WindowCircleOp (win, 2, left, top, right, bottom, 
+    WindowCircleOp (win, miniwin.circle_rectangle, left, top, right, bottom, 
                     room.bordercolour, room.borderpen, room.borderpenwidth,  -- pen
-                    -1, 1)  -- no brush
+                    -1, miniwin.brush_null)  -- opaque, no brush
   end -- if 
                
           
   -- show up and down in case we can't get a line in
   
   if room.exits.u then  -- line at top
-    WindowLine (win, left, top, left + ROOM_SIZE, top, config.EXIT_COLOUR_UP_DOWN.colour, 0, 1)
+    WindowLine (win, left, top, left + ROOM_SIZE, top, config.EXIT_COLOUR_UP_DOWN.colour, miniwin.pen_solid, 1)
   end -- if
   if room.exits.d then  -- line at bottom
-    WindowLine (win, left, bottom, left + ROOM_SIZE, bottom, config.EXIT_COLOUR_UP_DOWN.colour, 0, 1)
+    WindowLine (win, left, bottom, left + ROOM_SIZE, bottom, config.EXIT_COLOUR_UP_DOWN.colour, miniwin.pen_solid, 1)
   end -- if
   if room.exits ['in'] then  -- line at right
-    WindowLine (win, left + ROOM_SIZE, top, left + ROOM_SIZE, bottom, config.EXIT_COLOUR_IN_OUT.colour, 0, 1)
+    WindowLine (win, left + ROOM_SIZE, top, left + ROOM_SIZE, bottom, config.EXIT_COLOUR_IN_OUT.colour, miniwin.pen_solid, 1)
   end -- if
   if room.exits.out then  -- line at left
-    WindowLine (win, left, top, left, bottom, config.EXIT_COLOUR_IN_OUT.colour, 0, 1)
+    WindowLine (win, left, top, left, bottom, config.EXIT_COLOUR_IN_OUT.colour, miniwin.pen_solid , 1)
   end -- if
   
   speedwalks [uid] = path  -- so we know how to get here
@@ -651,7 +709,7 @@ local function draw_room (uid, path, x, y)
                  "",  -- cancelmousedown
                  "mapper.mouseup_room",  -- mouseup
                  room.hovermessage,
-                 1, 0)  -- hand cursor
+                 miniwin.cursor_hand, 0)  -- hand cursor
                    
 end -- draw_room
 
@@ -706,23 +764,23 @@ local function draw_zone_exit (exit)
   local offset = ROOM_SIZE
   
   -- draw circle around us
-  WindowCircleOp (win, 1, 
+  WindowCircleOp (win, miniwin.circle_ellipse, 
                   x - offset, y - offset,
                   x + offset, y + offset,
                   ColourNameToRGB "cornflowerblue",  -- pen colour
-                  0, -- solid pen
+                  miniwin.pen_solid, -- solid pen
                   3, -- pen width
                   0, -- brush colour
-                  1 ) -- null brush
+                  miniwin.brush_null) -- null brush
                   
-  WindowCircleOp (win, 1, 
+  WindowCircleOp (win, miniwin.circle_ellipse, 
                   x - offset, y - offset,
                   x + offset, y + offset,
                   ColourNameToRGB "cyan",  -- pen colour
-                  0, -- solid pen
+                  miniwin.pen_solid, -- solid pen
                   1, -- pen width
                   0, -- brush colour
-                  1 ) -- null brush
+                  miniwin.brush_null) -- null brush
 
 end --  draw_zone_exit 
 
@@ -970,7 +1028,7 @@ function draw (uid)
                    "",  -- cancelmousedown
                    "mapper.mouseup_configure",  -- mouseup
                    "Click to configure map",
-                   1, 0)  -- hand cursor
+                   miniwin.cursor_hand, 0)  -- hand cursor
   end -- if
                
   if type (show_help) == "function" then
@@ -992,7 +1050,7 @@ function draw (uid)
                    "",  -- cancelmousedown
                    "mapper.show_help",  -- mouseup
                    "Click for help",
-                   1, 0)  -- hand cursor
+                   miniwin.cursor_hand, 0)  -- hand cursor
   end -- if
                                                               
   -- 3D box around whole thing
@@ -1061,7 +1119,7 @@ function init (t)
   font_height = WindowFontInfo (win, FONT_ID, 1)  -- height
 
   -- find where window was last time
-  windowinfo = movewindow.install (win, 7)
+  windowinfo = movewindow.install (win, miniwin.pos_center_right)
 
   -- calculate box sizes, arrows, connecting lines etc.
   build_room_info ()
@@ -1376,7 +1434,7 @@ end -- cancel_speedwalk
 function mouseup_room (flags, hotspot_id)
   local uid = hotspot_id
 
-  if bit.band (flags, 0x20) ~= 0 then
+  if bit.band (flags, miniwin.hotspot_got_rh_mouse) ~= 0 then
     
     -- RH click
     
@@ -1390,7 +1448,7 @@ function mouseup_room (flags, hotspot_id)
   -- here for LH click
     
    -- Control key down?
-  if bit.band (flags, 0x02) ~= 0 then
+  if bit.band (flags, miniwin.hotspot_got_control) ~= 0 then
     cancel_speedwalk ()
     return
   end -- if ctrl-LH click
