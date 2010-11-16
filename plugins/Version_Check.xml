@@ -10,7 +10,7 @@
    purpose="Checks for a new version of MUSHclient"
    date_written="2010-11-13 16:45:58"
    requires="4.60"
-   version="1.4"
+   version="1.5"
    >
 <description trim="y">
 <![CDATA[
@@ -163,6 +163,14 @@ function do_version_check ()
   require "getlines"
   require "movewindow"
   
+  if package.loaders [3] == nil or package.loadlib == nil then
+     ColourNote ("orange", "", GetPluginName () .. " cannot do version check.") 
+     ColourNote ("orange", "", "You need to allow DLLs to be loaded.")
+     ColourNote ("orange", "", "You also need to trust this plugin.")
+     ColourNote ("orange", "", "See File Menu -> Global Preferences -> Lua")
+     return
+  end -- if
+    
   local http = require "socket.http" 
   
   SetStatus "Checking for latest MUSHclient version ..."
