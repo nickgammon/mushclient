@@ -149,6 +149,17 @@ VARIANT CMUSHclientDoc::GetPluginInfo(LPCTSTR PluginID, short InfoType)
     case  22: SetUpVariantDate   (vaResult, COleDateTime (pPlugin->m_tDateInstalled.GetTime ()));  break;
     case  23: SetUpVariantString (vaResult, pPlugin->m_strCallingPluginID); break;
 
+    case  24:
+      {
+      double elapsed_time = 0.0;
+      if (App.m_iCounterFrequency > 0)
+        elapsed_time = ((double) pPlugin->m_iScriptTimeTaken) / 
+                       ((double) App.m_iCounterFrequency);
+
+      SetUpVariantDouble (vaResult, elapsed_time); 
+      break;
+      }
+
     default:
       vaResult.vt = VT_NULL;
       break;

@@ -304,6 +304,8 @@ bool CScriptEngine::ParseLua (const CString & strCode, const CString & strWhat)
     {
     QueryPerformanceCounter (&finish);
     m_pDoc->m_iScriptTimeTaken += finish.QuadPart - start.QuadPart;
+    if (m_pDoc->m_CurrentPlugin)
+      m_pDoc->m_CurrentPlugin->m_iScriptTimeTaken += finish.QuadPart - start.QuadPart;
     }
 
   return false;
@@ -611,6 +613,8 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
     {
     QueryPerformanceCounter (&finish);
     m_pDoc->m_iScriptTimeTaken += finish.QuadPart - start.QuadPart;
+    if (m_pDoc->m_CurrentPlugin)
+      m_pDoc->m_CurrentPlugin->m_iScriptTimeTaken += finish.QuadPart - start.QuadPart;
     }
 
   if (result)
@@ -702,6 +706,8 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,          // dispatch ID, will b
     {
     QueryPerformanceCounter (&finish);
     m_pDoc->m_iScriptTimeTaken += finish.QuadPart - start.QuadPart;
+    if (m_pDoc->m_CurrentPlugin)
+      m_pDoc->m_CurrentPlugin->m_iScriptTimeTaken += finish.QuadPart - start.QuadPart;
     }
 
   if (lua_gettop (L) > 0 && lua_isstring (L, 1))

@@ -118,6 +118,8 @@ bool CScriptEngine::Execute (DISPID & dispid,  // dispatch ID, will be set to DI
     {
     QueryPerformanceCounter (&finish);
     m_pDoc->m_iScriptTimeTaken += finish.QuadPart - start.QuadPart;
+    if (m_pDoc->m_CurrentPlugin)
+      m_pDoc->m_CurrentPlugin->m_iScriptTimeTaken += finish.QuadPart - start.QuadPart;
     }
 
   // put status line back
@@ -462,6 +464,8 @@ SCRIPTSTATE ss;
     {
     QueryPerformanceCounter (&finish);
     m_pDoc->m_iScriptTimeTaken += finish.QuadPart - start.QuadPart;
+    if (m_pDoc->m_CurrentPlugin)
+      m_pDoc->m_CurrentPlugin->m_iScriptTimeTaken += finish.QuadPart - start.QuadPart;
     }
 
  ::SysFreeString (bstrCode);

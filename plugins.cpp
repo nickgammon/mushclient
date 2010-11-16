@@ -164,6 +164,7 @@ CPlugin::CPlugin (CMUSHclientDoc * pDoc)
   m_bSendToScriptUsed = false;
   m_bGlobal = false;
   m_iLoadOrder = 0;
+  m_iScriptTimeTaken = 0;
 
   } // end of constructor
 

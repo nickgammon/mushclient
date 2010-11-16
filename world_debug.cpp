@@ -1292,8 +1292,13 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       else
         strLanguage.SetAt (0, toupper (strLanguage [0]));
 
-      ColourTell (strColour, "", TFormat ("', (%s) %s", 
-            (LPCSTR) strLanguage, pActive));
+      double elapsed_time = 0.0;
+      if (App.m_iCounterFrequency > 0)
+        elapsed_time = ((double) pPlugin->m_iScriptTimeTaken) / 
+                       ((double) App.m_iCounterFrequency);
+
+      ColourTell (strColour, "", TFormat ("', (%s, %0.3f s) %s", 
+            (LPCSTR) strLanguage, elapsed_time, pActive));
 
       // no quick way of finding variables count
       int nTotalVariables = 0;
