@@ -950,13 +950,13 @@ function draw (uid)
    
   -- for zooming
   WindowAddHotspot(win, 
-                   "yy_zoom",  
+                   "zzz_zoom",  
                    0, 0, 0, 0, 
                    "", "", "", "", "",
                    "",  -- hint
                    miniwin.cursor_arrow, 0)  
         
-  WindowScrollwheelHandler (win, "yy_zoom", "mapper.zoom_map")
+  WindowScrollwheelHandler (win, "zzz_zoom", "mapper.zoom_map")
   
   -- set up for initial room, in middle
   drawn, drawn_coords, rooms_to_be_drawn, speedwalks, plan_to_draw, area_exits = {}, {}, {}, {}, {}, {}
