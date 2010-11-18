@@ -183,6 +183,7 @@ tInfoTypeMapping InfoTypes [] =
  { 84, "File browsing directory" },
  { 85, "State files path (directory)" },
  { 86, "Word under mouse on mouse menu click" },
+ { 87, "Last command sent" },
 
 
 
@@ -528,8 +529,8 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case   84: SetUpVariantString (vaResult, file_browsing_dir); break;
     case   85: SetUpVariantString (vaResult, App.m_strDefaultStateFilesDirectory); break;
     case   86: SetUpVariantString (vaResult, m_strWordUnderMenu); break;
-
-
+    case   87: SetUpVariantString (vaResult, m_strLastCommandSent); break;
+      
     case  101: SetUpVariantBool (vaResult, m_bNoEcho); break;
     case  102: SetUpVariantBool (vaResult, m_bDebugIncomingPackets); break;
     case  103: SetUpVariantBool (vaResult, m_bCompress); break;

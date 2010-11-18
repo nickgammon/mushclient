@@ -1120,7 +1120,7 @@ public:
   __int64 m_nBytesIn;
   __int64 m_nBytesOut;
 
-// sockets stuff
+ // sockets stuff
 
 	SOCKADDR_IN m_sockAddr;       // MUD address/port
 	SOCKADDR_IN m_ProxyAddr;      // Proxy address/port

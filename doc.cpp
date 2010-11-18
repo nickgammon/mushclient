@@ -1258,6 +1258,19 @@ CString str = strText;
   if (str.Right (2) != ENDLINE)
     str += ENDLINE;
 
+  // "OnPluginSend" - script can cancel send
+
+  if (!m_bPluginProcessingSend)
+    {
+    m_bPluginProcessingSend = true;  // so we don't go into a loop
+    if (!SendToAllPluginCallbacks (ON_PLUGIN_SEND, str.Left (str.GetLength () - 2)))
+      {
+      m_bPluginProcessingSend = false;
+      return;     // plugin declines to send this line
+      }
+    m_bPluginProcessingSend = false;
+    }
+
 // count number of times we sent this
 
   if (str == m_strLastCommandSent)
@@ -1282,18 +1295,6 @@ CString str = strText;
 
     } // end of spam prevention active
 
-  // "OnPluginSend" - script can cancel send
-
-  if (!m_bPluginProcessingSend)
-    {
-    m_bPluginProcessingSend = true;  // so we don't go into a loop
-    if (!SendToAllPluginCallbacks (ON_PLUGIN_SEND, str.Left (str.GetLength () - 2)))
-      {
-      m_bPluginProcessingSend = false;
-      return;     // plugin declines to send this line
-      }
-    m_bPluginProcessingSend = false;
-    }
 
   // "OnPluginSent" - we are definitely sending this
   // See: http://www.gammon.com.au/forum/bbshowpost.php?bbsubject_id=7244
