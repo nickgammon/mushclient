@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir ".\WinDebug"
 # PROP Ignore_Export_Lib 0
 # ADD BASE CPP /nologo /MT /W3 /GX /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /FR /Yu"stdafx.h" /c
-# ADD CPP /nologo /MTd /W4 /Gm /Gi /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "LUA51" /D "LUA_52" /Fr /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MTd /W4 /Gm /Gi /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "LUA51" /Fr /Yu"stdafx.h" /FD /c
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
