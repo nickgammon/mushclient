@@ -11,7 +11,11 @@
 
 extern "C"
 {
-#include "..\lua.h"
+#ifdef LUA_52
+    #include "..\..\lua52\src\lua.h"
+#else
+    #include "..\lua.h"
+#endif
 }
 
 #include "tLuaCOM.h"

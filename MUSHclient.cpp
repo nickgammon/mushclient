@@ -39,7 +39,11 @@ extern "C"
 COLORREF xterm_256_colours [256];
 
 // Lua 5.1
-#pragma comment( lib, "lua5.1.lib" )
+#ifdef LUA_52
+  #pragma comment( lib, "lua52.lib" )
+#else
+  #pragma comment( lib, "lua5.1.lib" )
+#endif
 
 // library needed for timers
 #pragma comment( lib, "winmm.lib")
@@ -79,7 +83,7 @@ void LoadMapDirections (void);
 
 void Generate256colours (void);
 
-extern const struct luaL_reg *ptr_xmllib;
+extern const struct luaL_Reg *ptr_xmllib;
 
 extern "C"
   {

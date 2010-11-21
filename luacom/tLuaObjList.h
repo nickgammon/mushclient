@@ -9,7 +9,11 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "..\lua.h"
+#ifdef LUA_52
+    #include "..\..\lua52\src\lua.h"
+#else
+    #include "..\lua.h"
+#endif
 
 #include "tUtil.h"
 #include "LuaAux.h"

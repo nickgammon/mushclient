@@ -1706,7 +1706,11 @@ bool GetNestedFunction (lua_State * L, const char * sName, const bool bRaiseErro
   {
   vector<string> v;
   StringToVector (sName, v, ".", true);
+#ifdef LUA_52
+  lua_pushglobaltable(L);
+#else
   lua_pushvalue(L, LUA_GLOBALSINDEX);
+#endif
   vector<string>::const_iterator iter = v.begin ();
   string sPrev, sItem;
 

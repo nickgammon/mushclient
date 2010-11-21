@@ -17,8 +17,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "..\lua.h"
-#include "..\lauxlib.h"
+#ifdef LUA_52
+    #include "..\..\lua52\src\lua.h"
+    #include "..\..\lua52\src\lauxlib.h"
+#else
+    #include "..\lua.h"
+    #include "..\lauxlib.h"
+#endif
 
 #define LREXLIB_PCRE      // NJG
 #pragma warning( disable: 4057)  // 'const unsigned char *' differs in indirection to slightly different base types from 'const char *'
@@ -341,7 +346,7 @@ static int posix_get_flags (lua_State *L) {
   return regex_get_flags(L, posix_flags);
 }
 
-static const luaL_reg posixmeta[] = {
+static const luaL_Reg posixmeta[] = {
   {"exec",       posix_exec},
   {"match",      posix_match},
   {"gmatch",     posix_gmatch},
@@ -779,7 +784,7 @@ static int Lpcre_get_flags (lua_State *L) {
   return regex_get_flags(L, pcre_flags);
 }
 
-static const luaL_reg pcremeta[] = {
+static const luaL_Reg pcremeta[] = {
   {"exec",       Lpcre_exec},
   {"match",      Lpcre_match},
   {"gmatch",     Lpcre_gmatch},
@@ -793,7 +798,7 @@ static const luaL_reg pcremeta[] = {
 
 /* Open the library */
 
-static const luaL_reg rexlib[] = {
+static const luaL_Reg rexlib[] = {
 #ifdef LREXLIB_POSIX
   {"newPOSIX",    posix_comp},
   {"flagsPOSIX",  posix_get_flags},

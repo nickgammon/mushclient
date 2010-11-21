@@ -9,6 +9,24 @@
 #pragma warning ( disable : 4702)  // unreachable code
 #pragma warning ( disable : 4710)  // function 'x' not inlined
 
+#ifdef LUA_52
+  #define LUA_NOREF       (-2)
+  #define LUA_REFNIL      (-1)
+
+  #define lua_ref(L,lock) ((lock) ? luaL_ref(L, LUA_REGISTRYINDEX) : \
+        (lua_pushstring(L, "unlocked references are obsolete"), lua_error(L), 0))
+
+  #define lua_unref(L,ref)        luaL_unref(L, LUA_REGISTRYINDEX, (ref))
+
+  #define lua_getref(L,ref)       lua_rawgeti(L, LUA_REGISTRYINDEX, (ref))
+
+  #define lua_getregistry(L)	lua_pushvalue(L, LUA_REGISTRYINDEX)
+
+  #define lua_equal(L,index1,index2) lua_compare (L, index1, index2, LUA_OPEQ)
+
+  #define lua_strlen(L,i)		lua_rawlen(L, (i))
+
+#endif // LUA_52
 
 /*
  * LuaCompat.h
@@ -21,7 +39,7 @@
 #ifndef __LUACOMPAT_H
 #define __LUACOMPAT_H
 
-void luaCompat_openlib(lua_State* L, const char* libname, const struct luaL_reg* funcs);
+void luaCompat_openlib(lua_State* L, const char* libname, const struct luaL_Reg* funcs);
 int luaCompat_call(lua_State* L, int nargs, int nresults, const char** pErrMsg);
 
 void luaCompat_newLuaType(lua_State* L, const char* module_name, const char* name);
@@ -57,7 +75,6 @@ int luaCompat_getNumParams(lua_State* L, int num_upvalues);
 
 void luaCompat_needStack(lua_State* L, long size);
 
-void luaCompat_setglobal(lua_State* L);
 void luaCompat_getglobal(lua_State* L);
 
 int luaCompat_checkTagToCom(lua_State *L, int luaval);
@@ -66,7 +83,11 @@ int luaCompat_checkTagToCom(lua_State *L, int luaval);
 extern "C"
 {
 #endif
-#include "..\lua.h"
+#ifdef LUA_52
+    #include "..\..\lua52\src\lua.h"
+#else
+    #include "..\lua.h"
+#endif
 #ifdef __cplusplus
 }
 #endif

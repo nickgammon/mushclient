@@ -30,8 +30,20 @@ static char const * const g_version = "1.4";
 
 extern "C"
 {
-#include "..\lua.h"
-#include "..\lauxlib.h"
+#ifdef LUA_52
+  extern "C"
+    {
+    #include "..\..\lua52\src\lua.h"
+    #include "..\..\lua52\src\lauxlib.h"
+    }
+
+#else
+  extern "C"
+    {
+    #include "..\lua.h"
+    #include "..\lauxlib.h"
+    }
+#endif
 #include "LuaCompat.h"
 }
 
@@ -2464,7 +2476,7 @@ static int luacom_RoundTrip(lua_State *L) {
 //                                         //
 /////////////////////////////////////////////
 
-static struct luaL_reg functions_tb []= 
+static struct luaL_Reg functions_tb []= 
 {
   {"CreateObject",luacom_CreateObject},
   {"GetObject",luacom_GetObject},

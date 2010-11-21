@@ -18,8 +18,13 @@
 
 extern "C"
 {
-#include "..\lua.h"
-#include "..\lualib.h"
+#ifdef LUA_52
+    #include "..\..\lua52\src\lua.h"
+    #include "..\..\lua52\src\lauxlib.h"
+#else
+    #include "..\lua.h"
+    #include "..\lauxlib.h"
+#endif
 #include "LuaCompat.h"
 }
 

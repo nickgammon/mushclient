@@ -35,8 +35,16 @@
 #include <string.h>
 #include <assert.h>
 
-#include "..\lua.h"
-#include "..\lauxlib.h"
+#ifdef LUA_52
+    #include "..\..\lua52\src\lua.h"
+    #include "..\..\lua52\src\lauxlib.h"
+    #define lua_strlen(L,i)		lua_rawlen(L, (i))
+    LUALIB_API int (luaL_typerror) (lua_State *L, int narg, const char *tname);
+
+#else
+    #include "..\lua.h"
+    #include "..\lauxlib.h"
+#endif
 
 #include "..\sqlite3\sqlite3.h"
 
@@ -1732,7 +1740,7 @@ static const struct {
 
 /* ======================================================= */
 
-static const luaL_reg dblib[] = {
+static const luaL_Reg dblib[] = {
     {"isopen",              db_isopen               },
     {"last_insert_rowid",   db_last_insert_rowid    },
     {"changes",             db_changes              },
@@ -1768,7 +1776,7 @@ static const luaL_reg dblib[] = {
     {NULL, NULL}
 };
 
-static const luaL_reg vmlib[] = {
+static const luaL_Reg vmlib[] = {
     {"isopen",              dbvm_isopen             },
 
     {"step",                dbvm_step               },
@@ -1814,7 +1822,7 @@ static const luaL_reg vmlib[] = {
     { NULL, NULL }
 };
 
-static const luaL_reg ctxlib[] = {
+static const luaL_Reg ctxlib[] = {
     {"user_data",               lcontext_user_data              },
 
     {"get_aggregate_data",      lcontext_get_aggregate_context  },
@@ -1834,7 +1842,7 @@ static const luaL_reg ctxlib[] = {
     {NULL, NULL}
 };
 
-static const luaL_reg sqlitelib[] = {
+static const luaL_Reg sqlitelib[] = {
     {"version",         lsqlite_version         },
     {"complete",        lsqlite_complete        },
 #ifndef WIN32
@@ -1847,7 +1855,7 @@ static const luaL_reg sqlitelib[] = {
     {NULL, NULL}
 };
 
-static void create_meta(lua_State *L, const char *name, const luaL_reg *lib) {
+static void create_meta(lua_State *L, const char *name, const luaL_Reg *lib) {
     luaL_newmetatable(L, name);
     lua_pushstring(L, "__index");
     lua_pushvalue(L, -2);               /* push metatable */

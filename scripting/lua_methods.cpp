@@ -82,8 +82,8 @@ CMUSHclientDoc **ud = (CMUSHclientDoc **) isudata (L, 1, mushclient_typename);
 
   // retrieve our state (world pointer)
   
-  // retrieve the document pointer from the environment table
-  lua_getfield (L, LUA_ENVIRONINDEX, DOCUMENT_STATE);  // get "mushclient.document" value
+  // retrieve the document pointer from the registry
+  lua_getfield (L, LUA_REGISTRYINDEX, DOCUMENT_STATE);  // get "mushclient.document" value
   CMUSHclientDoc * pDoc = (CMUSHclientDoc *) lua_touserdata (L, -1);  // convert to world pointer
   lua_pop (L, 1);  // pop document pointer
 
@@ -6584,7 +6584,7 @@ static int L_WriteLog (lua_State *L)
 
 // eg. world.Note ("hello ", "world")
 
-static const struct luaL_reg worldlib [] = 
+static const struct luaL_Reg worldlib [] = 
   {
 
   {"Accelerator", L_Accelerator},
@@ -7034,7 +7034,7 @@ int world2string (lua_State *L)
   return 1;
   }
   
-static const struct luaL_reg worldlib_meta [] = 
+static const struct luaL_Reg worldlib_meta [] = 
   {
     {"__tostring", world2string},
     {NULL, NULL}
@@ -7644,23 +7644,18 @@ static flags_pair miniwindow_flags [] =
   { NULL, 0 }
 };
 
-extern const struct luaL_reg *ptr_xmllib;
+extern const struct luaL_Reg *ptr_xmllib;
 
-
-// Note stack contains: 1: "mushclient.document"   (DOCUMENT_STATE)
-//                      2: pointer to document     (CMUSHclientDoc)
 
 int RegisterLuaRoutines (lua_State *L)
   {
 
-  lua_newtable (L);                    // make a new table
-  lua_replace (L, LUA_ENVIRONINDEX);   // global environment is now this empty table
-
-  // this line is doing: global_environment ["mushclient.document"] = world_pointer  (CMUSHclientDoc)
-  lua_settable(L, LUA_ENVIRONINDEX);
-
   // we want the global table so we can put a metatable on it  (ie. _G)
-  lua_pushvalue (L, LUA_GLOBALSINDEX);   // for setting the metatable later
+#ifdef LUA_52
+  lua_pushglobaltable(L);
+#else
+  lua_pushvalue(L, LUA_GLOBALSINDEX);
+#endif
 
   // add the __index metamethod to the world library
   lua_newtable (L);                     // make a new table (the metatable)
@@ -7744,7 +7739,7 @@ int RegisterLuaRoutines (lua_State *L)
   luaL_register (L, "utils", ptr_xmllib);
 
   return 0;
-  }
+  }   // end of RegisterLuaRoutines
 
 
 CString GetFromStack (lua_State *L, const char * what)
@@ -7897,6 +7892,8 @@ int DisableDLLs (lua_State * L)
     {
     // grab package library
     lua_getglobal (L, LUA_LOADLIBNAME);  // package table
+    if (!lua_istable(L, -1))
+      luaL_error(L, LUA_QL("package") " must be a table");
 
     // remove package.loadlib
     lua_pushnil     (L);

@@ -1494,7 +1494,7 @@ CString strSelection;
 
 }
 
-extern const struct luaL_reg *ptr_xmllib;
+extern const struct luaL_Reg *ptr_xmllib;
 
 void CTextView::OpenLuaDelayed ()
   {

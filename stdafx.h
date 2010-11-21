@@ -92,11 +92,22 @@
 #include <sstream>
 #pragma warning (pop)
 
-extern "C"
-  {
-  #include "lua.h"
-  #include "lauxlib.h"
-  }
+#ifdef LUA_52
+  extern "C"
+    {
+    #include "..\lua52\src\lua.h"
+    #include "..\lua52\src\lualib.h"
+    #include "..\lua52\src\lauxlib.h"
+    }
+
+#else
+  extern "C"
+    {
+    #include "lua.h"
+    #include "lualib.h"
+    #include "lauxlib.h"
+    }
+#endif
 
 using namespace std ;
 
@@ -867,3 +878,9 @@ typedef struct
   #define BIF_NEWDIALOGSTYLE 0x00000040
 #endif 
 
+#ifdef LUA_52
+  extern "C"
+    {
+    LUALIB_API int (luaL_typerror) (lua_State *L, int narg, const char *tname);
+    }
+#endif // LUA_52

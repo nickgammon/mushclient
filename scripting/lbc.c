@@ -25,7 +25,6 @@
 //   bc.tostring
 //   bc.version
 
-
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,8 +32,14 @@
 
 #include "bcconfig.h"
 
-#include "..\lua.h"
-#include "..\lauxlib.h"
+#ifdef LUA_52
+    #include "..\..\lua52\src\lua.h"
+    #include "..\..\lua52\src\lauxlib.h"
+    LUALIB_API int (luaL_typerror) (lua_State *L, int narg, const char *tname);
+#else
+    #include "..\lua.h"
+    #include "..\lauxlib.h"
+#endif
 
 #include "number.h"
 
@@ -242,7 +247,7 @@ static int Bneg(lua_State *L)
  return 1;
 }
 
-static const luaL_reg R[] =
+static const luaL_Reg R[] =
 {
 
 	{ "__add",	Badd	},
@@ -275,7 +280,10 @@ static const luaL_reg R[] =
 LUALIB_API int luaopen_bc(lua_State *L)
 {
 // bc_init_numbers();     // done once in MUSHclient.cpp
+#ifndef LUA_52
  lua_pushliteral(L,MYNAME);
+#endif
+
  luaL_newmetatable(L,MYTYPE);
  luaL_openlib(L,NULL,R,0);
  lua_pushliteral(L,"version");			/** version */
@@ -284,6 +292,12 @@ LUALIB_API int luaopen_bc(lua_State *L)
  lua_pushliteral(L,"__index");
  lua_pushvalue(L,-2);
  lua_settable(L,-3);
+ 
+#ifdef LUA_52
+ lua_setglobal(L, MYNAME);
+#else
  lua_rawset(L,LUA_GLOBALSINDEX);
+#endif 
+
  return 1;
 }

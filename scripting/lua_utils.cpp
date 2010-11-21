@@ -1838,9 +1838,29 @@ static int reload_global_prefs (lua_State *L)
   return 0;   // no results
   } // end of reload_global_prefs
 
+#if 0
+static int registry (lua_State *L)
+  {
+  lua_pushvalue(L, LUA_REGISTRYINDEX);
+  return 1;
+  } // end of registry
+
+static int environment (lua_State *L)
+  {
+  lua_pushvalue(L, LUA_ENVIRONINDEX);
+  return 1;
+  }  // end of environment
+
+static int globals (lua_State *L)
+  {
+  lua_pushvalue(L, LUA_GLOBALSINDEX);
+  return 1;
+  }  // end of globals
+
+#endif  // 0
 
 // table of operations
-static const struct luaL_reg xmllib [] = 
+static const struct luaL_Reg xmllib [] = 
   {
 
   {"activatenotepad",   activatenotepad},
@@ -1876,9 +1896,15 @@ static const struct luaL_reg xmllib [] =
   {"utf8valid",         utf8valid},
   {"xmlread",           xmlread},
 
+#if 0
+  // Lua debugging
+  {"registry",          registry},
+  {"environment",       environment},
+  {"globals",           globals},
+#endif  // 0
 
   {NULL, NULL}
   };
 
-const struct luaL_reg *ptr_xmllib = xmllib;
+const struct luaL_Reg *ptr_xmllib = xmllib;
 

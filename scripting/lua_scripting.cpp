@@ -182,12 +182,10 @@ void CScriptEngine::OpenLuaDelayed ()
 
   luaL_openlibs (L);           // open all standard Lua libraries
 
-  // call as Lua function because we need the environment
-  lua_pushcfunction(L, RegisterLuaRoutines);
-  lua_pushstring(L, DOCUMENT_STATE);  /* push address */
   lua_pushlightuserdata(L, (void *)m_pDoc);    /* push value */
-  lua_call(L, 2, 0);
+  lua_setfield (L, LUA_REGISTRYINDEX, DOCUMENT_STATE);  // document pointer into registry
 
+  CallLuaCFunction (L, RegisterLuaRoutines);    // register our stuff
   CallLuaCFunction (L, luaopen_rex);            // regular expression library
   CallLuaCFunction (L, luaopen_bits);           // bit manipulation library
   CallLuaCFunction (L, luaopen_compress);       // compression (utils) library
@@ -731,7 +729,7 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,          // dispatch ID, will b
 void GetTracebackFunction (lua_State *L)
   {
   // get debug table
-  lua_getfield (L, LUA_GLOBALSINDEX, LUA_DBLIBNAME);
+  lua_getglobal (L, LUA_DBLIBNAME);  
 
   // if it is a table then find traceback function
   if (lua_istable (L, -1))

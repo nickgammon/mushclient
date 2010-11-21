@@ -40,8 +40,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "..\lua.h"
-#include "..\lauxlib.h"
+#ifdef LUA_52
+    #include "..\..\lua52\src\lua.h"
+    #include "..\..\lua52\src\lauxlib.h"
+#else
+    #include "..\lua.h"
+    #include "..\lauxlib.h"
+#endif
 
 #include "lpeg.h"
 
@@ -2373,7 +2378,7 @@ static int matchl (lua_State *L) {
 }
 
 
-static struct luaL_reg pattreg[] = {
+static struct luaL_Reg pattreg[] = {
   {"match", matchl},
   {"print", printpat_l},
   {"locale", locale_l},
@@ -2399,7 +2404,7 @@ static struct luaL_reg pattreg[] = {
 };
 
 
-static struct luaL_reg metapattreg[] = {
+static struct luaL_Reg metapattreg[] = {
   {"__add", union_l},
   {"__pow", star_l},
   {"__sub", diff_l},

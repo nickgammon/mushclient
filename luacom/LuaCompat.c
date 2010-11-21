@@ -11,8 +11,13 @@
 #include <assert.h>
 #include <string.h>
 
-#include "..\lua.h"
-#include "..\lauxlib.h"
+#ifdef LUA_52
+    #include "..\..\lua52\src\lua.h"
+    #include "..\..\lua52\src\lauxlib.h"
+#else
+    #include "..\lua.h"
+    #include "..\lauxlib.h"
+#endif
 
 #include "LuaCompat.h"
 
@@ -29,7 +34,7 @@
 
 /* Lua 5 version of the API */
 
-void luaCompat_openlib(lua_State* L, const char* libname, const struct luaL_reg* funcs)
+void luaCompat_openlib(lua_State* L, const char* libname, const struct luaL_Reg* funcs)
 { /* lua5 */
   LUASTACK_SET(L);
 
@@ -365,12 +370,11 @@ void luaCompat_needStack(lua_State* L, long size)
 
 void luaCompat_getglobal(lua_State* L)
 { /* lua5 */
+#ifdef LUA_52
+  lua_pushglobaltable (L);
+#else
   lua_gettable(L, LUA_GLOBALSINDEX);
-}
-
-void luaCompat_setglobal(lua_State* L)
-{ /* lua5 */
-  lua_settable(L, LUA_GLOBALSINDEX);
+#endif
 }
 
 

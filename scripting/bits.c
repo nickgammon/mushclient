@@ -15,8 +15,13 @@
 //   bit.tostring
 //   bit.xor
 
-#include "..\lua.h"
-#include "..\lauxlib.h"
+#ifdef LUA_52
+    #include "..\..\lua52\src\lua.h"
+    #include "..\..\lua52\src\lauxlib.h"
+#else
+    #include "..\lua.h"
+    #include "..\lauxlib.h"
+#endif
 
 #include <ctype.h>
 #include <stdlib.h>
@@ -174,7 +179,7 @@ static int bit_tostring (lua_State *L)
   } // end of bit_tostring
 
 
-static const struct luaL_reg bitlib[] = {
+static const struct luaL_Reg bitlib[] = {
 
   {"ashr",  bit_arshift},      // was arshift in Reuben's library
   {"band",  bit_band},

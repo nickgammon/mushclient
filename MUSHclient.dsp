@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir ".\WinDebug"
 # PROP Ignore_Export_Lib 0
 # ADD BASE CPP /nologo /MT /W3 /GX /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /FR /Yu"stdafx.h" /c
-# ADD CPP /nologo /MTd /W4 /Gm /Gi /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "LUA51" /Fr /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MTd /W4 /Gm /Gi /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "LUA51" /D "LUA_52" /Fr /Yu"stdafx.h" /FD /c
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -66,7 +66,7 @@ LINK32=link.exe
 # PROP Intermediate_Dir ".\WinRel"
 # PROP Ignore_Export_Lib 0
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /FR /Yu"stdafx.h" /c
-# ADD CPP /nologo /G6 /MT /W4 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "LUA51" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /G6 /MT /W4 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "LUA51" /D "LUA_52" /Yu"stdafx.h" /FD /c
 # SUBTRACT CPP /Fr
 # ADD MTL /mktyplib203
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -1560,6 +1560,12 @@ SOURCE=.\using_git.txt
 # End Source File
 # End Target
 # End Project
+# Section MUSHclient : {00000000-000C-0000-0C00-00004944445F}
+# 	1:26:CG_IDR_POPUP_ACTIVITY_VIEW:127
+# End Section
+# Section MUSHclient : {00000000-0001-0000-0000-000000000000}
+# 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
+# End Section
 # Section MUSHclient : {F3B13065-16CC-11D0-B7D0-00A0247B3BFD}
 # 	0:8:TipDlg.h:D:\SOURCE\MUSHclient\TipDlg.h
 # 	0:10:TipDlg.cpp:D:\SOURCE\MUSHclient\TipDlg.cpp
@@ -1603,10 +1609,4 @@ SOURCE=.\using_git.txt
 # End Section
 # Section MUSHclient : {52A03A14-D2CC-0056-A8D2-560020D55600}
 # 	1:21:CG_IDR_POPUP_MUSHVIEW:125
-# End Section
-# Section MUSHclient : {00000000-000C-0000-0C00-00004944445F}
-# 	1:26:CG_IDR_POPUP_ACTIVITY_VIEW:127
-# End Section
-# Section MUSHclient : {00000000-0001-0000-0000-000000000000}
-# 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
 # End Section

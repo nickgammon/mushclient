@@ -22,7 +22,7 @@
 
 //----------------------- begin Lua stuff ----------------------------
 
-const char progress_dlg_handle[] = "progress_dialog_handle";
+const char progress_dlg_handle[] = "mushclient.progress_dialog_handle";
 
 
 static CProgressDlg * Lprogress_getdialog (lua_State *L)
@@ -117,7 +117,7 @@ static int Lprogress_new(lua_State *L)
 
 
 
-static const luaL_reg progress_dialog_meta[] = {
+static const luaL_Reg progress_dialog_meta[] = {
 
   {"__gc",       Lprogress_gc},
   {"__tostring", Lprogress_tostring},
@@ -135,7 +135,7 @@ static const luaL_reg progress_dialog_meta[] = {
 
 /* Open the library */
 
-static const luaL_reg progress_dialog_lib[] = {
+static const luaL_Reg progress_dialog_lib[] = {
   {"new",     Lprogress_new},
   {NULL, NULL}
 };

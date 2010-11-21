@@ -9,10 +9,20 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-extern "C"
-{
-#include "..\lua.h"
-}
+#ifdef LUA_52
+  extern "C"
+    {
+    #include "..\..\lua52\src\lua.h"
+    #include "..\..\lua52\src\lauxlib.h"
+    }
+
+#else
+  extern "C"
+    {
+    #include "..\lua.h"
+    #include "..\lauxlib.h"
+    }
+#endif
 
 typedef int stkIndex;
 
