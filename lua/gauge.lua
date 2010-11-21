@@ -57,7 +57,7 @@ function gauge (win,                        -- miniwindow ID to draw in
   WindowRectOp (win, 2, left, top, left + width, top + height, bg_colour)  -- fill entire box
     
   -- how big filled part is
-  local gauge_width = width * Fraction
+  local gauge_width = (width - 2) * Fraction
     
    -- box size must be > 0 or WindowGradient fills the whole thing 
   if math.floor (gauge_width) > 0 then
@@ -96,11 +96,9 @@ function gauge (win,                        -- miniwindow ID to draw in
   WindowRectOp (win, 1, left, top, left + width, top + height, frame_colour)
   
   if name and #name > 0 then
-    -- mouse-over information: add hotspot if not there
-    if not WindowHotspotInfo(win, name, 1) then
+    -- mouse-over information: add hotspot
       WindowAddHotspot (win, name, left, top, left + width, top + height, 
                     "", "", "", "", "", "", 0, 0)
-    end -- if
     
       -- store numeric values in case they mouse over it
     if max then
