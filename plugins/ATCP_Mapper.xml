@@ -18,9 +18,9 @@
    language="Lua"
    purpose="Draws map for ATCP MUDs"
    date_written="2010-03-04"
-   date_modified="2010-08-15"
+   date_modified="2010-11-26"
    requires="4.51"
-   version="1.5"
+   version="1.6"
    save_state="y"
    >
 <description trim="y">
@@ -47,8 +47,8 @@ room the stub will disappear and the room(s) in question will be drawn.
 ACTIONS
 
 mapper help         --> this help  (or click the "?" button on the bottom right)
-mapper zoom out     --> zoom out
-mapper zoom in      --> zoom in
+mapper zoom out     --> zoom out   (or use the mouse-wheel)
+mapper zoom in      --> zoom in    (or use the mouse-wheel)
 mapper hide         --> hide map
 mapper show         --> show map
 
@@ -1260,6 +1260,59 @@ function change_room_area (room, uid)
       )))
 end -- change_room_area
 
+function add_area (room, uid)
+   
+  local roomname
+  local roomarea
+  
+  for row in db:nrows(string.format ("SELECT name, area FROM rooms WHERE uid = %s", fixsql (uid))) do
+    roomname = row.name
+    roomarea = row.area
+  end   -- finding room
+
+  if roomname == nil then
+    mapper.maperror("Cannot find this room in the database")
+    return
+  end -- if
+ 
+  local area_name = utils.inputbox ("Name for area: " .. roomarea,
+                                    "Choose the name for this area",
+                                    areas [roomarea] )
+   
+  if not area_name or area_name == "" then
+    return
+  end -- if
+
+  db:exec ("BEGIN TRANSACTION")  
+     
+  -- get rid of old area description, if any
+  local exists = db:execute (string.format (
+    "DELETE FROM areas WHERE uid = %s;",
+      fixsql (roomarea)
+    )) == sqlite3.OK
+    
+  dbcheck (db:execute (string.format (
+    "INSERT INTO areas (uid, name, date_added) VALUES (%s, %s, DATETIME('NOW'));",
+      fixsql (roomarea), 
+      fixsql (area_name)
+    )))
+
+  db:exec ("COMMIT")  
+          
+  local action = "Added"
+  if exists then
+    action = "Changed"
+  end -- if
+  
+  mapper.mapprint (string.format ("%s area '%s' with area code '%s'", 
+                   action, area_name, roomarea))
+                         
+  areas [roomarea] = area_name
+                              
+  mapper.draw (current_room)
+      
+end -- add_area
+
 function room_click (uid, flags)
 
   -- check we got room at all
@@ -1288,7 +1341,9 @@ function room_click (uid, flags)
       { name = "Add Exit", func = room_add_exit} ,
       { name = "Change Exit", func = room_change_exit} ,
       { name = "Delete Exit", func = room_delete_exit} ,
-      { name = "Set area", func = change_room_area} ,
+      { name = "-", } ,
+      { name = "Set area for room", func = change_room_area} ,
+      { name = "Update area name", func = add_area} ,
       } -- handlers
       
   local t, tf = {}, {}
@@ -1528,7 +1583,7 @@ end -- got_environment
 
 -- we got room coordinates, eg. : "38,3,1,0"
 function got_coordinates (s)
-  
+ 
   if not current_room then
     return
   end -- if
@@ -1540,7 +1595,7 @@ function got_coordinates (s)
     room = load_room_from_database (current_room)
   end -- not in cache
   
-  if room and room.area == nil then
+  if room and (room.area == nil or tonumber (room.area) == 0) then
     save_coordinates_to_database (current_room, s)
     mapper.draw (current_room)    -- redraw room with area
   end -- need to save environment
