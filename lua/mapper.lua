@@ -10,6 +10,7 @@ Amended: 18th October 2010 to added find callback
 Amended: 16th November 2010 to add symbolic constants (miniwin.xxxx)
 Amended: 18th November 2010 to add more timing and count of times called
          Also added zooming with the mouse wheel.
+Amended: 26th November 2010 to check timers are enabled when speedwalking.       
 
 Generic MUD mapper.
 
@@ -66,7 +67,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 2.4   -- for querying by plugins
+VERSION = 2.5   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -747,6 +748,9 @@ local function changed_room (uid)
                    ". Speedwalks to go: " .. #current_speedwalk + 1)
         expected_room = dir.uid
         if config.DELAY.time > 0 then
+          if GetOption ("enable_timers") ~= 1 then
+            maperror ("WARNING! Timers not enabled. Speedwalking will not work properly.")
+          end -- if timers disabled
           DoAfter (config.DELAY.time, dir.dir)
         else
           Send (dir.dir)
