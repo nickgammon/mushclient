@@ -1834,9 +1834,9 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
         }
 
       CString strMatch = pTrigger->trigger;
-      if (strMatch.GetLength () > 38)
+      if (strMatch.GetLength () > (m_nWrapColumn - 42))
         {
-        strMatch = strMatch.Left (35);
+        strMatch = strMatch.Left (m_nWrapColumn - 45);
         strMatch = strMatch + "...";
         }
 
@@ -1895,9 +1895,9 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
         }
 
       CString strMatch = pAlias->name;
-      if (strMatch.GetLength () > 38)
+      if (strMatch.GetLength () > (m_nWrapColumn - 42))
         {
-        strMatch = strMatch.Left (35);
+        strMatch = strMatch.Left (m_nWrapColumn - 45);
         strMatch = strMatch + "...";
         }
 
@@ -2031,9 +2031,9 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
       // now show newlines as \n
       strContents = Replace (strContents, "\n", "\\n", true);
 
-      if (strContents.GetLength () > 46)
+      if (strContents.GetLength () > (m_nWrapColumn - 34))
         {
-        strContents = strContents.Left (43);
+        strContents = strContents.Left (m_nWrapColumn - 37);
         strContents = strContents + "...";
         }
 
@@ -2119,9 +2119,9 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
       // now show newlines as \n
       strContents = Replace (strContents, "\n", "\\n", true);
       
-      if (strContents.GetLength () > 40)
+      if (strContents.GetLength () > (m_nWrapColumn - 40))
         {
-        strContents = strContents.Left (37);
+        strContents = strContents.Left (m_nWrapColumn - 43);
         strContents = strContents + "...";
         }
 
