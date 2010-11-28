@@ -5929,9 +5929,6 @@ void CPrefsP14::OnAdjustWidth()
 // this is for the guy that wants to fit the max text he can in his window,
 // after resizing it
 
-if (m_doc->m_pActiveCommandView || m_doc->m_pActiveOutputView)
-  {
-
   CDC dc;
 
   dc.CreateCompatibleDC (NULL);
@@ -5954,33 +5951,39 @@ if (m_doc->m_pActiveCommandView || m_doc->m_pActiveOutputView)
           MUSHCLIENT_FONT_FAMILY, // BYTE nPitchAndFamily,     // was  FF_DONTCARE
           m_font_name);// LPCTSTR lpszFacename );
 
-    // Get the metrics of the font.
+  // Get the metrics of the font.
 
-    dc.SelectObject(font);
+  dc.SelectObject(font);
 
-    TEXTMETRIC tm;
-    dc.GetTextMetrics(&tm);
+  TEXTMETRIC tm;
+  dc.GetTextMetrics(&tm);
 
-  RECT rect;
+  // find the first output window, work out the correct width
+  for(POSITION pos = m_doc->GetFirstViewPosition(); pos != NULL; )
+	  {
+	  CView* pView = m_doc->GetNextView(pos);
+	  
+	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+  	  {
+		  CMUSHView* pmyView = (CMUSHView*)pView;
 
-  if (m_doc->m_pActiveCommandView)
-    m_doc->m_pActiveCommandView->GetClientRect (&rect);
-  else
-    m_doc->m_pActiveOutputView->GetClientRect (&rect);
+      int iWidth = (pmyView->GetOutputWindowWidth () - m_doc->m_iPixelOffset) / tm.tmAveCharWidth;
 
-  int iWidth = (rect.right - rect.left - m_iPixelOffset) / tm.tmAveCharWidth;
+      // ensure in range that we allow
+      if (iWidth < 20)
+        iWidth = 20;
+      if (iWidth > MAX_LINE_WIDTH)
+        iWidth = MAX_LINE_WIDTH;
 
-  // ensure in range that we allow
-  if (iWidth < 20)
-    iWidth = 20;
-  if (iWidth > MAX_LINE_WIDTH)
-    iWidth = MAX_LINE_WIDTH;
+      // put in the new figure
+      m_ctlWrapColumn.SetWindowText (CFormat ("%i", iWidth));
+  
+      break;
+	    }	 // if CMUSHView
+    }  // end for
 
-  // put in the new figure
-  m_ctlWrapColumn.SetWindowText (CFormat ("%i", iWidth));
+}   // end of CPrefsP14::OnAdjustWidth
 
-  }
-}
 
 LRESULT CPrefsP14::OnKickIdle(WPARAM, LPARAM)
   {

@@ -157,6 +157,7 @@ bool GetSelection(CFile & f);
 bool GetSelection(CString & s);
 void SendMacro (int whichone);
 void SelectionChanged (void);
+void AutoWrapWindowWidth (CMUSHclientDoc* pDoc);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

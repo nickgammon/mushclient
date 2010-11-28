@@ -668,7 +668,8 @@ long CMUSHclientDoc::TextRectangle(long Left, long Top, long Right, long Bottom,
   m_TextRectangleBorderColour =       BorderColour;        
   m_TextRectangleBorderWidth =        BorderWidth;         
   m_TextRectangleOutsideFillColour =  OutsideFillColour;
-  m_TextRectangleOutsideFillStyle =   OutsideFillStyle;    
+  m_TextRectangleOutsideFillStyle =   OutsideFillStyle; 
+  bool bFixedWindowWidth = false;
 
   // refresh views  - get scroll bars right
 
@@ -681,9 +682,16 @@ long CMUSHclientDoc::TextRectangle(long Left, long Top, long Right, long Bottom,
 		  CMUSHView* pmyView = (CMUSHView*)pView;
 
 		  pmyView->addedstuff();
-	    }	
-    }
 
+      // now fix up auto-wrapping column if required
+      if (!bFixedWindowWidth)
+        {
+        bFixedWindowWidth = true;
+        pmyView->AutoWrapWindowWidth(this);
+        }   // if not already done
+      }	  // if CMUSHView
+    }  // end for
+       
   SendWindowSizes (m_nWrapColumn);  // notify of different window height
   Redraw ();
 	return eOK;

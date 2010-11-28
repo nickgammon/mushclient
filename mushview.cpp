@@ -3081,57 +3081,8 @@ void CMUSHView::OnKeysActivatecommandview()
 }
 
 
-void CMUSHView::OnSize(UINT nType, int cx, int cy) 
-{
-  CView::OnSize(nType, cx, cy);
-  
-CMUSHclientDoc* pDoc = GetDocument();
-ASSERT_VALID(pDoc);
-
-
-// find page size
-
-
-// find last line
-
-int lastline;
-
-  lastline = pDoc->GetLastLine ();
-
-CSize sizeTotal (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_FontHeight),
-      sizePage  (GetOutputWindowWidth () - pDoc->m_iPixelOffset, GetOutputWindowHeight ()),
-      sizeLine  (pDoc->m_FontWidth, pDoc->m_FontHeight);
-
-  SetScrollSizes (sizeTotal, sizePage, sizeLine);
-
-  // very bizarre bug - fixed in 4.39
-  // we seem to get size messages if we are maximized and in the background
-
-  bool bOldFreeze = m_freeze;  
-  if (m_bAtBufferEnd)
-    OnTestEnd ();   
-
-  m_freeze = bOldFreeze;
-  
-  Frame.FixUpTitleBar ();   // in case we need to add the mud name to the title bar
-
-  pDoc->SendToAllPluginCallbacks (ON_PLUGIN_WORLD_OUTPUT_RESIZED);
-
-
-// this is for the guy that wants to fit the max text he can in his window,
-// after resizing it
-
-WINDOWPLACEMENT wp;
-wp.length = sizeof (wp);
-GetOwner()->GetOwner()->GetWindowPlacement (&wp);
-
-// don't resize if not active, or minimized, or closed
-if (wp.showCmd != SW_MINIMIZE &&
-    pDoc->m_iConnectPhase == eConnectConnectedToMud &&
-    (
-    pDoc->m_pActiveOutputView == this  ||
-    pDoc->m_pActiveCommandView == m_bottomview
-    ))
+void CMUSHView::AutoWrapWindowWidth (CMUSHclientDoc* pDoc)
+  {
 
   if (pDoc->m_bAutoWrapWindowWidth && 
       !pDoc->m_font_name.IsEmpty () &&
@@ -3202,6 +3153,63 @@ if (wp.showCmd != SW_MINIMIZE &&
 
 
     }   // end of auto-wrap wanted
+
+
+  } // end of CMUSHView::AutoWrapWindowWidth
+
+void CMUSHView::OnSize(UINT nType, int cx, int cy) 
+{
+  CView::OnSize(nType, cx, cy);
+  
+CMUSHclientDoc* pDoc = GetDocument();
+ASSERT_VALID(pDoc);
+
+
+// find page size
+
+
+// find last line
+
+int lastline;
+
+  lastline = pDoc->GetLastLine ();
+
+CSize sizeTotal (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_FontHeight),
+      sizePage  (GetOutputWindowWidth () - pDoc->m_iPixelOffset, GetOutputWindowHeight ()),
+      sizeLine  (pDoc->m_FontWidth, pDoc->m_FontHeight);
+
+  SetScrollSizes (sizeTotal, sizePage, sizeLine);
+
+  // very bizarre bug - fixed in 4.39
+  // we seem to get size messages if we are maximized and in the background
+
+  bool bOldFreeze = m_freeze;  
+  if (m_bAtBufferEnd)
+    OnTestEnd ();   
+
+  m_freeze = bOldFreeze;
+  
+  Frame.FixUpTitleBar ();   // in case we need to add the mud name to the title bar
+
+  pDoc->SendToAllPluginCallbacks (ON_PLUGIN_WORLD_OUTPUT_RESIZED);
+
+
+// this is for the guy that wants to fit the max text he can in his window,
+// after resizing it
+
+WINDOWPLACEMENT wp;
+wp.length = sizeof (wp);
+GetOwner()->GetOwner()->GetWindowPlacement (&wp);
+
+// don't resize if not active, or minimized, or closed
+if (wp.showCmd != SW_MINIMIZE &&
+    pDoc->m_iConnectPhase == eConnectConnectedToMud &&
+    (
+    pDoc->m_pActiveOutputView == this  ||
+    pDoc->m_pActiveCommandView == m_bottomview
+    ))
+    AutoWrapWindowWidth (pDoc);
+
   pDoc->SendWindowSizes (pDoc->m_nWrapColumn);
   EnableScrollBarCtrl (SB_VERT, pDoc->m_bScrollBarWanted);
 
