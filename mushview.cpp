@@ -3201,9 +3201,9 @@ WINDOWPLACEMENT wp;
 wp.length = sizeof (wp);
 GetOwner()->GetOwner()->GetWindowPlacement (&wp);
 
-// don't resize if not active, or minimized, or closed
+// don't resize if not active, or minimized [, or closed - removed v4.71]
 if (wp.showCmd != SW_MINIMIZE &&
-    pDoc->m_iConnectPhase == eConnectConnectedToMud &&
+//    pDoc->m_iConnectPhase == eConnectConnectedToMud &&
     (
     pDoc->m_pActiveOutputView == this  ||
     pDoc->m_pActiveCommandView == m_bottomview
