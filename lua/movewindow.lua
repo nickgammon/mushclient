@@ -7,7 +7,7 @@ Miniwindow drag-to-move functions.
 Author: Nick Gammon
 Date:   15th July 2009
 Modified: 16th November 2010 to add preprocessing
-
+Modified: 29th November 2010 by Fiendish to improve dragging offscreen
 
 This module is intended to make it easier to add drag handlers for miniwindows.
 
@@ -174,6 +174,27 @@ local function make_dragmove_handler (mwi)
     local posx, posy = WindowInfo (win, 17) - mwi.startx,
                        WindowInfo (win, 18) - mwi.starty
   
+    -- change the mouse cursor shape appropriately
+    if posx < 0 or 
+       posx > GetInfo (281) - mwi.margin or
+       posy < 0 or   -- don't drag title out of view
+       posy > GetInfo (280) - mwi.margin then
+      SetCursor (miniwin.cursor_x)   -- X cursor
+    else
+      SetCursor (miniwin.cursor_hand)    -- hand cursor
+    end -- if
+    
+    if posx < 0 then
+        posx = 0
+    elseif posx > GetInfo (281) - mwi.margin then
+        posx = GetInfo(281) - mwi.margin
+    end
+    if posy < 0 then
+        posy = 0
+    elseif posy > GetInfo(280) - mwi.margin then
+        posy = GetInfo(280) - mwi.margin
+    end
+    
     -- move the window to the new location - offset by how far mouse was into window
     WindowPosition(win, posx, posy, 0, miniwin.create_absolute_location);
     
@@ -186,17 +207,7 @@ local function make_dragmove_handler (mwi)
                                WindowInfo (v, 8))
         end -- if
     end -- for
-
-    -- change the mouse cursor shape appropriately
-    if posx < mwi.margin - WindowInfo (win, 3) or 
-       posx > GetInfo (281) - mwi.margin or
-       posy < 0 or   -- don't drag title out of view
-       posy > GetInfo (280) - mwi.margin then
-      SetCursor (miniwin.cursor_x)   -- X cursor
-    else
-      SetCursor (miniwin.cursor_hand)    -- hand cursor
-    end -- if
-    
+        
     mwi.window_left = posx  -- remember for saving state
     mwi.window_top = posy
     mwi.window_mode = 0
@@ -222,26 +233,6 @@ local function make_dragrelease_handler (mwi)
     end -- if handler
     
     Repaint ()  -- update window location
-    
-    -- find where window is now
-    local newx, newy = WindowInfo (win, 10), WindowInfo (win, 11)
-    
-    -- don't let them drag it out of view
-    if newx < mwi.margin - WindowInfo (win, 3) or 
-       newx > GetInfo (281) - mwi.margin or
-       newy < 0 or  -- don't drag title out of view
-       newy > GetInfo (280) - mwi.margin then
-       -- put it back
-      WindowPosition(win, mwi.origx, mwi.origy, 0, miniwin.create_absolute_location)
-      
-      mwi.window_left = mwi.origx  -- remember for saving state
-      mwi.window_top = mwi.origy
-      mwi.window_mode = 0
-      mwi.window_flags = miniwin.create_absolute_location   -- absolute position
-      
-      return
-    end -- if out of bounds
- 
     
   end -- dragrelease
 
