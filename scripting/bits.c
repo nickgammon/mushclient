@@ -178,6 +178,37 @@ static int bit_tostring (lua_State *L)
   return 1;  // number of result fields
   } // end of bit_tostring
 
+// returns true if anding all the bits together gives the 2nd+ arguments
+//  if there are multiple arguments (more than 2) then the extra
+//    ones are or'd together before the final 'and'
+//  eg, print (bit.test (0x42, 0x02)) --> true
+//      print (bit.test (0x42, 0x40, 0x02)) --> true
+//      print (bit.test (0x02, 0x03)) --> false (0x01 bit not set)
+static int bit_test (lua_State *L)
+  {
+  int n = lua_gettop(L), i; 
+  Integer w = luaL_checkbit(L, 1);
+  Integer x = 0;
+  for (i = 2; i <= n; i++) 
+    x |= luaL_checkbit(L, i); 
+  lua_pushboolean (L, (w & x) == x);
+
+  return 1;  // number of result fields
+  } // end of bit_test
+
+// clear bits in the first argument
+//  eg. bit.clear (0x111, 0x01)  --> 0x110
+//      bit.clear (0x111, 0x01, 0x10) --> 0x100
+static int bit_clear (lua_State *L)
+  {
+  int n = lua_gettop(L), i; 
+  Integer w = luaL_checkbit(L, 1); 
+  for (i = 2; i <= n; i++) 
+    w &= ~ luaL_checkbit(L, i); 
+  lua_pushnumber (L, w);
+
+  return 1;  // number of result fields
+  } // end of bit_clear
 
 static const struct luaL_Reg bitlib[] = {
 
@@ -190,6 +221,8 @@ static const struct luaL_Reg bitlib[] = {
   {"shr",   bit_rshift},       // was rshift in Reuben's library
   {"tonumber", bit_tonumber},  // new by Nick
   {"tostring", bit_tostring},  // new by Nick
+  {"test",  bit_test},         // new by Nick in v4.71
+  {"clear", bit_clear},        // new by Nick in v4.71
   {"xor",   bit_bxor},         // was bxor in Reuben's library
 
   {NULL, NULL}
