@@ -364,9 +364,11 @@ SetOverwrite ifnewer
    File "..\lua\serialize.lua"
    File "..\lua\show_loaded.lua"  
    File "..\lua\strict.lua"
+   File "..\lua\string_indexing.lua"
    File "..\lua\tprint.lua"
    File "..\lua\var.lua"
    File "..\lua\wait.lua"
+   File "..\lua\words_to_numbers.lua"
    File "..\luacom\luacom5.lua"  
       
    ; LuaSocket
@@ -579,9 +581,11 @@ Section Uninstall
   Delete "$INSTDIR\lua\serialize.lua"
   Delete "$INSTDIR\lua\show_loaded.lua"  
   Delete "$INSTDIR\lua\strict.lua"
+  Delete "$INSTDIR\lua\string_indexing.lua"
   Delete "$INSTDIR\lua\tprint.lua"
   Delete "$INSTDIR\lua\var.lua"
   Delete "$INSTDIR\lua\wait.lua"
+  Delete "$INSTDIR\lua\words_to_numbers.lua"
      
   Delete "$INSTDIR\lua\socket.lua"
   Delete "$INSTDIR\lua\ltn12.lua"
