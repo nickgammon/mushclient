@@ -3,6 +3,11 @@
 #pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
 #pragma warning( disable : 4100)  // unreferenced formal parameter
 
+/*
+* this file is originally from GNU bc-1.06. it was trimmed down by lhf to fix
+* a memory leak in bc_raisemod and to remove the free list, as in php bcmath.
+*/
+
 /* number.c: Implements arbitrary precision numbers. */
 /*
     Copyright (C) 1991, 1992, 1993, 1994, 1997, 2000 Free Software Foundation, Inc.
@@ -36,25 +41,15 @@
 
 #include <stdio.h>
 #include "bcconfig.h"
+#include "number.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <ctype.h>/* Prototypes needed for external utility routines. */
-#include "number.h"
-
-#define bc_rt_warn rt_warn
-#define bc_rt_error rt_error
-#define bc_out_of_memory out_of_memory
-
-_PROTOTYPE(void rt_warn, (char *mesg ,...));
-_PROTOTYPE(void rt_error, (char *mesg ,...));
-_PROTOTYPE(void out_of_memory, (void));
 
 /* Storage used for special numbers. */
 bc_num _zero_;
 bc_num _one_;
 bc_num _two_;
-
-static bc_num _bc_Free_list = NULL;
 
 /* new_num allocates a number and sets fields to known values. */
 
@@ -64,13 +59,8 @@ bc_new_num (length, scale)
 {
   bc_num temp;
 
-  if (_bc_Free_list != NULL) {
-    temp = _bc_Free_list;
-    _bc_Free_list = temp->n_next;
-  } else {
-    temp = (bc_num) malloc (sizeof(bc_struct));
-    if (temp == NULL) bc_out_of_memory ();
-  }
+  temp = (bc_num) malloc (sizeof(bc_struct));
+  if (temp == NULL) bc_out_of_memory ();
   temp->n_sign = PLUS;
   temp->n_len = length;
   temp->n_scale = scale;
@@ -94,25 +84,11 @@ bc_free_num (num)
   if ((*num)->n_refs == 0) {
     if ((*num)->n_ptr)
       free ((*num)->n_ptr);
-    (*num)->n_next = _bc_Free_list;
-    _bc_Free_list = *num;
+    free (*num);
   }
   *num = NULL;
 }
 
-/* Frees the memory allocated in the memory-recycling list.
- * Primary use is to deafen memory leak warnings. -JW */
-
-void
-bc_free_freed_list ()
-{
-	while (_bc_Free_list != NULL)
-	{
-		bc_num next = _bc_Free_list->n_next;
-		free(_bc_Free_list);
-		_bc_Free_list = next;
-	}
-}
 
 /* Intitialize the number package! */
 
@@ -126,17 +102,6 @@ bc_init_numbers ()
   _two_->n_value[0] = 2;
 }
 
-/* Added by NJG to remove a memory leak */
-
-void
-bc_free_numbers ()
-  {
-  bc_free_num (&_zero_);
-  bc_free_num (&_one_);
-  bc_free_num (&_two_);
-
-  bc_free_freed_list();
-  }
 
 /* Make a copy of a number!  Just increments the reference count! */
 
@@ -605,7 +570,9 @@ bc_sub (n1, n2, result, scale_min)
    is the minimum scale for the result. */
 
 void
-bc_add (bc_num n1, bc_num n2, bc_num *result, int scale_min)
+bc_add (n1, n2, result, scale_min)
+     bc_num n1, n2, *result;
+     int scale_min;
 {
   bc_num sum = NULL;
   int cmp_res;
@@ -664,13 +631,8 @@ new_sub_num (length, scale, value)
 {
   bc_num temp;
 
-  if (_bc_Free_list != NULL) {
-    temp = _bc_Free_list;
-    _bc_Free_list = temp->n_next;
-  } else {
-    temp = (bc_num) malloc (sizeof(bc_struct));
-    if (temp == NULL) bc_out_of_memory ();
-  }
+  temp = (bc_num) malloc (sizeof(bc_struct));
+  if (temp == NULL) bc_out_of_memory ();
   temp->n_sign = PLUS;
   temp->n_len = length;
   temp->n_scale = scale;
@@ -1252,6 +1214,7 @@ bc_raisemod (base, expo, mod, result, scale)
   bc_free_num (&power);
   bc_free_num (&exponent);
   bc_free_num (result);
+  bc_free_num (&parity);
   *result = temp;
   return 0;	/* Everything is OK. */
 }
@@ -1432,173 +1395,6 @@ bc_sqrt (num, scale)
   return 1;
 }
 
-
-/* The following routines provide output for bcd numbers package
-   using the rules of POSIX bc for output. */
-
-/* This structure is used for saving digits in the conversion process. */
-typedef struct stk_rec {
-	long  digit;
-	struct stk_rec *next;
-} stk_rec;
-
-/* The reference string for digits. */
-static char ref_str[] = "0123456789ABCDEF";
-
-
-/* A special output routine for "multi-character digits."  Exactly
-   SIZE characters must be output for the value VAL.  If SPACE is
-   non-zero, we must output one space before the number.  OUT_CHAR
-   is the actual routine for writing the characters. */
-
-void
-bc_out_long (val, size, space, out_char)
-     long val;
-     int size, space;
-#ifdef __STDC__
-     void (*out_char)(int);
-#else
-     void (*out_char)();
-#endif
-{
-  char digits[40];
-  int len, ix;
-
-  if (space) (*out_char) (' ');
-  sprintf (digits, "%ld", val);
-  len = strlen (digits);
-  while (size > len)
-    {
-      (*out_char) ('0');
-      size--;
-    }
-  for (ix=0; ix < len; ix++)
-    (*out_char) (digits[ix]);
-}
-
-/* Output of a bcd number.  NUM is written in base O_BASE using OUT_CHAR
-   as the routine to do the actual output of the characters. */
-
-void
-bc_out_num (num, o_base, out_char, leading_zero)
-     bc_num num;
-     int o_base;
-     void (*out_char)(int);
-     int leading_zero;
-{
-  char *nptr;
-  int  index, fdigit, pre_space;
-  stk_rec *digits, *temp;
-  bc_num int_part, frac_part, base, cur_dig, t_num, max_o_digit;
-
-  /* The negative sign if needed. */
-  if (num->n_sign == MINUS) (*out_char) ('-');
-
-  /* Output the number. */
-  if (bc_is_zero (num))
-    (*out_char) ('0');
-  else
-    if (o_base == 10)
-      {
-	/* The number is in base 10, do it the fast way. */
-	nptr = num->n_value;
-	if (num->n_len > 1 || *nptr != 0)
-	  for (index=num->n_len; index>0; index--)
-	    (*out_char) (BCD_CHAR(*nptr++));
-	else
-	  nptr++;
-
-	if (leading_zero && bc_is_zero (num))
-	  (*out_char) ('0');
-
-	/* Now the fraction. */
-	if (num->n_scale > 0)
-	  {
-	    (*out_char) ('.');
-	    for (index=0; index<num->n_scale; index++)
-	      (*out_char) (BCD_CHAR(*nptr++));
-	  }
-      }
-    else
-      {
-	/* special case ... */
-	if (leading_zero && bc_is_zero (num))
-	  (*out_char) ('0');
-
-	/* The number is some other base. */
-	digits = NULL;
-	bc_init_num (&int_part);
-	bc_divide (num, _one_, &int_part, 0);
-	bc_init_num (&frac_part);
-	bc_init_num (&cur_dig);
-	bc_init_num (&base);
-	bc_sub (num, int_part, &frac_part, 0);
-	/* Make the INT_PART and FRAC_PART positive. */
-	int_part->n_sign = PLUS;
-	frac_part->n_sign = PLUS;
-	bc_int2num (&base, o_base);
-	bc_init_num (&max_o_digit);
-	bc_int2num (&max_o_digit, o_base-1);
-
-
-	/* Get the digits of the integer part and push them on a stack. */
-	while (!bc_is_zero (int_part))
-	  {
-	    bc_modulo (int_part, base, &cur_dig, 0);
-	    temp = (stk_rec *) malloc (sizeof(stk_rec));
-	    if (temp == NULL) bc_out_of_memory();
-	    temp->digit = bc_num2long (cur_dig);
-	    temp->next = digits;
-	    digits = temp;
-	    bc_divide (int_part, base, &int_part, 0);
-	  }
-
-	/* Print the digits on the stack. */
-	if (digits != NULL)
-	  {
-	    /* Output the digits. */
-	    while (digits != NULL)
-	      {
-		temp = digits;
-		digits = digits->next;
-		if (o_base <= 16)
-		  (*out_char) (ref_str[ (int) temp->digit]);
-		else
-		  bc_out_long (temp->digit, max_o_digit->n_len, 1, out_char);
-		free (temp);
-	      }
-	  }
-
-	/* Get and print the digits of the fraction part. */
-	if (num->n_scale > 0)
-	  {
-	    (*out_char) ('.');
-	    pre_space = 0;
-	    t_num = bc_copy_num (_one_);
-	    while (t_num->n_len <= num->n_scale) {
-	      bc_multiply (frac_part, base, &frac_part, num->n_scale);
-	      fdigit = bc_num2long (frac_part);
-	      bc_int2num (&int_part, fdigit);
-	      bc_sub (frac_part, int_part, &frac_part, 0);
-	      if (o_base <= 16)
-		(*out_char) (ref_str[fdigit]);
-	      else {
-		bc_out_long (fdigit, max_o_digit->n_len, pre_space, out_char);
-		pre_space = 1;
-	      }
-	      bc_multiply (t_num, base, &t_num, 0);
-	    }
-	    bc_free_num (&t_num);
-	  }
-
-	/* Clean up. */
-	bc_free_num (&int_part);
-	bc_free_num (&frac_part);
-	bc_free_num (&base);
-	bc_free_num (&cur_dig);
-	bc_free_num (&max_o_digit);
-      }
-}
 /* Convert a number NUM to a long.  The function returns only the integer
    part of the number.  For numbers that are too large to represent as
    a long, this function returns a zero.  This can be detected by checking
@@ -1784,33 +1580,13 @@ bc_str2num (num, str, scale)
     }
 }
 
-/* pn prints the number NUM in base 10. */
-
-static void
-out_char (int c)
-{
-  putchar(c);
-}
-
+/* Added by NJG to remove a memory leak */
 
 void
-pn (num)
-     bc_num num;
-{
-  bc_out_num (num, 10, out_char, 0);
-  out_char ('\n');
-}
+bc_free_numbers ()
+  {
+  bc_free_num (&_zero_);
+  bc_free_num (&_one_);
+  bc_free_num (&_two_);
 
-
-/* pv prints a character array as if it was a string of bcd digits. */
-void
-pv (name, num, len)
-     char *name;
-     unsigned char *num;
-     int len;
-{
-  int i;
-  printf ("%s=", name);
-  for (i=0; i<len; i++) printf ("%c",BCD_CHAR(num[i]));
-  printf ("\n");
-}
+  }
