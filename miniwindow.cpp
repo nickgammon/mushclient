@@ -3675,16 +3675,36 @@ CPoint menupoint (Left, Top);
       if (vPopup.size () > 1)
         vPopup.pop_back ();  // drop last item
       }
-    else if (strItem.Left (1) == "^")
-      vPopup.back ()->AppendMenu (MF_STRING | MF_GRAYED, 0, strItem.Mid (1));
-    else
-      {
-      strMXP_menu_item [j] = strItem;
-      vPopup.back ()->AppendMenu (MF_STRING | MF_ENABLED, MXP_FIRST_MENU + j, strItem);
-      j++;
-      if (j >= MXP_MENU_COUNT)
-        break;
+    else 
+      {            
+      // flags - will always be a string
+      UINT iFlags = MF_STRING;
+
+      while (strItem.Left (1) == "+" ||
+             strItem.Left (1) == "^")
+        {
+        // leading + means tick it
+        if (strItem.Left (1) == "+")
+          iFlags |= MF_CHECKED;
+        // and a carat means disabled
+        else if (strItem.Left (1) == "^")
+          iFlags |= MF_GRAYED;
+
+        strItem = strItem.Mid (1);  // get rid of first character
+        } // end of while
+
+      if (iFlags & MF_GRAYED)
+        vPopup.back ()->AppendMenu (iFlags, 0, strItem);
+      else
+        {
+        strMXP_menu_item [j] = strItem;
+        vPopup.back ()->AppendMenu (iFlags, MXP_FIRST_MENU + j, strItem);
+        j++;
+        if (j >= MXP_MENU_COUNT)
+          break;
+        }
       }
+
     }
 
   // without this line the auto-enable always set "no items" to active
