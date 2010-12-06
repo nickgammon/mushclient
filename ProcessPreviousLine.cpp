@@ -536,6 +536,7 @@ assemble the full text of the original line.
 
 
   m_sRecentLines.push_back ((const char *) strCurrentLine);
+  m_newlines_received++;
 
   // too many? remove oldest one
   if (m_sRecentLines.size () > MAX_RECENT_LINES)

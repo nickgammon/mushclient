@@ -6635,6 +6635,8 @@ void CMUSHclientDoc::ConnectionEstablished (void)
   m_iTimersFiredThisSessionCount = 0;       
   m_bSuppressNewline = false; 
   m_iLastCommandCount = 0;
+  m_sRecentLines.clear ();
+  m_newlines_received = 0;
   m_strLastCommandSent.Empty ();  // no command sent yet
   m_iNoteStyle = NORMAL;    // back to default style
 

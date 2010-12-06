@@ -328,6 +328,11 @@ tInfoTypeMapping InfoTypes [] =
 { 306, "When this world was created/opened" },
 
 
+// more numbers
+
+{ 310, "Newlines received" },
+
+
  { 0, "" }, // end of table marker
 
  };
@@ -1044,6 +1049,8 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
         break;
 
 
+    // dates
+
     case  301: 
       if (m_tConnectTime.GetTime ())     // only if non-zero, otherwise return empty
         SetUpVariantDate (vaResult, COleDateTime (m_tConnectTime.GetTime ())); 
@@ -1068,6 +1075,12 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case  306:
       SetUpVariantDate (vaResult, COleDateTime (m_whenWorldStarted.GetTime ())); 
       break;
+
+    // more numbers
+      
+    case 310:
+        SetUpVariantLong (vaResult, m_newlines_received);  // newlines received
+        break;
 
     default:
       vaResult.vt = VT_NULL;
