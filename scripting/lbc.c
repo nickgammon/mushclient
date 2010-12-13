@@ -101,7 +101,7 @@ static bc_num Bget(lua_State *L, int i)
   default:
    return *((void**)luaL_checkudata(L,i,MYTYPE));
  }
- return NULL;
+// return NULL;
 }
 
 static int Bdo1(lua_State *L, void (*f)(bc_num a, bc_num b, bc_num *c, int n))

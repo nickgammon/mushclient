@@ -8,7 +8,7 @@
 
 #include <string.h>
 #include <limits.h>
-#define NDEBUG
+#define NDEBUG 1
 
 #define _zero_		bc_zero
 #define _one_		bc_one
