@@ -91,6 +91,9 @@ public:
    void DockControlBarNextTo(CControlBar* pBar,
                              CControlBar* pTargetBar);
 
+   void CheckTimerFallback (void);
+   void ProcessTimers (void);
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CMainFrame)

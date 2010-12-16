@@ -1344,6 +1344,8 @@ void CMUSHclientDoc::ReceiveMsg()
 char buff [1000];
 int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
 
+  Frame.CheckTimerFallback ();   // see if time is up for timers to fire
+
   if (count == SOCKET_ERROR)
     {
     // don't delete the socket if we are already closing it

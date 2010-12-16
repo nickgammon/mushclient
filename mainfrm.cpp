@@ -38,6 +38,9 @@ void ListAccelerators (CDocument * pDoc, const int iType);
 
 static TCHAR BASED_CODE szCtrlBars[] = _T("CtrlBars");
 
+LARGE_INTEGER hp_timeLastTimerFired;  
+CTime         timeLastTimerFired;    
+
 int ActivityToolBarResourceNames [6] = {
   IDB_ACTIVITY_TOOLBAR_0,
   IDB_ACTIVITY_TOOLBAR_1,
@@ -402,8 +405,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   else if (App.m_iWindowTabsStyle == WINDOW_TABS_BOTTOM)
     m_wndMDITabs.Create (this, MT_BOTTOM);
 
+  // initialize timer fallback
+  if (App.m_iCounterFrequency)
+    QueryPerformanceCounter (&hp_timeLastTimerFired);
+  else
+    timeLastTimerFired = CTime::GetCurrentTime();
+
 	return 0;
-}
+}  // CMainFrame::OnCreate
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame diagnostics
@@ -685,23 +694,16 @@ void CMainFrame::OnDestroy()
   if (m_niData.uID)
     Shell_NotifyIcon (NIM_DELETE ,&m_niData);
 	
-}
+}  // end of CMainFrame::OnDestroy
 
-void CMainFrame::OnTimer(UINT nIDEvent) 
-{
+void CMainFrame::ProcessTimers (void)
+  {
 
-  // 25 ticks a second
-  if (nIDEvent == TICK_TIMER_ID)
-    {
-
-	  for (POSITION pos = App.m_pWorldDocTemplate->GetFirstDocPosition(); pos;)
-      {
-      CMUSHclientDoc * pDoc = (CMUSHclientDoc*) App.m_pWorldDocTemplate->GetNextDoc(pos);
-      pDoc->CheckTickTimers ();
-      }
-
-    return;
-    }
+  // so we know when we prccessed this one
+  if (App.m_iCounterFrequency)
+    QueryPerformanceCounter (&hp_timeLastTimerFired);
+  else
+    timeLastTimerFired = CTime::GetCurrentTime();
 
 // update activity window anyway every required inverval, to update durations
 // provided activity update type is not "on activity" only
@@ -789,8 +791,16 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
   m_timeFlashed = tNow;
 
+
+  }  // end of CMainFrame::ProcessTimers
+
+// timers are pretty unreliable, so we'll just use them as a hint now to check the timer times
+void CMainFrame::OnTimer(UINT nIDEvent) 
+  {
+
+  CheckTimerFallback ();
 	CMDIFrameWnd::OnTimer(nIDEvent);
-}
+  }  // end of CMainFrame::OnTimer
 
 void CMainFrame::OnUpdateStatuslineFreeze(CCmdUI* pCmdUI) 
 {
@@ -1172,7 +1182,7 @@ if ((long) ShellExecute (Frame, _T("open"), MY_WEB_PAGE, NULL, NULL, SW_SHOWNORM
             "Unable to open the Gammon Software Solutions web page: "
             MY_WEB_PAGE, 
             MB_ICONEXCLAMATION);
-}
+}  // end of CMainFrame::OnWebPage
 
 
 void CMainFrame::OnHelpForum() 
@@ -1182,7 +1192,7 @@ if ((long) ShellExecute (Frame, _T("open"), MUSHCLIENT_FORUM_URL, NULL, NULL, SW
             "Unable to open the MUSHclient forum web page: "
             MUSHCLIENT_FORUM_URL, 
             MB_ICONEXCLAMATION);
-}
+}   // end of CMainFrame::OnHelpForum
 
 void CMainFrame::OnHelpFunctionswebpage() 
 {
@@ -1192,7 +1202,7 @@ if ((long) ShellExecute (Frame, _T("open"), MUSHCLIENT_FUNCTIONS_URL, NULL, NULL
             MUSHCLIENT_FUNCTIONS_URL, 
             MB_ICONEXCLAMATION);
 	
-}
+}  // end of CMainFrame::OnHelpFunctionswebpage
 
 
 
@@ -1207,7 +1217,7 @@ void CMainFrame::OnViewResetToolbars()
   if (m_wndInfoBar.m_hWnd)
     DockControlBar(&m_wndInfoBar, AFX_IDW_DOCKBAR_BOTTOM);
 
-}
+}   // end of CMainFrame::OnViewResetToolbars
 
 void CMainFrame::OnHelpMudlists() 
 {
@@ -1216,7 +1226,7 @@ if ((long) ShellExecute (Frame, _T("open"), MUD_LIST, NULL, NULL, SW_SHOWNORMAL)
               "Unable to open the MUD lists web page: "
               MUD_LIST, 
               MB_ICONEXCLAMATION);
-}
+}   // end of CMainFrame::OnHelpMudlists
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy) 
 {
@@ -1224,7 +1234,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 	
 	// TODO: Add your message handler code here
 	
-}
+}   // end of CMainFrame::OnSize
 
 void CMainFrame::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized) 
 {
@@ -1259,7 +1269,7 @@ void CMainFrame::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 
   FixUpTitleBar ();
 
-}
+}   // end of CMainFrame::OnActivate
 
 
 LRESULT CMainFrame::OnMCINotify(WPARAM wParam, LPARAM lParam)
@@ -1282,7 +1292,7 @@ void CMainFrame::OnUpdateDisplayStopsoundplaying(CCmdUI* pCmdUI)
 {
 DoFixMenus (pCmdUI);  // remove accelerators from menus
 pCmdUI->Enable ();
-}
+}   // end of CMainFrame::OnUpdateDisplayStopsoundplaying
 
 // cancels any sound currently playing
 void CMainFrame::CancelSound (void)
@@ -1372,7 +1382,7 @@ if ((long) ShellExecute (Frame, _T("open"), BUG_REPORT_PAGE, NULL, NULL, SW_SHOW
             BUG_REPORT_PAGE, 
             MB_ICONEXCLAMATION);
 	
-}
+}    // end of CMainFrame::OnHelpBugreportsuggestion
 
 void CMainFrame::OnViewAlwaysontop() 
 {
@@ -1386,7 +1396,7 @@ App.m_bAlwaysOnTop = !App.m_bAlwaysOnTop;
 	
   App.db_write_int ("prefs", "AlwaysOnTop", App.m_bAlwaysOnTop);	
 
-}
+}   // end of  CMainFrame::OnViewAlwaysontop
 
 void CMainFrame::OnUpdateViewAlwaysontop(CCmdUI* pCmdUI) 
 {
@@ -1395,7 +1405,7 @@ void CMainFrame::OnUpdateViewAlwaysontop(CCmdUI* pCmdUI)
   pCmdUI->Enable ();
   pCmdUI->SetCheck (App.m_bAlwaysOnTop);
 	
-}
+}    // end of CMainFrame::OnUpdateViewAlwaysontop
 
 void CMainFrame::OnGameSendtoallworlds() 
 {
@@ -1425,7 +1435,7 @@ CSendToAllDlg dlg;
       pDoc->SendMsg (dlg.m_strSendText, App.m_bEchoSendToAll, false, pDoc->LoggingInput ());
     } // end of doing each document
 	
-}
+}   // end of CMainFrame::OnGameSendtoallworlds
 
 
 void CMainFrame::OnEditReloadnamesfile() 
@@ -1439,7 +1449,7 @@ void CMainFrame::OnEditReloadnamesfile()
 		e->ReportError();
 		e->Delete();
 	  }
-  }
+  }  // end of CMainFrame::OnEditReloadnamesfile
 
 void CMainFrame::OnViewFullscreenmode() 
 {
@@ -1508,7 +1518,7 @@ void CMainFrame::OnViewFullscreenmode()
 
     }
 
-}
+}   // end of CMainFrame::OnViewFullscreenmode
 
 void CMainFrame::OnUpdateViewFullscreenmode(CCmdUI* pCmdUI) 
 {
@@ -1516,7 +1526,7 @@ DoFixMenus (pCmdUI);  // remove accelerators from menus
 pCmdUI->SetCheck (m_bFullScreen);
 pCmdUI->Enable ();
 
-}
+}  // end of CMainFrame::OnUpdateViewFullscreenmode
 
 void CMainFrame::OnEditNotesworkarea() 
 {
@@ -1542,14 +1552,14 @@ void CMainFrame::OnEditNotesworkarea()
                     eNotepadNormal
                     );
 
-}
+}  // end of CMainFrame::OnEditNotesworkarea
 
 
 BOOL CMainFrame::OnDynamicTipText(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// call one global single handler
 	return ::OnNeedText(id,pNMHDR,pResult);
-}
+}   // end of CMainFrame::OnDynamicTipText
 
 
 
@@ -1620,7 +1630,7 @@ BOOL OnNeedText(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
 		SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOMOVE);
 
 	return TRUE;    // message was handled
-}
+}     // end of OnNeedText
 
 
 void CMainFrame::OnUpdateFrameMenu(HMENU hMenuAlt)
@@ -1631,7 +1641,7 @@ void CMainFrame::OnUpdateFrameMenu(HMENU hMenuAlt)
 
   CMDIFrameWnd::OnUpdateFrameMenu (hMenuAlt);
 
-  }
+  }  // end of CMainFrame::OnUpdateFrameMenu
 
 void CMainFrame::OnWindowCloseallnotepadwindows() 
 {
@@ -1651,7 +1661,7 @@ void CMainFrame::OnWindowCloseallnotepadwindows()
 
     } // end of doing each document
 	
-}
+}   // end of CMainFrame::OnWindowCloseallnotepadwindows
 
 void CMainFrame::DoFileOpen (void)
   {
@@ -1698,13 +1708,13 @@ void CMainFrame::DoFileOpen (void)
   else
     App.OpenDocumentFile (dlgFile.m_ofn.lpstrFile);	
 
-  }
+  }   // end of  CMainFrame::DoFileOpen 
 
 void CMainFrame::OnFileOpen() 
 {
   DoFileOpen ();
 	
-}
+}    // end of CMainFrame::OnFileOpen
 
 void CMainFrame::OpenAndConnectToWorldsInStartupList (const bool bConnect)
   {
@@ -1739,20 +1749,20 @@ void CMainFrame::OpenAndConnectToWorldsInStartupList (const bool bConnect)
     } // end of processing list
 
 
-  }
+  }  // end of CMainFrame::OpenAndConnectToWorldsInStartupList 
 
 void CMainFrame::OnFileOpenworldsinstartuplist() 
 {
 
 	OpenAndConnectToWorldsInStartupList (false);
 
-}
+}     // end of  CMainFrame::OnFileOpenworldsinstartuplist
 
 void CMainFrame::OnUpdateFileOpenworldsinstartuplist(CCmdUI* pCmdUI) 
 {
   DoFixMenus (pCmdUI);  // remove accelerators from menus
   pCmdUI->Enable (!App.m_strWorldList.IsEmpty ());
-}
+}    // end of CMainFrame::OnUpdateFileOpenworldsinstartuplist
 
 void CMainFrame::OnFileWinsock() 
 {
@@ -1773,7 +1783,7 @@ CString strAddresses;
 
   dlg.DoModal ();
 
-}
+}    // end of CMainFrame::OnFileWinsock
 
 void CMainFrame::OnConnectionConnecttoallopenworlds() 
 {
@@ -1788,27 +1798,27 @@ void CMainFrame::OnConnectionConnecttoallopenworlds()
       pDoc->ConnectSocket();
     } // end of doing each document
 	
-}
+}   // end of CMainFrame::OnConnectionConnecttoallopenworlds
 
 void CMainFrame::OnConnectionConnecttoworldsinstartuplist() 
 {
 	OpenAndConnectToWorldsInStartupList (true);
 	
-}
+}    // end of CMainFrame::OnConnectionConnecttoworldsinstartuplist
 
 void CMainFrame::OnUpdateConnectionConnecttoworldsinstartuplist(CCmdUI* pCmdUI) 
 {
   DoFixMenus (pCmdUI);  // remove accelerators from menus
   pCmdUI->Enable (!App.m_strWorldList.IsEmpty ());
 	
-}
+}   // end of CMainFrame::OnUpdateConnectionConnecttoworldsinstartuplist
 
 
 void CMainFrame::OnF1Test(void)
   {
   if (!App.m_bF1macro)
     CMDIFrameWnd::OnHelp ();
-  } 
+  }  // end of CMainFrame::OnF1Test
 
 void CMainFrame::OnHelpDocumentationwebpage() 
 {
@@ -1818,7 +1828,7 @@ if ((long) ShellExecute (Frame, _T("open"), DOCUMENTATION_PAGE, NULL, NULL, SW_S
             DOCUMENTATION_PAGE, 
             MB_ICONEXCLAMATION);
 	
-}
+}  // end of CMainFrame::OnHelpDocumentationwebpage
 
 void CMainFrame::OnHelpRegularexpressionswebpage() 
 {
@@ -1828,7 +1838,7 @@ if ((long) ShellExecute (Frame, _T("open"), REGEXP_PAGE, NULL, NULL, SW_SHOWNORM
             REGEXP_PAGE, 
             MB_ICONEXCLAMATION);
 	
-}
+}   // end of CMainFrame::OnHelpRegularexpressionswebpage
 
 void CMainFrame::OnUpdateInfoBar(CCmdUI* pCmdUI)
   {
@@ -1988,7 +1998,7 @@ LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
    }  // end of tray icon message
 	
 	return CMDIFrameWnd::WindowProc(message, wParam, lParam);
-}
+}   // end of CMainFrame::WindowProc
 
 
 void CMainFrame::LeftTrayClick (void)
@@ -2141,7 +2151,7 @@ void CMainFrame::OnFixMenus(CCmdUI* pCmdUI)
   {
   pCmdUI->ContinueRouting();
   DoFixMenus (pCmdUI);
-  }
+  }   // end of CMainFrame::OnFixMenus
 
 void CMainFrame::DoFixMenus(CCmdUI* pCmdUI)
   {
@@ -2195,7 +2205,7 @@ dlg.m_strUniqueID = ::GetUniqueID ();
 
   dlg.DoModal ();
 
-}
+}   // end of CMainFrame::OnEditGenerateuniqueid
 
 
 void CMainFrame::OnEditConvertclipboardforumcodes() 
@@ -2207,7 +2217,7 @@ CString strContents;
 
  putontoclipboard  (QuoteForumCodes (strContents));
 
-}
+}    // end of CMainFrame::OnEditConvertclipboardforumcodes
 
 void CMainFrame::OnSysCommand(UINT nID, LPARAM lParam) 
 {
@@ -2229,4 +2239,60 @@ void CMainFrame::OnSysCommand(UINT nID, LPARAM lParam)
     } 
   else
 		CMDIFrameWnd::OnSysCommand(nID, lParam);
-}
+}   // end of CMainFrame::OnSysCommand
+
+/*
+
+  See: http://www.gammon.com.au/forum/?id=10793
+
+  This stuff is designed to compensate for the fact that timers are a low-priority event.
+
+  From time to time (eg. when a packet arrives) we will check whether the timer interval has 
+  elapsed that we expect (eg. normally 1/10 of a second these days) plus also the tick timers.
+
+  If so, we call the timers anyway, so they fire closer to the advertised time.
+
+  */
+
+void CMainFrame::CheckTimerFallback ()
+  {
+  double fElapsedTime;
+
+  if (App.m_iCounterFrequency)
+    {
+    LARGE_INTEGER timeNow;  
+
+    QueryPerformanceCounter (&timeNow);
+
+    LONGLONG iTimeTaken = iTimeTaken = timeNow.QuadPart - hp_timeLastTimerFired.QuadPart;
+
+    fElapsedTime = ((double) iTimeTaken) / 
+                   ((double) App.m_iCounterFrequency);
+    }
+  else
+    {
+    fElapsedTime = (double) timeLastTimerFired.GetTime () - (double) CTime::GetCurrentTime().GetTime ();
+    }
+
+  // first do tick timers
+
+  if (fElapsedTime > 0.040)    // more than 40 milliseconds has elapsed
+    {
+	  for (POSITION pos = App.m_pWorldDocTemplate->GetFirstDocPosition(); pos;)
+      {
+      CMUSHclientDoc * pDoc = (CMUSHclientDoc*) App.m_pWorldDocTemplate->GetNextDoc(pos);
+      pDoc->CheckTickTimers ();
+      }
+    }
+
+  double fInterval = 0.10;   // 10th of a second
+
+  // if non-zero interval is seconds
+  if (App.m_nTimerInterval)
+    fInterval = App.m_nTimerInterval;
+
+  // interval has elapsed, call timer anyway
+  if (fElapsedTime > fInterval)
+     ProcessTimers ();
+
+  } // end of CMainFrame::CheckTimerFallback
