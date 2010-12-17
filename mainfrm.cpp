@@ -38,8 +38,16 @@ void ListAccelerators (CDocument * pDoc, const int iType);
 
 static TCHAR BASED_CODE szCtrlBars[] = _T("CtrlBars");
 
-LARGE_INTEGER hp_timeLastTimerFired;  
-CTime         timeLastTimerFired;    
+// we need two timers, because processing a tick shouldn't reset timer processing
+// nor vice-versa
+
+// for normal timers
+LARGE_INTEGER hp_timeLastTimerFired;    // if we have high-resolution timer
+CTime         timeLastTimerFired;       // otherwise
+
+// for OnPluginTick
+LARGE_INTEGER hp_timeLastTickFired;     // if we have high-resolution timer
+CTime         timeLastTickFired;        // otherwise                       
 
 int ActivityToolBarResourceNames [6] = {
   IDB_ACTIVITY_TOOLBAR_0,
@@ -407,9 +415,15 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
   // initialize timer fallback
   if (App.m_iCounterFrequency)
+    {
     QueryPerformanceCounter (&hp_timeLastTimerFired);
+    QueryPerformanceCounter (&hp_timeLastTickFired);
+    }
   else
+    {
     timeLastTimerFired = CTime::GetCurrentTime();
+    timeLastTickFired  = CTime::GetCurrentTime();
+    }
 
 	return 0;
 }  // CMainFrame::OnCreate
@@ -2256,7 +2270,8 @@ void CMainFrame::OnSysCommand(UINT nID, LPARAM lParam)
 
 void CMainFrame::CheckTimerFallback ()
   {
-  double fElapsedTime;
+  double fElapsedTime;      // normal timers
+  double fElapsedTick;      // OnPluginTick timer
 
   if (App.m_iCounterFrequency)
     {
@@ -2264,28 +2279,41 @@ void CMainFrame::CheckTimerFallback ()
 
     QueryPerformanceCounter (&timeNow);
 
-    LONGLONG iTimeTaken = iTimeTaken = timeNow.QuadPart - hp_timeLastTimerFired.QuadPart;
+    LONGLONG iTimeTaken;
+    
+    // normal timers
+    iTimeTaken = timeNow.QuadPart - hp_timeLastTimerFired.QuadPart;
+    fElapsedTime = ((double) iTimeTaken) / ((double) App.m_iCounterFrequency);
 
-    fElapsedTime = ((double) iTimeTaken) / 
-                   ((double) App.m_iCounterFrequency);
+    // OnPluginTick timer
+    iTimeTaken = timeNow.QuadPart - hp_timeLastTickFired.QuadPart;
+    fElapsedTick = ((double) iTimeTaken) / ((double) App.m_iCounterFrequency);
     }
-  else
+  else  // 1-second resolution if no high-resolution timer available
     {
-    fElapsedTime = (double) timeLastTimerFired.GetTime () - (double) CTime::GetCurrentTime().GetTime ();
+    fElapsedTime = (double) CTime::GetCurrentTime().GetTime () - (double) timeLastTimerFired.GetTime ();
+    fElapsedTick = (double) CTime::GetCurrentTime().GetTime () - (double) timeLastTickFired.GetTime ();
     }
 
   // first do tick timers
 
-  if (fElapsedTime > 0.040)    // more than 40 milliseconds has elapsed
+  if (fElapsedTick > 0.040)    // more than 40 milliseconds has elapsed
     {
 	  for (POSITION pos = App.m_pWorldDocTemplate->GetFirstDocPosition(); pos;)
       {
       CMUSHclientDoc * pDoc = (CMUSHclientDoc*) App.m_pWorldDocTemplate->GetNextDoc(pos);
       pDoc->CheckTickTimers ();
-      }
-    }
+      }  // end for
 
-  double fInterval = 0.10;   // 10th of a second
+    // so we know when we prccessed this tick
+    if (App.m_iCounterFrequency)
+      QueryPerformanceCounter (&hp_timeLastTickFired);
+    else
+      timeLastTickFired = CTime::GetCurrentTime();
+
+    }  // if time for OnPluginTick
+
+  double fInterval = 0.10;   // 10th of a second (if m_nTimerInterval is zero)
 
   // if non-zero interval is seconds
   if (App.m_nTimerInterval)
