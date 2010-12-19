@@ -1229,17 +1229,21 @@ void CPrefsP4::OnStandardPreamble()
   m_ctlPreamble.SetWindowText (
     "<html>" NL 
     " <head>" NL  
+
     " <title>Log of %N session</title>" NL  
+
+    " <style type=\"text/css\">" NL
+    "   body {background-color: black;}" NL
+    " </style>" NL 
+
     " </head>" NL  
     " <body>" NL  
-    "   <table border=0 cellpadding=5 bgcolor=\"#000000\">" NL   
-    "   <tr><td>" NL   
-    "   <pre><code><font size=2 face=\"FixedSys, Lucida Console, Courier New, Courier\">" NL  
+    "   <pre><code>" NL
+    "   <font size=2 face=\"FixedSys, Lucida Console, Courier New, Courier\">" NL  
     );
 
   m_ctlPostamble.SetWindowText (
     "</font></code></pre>" NL 
-    "</td></tr></table>" NL 
     "</body>" NL 
     "</html>" NL 
           );
