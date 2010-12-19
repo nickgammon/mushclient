@@ -355,6 +355,9 @@ void CPluginsDlg::OnAddPlugin()
       m_pDoc->InternalLoadPlugin (strPath);
       bChanged = true;
 
+      m_pDoc->Note (TFormat ("Added plugin %s",
+                          (LPCTSTR) strPath));
+
       } // end of try block
 
     catch (CFileException * e)
@@ -420,7 +423,7 @@ int nItem,
       m_pDoc->m_PluginList.erase (pit);  // remove from list
       delete p;   // delete the plugin
       bChanged = true;
-      m_pDoc->Note (TFormat ("Deleted plugin %s (%s)",
+      m_pDoc->Note (TFormat ("Removed plugin %s (%s)",
                           (LPCTSTR) strPluginName, (LPCTSTR) strPluginID));
       }
     else
