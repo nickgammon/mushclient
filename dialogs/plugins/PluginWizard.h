@@ -119,6 +119,9 @@ public:
 
   CMUSHclientDoc * m_doc;           // which document this belongs to
 
+  int m_last_col;                   // which column to sort on
+  BOOL m_reverse;                   // if true, reverse sort
+
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CPluginWizardPage3)
@@ -136,6 +139,8 @@ protected:
 	afx_msg void OnSelectAll();
 	afx_msg void OnSelectNone();
 	//}}AFX_MSG
+	afx_msg void OnColumnclickTriggersList(NMHDR* pNMHDR, LRESULT* pResult);
+
 	DECLARE_MESSAGE_MAP()
 
 };
@@ -161,6 +166,9 @@ public:
 
   CMUSHclientDoc * m_doc;           // which document this belongs to
 
+  int m_last_col;                   // which column to sort on
+  BOOL m_reverse;                   // if true, reverse sort
+
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CPluginWizardPage4)
@@ -178,6 +186,8 @@ protected:
 	afx_msg void OnSelectAll();
 	afx_msg void OnSelectNone();
 	//}}AFX_MSG
+	afx_msg void OnColumnclickAliasesList(NMHDR* pNMHDR, LRESULT* pResult);
+
 	DECLARE_MESSAGE_MAP()
 
 };
@@ -203,6 +213,9 @@ public:
 
   CMUSHclientDoc * m_doc;           // which document this belongs to
 
+  int m_last_col;                   // which column to sort on
+  BOOL m_reverse;                   // if true, reverse sort
+
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CPluginWizardPage5)
@@ -220,6 +233,7 @@ protected:
 	afx_msg void OnSelectAll();
 	afx_msg void OnSelectNone();
 	//}}AFX_MSG
+	afx_msg void OnColumnclickTimersList(NMHDR* pNMHDR, LRESULT* pResult);
 	DECLARE_MESSAGE_MAP()
 
 };
@@ -247,6 +261,9 @@ public:
 
   CMUSHclientDoc * m_doc;           // which document this belongs to
 
+  int m_last_col;                   // which column to sort on
+  BOOL m_reverse;                   // if true, reverse sort
+
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CPluginWizardPage6)
@@ -264,6 +281,7 @@ protected:
 	afx_msg void OnSelectAll();
 	afx_msg void OnSelectNone();
 	//}}AFX_MSG
+	afx_msg void OnColumnclickVariablesList(NMHDR* pNMHDR, LRESULT* pResult);
 	DECLARE_MESSAGE_MAP()
 
 };

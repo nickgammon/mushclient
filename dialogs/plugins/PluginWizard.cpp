@@ -141,6 +141,7 @@ BEGIN_MESSAGE_MAP(CPluginWizardPage2, CPropertyPage)
   ON_MESSAGE(WM_KICKIDLE, OnKickIdle)
   ON_UPDATE_COMMAND_UI(IDC_GENERATE_HELP, OnUpdateNeedDescription)
   ON_UPDATE_COMMAND_UI(IDC_HELP_ALIAS, OnUpdateNeedDescription)
+
 END_MESSAGE_MAP()
 
 
@@ -178,6 +179,10 @@ CPluginWizardPage3::CPluginWizardPage3() : CPropertyPage(CPluginWizardPage3::IDD
 	//{{AFX_DATA_INIT(CPluginWizardPage3)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
+
+  m_last_col            = 0;
+  m_reverse             = FALSE;
+
 }
 
 CPluginWizardPage3::~CPluginWizardPage3()
@@ -198,6 +203,8 @@ BEGIN_MESSAGE_MAP(CPluginWizardPage3, CPropertyPage)
 	ON_BN_CLICKED(IDC_SELECT_ALL, OnSelectAll)
 	ON_BN_CLICKED(IDC_SELECT_NONE, OnSelectNone)
 	//}}AFX_MSG_MAP
+	ON_NOTIFY(LVN_COLUMNCLICK, IDC_TRIGGER_LIST, OnColumnclickTriggersList)
+
 END_MESSAGE_MAP()
 
 
@@ -278,6 +285,74 @@ void CPluginWizardPage3::OnOK()
 	CPropertyPage::OnOK();
 }
 
+static int CALLBACK CompareFunc_p3 ( LPARAM lParam1, 
+                                     LPARAM lParam2,
+                                     LPARAM lParamSort)
+  { 
+
+
+CTrigger * trigger1 = (CTrigger *) lParam1;
+CTrigger * trigger2 = (CTrigger *) lParam2;
+
+ ASSERT_VALID (trigger1);
+ ASSERT( trigger1->IsKindOf( RUNTIME_CLASS( CTrigger ) ) );
+ ASSERT_VALID (trigger2);
+ ASSERT( trigger2->IsKindOf( RUNTIME_CLASS( CTrigger ) ) );
+
+int iResult;
+
+  // we do it in this order so that if triggers have the same group then
+  // we sort by label, etc.
+
+  switch (lParamSort & 0x0F)   // which sort key
+    {
+    case 3: iResult = trigger1->strGroup.CompareNoCase (trigger2->strGroup); 
+                      if (iResult)
+                        break;
+
+    case 0: iResult = trigger1->strLabel.CompareNoCase (trigger2->strLabel); 
+                      if (iResult)
+                        break;
+
+    case 1: iResult = trigger1->trigger.CompareNoCase (trigger2->trigger); 
+                      if (iResult)
+                        break;
+
+    case 2: iResult = trigger1->contents.CompareNoCase (trigger2->contents); 
+                      break;
+    default: iResult = 0;
+    } // end of switch
+
+// if reverse sort wanted, reverse sense of result
+
+  if (lParamSort >> 8)
+    iResult *= -1;
+
+  return iResult;
+
+
+  } // end of CompareFunc_p3
+
+
+void CPluginWizardPage3::OnColumnclickTriggersList(NMHDR* pNMHDR, LRESULT* pResult) 
+  {
+	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+
+int col = pNMListView->iSubItem;
+
+  if (col == m_last_col)
+    m_reverse = !m_reverse;
+  else
+    m_reverse = FALSE;
+
+  m_last_col = col;
+
+  m_ctlList.SortItems (CompareFunc_p3, (LPARAM) (m_reverse << 8) | col); 
+	
+	*pResult = 0;
+
+  }   // end of CPluginWizardPage3::OnColumnclickTriggersList
+
 /////////////////////////////////////////////////////////////////////////////
 // CPluginWizardPage4 property page
 
@@ -286,6 +361,10 @@ CPluginWizardPage4::CPluginWizardPage4() : CPropertyPage(CPluginWizardPage4::IDD
 	//{{AFX_DATA_INIT(CPluginWizardPage4)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
+
+  m_last_col            = 0;
+  m_reverse             = FALSE;
+
 }
 
 CPluginWizardPage4::~CPluginWizardPage4()
@@ -306,6 +385,7 @@ BEGIN_MESSAGE_MAP(CPluginWizardPage4, CPropertyPage)
 	ON_BN_CLICKED(IDC_SELECT_ALL, OnSelectAll)
 	ON_BN_CLICKED(IDC_SELECT_NONE, OnSelectNone)
 	//}}AFX_MSG_MAP
+	ON_NOTIFY(LVN_COLUMNCLICK, IDC_ALIAS_LIST, OnColumnclickAliasesList)
 END_MESSAGE_MAP()
 
 BOOL CPluginWizardPage4::OnInitDialog() 
@@ -388,6 +468,74 @@ void CPluginWizardPage4::OnOK()
 	CPropertyPage::OnOK();
 }
 
+static int CALLBACK CompareFunc_p4 ( LPARAM lParam1, 
+                                     LPARAM lParam2,
+                                     LPARAM lParamSort)
+  { 
+
+
+CAlias * alias1 = (CAlias *) lParam1;
+CAlias * alias2 = (CAlias *) lParam2;
+
+ ASSERT_VALID (alias1);
+ ASSERT( alias1->IsKindOf( RUNTIME_CLASS( CAlias ) ) );
+ ASSERT_VALID (alias2);
+ ASSERT( alias2->IsKindOf( RUNTIME_CLASS( CAlias ) ) );
+
+int iResult;
+
+  // we do it in this order so that if aliass have the same group then
+  // we sort by label, etc.
+
+  switch (lParamSort & 0x0F)   // which sort key
+    {
+    case 3: iResult = alias1->strGroup.CompareNoCase (alias2->strGroup); 
+                      if (iResult)
+                        break;
+
+    case 0: iResult = alias1->strLabel.CompareNoCase (alias2->strLabel); 
+                      if (iResult)
+                        break;
+
+    case 1: iResult = alias1->name.CompareNoCase (alias2->name); 
+                      if (iResult)
+                        break;
+
+    case 2: iResult = alias1->contents.CompareNoCase (alias2->contents); 
+                      break;
+    default: iResult = 0;
+    } // end of switch
+
+// if reverse sort wanted, reverse sense of result
+
+  if (lParamSort >> 8)
+    iResult *= -1;
+
+  return iResult;
+
+
+  } // end of CompareFunc_p4
+
+
+void CPluginWizardPage4::OnColumnclickAliasesList(NMHDR* pNMHDR, LRESULT* pResult) 
+  {
+	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+
+int col = pNMListView->iSubItem;
+
+  if (col == m_last_col)
+    m_reverse = !m_reverse;
+  else
+    m_reverse = FALSE;
+
+  m_last_col = col;
+
+  m_ctlList.SortItems (CompareFunc_p4, (LPARAM) (m_reverse << 8) | col); 
+	
+	*pResult = 0;
+
+  }   // end of CPluginWizardPage4::OnColumnclickAliasesList
+
 /////////////////////////////////////////////////////////////////////////////
 // CPluginWizardPage5 property page
 
@@ -396,6 +544,10 @@ CPluginWizardPage5::CPluginWizardPage5() : CPropertyPage(CPluginWizardPage5::IDD
 	//{{AFX_DATA_INIT(CPluginWizardPage5)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
+
+  m_last_col            = 0;
+  m_reverse             = FALSE;
+
 }
 
 CPluginWizardPage5::~CPluginWizardPage5()
@@ -416,6 +568,7 @@ BEGIN_MESSAGE_MAP(CPluginWizardPage5, CPropertyPage)
 	ON_BN_CLICKED(IDC_SELECT_ALL, OnSelectAll)
 	ON_BN_CLICKED(IDC_SELECT_NONE, OnSelectNone)
 	//}}AFX_MSG_MAP
+	ON_NOTIFY(LVN_COLUMNCLICK, IDC_TIMER_LIST, OnColumnclickTimersList)
 END_MESSAGE_MAP()
  
 BOOL CPluginWizardPage5::OnInitDialog() 
@@ -521,6 +674,104 @@ void CPluginWizardPage5::OnOK()
 	CPropertyPage::OnOK();
 }
 
+static int CALLBACK CompareFunc_p5 ( LPARAM lParam1, 
+                                     LPARAM lParam2,
+                                     LPARAM lParamSort)
+  { 
+
+
+CTimer * timer1 = (CTimer *) lParam1;
+CTimer * timer2 = (CTimer *) lParam2;
+
+ ASSERT_VALID (timer1);
+ ASSERT( timer1->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
+ ASSERT_VALID (timer2);
+ ASSERT( timer2->IsKindOf( RUNTIME_CLASS( CTimer ) ) );
+
+int iResult = 0;
+CmcDateTimeSpan ts1,
+                ts2;
+
+  // we do it in this order so that if timers have the same group then
+  // we sort by label, etc.
+
+  switch (lParamSort & 0x0F)   // which sort key
+    {
+    case 3: iResult = timer1->strGroup.CompareNoCase (timer2->strGroup); 
+                      if (iResult)
+                        break;
+
+    case 0: iResult = timer1->strLabel.CompareNoCase (timer2->strLabel); 
+                      if (iResult)
+                        break;
+
+    case 1: 
+
+            if (timer1->iType == CTimer::eAtTime)
+              ts1 = CmcDateTimeSpan (0, 
+                              timer1->iAtHour, 
+                              timer1->iAtMinute, 
+                              timer1->fAtSecond);
+            else
+              ts1 = CmcDateTimeSpan (0, 
+                              timer1->iEveryHour, 
+                              timer1->iEveryMinute, 
+                              timer1->fEverySecond);
+
+            if (timer2->iType == CTimer::eAtTime)
+              ts2 = CmcDateTimeSpan (0, 
+                              timer2->iAtHour, 
+                              timer2->iAtMinute, 
+                              timer2->fAtSecond);
+            else
+              ts2 = CmcDateTimeSpan (0, 
+                              timer2->iEveryHour, 
+                              timer2->iEveryMinute, 
+                              timer2->fEverySecond);
+            if (ts1 < ts2)
+              iResult = -1;
+            else if (ts1 > ts2)
+              iResult = 1;
+
+            if (iResult)
+              break;
+
+    case 2: iResult = timer1->strContents.CompareNoCase (timer2->strContents); 
+                      break;
+    default: iResult = 0;
+    } // end of switch
+
+// if reverse sort wanted, reverse sense of result
+
+  if (lParamSort >> 8)
+    iResult *= -1;
+
+  return iResult;
+
+
+  } // end of CompareFunc_p5
+
+
+void CPluginWizardPage5::OnColumnclickTimersList(NMHDR* pNMHDR, LRESULT* pResult) 
+  {
+	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+
+int col = pNMListView->iSubItem;
+
+  if (col == m_last_col)
+    m_reverse = !m_reverse;
+  else
+    m_reverse = FALSE;
+
+  m_last_col = col;
+
+  m_ctlList.SortItems (CompareFunc_p5, (LPARAM) (m_reverse << 8) | col); 
+	
+	*pResult = 0;
+
+  }   // end of CPluginWizardPage5::OnColumnclickTimersList
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CPluginWizardPage6 property page
 
@@ -529,6 +780,10 @@ CPluginWizardPage6::CPluginWizardPage6() : CPropertyPage(CPluginWizardPage6::IDD
 	//{{AFX_DATA_INIT(CPluginWizardPage6)
 	m_bSaveState = FALSE;
 	//}}AFX_DATA_INIT
+
+  m_last_col            = 0;
+  m_reverse             = FALSE;
+
 }
 
 CPluginWizardPage6::~CPluginWizardPage6()
@@ -550,6 +805,7 @@ BEGIN_MESSAGE_MAP(CPluginWizardPage6, CPropertyPage)
 	ON_BN_CLICKED(IDC_SELECT_ALL, OnSelectAll)
 	ON_BN_CLICKED(IDC_SELECT_NONE, OnSelectNone)
 	//}}AFX_MSG_MAP
+	ON_NOTIFY(LVN_COLUMNCLICK, IDC_VARIABLE_LIST, OnColumnclickVariablesList)
 END_MESSAGE_MAP()
 
 BOOL CPluginWizardPage6::OnInitDialog() 
@@ -634,6 +890,68 @@ void CPluginWizardPage6::OnOK()
 
 	CPropertyPage::OnOK();
 }
+
+static int CALLBACK CompareFunc_p6 ( LPARAM lParam1, 
+                                     LPARAM lParam2,
+                                     LPARAM lParamSort)
+  { 
+
+
+CVariable * variable1 = (CVariable *) lParam1;
+CVariable * variable2 = (CVariable *) lParam2;
+
+ ASSERT_VALID (variable1);
+ ASSERT( variable1->IsKindOf( RUNTIME_CLASS( CVariable ) ) );
+ ASSERT_VALID (variable2);
+ ASSERT( variable2->IsKindOf( RUNTIME_CLASS( CVariable ) ) );
+
+int iResult;
+
+  // we do it in this order so that if variables have the same group then
+  // we sort by label, etc.
+
+  switch (lParamSort & 0x0F)   // which sort key
+    {
+    case 0: iResult = variable1->strLabel.CompareNoCase (variable2->strLabel); 
+                      if (iResult)
+                        break;
+
+    case 1: iResult = variable1->strContents.CompareNoCase (variable2->strContents); 
+                      if (iResult)
+                        break;
+
+    default: iResult = 0;
+    } // end of switch
+
+// if reverse sort wanted, reverse sense of result
+
+  if (lParamSort >> 8)
+    iResult *= -1;
+
+  return iResult;
+
+
+  } // end of CompareFunc_p6
+
+
+void CPluginWizardPage6::OnColumnclickVariablesList(NMHDR* pNMHDR, LRESULT* pResult) 
+  {
+	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+
+int col = pNMListView->iSubItem;
+
+  if (col == m_last_col)
+    m_reverse = !m_reverse;
+  else
+    m_reverse = FALSE;
+
+  m_last_col = col;
+
+  m_ctlList.SortItems (CompareFunc_p6, (LPARAM) (m_reverse << 8) | col); 
+	
+	*pResult = 0;
+
+  }   // end of CPluginWizardPage6::OnColumnclickVariablesList
 
 /////////////////////////////////////////////////////////////////////////////
 // CPluginWizardPage7 property page
