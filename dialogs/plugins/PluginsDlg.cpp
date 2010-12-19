@@ -408,9 +408,13 @@ int nItem,
 
     if (pit != m_pDoc->m_PluginList.end ())
       {
+      CString strPluginID = p->m_strID;
+      CString strPluginName = p->m_strName;
       m_pDoc->m_PluginList.erase (pit);  // remove from list
       delete p;   // delete the plugin
       bChanged = true;
+      m_pDoc->Note (TFormat ("Deleted plugin %s (%s)",
+                          (LPCTSTR) strPluginName, (LPCTSTR) strPluginID));
       }
     else
       ::TMessageBox ("Plugin cannot be found, unexpectedly.", MB_ICONEXCLAMATION); 
@@ -485,7 +489,10 @@ for (int nItem = -1;
 
     if (pit != m_pDoc->m_PluginList.end ())
       {
-      CString strName = p->m_strSource;
+      CString strName       = p->m_strSource;
+      CString strPluginID   = p->m_strID;
+      CString strPluginName = p->m_strName;
+
       m_pDoc->m_PluginList.erase (pit);  // remove from list
       delete p;   // delete the plugin
 
@@ -495,6 +502,9 @@ for (int nItem = -1;
 
         // now reload it
         m_pDoc->InternalLoadPlugin (strName);
+
+        m_pDoc->Note (TFormat ("Reinstalled plugin %s (%s)",
+                            (LPCTSTR) strPluginName, (LPCTSTR) strPluginID));
 
 
         } // end of try block
