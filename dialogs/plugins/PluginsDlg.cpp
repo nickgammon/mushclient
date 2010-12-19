@@ -765,11 +765,14 @@ for (int nItem = -1;
   if (pit == m_pDoc->m_PluginList.end ())
       continue;
 
+  bool bWasEnabled = p->m_bEnabled;
+
   m_pDoc->EnablePlugin (p->m_strID, TRUE);
   bChanged = true;
 
-  m_pDoc->Note (TFormat ("Enabled plugin %s (%s)",
-                      (LPCTSTR) p->m_strName, (LPCTSTR) p->m_strID));
+  if (!bWasEnabled)
+    m_pDoc->Note (TFormat ("Enabled plugin %s (%s)",
+                        (LPCTSTR) p->m_strName, (LPCTSTR) p->m_strID));
 
   } // end of loop
 	
@@ -797,11 +800,14 @@ for (int nItem = -1;
   if (pit == m_pDoc->m_PluginList.end ())
       continue;                          
 
+  bool bWasEnabled = p->m_bEnabled;
+
   m_pDoc->EnablePlugin (p->m_strID, FALSE);
   bChanged = true;
 
-  m_pDoc->Note (TFormat ("Disabled plugin %s (%s)",
-                      (LPCTSTR) p->m_strName, (LPCTSTR) p->m_strID));
+  if (bWasEnabled)
+    m_pDoc->Note (TFormat ("Disabled plugin %s (%s)",
+                        (LPCTSTR) p->m_strName, (LPCTSTR) p->m_strID));
 
   } // end of loop
 
