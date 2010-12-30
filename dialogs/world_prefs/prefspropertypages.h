@@ -1535,7 +1535,7 @@ public:
   virtual CString GetGroup (CObject * pItem) const { return ""; };    // get item group
   virtual CString GetDescription (CObject * pItem) const { return ""; };   // get item description for tree control
   virtual int     GetSequence (CObject * pItem) const { return 0; };      // get item sequence for sorting
-  virtual CString GetFindText (CObject * pItem) const { return ""; };     // get text for searching on
+  virtual CString GetFindText (CObject * pItem) const;     // get text for searching on
 
   // list management - add the item to the list control
   virtual int AddItem (CObject * pItem,                  // add one item to the list control

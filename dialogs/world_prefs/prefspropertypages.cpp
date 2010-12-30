@@ -7766,6 +7766,21 @@ void CPrefsP18::OnFindNext()
   DoFind (true);
 }   // end of CPrefsP18::OnFindNext
 
+CString CPrefsP18::GetFindText (CObject * pItem) const 
+  {
+  CVariable * variable_item = (CVariable *) pItem;
+
+  ASSERT_VALID (variable_item);
+  ASSERT( variable_item->IsKindOf( RUNTIME_CLASS( CVariable ) ) );
+
+
+  CString strResult = variable_item->strContents;
+  
+  strResult += "\t" + variable_item->strLabel;
+
+  return strResult;
+
+  }   // end of CPrefsP18::GetFindText 
 
 BOOL CPrefsP18::OnInitDialog() 
 {
