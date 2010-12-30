@@ -103,6 +103,7 @@ class CPlugin :public CObject
   bool m_bGlobal;               // true if plugin was loaded from global prefs
   long m_iLoadOrder;            // sequence in which plugins are processed
   LONGLONG m_iScriptTimeTaken;  // time taken to execute scripts
+  bool m_bSavingStateNow;       // to prevent infinite loops
 
   // Lua note - for Lua the DISPID is a flag indicating whether or not
   // the routine exists. It is set to DISPID_UNKNOWN if the last call caused an error

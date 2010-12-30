@@ -165,6 +165,7 @@ CPlugin::CPlugin (CMUSHclientDoc * pDoc)
   m_bGlobal = false;
   m_iLoadOrder = 0;
   m_iScriptTimeTaken = 0;
+  m_bSavingStateNow = false;
 
   } // end of constructor
 
@@ -784,8 +785,14 @@ bool bError = true;
   CPlugin * oldPlugin = m_pDoc->m_CurrentPlugin;
   m_pDoc->m_CurrentPlugin = this;
 
+  // prevent infinite loops
+  m_bSavingStateNow = true;
+
   CScriptCallInfo callinfo (ON_PLUGIN_SAVE_STATE, m_PluginCallbacks [ON_PLUGIN_SAVE_STATE]);
   ExecutePluginScript (callinfo);
+
+  // are not saving state now
+  m_bSavingStateNow = false;
 
   strFilename += m_pDoc->m_strWorldID;    // world ID
   strFilename += "-";

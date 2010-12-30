@@ -500,6 +500,11 @@ long CMUSHclientDoc::SaveState()
   if (!m_CurrentPlugin)                            
 	  return eNotAPlugin;                       
 
+  // if we are already saving the state, don't do it again
+  if (m_CurrentPlugin->m_bSavingStateNow) 
+    return ePluginCouldNotSaveState;
+
+  // save the state
   if (m_CurrentPlugin->SaveState (true))
     return ePluginCouldNotSaveState;
 
