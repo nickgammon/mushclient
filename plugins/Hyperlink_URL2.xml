@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE muclient>
-<!-- Saved on Saturday, 1 April 2006, 12:29 PM -->
-<!-- MuClient version 3.73 -->
+<!-- Saved on Wednesday, 22 December 2010, 4:25 PM -->
+<!-- MuClient version 4.61 -->
 <muclient>
 <plugin 
   name="Hyperlink_URL2" 
   author="Sketch" 
   id="520bc4f29806f7af0017985f" 
   language="Lua" 
-  purpose="Makes URLs on a line into hyperlinks." 
+  purpose="Changes URLs on a line into hyperlinks." 
   date_written="2006-04-01" 
-  requires="3.72" 
-  version="1.0">
+  date_modified="2010-12-22"
+  requires="4.42"
+  version="3.1">
 
 <description trim="y">
-
 <![CDATA[
-Detects text starting with HTTP:xxx and makes that part into a hyperlink.
-Limits: HTTP:// and the following character must be the same color
+Detects URLs and turns them into hyperlinks.
 ]]>
 </description>
 
@@ -28,11 +27,11 @@ Limits: HTTP:// and the following character must be the same color
 <triggers>
   <trigger
     enabled="y"
-    match="(.*)((https?|mailto)://(?:[\w\d\.\?\/\%#@!&quot;&amp;_]+[/\w\d#]))(.*)$"
+    match="(?:https?://|mailto:)\S*[\w/=@#\-\?]"
     omit_from_output="y"
     ignore_case="y"
     regexp="y"
-    script="OnHyperlink"
+    script="onURL"
     sequence="100"
   >
   </trigger>
@@ -41,75 +40,183 @@ Limits: HTTP:// and the following character must be the same color
 <!--  Script  -->
 <script>
 <![CDATA[
-function OnHyperlink (name, line, wildcards, styles)
+--[[
+   -- What it is --
+A URL hyperlinker for MUSHclient.
 
-  hyperlinks = {}
-  newstyle = {}
-  i = 1
-  hyperlinkcount = 0
-  doingURL = 0
-  while i <= table.getn(styles) do -- Doesn't use pairs() because of problems with field-injection.
-    if doingURL == 0 then
-     -- **** Not a URL **** --
-      cut = string.find(styles[i].text, "([hHtTpPsSmMaAiIlLoO]+://[%S]*[%w#/])")
-      if cut == nil then -- If there's nothing to cut, copy the whole line
-        table.insert(newstyle, {textcolour = styles[i].textcolour
-                               ,backcolour = styles[i].backcolour
-                               ,style = styles[i].style
-                               ,text = styles[i].text})
-      else
-        table.insert(newstyle, {textcolour = styles[i].textcolour
-                               ,backcolour = styles[i].backcolour
-                               ,style = styles[i].style
-                               ,text = string.sub(styles[i].text, 1, cut - 1)})
-        table.insert(styles, i + 1, {textcolour = styles[i].textcolour
-                                ,backcolour = styles[i].backcolour
-                                ,style = styles[i].style
-                                ,text = string.sub(styles[i].text, cut)})
-        doingURL = 1
-        hyperlinkcount = hyperlinkcount + 1
-      end -- if
-    else -- **** IS a URL **** --
-      -- Search for a URL. If the string is completely a URL...
-      -- Jump to the next table field. And keep doing such.
-      cut, length, temp = string.find(styles[i].text, "^([%S]*[%w#/])")
-      if cut ~= nil then
-        if hyperlinks[hyperlinkcount] ~= nil then
-          hyperlinks[hyperlinkcount] = hyperlinks[hyperlinkcount] .. temp
-        else
-          hyperlinks[hyperlinkcount] = temp
-        end -- if
-        table.insert(newstyle, {textcolour = styles[i].textcolour
-                               ,backcolour = styles[i].backcolour
-                               ,style = styles[i].style
-                               ,text = string.sub(styles[i].text, 1, length)
-                               ,hypernumber = hyperlinkcount})
-        styles[i].text = string.sub(styles[i].text, length + 1)
-        if styles[i].text ~= "" then
-          i = i - 1    -- The first hyperlink was cut, so scan the same field for more.
-          doingURL = 0
-        else
-          doingURL = 1
-        end
-      else 
-        doingURL = 0
-        i = i - 1
-      end -- if (cut)
-    end -- if (doingURL)
-    i = i + 1
-  end -- while
+	-- Why it's needed --
+We want to hyperlink all the URLs in a line, while preserving the original style and color of the line. However, due to how wildcard matching and triggers work, we can't make a trigger to match each URL on a line and hyperlink it.
+What do we do?
 
-  for x, y in pairs (newstyle) do -- x is the style number, y is the style-data table.
-   NoteStyle (y.style)
-   if y.hypernumber ~= nil then
-     Hyperlink(hyperlinks[y.hypernumber], y.text, "Go to " .. hyperlinks[y.hypernumber]
-               , RGBColourToName(y.textcolour), RGBColourToName(y.backcolour), 1)
-   else
-     ColourTell (RGBColourToName(y.textcolour), RGBColourToName(y.backcolour), y.text)
-   end
-  end -- while
-  Note ("") -- Insert a true newline at the end of the string.
-end -- of hyperlink
+	-- How it works --
+MUSHclient provides the plaintext of the whole line to scripts called from triggers, as the argument "line". MUSHclient also provides an array called "styles" to Lua scripts called from triggers. The styles array contains a structure (or "dictionary") for each styled segment of the whole line the trigger matched. The structure is: {textcolour, backcolour, style, text, length} where textcolour and backcolour are the foreground/background color, style is a set of OR-ed flags bold=1, underline=2, blink=4, text is the text in that segment, and length is the length of the segment. It's worth noting that the 'styles' array is contiguous, and the segments it contains span the whole line. Even segments with no special styling are included, and each style begins immediately after the previous one ends.
+Using these two arguments, we can compose a line with all URLs hyperlinked, while preserving colors and other formatting.
+
+Short breakdown:
+The script takes a matched trigger line and breaks it up in two different ways: An array of segments based on styling is made, and an array of segments based on URLs is made. Using those two arrays, the segments of the line are pieced back together, placing the styling on the hyperlinks.
+
+Long breakdown: (function names in parentheses)
+1) Trigger on a line that contains at least one URL-like item. The 'styles' array is passed into the script, as well as the plaintext line.
+
+2) Find all the URLs in the plaintext line, number them, and record their start/end points and text. We now have an array of (to-be) hyperlinks numbered 1-N, with start/end positions for each.
+(findURLs)
+
+3) Merge the start and end points of all the styles and hyperlinks into a sorted set. We now have a list of all points where either or both occurs:
+	* A style changes (even to/from 'no styling').
+	* A hyperlink begins or ends.
+(getpoints)
+
+4) Convert the start and end points into 'slices' of the text line. Disregarding the text itself, each of these slices is homogenous: the style is the same through the whole slice, and the slice is either not part of any hyperlink, or is part of only one hyperlink.
+(getslices)
+
+5) Iterate over the slices, recording style/hyperlink number/text for each slice
+	into an array named 'reformatted'.
+(reformat)
+
+6) Iterate over the 'reformatted' array. If the slice contains part of a hyperlink,
+	print it as such. Although the slice may contain only part of a hyperlink, the
+	whole URL was stored in the 'hyperlinks' array (in step 2), and can be looked
+	up by the slice's stored hyperlink number.
+
+You now have a line with detected URLs changed into hyperlinks, and the original styling preserved.
+--]]
+
+-- CODE SECTION --
+
+-- Returns an array {start, end, text}
+function findURLs(text)
+	local URLs = {}
+	local start, position = 0, 0
+	-- "rex" is a table supplied by MUSHclient for PCRE functionality.
+	local re = rex.new("(?:https?://|mailto:)\\S*[\\w/=@#\\-\\?]")
+	re:gmatch(text,
+		function (link, _)
+			start, position = string.find(text, link, position, true)
+			table.insert(URLs, {start=start, stop=position, text=link})
+		end
+	)
+	return URLs
+end -- function findURL
+
+-- Returns a table of points where formatting should change in the new string.
+function getpoints(styles, hyperlinks)
+	local points = {}
+	local unique_points = {}
+	local pos = 1
+	for _,v in pairs(styles) do
+		table.insert(points, pos)
+		table.insert(points, pos + v.length)
+		pos = pos + v.length
+	end
+	-- The last value of points is now 1 past the end of the string.
+
+	for _,v in pairs(hyperlinks) do
+		table.insert(points, v.start)
+		table.insert(points, v.stop + 1)
+		-- The hyperlink itself is at v.stop. v.stop+1 is where the change is.
+	end
+
+	table.sort(points)
+	return unique_array(points)
+end -- function getpoints
+
+-- Returns an array with consecutive duplicate items removed.
+function unique_array(a)
+	local uniq, current = {}, nil
+	for _,v in pairs(a) do
+		if v ~= current then
+			table.insert(uniq, v)
+			current = v
+		end
+	end
+return uniq
+end -- function unique_array
+
+-- Given an array of numbers, return an array of pairs, to be used in string.sub().
+-- Each pair starts at the original array's key, and ends before the next key.
+-- Example: [1, 5, 9, 13] --> [{1,4},{5,8},{9,12}]
+function getslices(points)
+	local newpoints = {}
+	for i = 1, #points - 1, 1 do
+		table.insert(newpoints, {start=points[i], stop=points[i+1] - 1})
+	end
+	return newpoints
+end -- function getslices
+
+-- Returns an array of
+-- {startpos, endpos, textcolour, backcolour, style, hyperlink_number}
+function reformat(slices, styles, hyperlinks)
+	local styles_i, hyperlinks_i = 1, 1
+	local hyperlink_number = 0
+	local reformatted = {}
+	-- nextstyle is set at the character where the next style begins.
+	local nextstyle = styles[1].length + 1
+
+	-- Add a fake hyperlink past the end of the string at the end of the array.
+	-- This way, we don't have to keep checking (hyperlinks_i > #hyperlinks).
+	table.insert(hyperlinks,{start=slices[#slices].stop + 1,stop=slices[#slices].stop + 1,text=""})
+
+	for _,v in pairs(slices) do
+
+		-- v.start is our 'current position'.
+		-- Make sure we're using the correct style
+		if v.start >= nextstyle then
+			nextstyle = v.start + styles[styles_i + 1].length
+			styles_i = styles_i + 1
+		end
+
+		-- If we've passed the hyperlink marked by hyperlinks_i, increment it.
+		if v.start > hyperlinks[hyperlinks_i].stop then
+			hyperlinks_i = hyperlinks_i + 1
+		end
+
+		-- The hyperlink_number is set to the hyperlink we're checking for if
+		-- we're at or past its starting position. (In other words, inside it)
+		if v.start >= hyperlinks[hyperlinks_i].start then
+			hyperlink_number = hyperlinks_i
+		else
+			hyperlink_number = 0
+		end
+
+		table.insert(reformatted,
+			{startpoint = v.start
+			,endpoint = v.stop
+			,textcolour = styles[styles_i].textcolour
+			,backcolour = styles[styles_i].backcolour
+			,style = styles[styles_i].style
+			,hyperlink_number = hyperlink_number}
+		)
+	end
+	return reformatted
+end -- function reformat
+
+-- Line: Whole line that contains the trigger, in plaintext.
+-- Styles: [{textcolour, backcolour, text, length, style},...]
+function onURL (name, line, wildcards, styles)
+	local hyperlinks = findURLs(line)
+	local reformatted = reformat(getslices(getpoints(styles,hyperlinks)), styles, hyperlinks)
+
+	for _,v in pairs(reformatted) do
+		NoteStyle(v.style) -- Set style for the segment, regardless of type.
+		if v.hyperlink_number ~= 0 then
+			Hyperlink(
+				hyperlinks[v.hyperlink_number].text -- Hyperlink
+				,string.sub(line, v.startpoint, v.endpoint) -- Displayed text
+				,"Go to " .. hyperlinks[v.hyperlink_number].text -- Hover text
+				,RGBColourToName(v.textcolour) -- Foreground color
+				,RGBColourToName(v.backcolour) -- Background color
+				,1 -- Boolean: Open as a URL?
+			)
+		else
+			ColourTell(
+				RGBColourToName(v.textcolour) -- Foreground color
+				,RGBColourToName(v.backcolour) -- Background color
+				,string.sub(line, v.startpoint, v. endpoint) -- Displayed text
+			)
+		end
+	end
+	Note ("") -- Insert a newline at the end of the string.  
+end -- function onURL
 ]]>
 </script>
 </muclient>
