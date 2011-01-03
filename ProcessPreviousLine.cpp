@@ -696,13 +696,14 @@ assemble the full text of the original line.
             m_pLinePositions [m_LineList.GetCount () / JUMP_SIZE] = NULL;
 
       // version 4.54 - keep notes, even if omitted from output ;)
+      // version 4.72 - also player input
 
       // we have to push_front because we are going through the lines backwards
       // this means the newline goes first. Also we process the styles in reverse order.
 
       CLine* pLine = m_LineList.GetTail ();
 
-      if (pLine->flags & COMMENT)
+      if (pLine->flags & NOTE_OR_COMMAND)
         {
        CString strLine = CString (pLine->text, pLine->len);
        int iCol = 0;
