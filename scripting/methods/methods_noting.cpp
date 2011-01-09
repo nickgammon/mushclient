@@ -555,9 +555,9 @@ void CMUSHclientDoc::Hyperlink(LPCTSTR Action,
 
   // output the link text
   if (strlen (Text) > 0)
-    AddToLine (Text, 0);
+    AddToLine (Text, COMMENT);
   else
-    AddToLine (Action, 0);
+    AddToLine (Action, COMMENT);
 
   // add another style to finish the hyperlink
 
