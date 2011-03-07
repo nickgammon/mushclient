@@ -211,6 +211,7 @@ bool bReplace = false;
   alias_item->bMenu            = (Flags & eAliasMenu) != 0;
   alias_item->bTemporary       = (Flags & eTemporary) != 0;
   alias_item->bOneShot         = (Flags & eAliasOneShot) != 0;
+  alias_item->bKeepEvaluating  = (Flags & eKeepEvaluating) != 0;
   alias_item->strProcedure     = ScriptName;
   alias_item->strLabel         = AliasName;
   alias_item->dispid           = dispid;
