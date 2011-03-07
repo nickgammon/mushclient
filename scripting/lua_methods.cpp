@@ -7118,6 +7118,7 @@ static flags_pair alias_flags[] =
 {
 
   { "Enabled", 1 },  // same as for AddTrigger 
+  { "KeepEvaluating", 8 },  // same as for AddTrigger 
   { "IgnoreAliasCase", 32 },  // ignore case when matching 
   { "OmitFromLogFile", 64 },  // omit this alias from the log file 
   { "RegularExpression", 128 },  // alias is regular expressions 
