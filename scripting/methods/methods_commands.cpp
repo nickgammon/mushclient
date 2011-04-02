@@ -335,8 +335,11 @@ if (m_enable_command_stack &&
 
 CStringList strList;
 
+// change \r\n to \n
+strFixedCommand.Replace (ENDLINE, "\n");
+
 // break up command into a list, terminated by newlines
-StringToList (strFixedCommand, ENDLINE, strList);
+StringToList (strFixedCommand, "\n", strList);
 
 // if list is empty, make sure we send at least one empty line
 if (strList.IsEmpty ())
