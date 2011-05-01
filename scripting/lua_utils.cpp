@@ -359,12 +359,12 @@ static int gen_inputbox (lua_State *L, T & msg)
       } // validate function there
 
     }  // table of extra stuff there
+ 
+  if (strlen (inputmsg) > 1000)
+     luaL_error (L, "inputbox message too long (max 1000 characters)");
 
   // if we leave in & it will make the next letter underlined
   string sInputMsg = FindAndReplace (inputmsg, "&", "&&");
-
-  if (sInputMsg.length () > 1000)
-     luaL_error (L, "inputbox message too long (max 1000 characters)");
 
   if (strlen (inputtitle) > 100)
      luaL_error (L, "inputbox title too long (max 100 characters)");
