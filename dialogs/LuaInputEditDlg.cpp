@@ -134,8 +134,14 @@ BOOL CLuaInputEditDlg::OnInitDialog()
   if (!m_strCancelbuttonLabel.IsEmpty ())
      GetDlgItem (IDCANCEL)->SetWindowText (m_strCancelbuttonLabel);
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+  if (m_bReadOnly)
+    {
+    m_ctlReply.SetReadOnly (TRUE);
+    m_ctlOK.SetFocus ();
+    return FALSE;
+    }
+  else
+	  return TRUE;  // return TRUE unless you set the focus to a control
 }
 
 void CLuaInputEditDlg::OnRemoveSelection()

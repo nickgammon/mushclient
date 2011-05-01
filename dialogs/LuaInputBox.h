@@ -40,6 +40,7 @@ public:
   int m_iReplyWidth;
   int m_iReplyHeight;
   int m_iMaxReplyLength;
+  bool m_bReadOnly;
   CString m_strOKbuttonLabel;
   CString m_strCancelbuttonLabel;
 

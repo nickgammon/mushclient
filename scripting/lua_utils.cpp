@@ -275,6 +275,17 @@ static int get_extra_integer (lua_State *L, const int narg, const char * name)
   return iResult;
   }  // end of get_extra_integer
 
+static bool get_extra_boolean (lua_State *L, const int narg, const char * name)
+  {
+  bool bResult;
+
+  lua_getfield (L, narg, name);
+  bResult = optboolean (L, -1, 0);
+  lua_pop (L, 1);
+
+  return bResult;
+  }  // end of get_extra_boolean
+
 static CString get_extra_string (lua_State *L, const int narg, const char * name)
   {
   CString strResult;
@@ -324,6 +335,7 @@ static int gen_inputbox (lua_State *L, T & msg)
   int iReplyWidth   = 0;
   int iReplyHeight  = 0;
   int iMaxReplyLength = 0;
+  bool bReadOnly = false;
   CString strOKbuttonLabel;
   CString strCancelbuttonLabel;
 
@@ -337,6 +349,7 @@ static int gen_inputbox (lua_State *L, T & msg)
     iReplyWidth           = get_extra_integer (L, nExtraStuffArg, "reply_width");
     iReplyHeight          = get_extra_integer (L, nExtraStuffArg, "reply_height");
     iMaxReplyLength       = get_extra_integer (L, nExtraStuffArg, "max_length");
+    bReadOnly             = get_extra_boolean (L, nExtraStuffArg, "read_only");
     strOKbuttonLabel      = get_extra_string  (L, nExtraStuffArg, "ok_button");
     strCancelbuttonLabel  = get_extra_string  (L, nExtraStuffArg, "cancel_button");
 
@@ -383,6 +396,7 @@ static int gen_inputbox (lua_State *L, T & msg)
   msg.m_iReplyWidth           = iReplyWidth  ;
   msg.m_iReplyHeight          = iReplyHeight ;
   msg.m_iMaxReplyLength       = iMaxReplyLength;
+  msg.m_bReadOnly             = bReadOnly;
   msg.m_strOKbuttonLabel      = strOKbuttonLabel ;
   msg.m_strCancelbuttonLabel  = strCancelbuttonLabel;
 
