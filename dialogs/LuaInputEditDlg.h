@@ -44,13 +44,20 @@ public:
   bool m_bReadOnly;
   CString m_strOKbuttonLabel;
   CString m_strCancelbuttonLabel;
+  int m_iOKbuttonWidth;
+  int m_iCancelbuttonWidth;
+  bool m_bNoDefault;
 
   lua_State *m_L;   // for validating
   int m_iValidationIndex;  // where validation function is
 
+  void Calculate_Button_Positions ();
+  
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CLuaInputEditDlg)
+	public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL

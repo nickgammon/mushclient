@@ -131,6 +131,36 @@ BOOL CLuaInputBox::OnInitDialog()
   if (!m_strCancelbuttonLabel.IsEmpty ())
      GetDlgItem (IDCANCEL)->SetWindowText (m_strCancelbuttonLabel);
 
+  CWnd * ctlOK      = GetDlgItem (IDOK);
+  CWnd * ctlCancel  = GetDlgItem (IDCANCEL);
+
+  int iHeight;
+  int iWidth;
+  WINDOWPLACEMENT buttonwndpl;        // where button is
+
+  // make OK button requested size
+  if (m_iOKbuttonWidth > 0)
+    {
+    GetButtonSize (*ctlOK, iHeight, iWidth);
+    ctlOK->GetWindowPlacement (&buttonwndpl);
+    ctlOK->MoveWindow (buttonwndpl.rcNormalPosition.left, 
+                       buttonwndpl.rcNormalPosition.top,
+                       m_iOKbuttonWidth, iHeight);
+    }
+
+  // make Cancel button requested size
+  if (m_iCancelbuttonWidth > 0)
+    {
+    GetButtonSize (*ctlCancel, iHeight, iWidth);
+    ctlCancel->GetWindowPlacement (&buttonwndpl);
+    ctlCancel->MoveWindow (buttonwndpl.rcNormalPosition.left, 
+                       buttonwndpl.rcNormalPosition.top,
+                       m_iCancelbuttonWidth, iHeight);
+    }
+
+  // layout dialog based on new button etc. sizes
+  Calculate_Button_Positions ();
+
   if (m_bReadOnly)
     {
     m_ctlReply.SetReadOnly (TRUE);
@@ -139,25 +169,28 @@ BOOL CLuaInputBox::OnInitDialog()
     }
   else
 	  return TRUE;  // return TRUE unless you set the focus to a control
-}
+}   // end of CLuaInputBox::OnInitDialog
 
 void CLuaInputBox::OnRemoveSelection()
   {
 
 //  m_ctlReply.SetSel (m_strReply.GetLength (), m_strReply.GetLength ());
 
-  }
-
-// helpful macro for adjusting button positions
-#define ADJUST_BUTTON(ctl, item) \
-  (ctl).MoveWindow          (iBorder + (iWidth * (item - 1)) + (iGap * (item - 1)), \
-                           iTopOfRow, iWidth, iHeight)
+  }   // end of CLuaInputBox::OnRemoveSelection
 
 
-void CLuaInputBox::OnSize(UINT nType, int cx, int cy) 
-{
-	CDialog::OnSize(nType, cx, cy);
-	
+void CLuaInputBox::Calculate_Button_Positions ()
+  {
+
+  int cx, cy;
+
+  CRect rect;
+
+	GetClientRect(&rect);
+
+  cx = rect.right - rect.left;
+  cy = rect.bottom - rect.top;
+
   CWnd * ctlOK      = GetDlgItem (IDOK);
   CWnd * ctlCancel  = GetDlgItem (IDCANCEL);
   CWnd * ctlMessage = GetDlgItem (IDC_INPUT_BOX_MESSAGE);
@@ -172,37 +205,36 @@ void CLuaInputBox::OnSize(UINT nType, int cx, int cy)
       )
     {
     // move OK and Cancel buttons
-    int iHeight;
-    int iWidth;
+    int iOKHeight;
+    int iOKWidth;
+    int iCancelHeight;
+    int iCancelWidth;
     int iBorder = 10;
-
-    const int iButtonCount = 2; // how many buttons
 
     // -----------------------
     // where is OK button?
-    GetButtonSize (*ctlOK, iHeight, iWidth);
+    GetButtonSize (*ctlOK, iOKHeight, iOKWidth);
+    GetButtonSize (*ctlCancel, iCancelHeight, iCancelWidth);
 
-    int iTopOfRow = cy - iHeight - 10;
+    int iTopOfRow = cy - iOKHeight - 10;
 
     // ------------------------
 
-    // calculate gaps for middle buttons - I will assume all buttons are the same size here
+    // calculate gaps for middle buttons  
 
     // gap (between OK and cancel buttons) will be the width of the dialog
-    // less the gaps on the side of those buttons, less the width of the iButtonCount buttons themselves
+    // less the gaps on the side of those buttons, less the width of the buttons themselves
 
-    int iGap = cx - (iBorder * 2) - (iWidth * iButtonCount);
-
-    // we need (iButtonCount - 1) gaps:  OK --1-- Cancel
-    iGap /= iButtonCount - 1;
+    int iGap = cx - (iBorder * 2) - (iOKWidth + iCancelWidth);
 
     // -----------------------
 
+
     // OK button (1)
-    ADJUST_BUTTON (*ctlOK, 1);
+    ctlOK->MoveWindow (iBorder, iTopOfRow, iOKWidth, iOKHeight);
 
     // Cancel Button (2)
-    ADJUST_BUTTON (*ctlCancel, 2);
+    ctlCancel->MoveWindow (iBorder + iOKWidth + iGap, iTopOfRow, iCancelWidth, iCancelHeight);
 
 
     WINDOWPLACEMENT promptwndpl;        // where prompt is
@@ -257,5 +289,26 @@ void CLuaInputBox::OnSize(UINT nType, int cx, int cy)
 
 
     }  // end of controls available
+
+
+  }   // end of CLuaInputBox::Calculate_Button_Positions 
+
+void CLuaInputBox::OnSize(UINT nType, int cx, int cy) 
+{
+	CDialog::OnSize(nType, cx, cy);
+	
+  Calculate_Button_Positions ();
+
 	
 }   // end of CLuaInputBox::OnSize
+
+BOOL CLuaInputBox::PreTranslateMessage(MSG* pMsg) 
+{
+  // if no default button wanted, throw away <enter> key
+  if( pMsg->message==WM_KEYDOWN &&
+      pMsg->wParam==VK_RETURN &&
+      m_bNoDefault)
+     return TRUE;
+
+  return CDialog::PreTranslateMessage(pMsg);
+}     // end of CLuaInputBox::PreTranslateMessage

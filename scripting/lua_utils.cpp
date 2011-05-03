@@ -314,6 +314,11 @@ static CString get_extra_string (lua_State *L, const int narg, const char * name
 //          validate            --> validation function
 //          ok_button           --> what to put on the OK button (default: OK)
 //          cancel_button       --> what to put on the Cancel button (default: Cancel)
+//          read_only           --> text cannot be changed
+//          ok_button_width     --> width of OK button in pixels
+//          cancel_button_width --> width of Cancel button in pixels
+//          no_default          --> there is no default button
+
 //
 // returns: what they typed, or nil if cancelled
 
@@ -336,8 +341,12 @@ static int gen_inputbox (lua_State *L, T & msg)
   int iReplyHeight  = 0;
   int iMaxReplyLength = 0;
   bool bReadOnly = false;
+  bool bNoDefault = false;
   CString strOKbuttonLabel;
   CString strCancelbuttonLabel;
+  int iOKbuttonWidth = 0;
+  int iCancelbuttonWidth = 0;
+
 
   // if arg6 present, and a table, grab extra stuff
   if (lua_istable (L, nExtraStuffArg))
@@ -352,6 +361,9 @@ static int gen_inputbox (lua_State *L, T & msg)
     bReadOnly             = get_extra_boolean (L, nExtraStuffArg, "read_only");
     strOKbuttonLabel      = get_extra_string  (L, nExtraStuffArg, "ok_button");
     strCancelbuttonLabel  = get_extra_string  (L, nExtraStuffArg, "cancel_button");
+    iOKbuttonWidth        = get_extra_integer (L, nExtraStuffArg, "ok_button_width");
+    iCancelbuttonWidth    = get_extra_integer (L, nExtraStuffArg, "cancel_button_width");
+    bNoDefault            = get_extra_boolean (L, nExtraStuffArg, "no_default");
 
 
     // see if validation function there - do this last so we can leave it on the stack
@@ -399,6 +411,9 @@ static int gen_inputbox (lua_State *L, T & msg)
   msg.m_bReadOnly             = bReadOnly;
   msg.m_strOKbuttonLabel      = strOKbuttonLabel ;
   msg.m_strCancelbuttonLabel  = strCancelbuttonLabel;
+  msg.m_iOKbuttonWidth        = iOKbuttonWidth ;
+  msg.m_iCancelbuttonWidth    = iCancelbuttonWidth;
+  msg.m_bNoDefault            = bNoDefault;
 
   lua_settop (L, 0);
 
