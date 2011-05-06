@@ -3112,18 +3112,18 @@ unsigned char header [8];
 
   int bit_per_pixel = 24;
 
-  if (png_ptr->color_type & PNG_COLOR_MASK_ALPHA)
+  if (png_get_color_type (png_ptr, info_ptr) & PNG_COLOR_MASK_ALPHA)
      bit_per_pixel = 32;
 
-  long bpl = BytesPerLine (info_ptr->width, bit_per_pixel);
+  long bpl = BytesPerLine (png_get_image_width (png_ptr, info_ptr), bit_per_pixel);
 
   bmiB.bmiHeader.biSize = sizeof bmiB;
-  bmiB.bmiHeader.biWidth =          info_ptr->width;       
-  bmiB.bmiHeader.biHeight =         info_ptr->height;
+  bmiB.bmiHeader.biWidth =          png_get_image_width (png_ptr, info_ptr);       
+  bmiB.bmiHeader.biHeight =         png_get_image_height (png_ptr, info_ptr);
   bmiB.bmiHeader.biPlanes =         1;
   bmiB.bmiHeader.biBitCount =       bit_per_pixel;
   bmiB.bmiHeader.biCompression =    BI_RGB;
-  bmiB.bmiHeader.biSizeImage =      info_ptr->height * bpl;
+  bmiB.bmiHeader.biSizeImage =      png_get_image_height (png_ptr, info_ptr) * bpl;
 
   unsigned char * pB = NULL;
 
@@ -3136,8 +3136,10 @@ unsigned char header [8];
   unsigned char * p = pB;
 
   // have to reverse row order
-  for (row = 0; row < info_ptr->height; row++, p += bpl)
-     memcpy (p, row_pointers [info_ptr->height - row - 1], bpl);
+
+  png_uint_32 iHeight = png_get_image_height (png_ptr, info_ptr);
+  for (row = 0; row < iHeight; row++, p += bpl)
+     memcpy (p, row_pointers [iHeight - row - 1], bpl);
 
   // done with data
   png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
@@ -3157,14 +3159,14 @@ typedef struct
 void ReadDataFromInputStream(png_structp png_ptr, png_bytep outBytes,
                       png_size_t byteCountToRead)
 {
-   if(png_ptr->io_ptr == NULL)
+   if(png_get_io_ptr (png_ptr) == NULL)
      {
      png_error(png_ptr, "No io_ptr structure");
      return;   // oops
      }
 
    // get our structure with buffer and length left in it
-   tPngBufferInfo * PngBufferInfo = (tPngBufferInfo*)png_ptr->io_ptr;
+   tPngBufferInfo * PngBufferInfo = (tPngBufferInfo*)png_get_io_ptr (png_ptr);
 
    if (byteCountToRead > PngBufferInfo->LengthRemaining)
      {
@@ -3263,18 +3265,18 @@ long LoadPngMemory (unsigned char * Buffer, const size_t Length, HBITMAP & hbmp,
 
   int bit_per_pixel = 24;
 
-  if (png_ptr->color_type & PNG_COLOR_MASK_ALPHA)
+  if (png_get_color_type (png_ptr, info_ptr) & PNG_COLOR_MASK_ALPHA)
      bit_per_pixel = 32;
   
-  long bpl = BytesPerLine (info_ptr->width, bit_per_pixel);
+  long bpl = BytesPerLine (png_get_image_width (png_ptr, info_ptr), bit_per_pixel);
 
   bmiB.bmiHeader.biSize = sizeof bmiB;
-  bmiB.bmiHeader.biWidth =          info_ptr->width;       
-  bmiB.bmiHeader.biHeight =         info_ptr->height;
+  bmiB.bmiHeader.biWidth =          png_get_image_width (png_ptr, info_ptr);       
+  bmiB.bmiHeader.biHeight =         png_get_image_height (png_ptr, info_ptr);
   bmiB.bmiHeader.biPlanes =         1;
   bmiB.bmiHeader.biBitCount =       bit_per_pixel;
   bmiB.bmiHeader.biCompression =    BI_RGB;
-  bmiB.bmiHeader.biSizeImage =      info_ptr->height * bpl;
+  bmiB.bmiHeader.biSizeImage =      png_get_image_height (png_ptr, info_ptr) * bpl;
 
   unsigned char * pB = NULL;
 
@@ -3287,8 +3289,9 @@ long LoadPngMemory (unsigned char * Buffer, const size_t Length, HBITMAP & hbmp,
   unsigned char * p = pB;
 
   // have to reverse row order
-  for (row = 0; row < info_ptr->height; row++, p += bpl)
-     memcpy (p, row_pointers [info_ptr->height - row - 1], bpl);
+  png_uint_32 iHeight = png_get_image_height (png_ptr, info_ptr);
+  for (row = 0; row < iHeight; row++, p += bpl)
+     memcpy (p, row_pointers [iHeight - row - 1], bpl);
 
   // done with data
   png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);

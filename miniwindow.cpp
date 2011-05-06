@@ -1304,7 +1304,8 @@ long CMiniWindow::WritePng (LPCTSTR FileName, const BITMAPINFO * bmi, unsigned c
   unsigned char * p = pData;
 
   // have to reverse row order
-  for (row = 0; row < info_ptr->height; row++, p += bpl)
+  png_uint_32 iHeight = png_get_image_height (png_ptr, info_ptr);
+  for (row = 0; row < iHeight; row++, p += bpl)
      row_pointers [bmi->bmiHeader.biHeight - row - 1] = p;
 
   // tell png where our pixel data is
