@@ -4376,15 +4376,10 @@ long CMUSHclientDoc::GetLastLine (void)
 // our "last found" line needs adjusting
 
   m_DisplayFindInfo.m_nCurrentLine -= JUMP_SIZE;
-  m_DisplayFindInfo.m_iLastLineSearched -= JUMP_SIZE;
 
   // has last found line has disappeared off the front of the buffer?
   if (m_DisplayFindInfo.m_nCurrentLine < 0)
-    {
     m_DisplayFindInfo.m_nCurrentLine = 0;
-    m_DisplayFindInfo.m_iLastLineSearched = -1;
-    }
-
 
    }  // end of CMUSHclientDoc::RemoveChunk
 

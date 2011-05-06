@@ -1476,7 +1476,7 @@ CLine * pLine;
 POSITION prevpos = NULL;
 
   if (FindInfo.m_pFindPosition == NULL)
-    return true;
+    return true;          // no more lines
 
   // if doing backwards, we must go back a whole *line* (ie. the one after a hard return)
   if (!FindInfo.m_bForwards)
