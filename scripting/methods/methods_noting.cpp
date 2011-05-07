@@ -498,6 +498,20 @@ else
 }   // end of CMUSHclientDoc::ColourTell
 
 
+/*
+
+  WARNING!
+
+  Do not use in sendto: script, with "omit from output"!
+
+  The saved and restored styles will lose the hyperlink action. 
+  
+  Use sendto:script (after omit) instead.
+
+  http://www.gammon.com.au/forum/?id=11067
+
+*/
+
 void CMUSHclientDoc::Hyperlink(LPCTSTR Action, 
                                LPCTSTR Text, 
                                LPCTSTR Hint, 
