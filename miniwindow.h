@@ -113,6 +113,7 @@ class CMiniWindow
   string  m_sMouseDownHotspot;    // last hotspot we mouse clicked in
   long    m_FlagsOnMouseDown;     // which mouse-down we got
   long    m_ZOrder;               // Z-order. If zero, use name order. Lower is drawn earlier.
+  bool    m_bExecutingScript;      // so windows don't delete themselves
 
   string  m_sCallbackPlugin;      // plugin we are using
 

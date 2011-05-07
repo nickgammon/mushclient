@@ -6535,11 +6535,15 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
 
         // call MoveCallback for that hotspot, if it exists
         if (it != prev_mw->m_Hotspots.end ())
+          {
+          prev_mw->m_bExecutingScript = true;
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_MoveCallback,
                                       prev_mw->m_sCallbackPlugin,
                                       it->second->m_sMoveCallback, 
                                       prev_mw->m_sMouseDownHotspot,
                                       prev_mw->m_FlagsOnMouseDown);
+          prev_mw->m_bExecutingScript = false;
+          }
         return true;  // that's all
 
         }   // we had previous hotspot
@@ -6578,10 +6582,12 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
         if (it != old_mw->m_Hotspots.end ())
           {
           RemoveToolTip ();
+          old_mw->m_bExecutingScript = true;
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseOver,
                                       old_mw->m_sCallbackPlugin,
                                       it->second->m_sCancelMouseOver, 
                                       old_mw->m_sMouseOverHotspot);
+          old_mw->m_bExecutingScript = false;
           }
         old_mw->m_sMouseOverHotspot.erase ();  // no mouse-over right now
         m_sPreviousMiniWindow.erase ();  // no longer have a previous mouse-over
@@ -6608,10 +6614,12 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
       if (it != mw->m_Hotspots.end ())
         {
         RemoveToolTip ();
+        mw->m_bExecutingScript = true;
         Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseOver,
                                     mw->m_sCallbackPlugin,
                                     it->second->m_sCancelMouseOver, 
                                     mw->m_sMouseOverHotspot);
+        mw->m_bExecutingScript = false;
         }
 
       mw->m_sMouseOverHotspot.erase ();  // no mouse-over right now
@@ -6632,10 +6640,12 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
         {
         // this is our new one
         mw->m_sMouseOverHotspot = sHotspotId;
+        mw->m_bExecutingScript = true;
         Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseOver,
                                     mw->m_sCallbackPlugin, 
                                     pHotspot->m_sMouseOver, 
                                     sHotspotId);
+        mw->m_bExecutingScript = false;
         // activate tooltip if possible
         if (::IsWindow(m_ToolTip.m_hWnd))
           {
@@ -6666,10 +6676,15 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
         {  // same hotspot (new in version 4.45)
         // see lengthy forum discussion: http://www.gammon.com.au/forum/?id=9942
         if (pHotspot->m_Flags & 1)
+          {
+          mw->m_bExecutingScript = true;
           Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseOver,
                                       mw->m_sCallbackPlugin, 
                                       pHotspot->m_sMouseOver, 
                                       sHotspotId, 0x80);
+          mw->m_bExecutingScript = false;
+          }
+
         }
       }
 
@@ -6710,10 +6725,14 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
 
         // call CancelMouseOver for that hotspot, if it exists
         if (it != old_mw->m_Hotspots.end ())
+          {
+          old_mw->m_bExecutingScript = true;
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseOver, 
                                       old_mw->m_sCallbackPlugin,
                                       it->second->m_sCancelMouseOver, 
-                                      old_mw->m_sMouseOverHotspot);    
+                                      old_mw->m_sMouseOverHotspot); 
+          old_mw->m_bExecutingScript = false;
+          }
         old_mw->m_sMouseOverHotspot.erase ();  // no mouse-over right now
         m_sPreviousMiniWindow.erase ();  // no longer have a previous mouse-over
         }   // we had previous hotspot
@@ -6734,12 +6753,13 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
       {
       mw->m_sMouseDownHotspot = sHotspotId;  // remember this is mousedown hotspot
       mw->m_FlagsOnMouseDown = flags & 0x70; // remember mouse flags 
-
+      mw->m_bExecutingScript = true;
       Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseDown, 
                                   mw->m_sCallbackPlugin, 
                                   pHotspot->m_sMouseDown, 
                                   sHotspotId,
                                   flags);   // LH / RH mouse?
+      mw->m_bExecutingScript = false;
       }
 
     m_sPreviousMiniWindow = sMiniWindowId;   // remember in case they move outside window
@@ -6789,11 +6809,15 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
 
         // call ReleaseCallback for that hotspot, if it exists
         if (it != prev_mw->m_Hotspots.end ())
+          {
+          prev_mw->m_bExecutingScript = true;
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_ReleaseCallback, 
                                       prev_mw->m_sCallbackPlugin,
                                       it->second->m_sReleaseCallback, 
                                       prev_mw->m_sMouseDownHotspot,
                                       prev_mw->m_FlagsOnMouseDown);
+          prev_mw->m_bExecutingScript = false;
+          }
 
         }   // we had previous hotspot
 
@@ -6834,11 +6858,15 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
 
         // call CancelMouseDown for that hotspot, if it exists
         if (it != old_mw->m_Hotspots.end ())
+          {
+          old_mw->m_bExecutingScript = true;
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseDown, 
                                       old_mw->m_sCallbackPlugin,
                                       it->second->m_sCancelMouseDown, 
                                       old_mw->m_sMouseDownHotspot,
                                       old_mw->m_FlagsOnMouseDown);
+          old_mw->m_bExecutingScript = false;
+          }
         old_mw->m_sMouseDownHotspot.erase ();  // no mouse-down right now
         }   // we had previous hotspot
 
@@ -6868,11 +6896,15 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
       HotspotMapIterator it = mw->m_Hotspots.find (mw->m_sMouseDownHotspot);
 
       if (it != mw->m_Hotspots.end ())
+        {
+        mw->m_bExecutingScript = true;
         Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseDown, 
                                     mw->m_sCallbackPlugin,
                                     it->second->m_sCancelMouseDown, 
                                     mw->m_sMouseDownHotspot,
                                     mw->m_FlagsOnMouseDown);
+        mw->m_bExecutingScript = false;
+        }
 
       mw->m_sMouseDownHotspot.erase ();  // no mouse-down right now
       } // previous one which isn't this one, or we are no longer on one
@@ -6880,12 +6912,13 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
     // now, did we release mouse over the hotspot it went down in?
     if (pHotspot && mw->m_sMouseDownHotspot == sHotspotId)
       {
+      mw->m_bExecutingScript = true;
       Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseUp, 
                                   mw->m_sCallbackPlugin, 
                                   pHotspot->m_sMouseUp, 
                                   sHotspotId, 
                                   mw->m_FlagsOnMouseDown);  // LH / RH mouse?
-
+      mw->m_bExecutingScript = false;
       mw->m_sMouseDownHotspot.erase ();  // no mouse-down right now
       }
 
@@ -7342,11 +7375,15 @@ bool CMUSHView::Mouse_Wheel_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long
 
   // now, are we now over a hotspot?
   if (pHotspot)
+    {
+    mw->m_bExecutingScript = true;
     Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_ScrollwheelCallback,
                                 mw->m_sCallbackPlugin, 
                                 pHotspot->m_sScrollwheelCallback, 
                                 sHotspotId,
                                 delta);
+    mw->m_bExecutingScript = false;
+    }
 
   return true;    // we are over mini-window - don't scroll underlying text
 

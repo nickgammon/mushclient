@@ -1267,6 +1267,9 @@ long CMUSHclientDoc::WindowDelete(LPCTSTR Name)
   if (it == m_MiniWindows.end ())
     return eNoSuchWindow;
 
+  if (it->second->m_bExecutingScript)
+    return eItemInUse;
+
   delete it->second;
 
   m_MiniWindows.erase (it);

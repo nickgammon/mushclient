@@ -27,7 +27,8 @@ CMiniWindow::CMiniWindow ()  :
           m_last_mouse_update (0),
           m_client_mouseposition (0, 0),
           m_FlagsOnMouseDown (0),
-          m_ZOrder (0)
+          m_ZOrder (0),
+          m_bExecutingScript (false)
   {
   dc.CreateCompatibleDC(NULL);
   dc.SetTextAlign (TA_LEFT | TA_TOP);
