@@ -70,14 +70,14 @@ library MUSHclient
 			[id(44)] long SetCommand(BSTR Message);
 			[id(45)] BSTR GetNotes();
 			[id(46)] void SetNotes(BSTR Message);
-			[id(406), propget] long NormalColour(short WhichColour);
-			[id(406), propput] void NormalColour(short WhichColour, long nNewValue);
-			[id(407), propget] long BoldColour(short WhichColour);
-			[id(407), propput] void BoldColour(short WhichColour, long nNewValue);
-			[id(408), propget] long CustomColourText(short WhichColour);
-			[id(408), propput] void CustomColourText(short WhichColour, long nNewValue);
-			[id(409), propget] long CustomColourBackground(short WhichColour);
-			[id(409), propput] void CustomColourBackground(short WhichColour, long nNewValue);
+			[id(407), propget] long NormalColour(short WhichColour);
+			[id(407), propput] void NormalColour(short WhichColour, long nNewValue);
+			[id(408), propget] long BoldColour(short WhichColour);
+			[id(408), propput] void BoldColour(short WhichColour, long nNewValue);
+			[id(409), propget] long CustomColourText(short WhichColour);
+			[id(409), propput] void CustomColourText(short WhichColour, long nNewValue);
+			[id(410), propget] long CustomColourBackground(short WhichColour);
+			[id(410), propput] void CustomColourBackground(short WhichColour, long nNewValue);
 			[id(47)] void Redraw();
 			[id(48)] long ResetTimer(BSTR TimerName);
 			[id(49)] void SetOutputFont(BSTR FontName, short PointSize);
@@ -437,6 +437,7 @@ library MUSHclient
 			[id(403)] long SetScroll(long Position, BOOL Visible);
 			[id(404)] BSTR Menu(BSTR Items, BSTR Default);
 			[id(405)] VARIANT DatabaseGetField(BSTR Name, BSTR Sql);
+			[id(406)] long WindowSetZOrder(BSTR Name, long Order);
 			//}}AFX_ODL_METHOD
 
 	};

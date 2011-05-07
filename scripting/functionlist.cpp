@@ -417,6 +417,7 @@ tInternalFunctionsTable InternalFunctionsTable [] = {
 { "WindowRectOp" ,               "( WindowName , Action , Left , Top , Right , Bottom , Colour1 , Colour2 )" } ,
 { "WindowScrollwheelHandler" ,   "( WindowName , HotspotId , MoveCallback )" } ,
 { "WindowSetPixel" ,             "( WindowName , x , y , Colour )" } ,
+{ "WindowSetZOrder" ,            "( WindowName , Order )" },
 { "WindowShow" ,                 "( WindowName , Show )" } ,
 { "WindowText" ,                 "( WindowName , FontId , Text , Left , Top , Right , Bottom , Colour , Unicode )" } ,
 { "WindowTextWidth" ,            "( WindowName , FontId , Text , Unicode )" } ,

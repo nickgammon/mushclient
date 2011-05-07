@@ -6458,6 +6458,19 @@ static int L_WindowSetPixel (lua_State *L)
   } // end of L_WindowSetPixel
 
 //----------------------------------------
+//  world.WindowSetZOrder
+//----------------------------------------
+static int L_WindowSetZOrder (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  lua_pushnumber (L, pDoc->WindowSetZOrder (
+            my_checkstring (L, 1),  // Name
+            my_checknumber (L, 2)   // Order
+            ));
+  return 1;  // number of result fields
+  } // end of L_WindowSetZOrder
+
+//----------------------------------------
 //  world.WindowShow
 //----------------------------------------
 static int L_WindowShow (lua_State *L)
@@ -7002,6 +7015,7 @@ static const struct luaL_Reg worldlib [] =
   {"WindowRectOp", L_WindowRectOp},
   {"WindowResize", L_WindowResize},
   {"WindowScrollwheelHandler", L_WindowScrollwheelHandler},
+  {"WindowSetZOrder", L_WindowSetZOrder},
   {"WindowSetPixel", L_WindowSetPixel},
   {"WindowShow", L_WindowShow},
   {"WindowText", L_WindowText},

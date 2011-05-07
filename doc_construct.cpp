@@ -638,6 +638,7 @@ int i;
        mwit++)
          delete mwit->second;
 
+  m_MiniWindowsOrder.clear ();
 
   // delete databases
   for (tDatabaseMapIterator dbit = m_Databases.begin (); 

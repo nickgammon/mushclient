@@ -608,6 +608,7 @@ BEGIN_DISPATCH_MAP(CMUSHclientDoc, CDocument)
 	DISP_FUNCTION(CMUSHclientDoc, "SetScroll", SetScroll, VT_I4, VTS_I4 VTS_BOOL)
 	DISP_FUNCTION(CMUSHclientDoc, "Menu", Menu, VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION(CMUSHclientDoc, "DatabaseGetField", DatabaseGetField, VT_VARIANT, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION(CMUSHclientDoc, "WindowSetZOrder", WindowSetZOrder, VT_I4, VTS_BSTR VTS_I4)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "NormalColour", GetNormalColour, SetNormalColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "BoldColour", GetBoldColour, SetBoldColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "CustomColourText", GetCustomColourText, SetCustomColourText, VT_I4, VTS_I2)
@@ -7753,6 +7754,37 @@ void CMUSHclientDoc::OnUpdateGameTrace(CCmdUI* pCmdUI)
   DoFixMenus (pCmdUI);  // remove accelerators from menus
   pCmdUI->Enable ();
   pCmdUI->SetCheck (m_bTrace);
-}
+}   // end of CMUSHclientDoc::OnUpdateGameTrace
 
+
+// sorting for miniwindow z-order
+// if equal z-order (eg. 0 which is the default) sort in window name order
+// otherwise use z-order which means negative ones will be drawn before named ones (with 0 order)
+// and positive ones after named ones (with 0 order)
+bool lessWindow (const pair<string, CMiniWindow *> & w1, const pair<string, CMiniWindow *> & w2)
+  {
+   if (w1.second->m_ZOrder == w2.second->m_ZOrder)
+     return w1.first < w2.first;
+
+  return w1.second->m_ZOrder < w2.second->m_ZOrder;
+  }   // end of lessWindow
+
+// sort miniwindows vector into Z-order
+void CMUSHclientDoc::SortWindows (void)
+  {
+  // start again
+  m_MiniWindowsOrder.clear ();
+
+  // reserve correct space
+  m_MiniWindowsOrder.reserve (m_MiniWindows.size ());
+
+  // rebuild vector of existing miniwindows
+  for (MiniWindowMapIterator win_it = m_MiniWindows.begin (); 
+       win_it != m_MiniWindows.end ();
+       win_it++)
+    m_MiniWindowsOrder.push_back (make_pair (win_it->first, win_it->second));
+
+  sort (m_MiniWindowsOrder.begin (), m_MiniWindowsOrder.end (), lessWindow); 
+
+  }   // end of CMUSHclientDoc::SortWindows
 

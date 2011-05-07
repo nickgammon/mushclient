@@ -1283,6 +1283,10 @@ public:
 
   // all our cute little miniwindows
   MiniWindowMap m_MiniWindows;
+  MiniWindowVector m_MiniWindowsOrder;
+
+  // sort miniwindows into Z-order
+  void SortWindows (void);
 
   // all our databases
   tDatabaseMap m_Databases;
@@ -1708,7 +1712,6 @@ public:
   void SortAliases (void);
   // set up timer reverse map after adding timers
   void SortTimers (void);
-
 
   BOOL Load_Set (const int set_type, 
                  CString strFileName,
@@ -2732,6 +2735,7 @@ public:
 	afx_msg long SetScroll(long Position, BOOL Visible);
 	afx_msg BSTR Menu(LPCTSTR Items, LPCTSTR Default);
 	afx_msg VARIANT DatabaseGetField(LPCTSTR Name, LPCTSTR Sql);
+	afx_msg long WindowSetZOrder(LPCTSTR Name, long Order);
 	afx_msg long GetNormalColour(short WhichColour);
 	afx_msg void SetNormalColour(short WhichColour, long nNewValue);
 	afx_msg long GetBoldColour(short WhichColour);

@@ -54,6 +54,7 @@
 //    WindowResize
 //    WindowScrollwheelHandler
 //    WindowSetPixel
+//    WindowSetZOrder
 //    WindowShow
 //    WindowText
 //    WindowTextWidth
@@ -126,6 +127,7 @@ long CMUSHclientDoc::WindowCreate(LPCTSTR Name,
                        Position, Flags, 
                        BackgroundColour);
 
+  SortWindows ();  // need to re-make sorted list in Z-order
   UpdateAllViews (NULL);
 
 	return eOK;
@@ -726,6 +728,22 @@ long CMUSHclientDoc::WindowSetPixel(LPCTSTR Name, long x, long y, long Colour)
 }   // end of CMUSHclientDoc::WindowSetPixel
 
 
+long CMUSHclientDoc::WindowSetZOrder(LPCTSTR Name, long Order) 
+{
+  MiniWindowMapIterator it = m_MiniWindows.find (Name);
+    
+  if (it == m_MiniWindows.end ())
+    return eNoSuchWindow;
+
+  long status = it->second->SetZOrder (Order);
+
+  SortWindows ();   // need to re-make sorted list in Z-order
+
+  return status;   // now we can return status
+
+}   // end of CMUSHclientDoc::WindowSetZOrder
+
+
 long CMUSHclientDoc::WindowGetPixel(LPCTSTR Name, long x, long y) 
 {
   MiniWindowMapIterator it = m_MiniWindows.find (Name);
@@ -1252,6 +1270,8 @@ long CMUSHclientDoc::WindowDelete(LPCTSTR Name)
   delete it->second;
 
   m_MiniWindows.erase (it);
+
+  SortWindows ();   // need to re-make sorted list in Z-order
 
   UpdateAllViews (NULL);
 

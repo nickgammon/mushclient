@@ -557,6 +557,7 @@
 3 WindowResize=FNC_WindowResize
 3 WindowScrollwheelHandler=FNC_WindowScrollwheelHandler
 3 WindowSetPixel=FNC_WindowSetPixel
+3 WindowSetZOrder=FNC_WindowSetZOrder
 3 WindowShow=FNC_WindowShow
 3 WindowText=FNC_WindowText
 3 WindowTextWidth=FNC_WindowTextWidth

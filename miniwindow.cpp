@@ -26,7 +26,8 @@ CMiniWindow::CMiniWindow ()  :
           m_last_mouseposition (0, 0),
           m_last_mouse_update (0),
           m_client_mouseposition (0, 0),
-          m_FlagsOnMouseDown (0)
+          m_FlagsOnMouseDown (0),
+          m_ZOrder (0)
   {
   dc.CreateCompatibleDC(NULL);
   dc.SetTextAlign (TA_LEFT | TA_TOP);
@@ -1009,6 +1010,8 @@ void CMiniWindow::Info (long InfoType, VARIANT & vaResult)
     case 19:  SetUpVariantString  (vaResult, m_sMouseOverHotspot.c_str ()); break; // mouse-over hotspot
     case 20:  SetUpVariantString  (vaResult, m_sMouseDownHotspot.c_str ()); break; // mouse-down hotspot
     case 21:  SetUpVariantDate    (vaResult, COleDateTime (m_tDateInstalled.GetTime ()));  break;
+
+    case 22:  SetUpVariantLong    (vaResult, m_ZOrder);  break; //  Z-Order
 
     default:
       vaResult.vt = VT_NULL;
@@ -3272,6 +3275,12 @@ long CMiniWindow::SetPixel(long x, long y, long Colour)
   } // end of CMiniWindow::SetPixel
 
 
+long CMiniWindow::SetZOrder(long Order)
+  {
+  m_ZOrder = Order;
+  return eOK;
+  }
+
 long CMiniWindow::GetPixel(long x, long y)
   {
   return dc.GetPixel(x, y);
@@ -4264,3 +4273,4 @@ long CMiniWindow::TransformImage(LPCTSTR ImageId, float Left, float Top, short M
 
   return eOK;
   }   // end of CMiniWindow::TransformImage
+

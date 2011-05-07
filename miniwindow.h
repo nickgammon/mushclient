@@ -112,6 +112,7 @@ class CMiniWindow
   string  m_sMouseOverHotspot;    // last hotspot we moused over
   string  m_sMouseDownHotspot;    // last hotspot we mouse clicked in
   long    m_FlagsOnMouseDown;     // which mouse-down we got
+  long    m_ZOrder;               // Z-order. If zero, use name order. Lower is drawn earlier.
 
   string  m_sCallbackPlugin;      // plugin we are using
 
@@ -293,8 +294,16 @@ class CMiniWindow
 
   long TransformImage(LPCTSTR ImageId, float Left, float Top, short Mode, float Mxx, float Mxy, float Myx, float Myy);
 
+  long SetZOrder(long Order);
+
   };
+
 
 typedef map<string, CMiniWindow *> MiniWindowMap;
 
 typedef MiniWindowMap::iterator MiniWindowMapIterator;
+
+typedef vector<pair<string, CMiniWindow *> > MiniWindowVector;
+
+typedef MiniWindowVector::iterator MiniWindowVectorIterator;
+typedef MiniWindowVector::reverse_iterator MiniWindowVectorReverseIterator;

@@ -973,11 +973,11 @@ RECT r;
 
   Calculate_MiniWindow_Rectangles (pDoc, true);
 
-  MiniWindowMapIterator mwit;
+  MiniWindowVectorIterator mwit;
 
   // mini windows  - on bottom
-  for (mwit = pDoc->m_MiniWindows.begin (); 
-       mwit != pDoc->m_MiniWindows.end ();
+  for (mwit = pDoc->m_MiniWindowsOrder.begin (); 
+       mwit != pDoc->m_MiniWindowsOrder.end ();
        mwit++)
          {
          CMiniWindow * mw = mwit->second;
@@ -1413,8 +1413,8 @@ previousLineHPtime.QuadPart = 0;
   Calculate_MiniWindow_Rectangles (pDoc, false);
 
   // mini windows  - on top
-  for (mwit = pDoc->m_MiniWindows.begin (); 
-       mwit != pDoc->m_MiniWindows.end ();
+  for (mwit = pDoc->m_MiniWindowsOrder.begin (); 
+       mwit != pDoc->m_MiniWindowsOrder.end ();
        mwit++)
          {
          CMiniWindow * mw = mwit->second;
@@ -6433,11 +6433,11 @@ CMiniWindow * CMUSHView::Mouse_Over_Miniwindow (CMUSHclientDoc* pDoc,
   {
   pHotspot = NULL;
 
-  map<string, CMiniWindow *>::reverse_iterator mwit;
+  MiniWindowVectorReverseIterator mwit;
 
    // mini windows - check backwards so one on top is found first
-  for (mwit = pDoc->m_MiniWindows.rbegin (); 
-       mwit != pDoc->m_MiniWindows.rend ();
+  for (mwit = pDoc->m_MiniWindowsOrder.rbegin (); 
+       mwit != pDoc->m_MiniWindowsOrder.rend ();
        mwit++)  // NB you still go "up" to go backwards
          {
          CMiniWindow * mw = mwit->second;
@@ -6969,7 +6969,7 @@ void CMUSHView::Calculate_MiniWindow_Rectangles (CMUSHclientDoc* pDoc, const boo
   pFrame->GetClientRect (&ownerrect);
   GetClientRect (&clientrect);
 
-  MiniWindowMapIterator mwit;
+  MiniWindowVectorIterator mwit;
 
   // record here how far out each corner extends
   CPoint pt_topleft (0, 0),
@@ -6991,8 +6991,8 @@ void CMUSHView::Calculate_MiniWindow_Rectangles (CMUSHclientDoc* pDoc, const boo
         left_ones;
 
   // do the corners, and fixed positions, and remember how much the centered ones wanted
-  for (mwit = pDoc->m_MiniWindows.begin (); 
-       mwit != pDoc->m_MiniWindows.end ();
+  for (mwit = pDoc->m_MiniWindowsOrder.begin (); 
+       mwit != pDoc->m_MiniWindowsOrder.end ();
        mwit++)
    {
    CMiniWindow * mw = mwit->second;
