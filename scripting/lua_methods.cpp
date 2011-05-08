@@ -5736,6 +5736,20 @@ static int L_UdpSend (lua_State *L)
   return 1;  // number of result fields
   } // end of L_UdpSend
 
+
+//----------------------------------------
+//  world.UnloadPlugin
+//----------------------------------------
+static int L_UnloadPlugin (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  lua_pushnumber (L, pDoc->UnloadPlugin (
+      my_checkstring (L, 1)    // Plugin ID
+      ));
+  return 1;  // number of result fields
+  } // end of L_UnloadPlugin
+
+
 //----------------------------------------
 //  world.Version
 //----------------------------------------
@@ -6974,6 +6988,7 @@ static const struct luaL_Reg worldlib [] =
   {"UdpListen", L_UdpListen},
   {"UdpPortList", L_UdpPortList},
   {"UdpSend", L_UdpSend},
+  {"UnloadPlugin", L_UnloadPlugin},
   {"Version", L_Version},
   {"WindowAddHotspot", L_WindowAddHotspot},
   {"WindowArc", L_WindowArc},

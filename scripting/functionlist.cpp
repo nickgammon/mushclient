@@ -376,6 +376,7 @@ tInternalFunctionsTable InternalFunctionsTable [] = {
 { "UdpListen" ,                  "( IP , Port , Script )" } ,
 { "UdpPortList" ,                "( )" } ,
 { "UdpSend" ,                    "( IP , Port , Text )" } ,
+{ "UnloadPlugin" ,               "( PluginID )" },
 { "Version" ,                    "( )" } ,
 { "WindowAddHotspot" ,           "( WindowName , HotspotId , Left , Top , Right , Bottom , MouseOver , CancelMouseOver , MouseDown , CancelMouseDown , MouseUp , TooltipText , Cursor , Flags )" } ,
 { "WindowArc" ,                  "( WindowName , Left , Top , Right , Bottom , x1 , y1 , x2 , y2 , PenColour , PenStyle , PenWidth )" } ,

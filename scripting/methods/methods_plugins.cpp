@@ -31,6 +31,7 @@
 //    LoadPlugin
 //    PluginSupports
 //    ReloadPlugin
+//    UnloadPlugin
 //    SaveState
 
 // gets our own plugin id
@@ -610,3 +611,44 @@ long CMUSHclientDoc::BroadcastPlugin(long Message, LPCTSTR Text)
 	return iCount;
 }  // end of CMUSHclientDoc::BroadcastPlugin
 
+
+
+long CMUSHclientDoc::UnloadPlugin(LPCTSTR PluginID) 
+{
+// first, find plugin by ID
+CPlugin * pPlugin = GetPlugin (PluginID);
+
+  // if not found, try to find by name
+  if (pPlugin == NULL && strlen (PluginID) > 0)
+    {
+    PluginListIterator pit = find_if (m_PluginList.begin (),
+                                     m_PluginList.end (),
+                                     bind2nd (compare_plugin_name (), PluginID));
+    if (pit != m_PluginList.end ())
+       pPlugin = *pit;
+       
+    }    
+
+  if (pPlugin == NULL)
+    return eNoSuchPlugin;
+
+  // cannot delete  ourselves
+  if (pPlugin == m_CurrentPlugin)
+    return eBadParameter;
+
+  PluginListIterator pit = find (m_PluginList.begin (), 
+                                 m_PluginList.end (), 
+                                 pPlugin);
+ 
+  if (pit == m_PluginList.end () )
+    return eNoSuchPlugin;
+
+  m_PluginList.erase (pit);  // remove from list
+  delete pPlugin;   // delete the plugin
+
+  PluginListChanged ();
+  SetModifiedFlag (TRUE);   // document has now changed
+
+	return eOK;
+  
+  }

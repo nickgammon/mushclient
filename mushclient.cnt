@@ -517,6 +517,7 @@
 3 UdpListen=FNC_UdpListen 
 3 UdpPortList=FNC_UdpPortList 
 3 UdpSend=FNC_UdpSend 
+3 UnloadPlugin=FNC_UnloadPlugin
 3 Version=FNC_Version 
 3 WindowAddHotspot=FNC_WindowAddHotspot
 3 WindowArc=FNC_WindowArc
