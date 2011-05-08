@@ -1797,6 +1797,10 @@ CLine * pOriginalLine = m_pCurrentLine;
 CString strOriginalText;
 CString strLine (lpszText, size);
 
+  // cannot go very far without this - must be called at world loadup from a plugin OnPluginInstall
+  if (m_pLinePositions == NULL)
+    return;
+
   // decompressed data has a size, not a null terminator.
   // Also, compressed data may have imbedded nulls.
 

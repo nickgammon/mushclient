@@ -46,7 +46,7 @@ void CMUSHclientDoc::Tell(LPCTSTR Message)
     return;
 
   // if output buffer doesn't exist yet, remember note for later
-  if (m_pCurrentLine == NULL)
+  if (m_pCurrentLine == NULL || m_pLinePositions == NULL)
     {
     COLORREF fore = m_iNoteColourFore, 
              back = m_iNoteColourBack;
@@ -520,7 +520,7 @@ void CMUSHclientDoc::Hyperlink(LPCTSTR Action,
                                BOOL URL) 
 {
   // return if attempt to do tell (or note) before output buffer exists
-  if (m_pCurrentLine == NULL)
+  if (m_pCurrentLine == NULL || m_pLinePositions == NULL)
     return;
 
   // don't muck around if empty message
