@@ -1,9 +1,12 @@
 png.c
 png.h
 pngconf.h
+pngdebug.h
 pngerror.c
 pnggccrd.c
 pngget.c
+pnginfo.h
+pnglibconf.h
 pngmem.c
 pngpread.c
 pngpriv.h
@@ -12,6 +15,7 @@ pngrio.c
 pngrtran.c
 pngrutil.c
 pngset.c
+pngstruct.h
 pngtrans.c
 pngwio.c
 pngwrite.c
