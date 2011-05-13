@@ -1,0 +1,61 @@
+To make stand-alone .zip file see:
+
+http://www.gammon.com.au/forum/bbshowpost.php?id=9662
+
+Basically this:
+
+
+    ** Remove MUSHclient from the Registry in case you have been testing earlier versions
+    
+    Then:
+    
+    Use the installer to make a copy of MUSHclient on the desktop
+
+    Open MUSHclient (the installer offers to do this)
+
+    Wait for the spell check dictionary to be built (about 2 seconds)
+
+    Close the various welcome and help dialogs
+
+    Move the program around on the screen, and resize the main window, to taste
+
+    Change any global prefs you might want, like "Notify (errors) to output window", and "confirm before closing MUSHclient".
+
+    If you were making a custom client for a particular MUD, this would be the time to add a world file for your MUD, with the IP address, port and MUD name preconfigured. You might also add it to the global preferences "worlds to open at startup".
+
+    Also install any plugins that you might require, and load them into your preconfigured world file.
+
+    Close MUSHclient so screen positions and toolbar locations would be written to mushclient_prefs.sqlite and MUSHclient.ini.
+
+    (Optional): I deleted a few files in the MUSHclient folder that I thought would confuse new users:
+
+
+        mushclient.ico
+        lua5.1.lib
+        mushclient.gid
+        uninstall.exe (not needed really since this is an installer-less version)
+
+
+    Create a "logs" directory  (maybe not required now)
+
+    Use the "SQLite Database Browser" program (http://sqlitebrowser.sourceforge.net/) to edit a few entries in the "control" table to make relative pathnames (you can't do this inside the program as it saves full pathnames). Alternatively you could use the sqlite3.exe program in a "command" window to do the same thing. Get this from: http://www.sqlite.org/sqlite-3_6_16.zip
+
+    This is how you would do it with the command-line version:
+
+
+    sqlite3 C:\Documents and Settings\Owner\Desktop\MUSHclient\mushclient_prefs.sqlite
+
+    UPDATE prefs   SET value = '.\logs\'           WHERE name = 'DefaultLogFileDirectory';
+    UPDATE prefs   SET value = '.\worlds\'         WHERE name = 'DefaultWorldFileDirectory';
+    UPDATE prefs   SET value = '.\worlds\plugins\' WHERE name = 'PluginsDirectory';
+    UPDATE control SET value = 1                   WHERE name = 'First time';  -- put first-time flag back
+    .quit
+
+
+
+    In the "spell" subdirectory I deleted the 3.44 Mb file "spell.sqlite". That will be rebuilt when the player starts MUSHclient for the first time, and it adds somewhat to the .zip file size.
+
+    Use WinZip or some compression program of your choice to make an archive of the resulting folder, making sure you preserve the directory structure.
+
+    You now have a stand-alone distributable version!
+
