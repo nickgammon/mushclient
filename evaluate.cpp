@@ -349,11 +349,16 @@ int iCount = GetTriggerArray ().GetSize ();    // how many there are
 
 
         LONGLONG iOldTimeTaken = 0;
+        long iOldMatchAttempts = 0;
+
 
         // remember time taken to execute them
 
         if (trigger_item->regexp)
+          {
           iOldTimeTaken = trigger_item->regexp->iTimeTaken;
+          iOldMatchAttempts = trigger_item->regexp->m_iMatchAttempts;
+          }
 
         delete trigger_item->regexp;    // get rid of earlier regular expression
         trigger_item->regexp = NULL;
@@ -384,7 +389,10 @@ int iCount = GetTriggerArray ().GetSize ();    // how many there are
 
         // add back execution time
         if (trigger_item->regexp)
+          {
           trigger_item->regexp->iTimeTaken += iOldTimeTaken;
+          trigger_item->regexp->m_iMatchAttempts += iOldMatchAttempts;
+          }
 
         } // end of variable substitution
 
