@@ -70,8 +70,9 @@ Date/time
    purpose="Adds a timestamp to each line in the output window"
    save_state="y"
    date_written="2010-09-25 14:02:11"
+   date_modified="2011-05-20 16:05:00"
    requires="4.62"
-   version="1.0"
+   version="1.1"
    >
 <description trim="y">
 <![CDATA[
@@ -126,6 +127,10 @@ function OnPluginDisable ()
   Redraw ()
   
 end -- OnPluginDisable
+
+function OnPluginClose ()
+  OnPluginDisable ()
+end -- OnPluginClose
 
 function OnPluginEnable ()
  
