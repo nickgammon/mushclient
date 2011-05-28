@@ -6490,12 +6490,22 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
   string sHotspotId;
   string sMiniWindowId;
 
+  // find which miniwindow we are over, if any (and hotspot, if any)
   mw = Mouse_Over_Miniwindow (pDoc, point, sHotspotId, pHotspot, sMiniWindowId);
+
+  // the original hotspot that we moused over, in this window (if any)
+  string sOldMouseOverHotspotInThisWindow;
 
   if (mw)
     {
+    // remember mouse position in *this* window
     mw->m_last_mouseposition = CPoint (point.x - mw->m_rect.left, point.y - mw->m_rect.top);
     mw->m_last_mouse_update++;
+
+    // remember original hotspot ID
+    sOldMouseOverHotspotInThisWindow = mw->m_sMouseOverHotspot;
+    // change to new one for the benefit of WindowInfo (19)
+    mw->m_sMouseOverHotspot = sHotspotId;
     }
 
 
@@ -6558,7 +6568,8 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
   // end drag-and-drop
 
 
-  // next see if they have moved away from our previous miniwindow, if any
+  // Next see if they have moved away from our previous miniwindow, if any
+  // Note: This code is for when we change miniwindows
   if (sMiniWindowId != m_sPreviousMiniWindow  && !m_sPreviousMiniWindow.empty ())
     {
 
@@ -6578,6 +6589,9 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
         // lookup that HotspotId
         HotspotMapIterator it = old_mw->m_Hotspots.find (old_mw->m_sMouseOverHotspot);
 
+        string  sOldMouseOverHotspot = old_mw->m_sMouseOverHotspot;
+        old_mw->m_sMouseOverHotspot.erase ();  // no mouse-over right now (changed windows)
+
         // call CancelMouseOver for that hotspot, if it exists
         if (it != old_mw->m_Hotspots.end ())
           {
@@ -6586,10 +6600,9 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseOver,
                                       old_mw->m_sCallbackPlugin,
                                       it->second->m_sCancelMouseOver, 
-                                      old_mw->m_sMouseOverHotspot);
+                                      sOldMouseOverHotspot);
           old_mw->m_bExecutingScript = false;
           }
-        old_mw->m_sMouseOverHotspot.erase ();  // no mouse-over right now
         m_sPreviousMiniWindow.erase ();  // no longer have a previous mouse-over
         }   // we had previous hotspot
 
@@ -6599,17 +6612,21 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
     } // moved to different window
 
 
-  // here if currently over a miniwindow
+  // here if currently over a miniwindow and mouse is not captured (down)
   if (mw && GetCapture () != this)
     {
 
 
-    // cancel previous move-over hotspot (in this miniwindow)
-    if ((pHotspot == NULL ||                      // not on any hotspot
-         mw->m_sMouseOverHotspot != sHotspotId)   // or on different hotspot         
-         && !mw->m_sMouseOverHotspot.empty ())    // and we previously were over one in this miniwindow
+    // Cancel previous move-over hotspot (in this miniwindow)
+    //  if either there is no hotspot at all, or there was a previous, different, one.
+    // Note: Won't apply to changing miniwindows - we handled that above
+
+    if ((pHotspot == NULL ||                            // not on any hotspot
+         sOldMouseOverHotspotInThisWindow != sHotspotId)// or on different hotspot         
+         && !sOldMouseOverHotspotInThisWindow.empty ()  // and we previously were over one in this miniwindow
+         && sMiniWindowId == m_sPreviousMiniWindow)     // and it is the same miniwindow
       {
-      HotspotMapIterator it = mw->m_Hotspots.find (mw->m_sMouseOverHotspot);
+      HotspotMapIterator it = mw->m_Hotspots.find (sOldMouseOverHotspotInThisWindow);
 
       if (it != mw->m_Hotspots.end ())
         {
@@ -6618,11 +6635,10 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
         Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseOver,
                                     mw->m_sCallbackPlugin,
                                     it->second->m_sCancelMouseOver, 
-                                    mw->m_sMouseOverHotspot);
+                                    sOldMouseOverHotspotInThisWindow);
         mw->m_bExecutingScript = false;
         }
 
-      mw->m_sMouseOverHotspot.erase ();  // no mouse-over right now
       } // previous one which isn't this one, or we are no longer on one
 
     // now, are we now over a hotspot?
@@ -6636,10 +6652,9 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
       m_sPreviousMiniWindow = sMiniWindowId;   // remember in case they move outside window
 
       // if different hotspot from before
-      if (sHotspotId != mw->m_sMouseOverHotspot)
+      if (sHotspotId != sOldMouseOverHotspotInThisWindow)
         {
         // this is our new one
-        mw->m_sMouseOverHotspot = sHotspotId;
         mw->m_bExecutingScript = true;
         Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseOver,
                                     mw->m_sCallbackPlugin, 
@@ -6706,6 +6721,21 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
 
   mw = Mouse_Over_Miniwindow (pDoc, point, sHotspotId, pHotspot, sMiniWindowId);
 
+  // the original hotspot that we moused over, in this window (if any)
+  string sOldMouseOverHotspotInThisWindow;
+
+  if (mw)
+    {
+    // remember mouse position in *this* window
+    mw->m_last_mouseposition = CPoint (point.x - mw->m_rect.left, point.y - mw->m_rect.top);
+    mw->m_last_mouse_update++;
+
+    // remember original hotspot ID
+    sOldMouseOverHotspotInThisWindow = mw->m_sMouseOverHotspot;
+    // change to new one for the benefit of WindowInfo (19/20)
+    mw->m_sMouseDownHotspot = sHotspotId;
+    }
+
   // ANY mouse-down cancels a previous mouse-over
   if (!m_sPreviousMiniWindow.empty ())
     {
@@ -6723,6 +6753,9 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
         // lookup that HotspotId
         HotspotMapIterator it = old_mw->m_Hotspots.find (old_mw->m_sMouseOverHotspot);
 
+        string  sOldMouseOverHotspot = old_mw->m_sMouseOverHotspot;
+        old_mw->m_sMouseOverHotspot.erase ();  // no mouse-over right now
+
         // call CancelMouseOver for that hotspot, if it exists
         if (it != old_mw->m_Hotspots.end ())
           {
@@ -6730,10 +6763,9 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseOver, 
                                       old_mw->m_sCallbackPlugin,
                                       it->second->m_sCancelMouseOver, 
-                                      old_mw->m_sMouseOverHotspot); 
+                                      sOldMouseOverHotspot); 
           old_mw->m_bExecutingScript = false;
           }
-        old_mw->m_sMouseOverHotspot.erase ();  // no mouse-over right now
         m_sPreviousMiniWindow.erase ();  // no longer have a previous mouse-over
         }   // we had previous hotspot
 
@@ -6744,14 +6776,11 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
   // here if currently over a miniwindow
   if (mw)
     {
-
-    mw->m_last_mouseposition = CPoint (point.x - mw->m_rect.left, point.y - mw->m_rect.top);
-    mw->m_last_mouse_update++;
+    mw->m_sMouseOverHotspot.erase ();
 
     // now, are we now over a hotspot?
     if (pHotspot)
       {
-      mw->m_sMouseDownHotspot = sHotspotId;  // remember this is mousedown hotspot
       mw->m_FlagsOnMouseDown = flags & 0x70; // remember mouse flags 
       mw->m_bExecutingScript = true;
       Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseDown, 
@@ -6782,6 +6811,38 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
   string sMiniWindowId;
   bool bPreviouslyInMiniwindow = false;
 
+  mw = Mouse_Over_Miniwindow (pDoc, point, sHotspotId, pHotspot, sMiniWindowId);
+
+  // the original hotspot that we moused over, in this window (if any)
+  string sOldMouseDownHotspotInThisWindow;
+  string sOldMouseDownHotspot;
+
+
+  if (mw)
+    {
+    // remember mouse position in *this* window
+    mw->m_last_mouseposition = CPoint (point.x - mw->m_rect.left, point.y - mw->m_rect.top);
+    mw->m_last_mouse_update++;
+
+    // remember original hotspot ID
+    sOldMouseDownHotspotInThisWindow = mw->m_sMouseDownHotspot;
+    // change to new one for the benefit of WindowInfo (19/20)
+    mw->m_sMouseOverHotspot = sHotspotId;
+    }
+
+  // find mouse-down hotspot in previous window, if any
+  if (!m_sPreviousMiniWindow.empty ())
+    {
+    MiniWindowMapIterator it = pDoc->m_MiniWindows.find (m_sPreviousMiniWindow);
+    if (it != pDoc->m_MiniWindows.end ())
+      {
+      sOldMouseDownHotspot = it->second->m_sMouseDownHotspot;
+      it->second->m_sMouseDownHotspot.empty ();
+      }
+    }
+
+  if (mw)
+    mw->m_sMouseDownHotspot.erase ();
 
   // drag-and-drop stuff
 
@@ -6805,16 +6866,17 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
       if (!prev_mw->m_sMouseDownHotspot.empty ())   // mouse was clicked
         {
         // lookup that HotspotId
-        HotspotMapIterator it = prev_mw->m_Hotspots.find (prev_mw->m_sMouseDownHotspot);
+        HotspotMapIterator it = prev_mw->m_Hotspots.find (sOldMouseDownHotspot);
 
         // call ReleaseCallback for that hotspot, if it exists
         if (it != prev_mw->m_Hotspots.end ())
           {
+
           prev_mw->m_bExecutingScript = true;
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_ReleaseCallback, 
                                       prev_mw->m_sCallbackPlugin,
                                       it->second->m_sReleaseCallback, 
-                                      prev_mw->m_sMouseDownHotspot,
+                                      sOldMouseDownHotspot,
                                       prev_mw->m_FlagsOnMouseDown);
           prev_mw->m_bExecutingScript = false;
           }
@@ -6830,9 +6892,6 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
 
   // end drag-and-drop
 
-
-
-  mw = Mouse_Over_Miniwindow (pDoc, point, sHotspotId, pHotspot, sMiniWindowId);
 
   // A mouse-up not in this miniwindow cancels a previous mouse-down
   if (sMiniWindowId != m_sPreviousMiniWindow && !m_sPreviousMiniWindow.empty ())
@@ -6851,10 +6910,10 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
       old_mw->m_last_mouse_update++;
 
       // cancel previous move-down hotspot
-      if (!old_mw->m_sMouseDownHotspot.empty ())   // HotspotId was used
+      if (!sOldMouseDownHotspot.empty ())   // HotspotId was used
         {
         // lookup that HotspotId
-        HotspotMapIterator it = old_mw->m_Hotspots.find (old_mw->m_sMouseDownHotspot);
+        HotspotMapIterator it = old_mw->m_Hotspots.find (sOldMouseDownHotspot);
 
         // call CancelMouseDown for that hotspot, if it exists
         if (it != old_mw->m_Hotspots.end ())
@@ -6863,11 +6922,10 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
           Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseDown, 
                                       old_mw->m_sCallbackPlugin,
                                       it->second->m_sCancelMouseDown, 
-                                      old_mw->m_sMouseDownHotspot,
+                                      sOldMouseDownHotspot,
                                       old_mw->m_FlagsOnMouseDown);
           old_mw->m_bExecutingScript = false;
           }
-        old_mw->m_sMouseDownHotspot.erase ();  // no mouse-down right now
         }   // we had previous hotspot
 
       } // previous window still exists
@@ -6881,19 +6939,18 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
   // here if currently over a miniwindow
   if (mw)
     {
+    mw->m_sMouseDownHotspot.erase ();
 
-    mw->m_last_mouseposition = CPoint (point.x - mw->m_rect.left, point.y - mw->m_rect.top);
-    mw->m_last_mouse_update++;
     ReleaseCapture();   // Release the mouse capture established at
                         // the beginning of the mouse click.
 
     // if mouse-up outside the current hotspot just cancel previous one
     // cancel previous mouse-down hotspot (in this miniwindow)
     if ((pHotspot == NULL ||                      // not on any hotspot
-         mw->m_sMouseDownHotspot != sHotspotId)   // or on different hotspot         
-         && !mw->m_sMouseDownHotspot.empty ())    // and we previously were down in this miniwindow
+         sOldMouseDownHotspotInThisWindow != sHotspotId)   // or on different hotspot         
+         && !sOldMouseDownHotspotInThisWindow.empty ())    // and we previously were down in this miniwindow
       {
-      HotspotMapIterator it = mw->m_Hotspots.find (mw->m_sMouseDownHotspot);
+      HotspotMapIterator it = mw->m_Hotspots.find (sOldMouseDownHotspotInThisWindow);
 
       if (it != mw->m_Hotspots.end ())
         {
@@ -6901,16 +6958,15 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
         Send_Mouse_Event_To_Plugin (it->second->m_dispid_CancelMouseDown, 
                                     mw->m_sCallbackPlugin,
                                     it->second->m_sCancelMouseDown, 
-                                    mw->m_sMouseDownHotspot,
+                                    sOldMouseDownHotspotInThisWindow,
                                     mw->m_FlagsOnMouseDown);
         mw->m_bExecutingScript = false;
         }
 
-      mw->m_sMouseDownHotspot.erase ();  // no mouse-down right now
       } // previous one which isn't this one, or we are no longer on one
 
     // now, did we release mouse over the hotspot it went down in?
-    if (pHotspot && mw->m_sMouseDownHotspot == sHotspotId)
+    if (pHotspot && sOldMouseDownHotspotInThisWindow == sHotspotId)
       {
       mw->m_bExecutingScript = true;
       Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseUp, 
@@ -6919,11 +6975,12 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
                                   sHotspotId, 
                                   mw->m_FlagsOnMouseDown);  // LH / RH mouse?
       mw->m_bExecutingScript = false;
-      mw->m_sMouseDownHotspot.erase ();  // no mouse-down right now
       }
 
     m_sPreviousMiniWindow.erase ();  // no longer have a previous mouse-over
 
+    mw->m_sMouseOverHotspot.erase ();  // erase it so Mouse_Move_MiniWindow will work
+    Mouse_Move_MiniWindow (pDoc, point); // we are no longer down so maybe we are over again
     return true;    // we are over mini-window - don't check for underlying text
     }
 
