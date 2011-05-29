@@ -6837,7 +6837,7 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
     if (it != pDoc->m_MiniWindows.end ())
       {
       sOldMouseDownHotspot = it->second->m_sMouseDownHotspot;
-      it->second->m_sMouseDownHotspot.empty ();
+      it->second->m_sMouseDownHotspot.erase ();
       }
     }
 
