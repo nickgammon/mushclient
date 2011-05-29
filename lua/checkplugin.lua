@@ -4,8 +4,8 @@
 
 function do_plugin_check_now (id, name)
 
-  local me
-  local location
+  local me  -- who am I? plugin or main world script?
+  local location  -- location to attempt to load plugin from
   
   -- allow for being called from main world script
   if GetPluginID () == "" then
@@ -23,21 +23,6 @@ function do_plugin_check_now (id, name)
   
     if IsPluginInstalled (id) then
       ColourNote ("white", "green", "Success!") 
-      
-       -- now make sure enabled (suggested by Fiendish - version 4.74+ )
-  
-      if not GetPluginInfo(id, 17) then
-          ColourNote ("white", "green", "Plugin '" .. name .. "' not enabled. Attempting to enable it...")
-          EnablePlugin(id, true)
-          if GetPluginInfo(id, 17) then
-             ColourNote ("white", "green", "Success!") 
-          else
-             ColourNote ("white", "red", string.rep ("-", 80))
-             ColourNote ("white", "red", "Plugin '" .. name .. "' not enabled. Please make sure it can be enabled.")
-             ColourNote ("white", "red", "It is required for the correct operation of the " .. me)
-             ColourNote ("white", "red", string.rep ("-", 80))        
-          end -- if
-       end  -- if not enabled
    
     -- here if still not installed
     else      
@@ -45,8 +30,25 @@ function do_plugin_check_now (id, name)
       ColourNote ("white", "red", "Plugin '" .. name .. "' not installed. Please download and install it.") 
       ColourNote ("white", "red", "It is required for the correct operation of the " .. me)
       ColourNote ("white", "red", string.rep ("-", 80))
+      return  -- skip enabled check
     end -- if not installed
   end -- plugin was not installed
+   
+
+  -- now make sure enabled (suggested by Fiendish - version 4.74+ )
+
+  if not GetPluginInfo(id, 17) then
+      ColourNote ("white", "green", "Plugin '" .. name .. "' not enabled. Attempting to enable it...")
+      EnablePlugin(id, true)
+      if GetPluginInfo(id, 17) then
+         ColourNote ("white", "green", "Success!") 
+      else
+         ColourNote ("white", "red", string.rep ("-", 80))
+         ColourNote ("white", "red", "Plugin '" .. name .. "' not enabled. Please make sure it can be enabled.")
+         ColourNote ("white", "red", "It is required for the correct operation of the " .. me)
+         ColourNote ("white", "red", string.rep ("-", 80))        
+      end -- if
+   end  -- if not enabled
    
 end -- do_plugin_check_now
 
