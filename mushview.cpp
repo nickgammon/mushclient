@@ -6504,8 +6504,9 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
 
     // remember original hotspot ID
     sOldMouseOverHotspotInThisWindow = mw->m_sMouseOverHotspot;
-    // change to new one for the benefit of WindowInfo (19)
-    mw->m_sMouseOverHotspot = sHotspotId;
+    // change to new one for the benefit of WindowInfo (19) - if mouse is not down
+    if (mw->m_sMouseDownHotspot.empty ())
+      mw->m_sMouseOverHotspot = sHotspotId;
     }
 
 
