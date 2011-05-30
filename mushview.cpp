@@ -6746,14 +6746,17 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
       {
 
       CMiniWindow * old_mw = it->second;
+      string oldHotSpotID = old_mw->m_sMouseOverHotspot;
+      if (old_mw == mw)
+         oldHotSpotID = sOldMouseOverHotspotInThisWindow;
 
       // cancel previous move-over hotspot
-      if (!old_mw->m_sMouseOverHotspot.empty ())   // HotspotId was used
+      if (!oldHotSpotID.empty ())   // HotspotId was used
         {
         // lookup that HotspotId
-        HotspotMapIterator it = old_mw->m_Hotspots.find (old_mw->m_sMouseOverHotspot);
+        HotspotMapIterator it = old_mw->m_Hotspots.find (oldHotSpotID);
 
-        string  sOldMouseOverHotspot = old_mw->m_sMouseOverHotspot;
+        string  sOldMouseOverHotspot = oldHotSpotID;
         old_mw->m_sMouseOverHotspot.erase ();  // no mouse-over right now
 
         // call CancelMouseOver for that hotspot, if it exists
