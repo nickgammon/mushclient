@@ -115,7 +115,7 @@ UPLOAD AND INSTALL DOCUMENTATION
     bunzip2 documentation.sql.bz2
     . dbsetup
     mysql -h $SERVER -u $USER -p $DATABASE < documentation.sql
-    (password)
+    (password) (RH-click to paste)
     Ctrl+D
     
     
