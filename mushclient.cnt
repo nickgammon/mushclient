@@ -139,6 +139,7 @@
 2 Scripting callbacks - plugins=DOC_plugin_callbacks
 2 Variables=DOC_variables                                          
 2 Lua scripting topics
+3 Lua syntax=DOC_lua_syntax
 3 Lua script extensions=DOC_lua
 3 Lua base functions=DOC_lua_base
 3 Lua bc (big number) library=DOC_lua_bc
@@ -837,6 +838,7 @@
 3 string.reverse=LUA_string.reverse
 3 string.sub=LUA_string.sub
 3 string.upper=LUA_string.upper
+3 tables=LUA_tables
 3 table.concat=LUA_table.concat
 3 table.foreach=LUA_table.foreach
 3 table.foreachi=LUA_table.foreachi
