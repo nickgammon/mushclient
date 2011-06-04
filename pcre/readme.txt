@@ -1,8 +1,8 @@
 PCRE built as follows:
 
-1. Download: http://sourceforge.net/projects/pcre/files/pcre/8.10/pcre-8.10.zip/download
+1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.12.zip
 
-2. Unzip the file pcre-8.10.zip
+2. Unzip the file pcre-8.12.zip
 
 
 3. Copy the following files to the mushclient source "pcre" directory:
