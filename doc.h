@@ -1016,6 +1016,7 @@ public:
   __int64 m_nTotalUncompressed;
   __int64 m_nTotalCompressed;
   LONGLONG m_iCompressionTimeTaken;   // time taken to decompress
+  long m_nCompressionOutputBufferSize; // size of decompression output buffer
 
 
   int m_iMCCP_type;   // MCCP protocol type in use: 0 = none, 1 = v1, 2 = v2

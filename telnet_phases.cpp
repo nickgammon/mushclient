@@ -248,7 +248,7 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
       if (m_bCompressInitOK && !m_bDisableCompression)
         {
         if (!m_CompressOutput)
-          m_CompressOutput = (Bytef *) malloc (COMPRESS_BUFFER_LENGTH);
+          m_CompressOutput = (Bytef *) malloc (m_nCompressionOutputBufferSize);
         if (!m_CompressInput)
           m_CompressInput = (Bytef *) malloc (COMPRESS_BUFFER_LENGTH);
 

@@ -222,6 +222,7 @@ int i;
   m_nTotalUncompressed = 0;
   m_nTotalCompressed = 0;
   m_iCompressionTimeTaken = 0;
+  m_nCompressionOutputBufferSize = COMPRESS_BUFFER_LENGTH;  // initial value
 
   // we will defer initialising zlib until we really have to
 

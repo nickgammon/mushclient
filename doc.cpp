@@ -1343,7 +1343,7 @@ CString str = strText;
 
 void CMUSHclientDoc::ReceiveMsg()
 {
-char buff [1000];
+char buff [1000];   // must be less than COMPRESS_BUFFER_LENGTH or it won't fit
 int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
 
   Frame.CheckTimerFallback ();   // see if time is up for timers to fire
@@ -1470,7 +1470,30 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
       }
 
     // decompress it
-    int iCompressResult = inflate (&m_zCompress, Z_SYNC_FLUSH);
+    int iCompressResult;
+    do {
+       iCompressResult = inflate (&m_zCompress, Z_SYNC_FLUSH);
+
+       // buffer too small? (highly compressed text, huh?)
+       // make larger, try again - version 4.74
+       // See: http://www.gammon.com.au/forum/?id=11160 
+       if (iCompressResult == Z_BUF_ERROR)
+         {
+         m_nCompressionOutputBufferSize += COMPRESS_BUFFER_LENGTH;
+         m_zCompress.avail_out += COMPRESS_BUFFER_LENGTH;
+         m_CompressOutput = (Bytef *) realloc (m_CompressOutput, m_nCompressionOutputBufferSize);
+
+         if (m_CompressOutput == NULL)
+           {
+            OnConnectionDisconnect ();    // close the world
+            free (m_CompressInput);       // may as well get rid of compression input as well
+            m_CompressInput = NULL;
+            TMessageBox ("Insufficient memory to decompress MCCP text.", MB_ICONEXCLAMATION);
+            return;
+           }  // end of cannot get more memory
+         }  // end of Z_BUF_ERROR
+
+      } while (iCompressResult == Z_BUF_ERROR);
 
     if (App.m_iCounterFrequency)
       {
@@ -1481,10 +1504,12 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
     // error?
     if (iCompressResult < 0)
       {
+      char * pMsg = m_zCompress.msg;    // closing may clear the message
+
       OnConnectionDisconnect ();    // close the world
-      if (m_zCompress.msg)
+      if (pMsg)
         UMessageBox (TFormat ("Could not decompress text from MUD: %s",
-                          (LPCTSTR) m_zCompress.msg), MB_ICONEXCLAMATION);
+                          (LPCTSTR) pMsg), MB_ICONEXCLAMATION);
       else
         UMessageBox (TFormat ("Could not decompress text from MUD: %i",
                           iCompressResult), MB_ICONEXCLAMATION);
@@ -1492,7 +1517,7 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
       }
 
     // work out how much we got, and display it
-    int iLength = COMPRESS_BUFFER_LENGTH - m_zCompress.avail_out;
+    int iLength = m_nCompressionOutputBufferSize - m_zCompress.avail_out;
     
     // stats - count uncompressed bytes
     m_nTotalUncompressed += iLength;
@@ -1507,7 +1532,7 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
 
       DisplayMsg ((LPCTSTR) m_CompressOutput, iLength, 0);    // send uncompressed data to screen
       m_zCompress.next_out = m_CompressOutput;      // reset for more output
-      m_zCompress.avail_out = COMPRESS_BUFFER_LENGTH;
+      m_zCompress.avail_out = m_nCompressionOutputBufferSize;
       }
 
     // if end of stream, turn decompression off
@@ -1971,7 +1996,7 @@ CString strLine (lpszText, size);
               m_zCompress.next_in = m_CompressInput;
               m_zCompress.avail_in = size;
               m_zCompress.next_out = m_CompressOutput;
-              m_zCompress.avail_out = COMPRESS_BUFFER_LENGTH;
+              m_zCompress.avail_out = m_nCompressionOutputBufferSize;
               m_nTotalCompressed += size;
               return;  // done with this loop, now it needs to be decompressed
               }
@@ -1993,7 +2018,7 @@ CString strLine (lpszText, size);
               m_zCompress.next_in = m_CompressInput;
               m_zCompress.avail_in = size;
               m_zCompress.next_out = m_CompressOutput;
-              m_zCompress.avail_out = COMPRESS_BUFFER_LENGTH;
+              m_zCompress.avail_out = m_nCompressionOutputBufferSize;
               m_nTotalCompressed += size;
               return;  // done with this loop, now it needs to be decompressed
               }
