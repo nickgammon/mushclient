@@ -827,6 +827,7 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
     for (vector<string>::const_iterator i = v.begin (); i != v.end (); i++)
       {
       strPath = i->c_str ();
+      string sGlobalPluginPath (Make_Absolute_Path (strPath));
       bool bAlreadyLoaded = false;
 
       // see if we already have this one
@@ -835,8 +836,10 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
            ++pit)
         {
         CPlugin * p = *pit;
+        // convert filename to absolute path for a better comparison
+        string sThisPluginPath (Make_Absolute_Path (p->m_strSource));
 
-        if (p->m_strSource == strPath)
+        if (sGlobalPluginPath == sThisPluginPath)
           {
            bAlreadyLoaded = true;
            p->m_bGlobal = true;
@@ -853,8 +856,10 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
              ++pit)
           {
           CPlugin * p = *pit;
+          // convert filename to absolute path for a better comparison
+          string sThisPluginPath (Make_Absolute_Path (p->m_strSource));
 
-          if (p->m_strSource == strPath)
+          if (sGlobalPluginPath == sThisPluginPath)
             {
              p->m_bGlobal = true;
              break;
