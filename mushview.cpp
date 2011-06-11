@@ -6867,7 +6867,7 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
       prev_mw->m_client_mouseposition = point;
 
       // see if activity was mouse-down
-      if (!prev_mw->m_sMouseDownHotspot.empty ())   // mouse was clicked
+      if (!sOldMouseDownHotspot.empty ())   // mouse was clicked
         {
         // lookup that HotspotId
         HotspotMapIterator it = prev_mw->m_Hotspots.find (sOldMouseDownHotspot);
