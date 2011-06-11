@@ -6642,6 +6642,16 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
 
       } // previous one which isn't this one, or we are no longer on one
 
+    if (pHotspot)
+      {
+      // re-establish hotspot pointer in case previous callback deleted it
+      HotspotMapIterator it = mw->m_Hotspots.find (sHotspotId);
+      if (it == mw->m_Hotspots.end ())
+        pHotspot = NULL;
+      else 
+        pHotspot = it->second;
+      }    // if had a hotspot before
+
     // now, are we now over a hotspot?
     if (pHotspot)
       {
@@ -6672,6 +6682,16 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
           }   // end of having tooltip window
 
 
+        if (pHotspot)
+          {
+          // re-establish hotspot pointer in case previous callback deleted it
+          HotspotMapIterator it = mw->m_Hotspots.find (sHotspotId);
+          if (it == mw->m_Hotspots.end ())
+            pHotspot = NULL;
+          else 
+            pHotspot = it->second;
+          }  // if had a hotspot before
+              
         // capture mouse movements out of the miniwindow (version 4.46)
         // see: http://www.gammon.com.au/forum/?id=9980
 
@@ -6781,6 +6801,16 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
   if (mw)
     {
     mw->m_sMouseOverHotspot.erase ();
+
+    if (pHotspot)
+      {
+      // re-establish hotspot pointer in case previous callback deleted it
+      HotspotMapIterator it = mw->m_Hotspots.find (sHotspotId);
+      if (it == mw->m_Hotspots.end ())
+        pHotspot = NULL;
+      else 
+        pHotspot = it->second;
+      }    // if had a hotspot before
 
     // now, are we now over a hotspot?
     if (pHotspot)
@@ -6948,6 +6978,16 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
     ReleaseCapture();   // Release the mouse capture established at
                         // the beginning of the mouse click.
 
+    if (pHotspot)
+      {
+      // re-establish hotspot pointer in case previous callback deleted it
+      HotspotMapIterator it = mw->m_Hotspots.find (sHotspotId);
+      if (it == mw->m_Hotspots.end ())
+        pHotspot = NULL;
+      else 
+        pHotspot = it->second;
+      }    // if had a hotspot before
+
     // if mouse-up outside the current hotspot just cancel previous one
     // cancel previous mouse-down hotspot (in this miniwindow)
     if ((pHotspot == NULL ||                      // not on any hotspot
@@ -6969,16 +7009,26 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
 
       } // previous one which isn't this one, or we are no longer on one
 
+    if (pHotspot)
+      {
+      // re-establish hotspot pointer in case previous callback deleted it
+      HotspotMapIterator it = mw->m_Hotspots.find (sHotspotId);
+      if (it == mw->m_Hotspots.end ())
+        pHotspot = NULL;
+      else 
+        pHotspot = it->second;
+      }    // if had a hotspot before
+
     // now, did we release mouse over the hotspot it went down in?
     if (pHotspot && sOldMouseDownHotspotInThisWindow == sHotspotId)
       {
-      mw->m_bExecutingScript = true;
-      Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseUp, 
-                                  mw->m_sCallbackPlugin, 
-                                  pHotspot->m_sMouseUp, 
-                                  sHotspotId, 
-                                  mw->m_FlagsOnMouseDown);  // LH / RH mouse?
-      mw->m_bExecutingScript = false;
+        mw->m_bExecutingScript = true;
+        Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseUp, 
+                                    mw->m_sCallbackPlugin, 
+                                    pHotspot->m_sMouseUp, 
+                                    sHotspotId, 
+                                    mw->m_FlagsOnMouseDown);  // LH / RH mouse?
+        mw->m_bExecutingScript = false;
       }
 
     m_sPreviousMiniWindow.erase ();  // no longer have a previous mouse-over
