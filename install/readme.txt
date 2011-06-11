@@ -1,7 +1,7 @@
 MUSHclient version 4.75
 =======================
 
-Saturday, 11th June 2011
+Sunday, 12th June 2011
 
 Author: Nick Gammon
 Web support: http://www.gammon.com.au/forum/
