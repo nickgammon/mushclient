@@ -432,7 +432,7 @@ assemble the full text of the original line.
 // nb. if you get tempted to you will get a stack overflow when
 //     a trigger does a world.note
 
-  if (flags & NOTE_OR_COMMAND)
+  if (flags & (NOTE_OR_COMMAND | HORIZ_RULE))
     return false;   // done all we need to do, unless input from MUD
 
 //  We can be in a plugin if we had a prompt, which was not terminated, then
