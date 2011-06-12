@@ -21,8 +21,8 @@
 
 // New versions - things to change
 
-#define THISVERSION 475                       // Step 1.
-const CString MUSHCLIENT_VERSION = "4.75";    // Step 2.
+#define THISVERSION 476                       // Step 1.
+const CString MUSHCLIENT_VERSION = "4.76";    // Step 2.
 // Step 3. Don't forget VERSION resource in Resources tab
 // Step 4. Remember: README.TXT 
 
@@ -2184,6 +2184,14 @@ public:
                              const bool bAlpha);
 
   void EditFileWithEditor (CString strName);
+
+  void Hyperlink_Helper (LPCTSTR Action, 
+                         LPCTSTR Text, 
+                         LPCTSTR Hint, 
+                         LPCTSTR TextColour, 
+                         LPCTSTR BackColour, 
+                         BOOL URL,
+                         BOOL NoUnderline); 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
