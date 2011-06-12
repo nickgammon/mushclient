@@ -1373,7 +1373,7 @@ previousLineHPtime.QuadPart = 0;
         GetClientRect (&cr);
 
         SetRect (&r, 
-                 pDoc->m_iPixelOffset + 10,
+                 pDoc->m_iPixelOffset + 10 + pixel,
                  - pDoc->m_iPixelOffset + line * pDoc->m_FontHeight + iHalfFontHeight,
                  cr.right - 10 - pDoc->m_iPixelOffset,
                  - pDoc->m_iPixelOffset + line * pDoc->m_FontHeight + iHalfFontHeight + 1);
