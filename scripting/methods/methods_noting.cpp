@@ -512,12 +512,14 @@ else
 
 */
 
-void CMUSHclientDoc::Hyperlink(LPCTSTR Action, 
-                               LPCTSTR Text, 
-                               LPCTSTR Hint, 
-                               LPCTSTR TextColour, 
-                               LPCTSTR BackColour, 
-                               BOOL URL) 
+void CMUSHclientDoc::Hyperlink_Helper (LPCTSTR Action, 
+                       LPCTSTR Text, 
+                       LPCTSTR Hint, 
+                       LPCTSTR TextColour, 
+                       LPCTSTR BackColour, 
+                       BOOL URL,
+                       BOOL NoUnderline)
+
 {
   // return if attempt to do tell (or note) before output buffer exists
   if (m_pCurrentLine == NULL || m_pLinePositions == NULL)
@@ -560,7 +562,7 @@ void CMUSHclientDoc::Hyperlink(LPCTSTR Action,
   // change to underlined hyperlink
   AddStyle (COLOUR_RGB | 
             (URL ? ACTION_HYPERLINK : ACTION_SEND) | 
-            UNDERLINE, 
+            (NoUnderline ? 0 : UNDERLINE), 
             forecolour, 
             backcolour, 0, 
             GetAction (Action, 
@@ -590,7 +592,26 @@ void CMUSHclientDoc::Hyperlink(LPCTSTR Action,
       AddStyle (COLOUR_CUSTOM, m_iNoteTextColour, BLACK, 0, NULL);
     } // not RGB
 
-}   // end of CMUSHclientDoc::Hyperlink
+}   // end of CMUSHclientDoc::Hyperlink_Helper
+
+
+void CMUSHclientDoc::Hyperlink(LPCTSTR Action, 
+                               LPCTSTR Text, 
+                               LPCTSTR Hint, 
+                               LPCTSTR TextColour, 
+                               LPCTSTR BackColour, 
+                               BOOL URL) 
+  {
+
+  Hyperlink_Helper (Action, 
+                   Text, 
+                   Hint, 
+                   TextColour, 
+                   BackColour, 
+                   URL,
+                   FALSE);
+  } // end of CMUSHclientDoc::Hyperlink
+
 
 /*
 

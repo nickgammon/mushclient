@@ -4090,14 +4090,15 @@ static int L_Help (lua_State *L)
 static int L_Hyperlink (lua_State *L)
   {
   CMUSHclientDoc *pDoc = doc (L);
-  pDoc->Hyperlink (
-                      my_checkstring (L, 1),  // Action
-                      my_checkstring (L, 2),  // Text
-                      my_checkstring (L, 3),  // Hint
-                      my_checkstring (L, 4),  // TextColour
-                      my_checkstring (L, 5),  // BackColour
-                      optboolean (L, 6, 0)   // URL  - optional
-                      );
+  pDoc->Hyperlink_Helper (
+                          my_checkstring (L, 1),  // Action
+                          my_checkstring (L, 2),  // Text
+                          my_checkstring (L, 3),  // Hint
+                          my_checkstring (L, 4),  // TextColour
+                          my_checkstring (L, 5),  // BackColour
+                          optboolean (L, 6, 0),   // URL  - optional
+                          optboolean (L, 7, 0)    // No_Underline  - optional
+                          );
   return 0;  // number of result fields
   } // end of L_Hyperlink
 
