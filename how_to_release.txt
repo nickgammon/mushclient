@@ -2,7 +2,7 @@ HOW TO RELEASE MUSHCLIENT
 -------------------------
 
 Author: Nick Gammon
-Date:   20th July 2010
+Date:   14th June 2011
 
 Time required: Approx. 20 minutes.
 
@@ -24,6 +24,35 @@ HELP GENERATION
 4. Help file (mushclient.hlp) should be generated with no errors or warnings.
 
 
+GENERATE DOCUMENTATION SQL FROM DATABASE
+
+1. On Ubuntu server, run this:
+    . dumpdoc.sh
+
+   (Must be done on Ubuntu server, to make documentation.sql available for install step below)
+   
+       
+UPLOAD AND INSTALL DOCUMENTATION
+
+1. On Ubuntu server, upload:
+
+    sftp username@gammon.com.au
+    cd sql
+    put documentation.sql.bz2
+    Ctrl+D
+    
+2. Install:
+
+    ssh username@gammon.com.au
+    cd sql
+    rm documentation.sql
+    bunzip2 documentation.sql.bz2
+    . dbsetup
+    mysql -h $SERVER -u $USER -p $DATABASE < documentation.sql
+    (password) (RH-click to paste)
+    Ctrl+D
+
+        
 BUILD RELEASE VERSION
 
 1. Open project 'mushclient'
@@ -90,33 +119,7 @@ DO ANNOUNCEMENT
 UPDATE RELEASE NOTES
 
 1. Change record for relnotes for this release to have today's date as release date
-
-
-GENERATE DOCUMENTATION SQL FROM DATABASE
-
-1. On Ubuntu server, run this:
-    . dumpdoc.sh
     
-    
-UPLOAD AND INSTALL DOCUMENTATION
-
-1. Upload:
-
-    sftp username@gammon.com.au
-    cd sql
-    put documentation.sql.bz2
-    Ctrl+D
-    
-2. Install:
-
-    ssh username@gammon.com.au
-    cd sql
-    rm documentation.sql
-    bunzip2 documentation.sql.bz2
-    . dbsetup
-    mysql -h $SERVER -u $USER -p $DATABASE < documentation.sql
-    (password) (RH-click to paste)
-    Ctrl+D
     
     
     
