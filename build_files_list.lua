@@ -44,6 +44,8 @@ table.sort (files)
 
 fo = assert (io.open ("all_files_list.txt", "w"))
 for _, name in ipairs (files) do
+  name = string.gsub (name, "^C:\\source\\mushclient\\", "/cygdrive/c/source/mushclient/")
+  name = string.gsub (name, "\\", "/")
   fo:write (name .. "\n")
 end -- for
 
