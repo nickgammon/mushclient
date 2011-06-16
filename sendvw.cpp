@@ -2535,6 +2535,11 @@ void CSendView::OnAcceleratorCommand (UINT nID)
     CString strExtraOutput;
     pDoc->m_iCurrentActionSource = eUserAccelerator;  
 
+    CPlugin * pSavedPlugin = pDoc->m_CurrentPlugin;
+
+    // which plugin wanted it
+    pDoc->m_CurrentPlugin = pDoc->GetPlugin (pDoc->m_CommandToPluginMap [nID].c_str ());
+
     // ok let's do it now
     pDoc->SendTo (pDoc->m_CommandToSendToMap [nID], 
             sCommand.c_str (), 
@@ -2544,6 +2549,8 @@ void CSendView::OnAcceleratorCommand (UINT nID)
             "",       // Variable name
             strExtraOutput  // if we sent to output, it goes here
             );
+
+    pDoc->m_CurrentPlugin = pSavedPlugin;
 
     // display any stuff sent to output window
 

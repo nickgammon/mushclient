@@ -1310,6 +1310,7 @@ public:
   map<long, WORD> m_AcceleratorToCommandMap;  // command to send for accelerator
   map<WORD, string> m_CommandToMacroMap;      // what that command does
   map<WORD, short> m_CommandToSendToMap;      // where it goes (eg. 0 = world, 1 = command etc.)
+  map<WORD, string> m_CommandToPluginMap;     // what plugin it belongs to
   HACCEL m_accelerator;
 
   // for mapping colours to colours

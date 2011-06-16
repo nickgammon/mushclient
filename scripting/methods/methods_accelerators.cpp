@@ -133,6 +133,12 @@ WORD key;
     // and where to send it
     m_CommandToSendToMap [command] = SendTo;
 
+    // remember which plugin did it
+    m_CommandToPluginMap [command].empty ();
+
+    if (m_CurrentPlugin)
+      m_CommandToPluginMap [command] = m_CurrentPlugin->m_strID;
+
     }  // end of having something to do (ie. not deleting accelerator)
 
   // create new handle
