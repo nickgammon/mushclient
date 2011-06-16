@@ -134,7 +134,7 @@ WORD key;
     m_CommandToSendToMap [command] = SendTo;
 
     // remember which plugin did it
-    m_CommandToPluginMap [command].empty ();
+    m_CommandToPluginMap [command].erase ();
 
     if (m_CurrentPlugin)
       m_CommandToPluginMap [command] = m_CurrentPlugin->m_strID;

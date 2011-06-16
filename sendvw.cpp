@@ -2540,15 +2540,19 @@ void CSendView::OnAcceleratorCommand (UINT nID)
     // which plugin wanted it
     pDoc->m_CurrentPlugin = pDoc->GetPlugin (pDoc->m_CommandToPluginMap [nID].c_str ());
 
-    // ok let's do it now
-    pDoc->SendTo (pDoc->m_CommandToSendToMap [nID], 
-            sCommand.c_str (), 
-            TRUE,     // omit from output
-            TRUE,     // omit from log
-            TFormat ("Accelerator: %s", (LPCTSTR) key),
-            "",       // Variable name
-            strExtraOutput  // if we sent to output, it goes here
-            );
+    if (pDoc->m_CurrentPlugin != NULL ||
+        pDoc->m_CommandToPluginMap [nID].empty ())
+      {
+      // ok let's do it now
+      pDoc->SendTo (pDoc->m_CommandToSendToMap [nID], 
+              sCommand.c_str (), 
+              TRUE,     // omit from output
+              TRUE,     // omit from log
+              TFormat ("Accelerator: %s", (LPCTSTR) key),
+              "",       // Variable name
+              strExtraOutput  // if we sent to output, it goes here
+              );
+      }
 
     pDoc->m_CurrentPlugin = pSavedPlugin;
 
