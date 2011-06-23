@@ -23,6 +23,7 @@
 #include "ActivityView.h"
 
 #include "dialogs\cmdhist.h"
+#include "dialogs\CompleteWordDlg.h"
 
 #include "ActivityDoc.h"
 
@@ -2727,12 +2728,64 @@ void CSendView::OnCompleteFunction()
 	CMUSHclientDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 
-  bool bLua = false;
-  
-  if (pDoc->GetScriptEngine () && pDoc->GetScriptEngine ()->L)
-    bLua = true;
+	CString strText;
+  GetEditCtrl().GetWindowText(strText);
 
-  FunctionMenu (GetEditCtrl(), bLua, &pDoc->m_ExtraShiftTabCompleteItems, pDoc->m_bTabCompleteFunctions);
+  // if line starts with scripting prefix, do a function-completion
+  if (pDoc->m_bEnableScripts &&            // providing scripting active
+      !pDoc->m_strScriptPrefix.IsEmpty () &&    // and we *have* a script prefix
+      strText.Left (pDoc->m_strScriptPrefix.GetLength ()) == pDoc->m_strScriptPrefix  // and it matches
+     )
+    {
+    bool bLua = false;
+
+    if (pDoc->GetScriptEngine () && pDoc->GetScriptEngine ()->L)
+      bLua = true;
+
+    FunctionMenu (GetEditCtrl(), bLua, &pDoc->m_ExtraShiftTabCompleteItems, pDoc->m_bTabCompleteFunctions);
+    return;
+    }
+
+  // otherwise look up old command in command history
+
+  vector<string> vWantedHistory;
+
+   // top
+
+  strText.MakeUpper ();
+
+  for (POSITION pos = m_msgList.GetHeadPosition (); pos; )
+    {
+    CString strLine = m_msgList.GetNext (pos);
+    // add providing matches start of what they typed
+    if (strText.IsEmpty () || strLine.Left (strText.GetLength ()).CompareNoCase (strText) == 0)
+      vWantedHistory.push_back ((LPCTSTR) strLine);
+    }
+
+
+  CCompleteWordDlg dlg;
+
+  int nStartChar,
+      nEndChar;
+
+  // find the selection range
+  GetEditCtrl().GetSel(nStartChar, nEndChar);
+
+  dlg.m_bFunctions = false;
+  dlg.m_commandHistoryItems = &vWantedHistory;
+  dlg.m_pt = GetEditCtrl().PosFromChar (nEndChar - 1);  // strangely doesn't work at end of line
+
+  dlg.m_pt.x += 10;  // small gap
+  dlg.m_pt.y += 10;  // small adjustment lalala
+
+  GetEditCtrl().ClientToScreen(&dlg.m_pt);
+
+  if (dlg.DoModal () == IDCANCEL || dlg.m_strResult.IsEmpty ())
+    return;
+
+  GetEditCtrl().SetSel (0, -1);   // select all
+  GetEditCtrl().ReplaceSel (dlg.m_strResult, TRUE);
+
 }
 
 void CSendView::OnUpdateCompleteFunction(CCmdUI* pCmdUI) 

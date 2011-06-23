@@ -31,6 +31,7 @@ public:
   bool m_bLua;
   bool m_bFunctions;
   set<string> * m_extraItems;
+  vector<string> * m_commandHistoryItems;
 
 // Overrides
 	// ClassWizard generated virtual function overrides

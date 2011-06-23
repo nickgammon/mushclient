@@ -27,6 +27,7 @@ CCompleteWordDlg::CCompleteWordDlg(CWnd* pParent /*=NULL*/)
 m_bLua = false;
 m_bFunctions = true;
 m_extraItems = NULL;
+m_commandHistoryItems = NULL;
 }
 
 
@@ -49,7 +50,7 @@ END_MESSAGE_MAP()
 // CCompleteWordDlg message handlers
 
 
-static const char * sNoMatches = "(no matches)";
+CString strNoMatches = "(no matches)";
 
 extern tInternalFunctionsTable InternalFunctionsTable [1];
 
@@ -57,6 +58,31 @@ void CCompleteWordDlg::ReloadList ()
   {
 
   m_ctlFunctions.ResetContent ();
+
+  if (m_commandHistoryItems)
+    {
+    strNoMatches = "(no matching commands)";
+    if (m_commandHistoryItems->empty ())
+      {
+      m_ctlFunctions.AddString (strNoMatches);
+      m_ctlFunctions.EnableWindow (FALSE);
+      return;
+      }
+
+    string sLastOne;
+
+    for (vector<string>::const_iterator it = m_commandHistoryItems->begin ();
+         it != m_commandHistoryItems->end ();
+         it++)
+           {
+            m_ctlFunctions.AddString  (it->c_str ());
+            sLastOne = *it;
+           }
+
+//    m_ctlFunctions.SelectString (-1, sLastOne.c_str ());
+
+    return;
+    }
 
   m_strFilter.MakeLower ();
   m_strFilter.TrimLeft ();
@@ -156,7 +182,7 @@ void CCompleteWordDlg::ReloadList ()
 
   if (iCount == 0)
     {
-    m_ctlFunctions.AddString (sNoMatches);
+    m_ctlFunctions.AddString (strNoMatches);
     m_ctlFunctions.EnableWindow (FALSE);
     }
 
@@ -193,7 +219,7 @@ void CCompleteWordDlg::OnOK()
     m_ctlFunctions.GetText (iWhich, m_strResult);
 
   // can't return our "no matches" string
-  if (m_strResult == sNoMatches)
+  if (m_strResult == strNoMatches)
     m_strResult.Empty ();
   else
     {
