@@ -317,7 +317,7 @@ void CSendView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
-	if ((nChar == VK_RETURN) && (nRepCnt == 1))
+	if (nChar == VK_RETURN)
   	{
 
     pDoc->m_iCurrentActionSource = eUserTyping;
@@ -718,6 +718,7 @@ void CSendView::SendCommand (const CString strOriginalCommand,
   if (!bSavePrevious)
     if (pDoc->m_bAutoRepeat && !pDoc->m_bNoEcho)    // auto repeat re-enters the last command
       {
+      SetCommand (strOriginalCommand);
       GetEditCtrl().SetSel (0, -1);   // select all
       m_bChanged = FALSE;   // no change yet
       }
