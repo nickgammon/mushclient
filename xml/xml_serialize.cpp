@@ -46,7 +46,7 @@ void CMUSHclientDoc::Serialize_World_XML (CArchive& ar)
     m_CurrentPlugin = pSavedPlugin;
     }
   else
-    { // loaidng
+    { // loading
     Load_World_XML (ar, (unsigned long) ~(XML_PLUGINS | XML_NO_PLUGINS));    // load all options, except plugins
     m_bLoaded = true;   // this world has been loaded from disk
     }
