@@ -428,8 +428,7 @@ void CMUSHclientDoc::Phase_DONT (const unsigned char c)
 
   TRACE1 ("<%d>", c);
   m_phase = NONE;
-  unsigned char p [3] = { IAC, WONT, c };
-  SendPacket (p, sizeof p);
+  Send_IAC_WONT (c);
 
   m_nCount_IAC_DONT++;
   m_bClient_got_IAC_DONT [c] = true;
