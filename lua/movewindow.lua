@@ -289,7 +289,7 @@ end -- make_check_map_position_handler
 -- call movewindow.install in OnPluginInstall to find the position of the window, before creating it
 --  - it also creates the handler functions ready for use later
 
-function movewindow.install (win, default_position, default_flags, nocheck, friends, preprocess)
+function movewindow.install (win, default_position, default_flags, nocheck, friends, preprocess, start_position)
 
   win = win or GetPluginID ()  -- default to current plugin ID
   
@@ -303,8 +303,8 @@ function movewindow.install (win, default_position, default_flags, nocheck, frie
      win = win,   -- save window ID
      
      -- save current position in table (obtained from state file)
-     window_left  = tonumber (GetVariable ("mw_" .. win .. "_windowx")) or 0,
-     window_top   = tonumber (GetVariable ("mw_" .. win .. "_windowy")) or 0,
+     window_left  = tonumber (GetVariable ("mw_" .. win .. "_windowx")) or (start_position and start_position.x) or 0,
+     window_top   = tonumber (GetVariable ("mw_" .. win .. "_windowy")) or (start_position and start_position.y) or 0,     
      window_mode  = tonumber (GetVariable ("mw_" .. win .. "_windowmode")) or default_position,
      window_flags = tonumber (GetVariable ("mw_" .. win .. "_windowflags")) or default_flags,
      window_friends = friends or {},
