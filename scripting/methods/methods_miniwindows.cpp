@@ -547,7 +547,9 @@ long CMUSHclientDoc::WindowAddHotspot(LPCTSTR Name,
   if (m_CurrentPlugin)                            
     sPluginID = m_CurrentPlugin->m_strID;
 
-  return it->second->AddHotspot (this, 
+  long status;
+
+  status = it->second->AddHotspot (this, 
                                HotspotId, 
                                sPluginID,
                                Left, Top, Right, Bottom, 
@@ -559,6 +561,31 @@ long CMUSHclientDoc::WindowAddHotspot(LPCTSTR Name,
                                TooltipText,
                                Cursor,
                                Flags);
+
+  // in mouse was over hotspot when it was created, do a "mouse move" to detect this
+  if (status == eOK)
+    {
+    MiniWindowMapIterator it = m_MiniWindows.find (Name);
+    if (it != m_MiniWindows.end ())
+      {
+      CMiniWindow * mw = it->second;
+
+      for(POSITION pos=GetFirstViewPosition();pos!=NULL;)
+	      {
+	      CView* pView = GetNextView(pos);
+	      
+	      if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+  	      {
+		      CMUSHView* pmyView = (CMUSHView*)pView;
+          pmyView->Mouse_Move_MiniWindow (this, 
+              CPoint (mw->m_last_mouseposition.x + mw->m_rect.left, mw->m_last_mouseposition.y + mw->m_rect.top) );
+	        }	
+        } // end of looping through views
+      }   // end of miniwindow still exists
+    } // end of added hotspot OK
+
+  return status;
+
 }  // end of CMUSHclientDoc::WindowHotspot
 
 // remove a previously-installed hotspot
