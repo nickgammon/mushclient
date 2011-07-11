@@ -2729,6 +2729,8 @@ void CSendView::OnCompleteFunction()
 	CMUSHclientDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 
+/*    // NOT YET
+
 	CString strText;
   GetEditCtrl().GetWindowText(strText);
 
@@ -2738,12 +2740,20 @@ void CSendView::OnCompleteFunction()
       strText.Left (pDoc->m_strScriptPrefix.GetLength ()) == pDoc->m_strScriptPrefix  // and it matches
      )
     {
+
+*/
+
     bool bLua = false;
 
     if (pDoc->GetScriptEngine () && pDoc->GetScriptEngine ()->L)
       bLua = true;
 
     FunctionMenu (GetEditCtrl(), bLua, &pDoc->m_ExtraShiftTabCompleteItems, pDoc->m_bTabCompleteFunctions);
+
+
+    /*    // NOT YET
+
+
     return;
     }
 
@@ -2786,6 +2796,7 @@ void CSendView::OnCompleteFunction()
 
   GetEditCtrl().SetSel (0, -1);   // select all
   GetEditCtrl().ReplaceSel (dlg.m_strResult, TRUE);
+*/
 
 }
 
