@@ -1548,6 +1548,10 @@ SOURCE=.\.gitignore
 # End Source File
 # Begin Source File
 
+SOURCE=.\how_to_make_standalone_installer.txt
+# End Source File
+# Begin Source File
+
 SOURCE=.\how_to_release.txt
 # End Source File
 # Begin Source File
@@ -1560,9 +1564,6 @@ SOURCE=.\using_git.txt
 # End Source File
 # End Target
 # End Project
-# Section MUSHclient : {00000000-000C-0000-0C00-00004944445F}
-# 	1:26:CG_IDR_POPUP_ACTIVITY_VIEW:127
-# End Section
 # Section MUSHclient : {00000000-0001-0000-0000-000000000000}
 # 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
 # End Section
@@ -1609,4 +1610,7 @@ SOURCE=.\using_git.txt
 # End Section
 # Section MUSHclient : {52A03A14-D2CC-0056-A8D2-560020D55600}
 # 	1:21:CG_IDR_POPUP_MUSHVIEW:125
+# End Section
+# Section MUSHclient : {00000000-000C-0000-0C00-00004944445F}
+# 	1:26:CG_IDR_POPUP_ACTIVITY_VIEW:127
 # End Section
