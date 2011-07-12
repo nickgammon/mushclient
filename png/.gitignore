@@ -16,6 +16,7 @@ pngrutil.c
 pngset.c
 pngstruct.h
 pngtrans.c
+pngvalid.c
 pngwio.c
 pngwrite.c
 pngwtran.c
