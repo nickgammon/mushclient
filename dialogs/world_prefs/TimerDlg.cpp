@@ -404,3 +404,16 @@ CEditMultiLine dlg;
 	
 }
 
+
+// Alt+Return edits "send" text
+BOOL CTimerDlg::PreTranslateMessage(MSG* pMsg) 
+{
+	if (pMsg->message == WM_SYSKEYDOWN &&
+    pMsg->wParam == VK_RETURN)     
+      {
+      PostMessage(WM_COMMAND, MAKELONG(IDC_EDIT_SEND, BN_CLICKED), NULL);
+      return FALSE;
+      }
+
+	return CDialog::PreTranslateMessage(pMsg);
+}

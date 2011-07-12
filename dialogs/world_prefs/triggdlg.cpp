@@ -823,3 +823,16 @@ if (GetText (m_ctlLinesToMatch) == "0")
   m_ctlLinesToMatch.SetWindowText ("2");
 
 }
+
+// Alt+Return edits "send" text
+BOOL CTriggerDlg::PreTranslateMessage(MSG* pMsg) 
+{
+	if (pMsg->message == WM_SYSKEYDOWN &&    
+      pMsg->wParam == VK_RETURN)     
+      {
+      PostMessage(WM_COMMAND, MAKELONG(IDC_EDIT_SEND, BN_CLICKED), NULL);
+      return FALSE;
+      }
+
+	return CDialog::PreTranslateMessage(pMsg);
+}
