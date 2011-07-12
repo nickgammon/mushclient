@@ -1787,6 +1787,7 @@ CFunctionListDlg dlg;
     } // end of looping through table
 
 
+  // filter function
   if (lua_gettop (L) > 4)
     {
     if (!lua_isnil (L, 5))
@@ -1800,6 +1801,24 @@ CFunctionListDlg dlg;
       // while the dialog box is running - so we store it in the registry and get the
       // unique index back
       dlg.m_iFilterIndex = luaL_ref (L, LUA_REGISTRYINDEX);
+
+      }
+    }
+
+  // filter prep function
+  if (lua_gettop (L) > 5)
+    {
+    if (!lua_isnil (L, 6))
+      {
+      luaL_checktype (L, 6, LUA_TFUNCTION);
+      lua_pushvalue (L, 6);    // function is now on top of stack   
+
+      dlg.m_L = L; 
+
+      // we can't leave the function on the stack, that gets cleared from time to time
+      // while the dialog box is running - so we store it in the registry and get the
+      // unique index back
+      dlg.m_iFilterPrepIndex = luaL_ref (L, LUA_REGISTRYINDEX);
 
       }
     }
@@ -1821,6 +1840,7 @@ CFunctionListDlg dlg;
   
   // free up registry entry  (is OK with LUA_NOREF)
   luaL_unref(L, LUA_REGISTRYINDEX, dlg.m_iFilterIndex);
+  luaL_unref(L, LUA_REGISTRYINDEX, dlg.m_iFilterPrepIndex);
 
   return 1;   // 1 result
 

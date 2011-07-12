@@ -27,6 +27,7 @@ CFunctionListDlg::CFunctionListDlg(CWnd* pParent /*=NULL*/)
   m_bNoSort = false;
   m_L = NULL;
   m_iFilterIndex = LUA_NOREF;
+  m_iFilterPrepIndex = LUA_NOREF;
 }
 
 
@@ -71,6 +72,28 @@ BOOL CFunctionListDlg::ReloadList ()
   m_strFilter.TrimRight ();
 
   string sFilter (m_strFilter);
+
+  // call filter "prep" function (eg. do FTS3 database lookup based on the wanted filter)
+
+  if (m_L && m_iFilterPrepIndex != LUA_NOREF)
+    {
+
+    lua_rawgeti (m_L, LUA_REGISTRYINDEX, m_iFilterPrepIndex);
+
+    // Lua filter:  function f (filter)  ... end
+
+    // what they have currently typed
+    lua_pushlstring (m_L, sFilter.c_str (), sFilter.size ());
+
+    // call the function: arg1: filter field, arg2: key, arg3: value
+    if (lua_pcall (m_L, 1, 0, 0))   // call with 3 args and 0 results
+      {
+      LuaError (m_L);    // note that this clears the stack, so we won't call it again
+      lua_settop (m_L, 0);   // clear stack, just in case LuaError changes behaviour
+      }   // end of error
+
+    }  // end of Lua filter prep function available
+
 
   // filter based on a partial match on what is in the filter box
   // (eg. "chat" would find all chat functions)
