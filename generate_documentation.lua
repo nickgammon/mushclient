@@ -100,28 +100,34 @@ end -- while
 
 fo:write [[
 DROP TABLE IF EXISTS commands_lookup;
+DROP TABLE IF EXISTS dialogs_lookup;
+DROP TABLE IF EXISTS functions_lookup;
+DROP TABLE IF EXISTS general_doc_lookup;
+DROP TABLE IF EXISTS errors_lookup;
+DROP TABLE IF EXISTS lua_functions_lookup;
+
+/*
+
+-- do this at the client end to save download space
+
 CREATE VIRTUAL TABLE commands_lookup USING FTS4(command_name, short_description, description);
 INSERT INTO commands_lookup (command_name, short_description, description) SELECT command_name, short_description, description FROM commands;
 
-DROP TABLE IF EXISTS dialogs_lookup;
 CREATE VIRTUAL TABLE dialogs_lookup USING FTS4(dialog_name, title, description);
 INSERT INTO dialogs_lookup (dialog_name, title, description) SELECT dialog_name, title, description FROM dialogs;
 
-DROP TABLE IF EXISTS functions_lookup;
 CREATE VIRTUAL TABLE functions_lookup USING FTS4(name, summary, description, lua_example, lua_notes);
 INSERT INTO functions_lookup (name, summary, description, lua_example, lua_notes) SELECT name, summary, description, lua_example, lua_notes FROM functions;
 
-DROP TABLE IF EXISTS general_doc_lookup;
 CREATE VIRTUAL TABLE general_doc_lookup USING FTS4(doc_name, title, description);
 INSERT INTO general_doc_lookup (doc_name, title, description) SELECT doc_name, title, description FROM general_doc;
 
-DROP TABLE IF EXISTS errors_lookup;
 CREATE VIRTUAL TABLE errors_lookup USING FTS4(error_name, error_code, meaning);
 INSERT INTO errors_lookup (error_name, error_code, meaning) SELECT error_name, error_code, meaning FROM errors;
 
-DROP TABLE IF EXISTS lua_functions_lookup;
 CREATE VIRTUAL TABLE lua_functions_lookup USING FTS4(name, summary, description);
 INSERT INTO lua_functions_lookup (name, summary, description) SELECT name, summary, description FROM lua_functions;
+*/
 
 DROP TABLE IF EXISTS `tblUnixControl`;
 ]]
