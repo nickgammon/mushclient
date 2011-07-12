@@ -6,7 +6,6 @@ pngerror.c
 pnggccrd.c
 pngget.c
 pnginfo.h
-pnglibconf.h
 pngmem.c
 pngpread.c
 pngpriv.h
