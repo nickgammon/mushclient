@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="MUSHclient_Help"
+   author="Nick Gammon"
+   id="d2fa45d390d935d947cdc169"
+   language="Lua"
+   purpose="Shows the MUSHclient help file"
+   save_state="y"
+   date_written="2011-06-13 08:58:30"
+   requires="4.75"
+   version="1.0"
+   >
+<description trim="y">
+<![CDATA[
+To get general help:
+  
+  mchelp  <search string>
+  mchelps <search string>   --> get help with snippet (context) shown
+  
+  mchelp   --> on its own, shows this help
+
+Search strings can have boolean operators in them, namely the words:
+  
+  AND NEAR NOT OR
+
+These words must be in all capitals or they are just searched for literally. 
+
+For example:
+
+  mchelp trigger AND alias
+  mchelp delete AND trigger NEAR count
+  mchelp search NOT table
+  mchelp search -table
+  mchelp add OR delete
+  mchelp next NEAR/5 table
+  mchelp add AND (trigger OR alias)
+
+(The syntax NEAR/5 means if one word is within 5 words of another word, the default is 10)
+
+You can use a wildcard suffix, eg.
+  
+  mchelp trigg*
+
+You can look for phrases by putting them in quotes, eg.
+  
+  mchelp "hash a string"
+  
+You can restrict the lookup to the item name (eg. the function name) like this:
+
+  mchelp name:utils.*
+
+]]>
+</description>
+
+</plugin>
+
+
+<!--  Aliases  -->
+
+<aliases>
+  <alias
+   script="help_find"
+   match="^mchelp (.+)$"
+   enabled="y"
+   group="help"
+   regexp="y"
+   sequence="100"
+  >
+  </alias>
+  
+ <alias
+   script="help_find_snippet"
+   match="^mchelps (.+)$"
+   enabled="y"
+   group="help"
+   regexp="y"
+   sequence="100"
+  >
+  </alias>
+    
+  <alias
+   script="OnHelp"
+   match="^mchelps?$"
+   enabled="y"
+   regexp="y"
+  >
+  </alias>
+  
+</aliases>
+
+<!--  Script  -->
+
+
+<script>
+<![CDATA[
+
+require "pairsbykeys"
+
+-- major headings
+local HEADINGCOLOUR = "yellow"
+local NAMECOLOUR = "cyan"
+local SUMMARYCOLOUR = "white"
+local PROTOTYPECOLOUR = "cyan"
+local DESCRIPTIONCOLOUR = "white"
+local NOTESCOLOUR = "white"
+local HELPCOLOUR = "indianred"
+
+-- tags (eg. bold, italic)
+local CODECOLOUR = "greenyellow"
+local RETURNVALUE = "thistle"
+local BOLDCOLOUR = "orange"
+local ITALICCOLOUR = "linen"
+
+-- for snippets
+local RESET   = ANSI (0)
+local BOLD    = ANSI (1)
+local UNBOLD  = ANSI (22)
+local SNIPPETSIZE = -15   -- how many tokens to show around snippet
+
+local styles
+
+-- SQL fixup function
+
+local function fixsql (s)
+  -- replace single quotes with two lots of single quotes
+  if s then
+    return "'" .. (string.gsub (s, "'", "''")) .. "'" 
+  end -- if string exists
+  
+  return "NULL"
+end -- fixsql
+
+-- for fixing up entities
+local entities = {
+  ["&lt;"]    = "<";
+  ["&gt;"]    = ">";
+  ["&amp;"]   = "&";
+  ["&quot;"]  = "\"";
+  } -- end of entities
+  
+-- what to do on getting a tag like <b>
+local tag_handlers = {
+  ["<b>"]     = function () SetNoteColourFore (ColourNameToRGB (BOLDCOLOUR))    end;
+  ["<i>"]     = function () SetNoteColourFore (ColourNameToRGB (ITALICCOLOUR))  end;
+  ["<code>"]  = function () SetNoteColourFore (ColourNameToRGB (CODECOLOUR))    end;
+  ["<ul>"]    = function ()   end;
+  ["<li/>"]   = function () Tell (" * ") end;
+  ["<hr/>"]   = function () NoteHr () end;
+
+  } -- end of tag_handlers
+  
+-- called by LPEG to output an opening, closing, or empty tag
+local function tag_output (tag)
+
+  -- restore colour on closing tag, save colour on nested tag
+  if tag:sub (2, 2) == "/" then
+    SetNoteColourFore (table.remove (styles))
+  elseif tag:sub (-2, -2) ~= "/" then
+    table.insert (styles, GetNoteColourFore () )
+  end -- if  
+
+  local f = tag_handlers [tag:lower ()]
+  if f then
+    f ()
+  end -- if handler found
+  
+end -- tag_output
+  
+-- called by LPEG to output straight text
+local function text_output (text)
+  -- fix up entities like &lt;
+  Tell ((text:gsub ("&%a-;", entities)))
+end -- text_output
+
+-- LPEG grammar for (simplified) HTML
+local P, R, S, C, Cc, Ct = lpeg.P, lpeg.R, lpeg.S, lpeg.C, lpeg.Cc, lpeg.Ct
+local TAG     = (P"<" * P"/"^-1 * R("AZ", "az")^1 * P"/"^-1 * P">")/tag_output
+local NOT_TAG = ((1 - lpeg.P"<")^0/text_output)
+local HTML    = (NOT_TAG * TAG * NOT_TAG)^0
+  
+-- show a help item with a coloured heading, and coloured text
+
+local function show_item (hdg_colour, hdg, text_colour, text, tagged)
+
+  if text and text ~= "" then
+  
+    if hdg and hdg ~= "" then
+      ColourNote (hdg_colour, "", hdg)
+      print ""
+    end -- if any heading
+        
+    if tagged then
+      local notecolour = GetNoteColourFore ()
+      styles = {}  -- nested styles - start off with none
+      SetNoteColourFore (ColourNameToRGB (text_colour))
+      lpeg.match (HTML, text)
+      SetNoteColourFore (notecolour)
+      print ""  -- probably doesn't end with newline
+    else
+      ColourNote (text_colour, "", text)
+    end -- if tagged or not
+    
+    print ""
+  end -- if any text
+  
+end -- show_item
+
+-- normal functions
+local function show_functions_help (row)
+
+  NoteHr ()
+  show_item (HEADINGCOLOUR, "Function",      NAMECOLOUR,        row.name)
+  show_item (HEADINGCOLOUR, "Summary",       SUMMARYCOLOUR,     row.summary)
+  show_item (HEADINGCOLOUR, "Prototype",     PROTOTYPECOLOUR,   row.prototype)
+  show_item (HEADINGCOLOUR, "Description",   DESCRIPTIONCOLOUR, row.description)
+  show_item (HEADINGCOLOUR, "Return Value",  RETURNVALUE,       row.return_value)
+  show_item (HEADINGCOLOUR, "Lua Example",   CODECOLOUR,        row.lua_example)
+  show_item (HEADINGCOLOUR, "Lua Notes",     NOTESCOLOUR,       row.lua_notes)
+
+end -- show_functions_help
+
+-- general help (major topics)
+local function show_general_help (row)
+
+  NoteHr ()
+  show_item (NOTESCOLOUR,   "",         NAMECOLOUR,     row.title)
+  show_item (HEADINGCOLOUR, "Summary",  SUMMARYCOLOUR,  row.description,   true)
+  
+end -- show_general_help
+
+-- lua functions
+local function show_lua_functions_help (row)
+
+  NoteHr ()
+  show_item (HEADINGCOLOUR, "Lua",         NAMECOLOUR,        row.name)
+  show_item (HEADINGCOLOUR, "Summary",     SUMMARYCOLOUR,     row.summary)
+  show_item (HEADINGCOLOUR, "Prototype",   PROTOTYPECOLOUR,   row.prototype)
+  show_item (HEADINGCOLOUR, "Description", DESCRIPTIONCOLOUR, row.description,  true)
+
+end -- show_lua_functions_help
+
+
+local hyperlink_handlers = {
+
+  functions     = { sql = "SELECT * FROM functions WHERE name = %s", 
+                    handler = show_functions_help };
+                    
+  general       = { sql = "SELECT * FROM general_doc WHERE doc_name = %s", 
+                    handler = show_general_help };
+                    
+  lua_functions = { sql = "SELECT * FROM lua_functions WHERE name = %s", 
+                    handler = show_lua_functions_help };
+
+  } -- end of hyperlink_handlers
+
+-- here when hyperlink clicked
+  
+function do_hyperlink (s)
+  local what, name = string.match (s, "([%a_]+):([%a%d_%. :]+)")
+  
+  if not what then return end
+ 
+  local help = hyperlink_handlers [what]
+  
+  if not help then 
+    ColourNote ("red", "", "Handler not found for " .. what)
+    return
+  end -- if not found
+  
+  -- should only find one match here ...
+  for row in db:nrows(string.format (help.sql, fixsql (name))) do
+     help.handler (row)
+  end   -- finding function
+  
+end -- do_hyperlink
+
+function general_help (search_string, want_snippet)
+
+  local searchfor = fixsql (search_string)
+  
+  AnsiNote (RESET)
+  
+  assert (db, "No help database found")
+  
+  local count = 0
+  local functions = {}
+  local general = {}
+  local lua_functions = {}
+  
+  function show_snippet (what, name, title, extra, snippet)
+    Tell " "
+    Hyperlink ("!!" .. GetPluginID () .. ":do_hyperlink(" .. what .. ":" .. name .. ")", 
+                title, "Click for help on " .. title, "cyan", "", false)
+    if extra ~= "" then
+        Tell (" - ", extra)
+    end -- if
+    print ""  
+    
+    -- show snippet
+           
+    if want_snippet then
+    
+      -- fix up snippet ...
+      -- get rid of imbedded tags
+      snippet = snippet:gsub ("</?%a+/?>", "")
+      -- get rid of partial leading tags (eg. b>)
+      snippet = snippet:gsub ("^ %.%.%. /?%a-/?>", "")
+      -- get rid of partial closing tags (eg. <b)
+      snippet = snippet:gsub ("</?%a-/? %.%.%. $", "")
+      
+      -- convert entities ...
+      snippet = snippet:gsub ("&%a-;", entities)
+      
+      -- phew! now show it
+      AnsiNote (RESET .. snippet)
+      print ""
+    end -- if snippet wanted
+    
+  end -- show_snippet
+
+  NoteHr ()
+ 
+  -- GENERAL documentation
+  
+  -- find matching items using FTS
+  for row in db:nrows(string.format (
+     [[
+     SELECT name, title, snippet(general_doc_lookup, '%s', '%s', ' ... ', -1, %i) AS snippet 
+        FROM general_doc_lookup 
+        WHERE general_doc_lookup MATCH %s]], 
+      BOLD, UNBOLD, SNIPPETSIZE,
+     searchfor)) do
+     general [row.name] = { snippet = row.snippet, title = row.title }
+     count = count + 1
+  end   -- finding item
+  
+  if next (general) then
+    ColourNote (HEADINGCOLOUR, "", "Topics")
+    for k, v in pairsByKeys (general) do
+      show_snippet ("general", k, v.title, "", v.snippet)
+    end -- for
+  end -- if
+      
+ -- FUNCTIONS documentation
+  
+  -- find matching items using FTS
+  for row in db:nrows(string.format (
+     [[
+     SELECT name, summary, snippet(functions_lookup, '%s', '%s', ' ... ', -1, %i) AS snippet 
+        FROM functions_lookup 
+        WHERE functions_lookup MATCH %s]], 
+      BOLD, UNBOLD, SNIPPETSIZE,
+      searchfor)) do
+     functions [row.name] = { snippet = row.snippet, summary = row.summary }
+     count = count + 1
+  end   -- finding item
+  
+  if next (functions) then
+    ColourNote (HEADINGCOLOUR, "", "Functions")
+    for k, v in pairsByKeys (functions) do
+      show_snippet ("functions", k, k, v.summary, v.snippet)
+    end -- for
+  end -- if
+    
+ -- LUA FUNCTIONS documentation
+  
+  -- find matching items using FTS
+  for row in db:nrows(string.format (
+     [[
+     SELECT name, summary, snippet(lua_functions_lookup, '%s', '%s', ' ... ', -1, %i) AS snippet 
+        FROM lua_functions_lookup 
+        WHERE lua_functions_lookup MATCH %s]], 
+      BOLD, UNBOLD, SNIPPETSIZE,
+      searchfor)) do
+     lua_functions [row.name] = { snippet = row.snippet, summary = row.summary }
+     count = count + 1
+  end   -- finding item
+  
+  if next (lua_functions) then
+    ColourNote (HEADINGCOLOUR, "", "Lua")
+    for k, v in pairsByKeys (lua_functions) do
+      show_snippet ("lua_functions", k, k, v.summary, v.snippet)
+    end -- for
+  end -- if  
+  
+  if count == 0 then
+    print ("Nothing found for:", search_string)
+  end -- if
+  
+end -- general_help
+
+-- here when they want to search the help
+
+function help_find (name, line, wildcards)
+  general_help (wildcards [1], false)
+end -- help_find
+
+function help_find_snippet (name, line, wildcards)
+  general_help (wildcards [1], true)
+end -- help_find_snippet
+
+function OnPluginInstall ()
+  -- open database on disk 
+  
+  if not db then
+    db = assert (sqlite3.open(GetInfo (66) .. "help.db"))
+  end -- if
+  
+  
+  local fts4 = false
+  
+  -- see if fts4 tables exist
+  for row in db:nrows("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'commands_lookup'") do 
+    fts4 = true
+  end
+
+    -- if no fts4 tables, make them
+  if not fts4 then
+    local start = utils.timer ()
+    ColourNote ("cyan", "", "Creating help database full-text lookup tables ...")
+    assert (db:execute[[
+        BEGIN TRANSACTION;
+        
+        DROP TABLE IF EXISTS commands_lookup;
+        CREATE VIRTUAL TABLE commands_lookup USING FTS4(name, short_description, description);
+        INSERT INTO commands_lookup (name, short_description, description) 
+               SELECT command_name, short_description, description FROM commands;
+        
+        DROP TABLE IF EXISTS dialogs_lookup;
+        CREATE VIRTUAL TABLE dialogs_lookup USING FTS4(name, title, description);
+        INSERT INTO dialogs_lookup (name, title, description) 
+               SELECT dialog_name, title, description FROM dialogs;
+        
+        DROP TABLE IF EXISTS functions_lookup;
+        CREATE VIRTUAL TABLE functions_lookup USING FTS4(name, summary, description, lua_example, lua_notes);
+        INSERT INTO functions_lookup (name, summary, description, lua_example, lua_notes) 
+               SELECT name, summary, description, lua_example, lua_notes FROM functions;
+        
+        DROP TABLE IF EXISTS general_doc_lookup;
+        CREATE VIRTUAL TABLE general_doc_lookup USING FTS4(name, title, description);
+        INSERT INTO general_doc_lookup (name, title, description) 
+               SELECT doc_name, title, description FROM general_doc;
+        
+        DROP TABLE IF EXISTS errors_lookup;
+        CREATE VIRTUAL TABLE errors_lookup USING FTS4(name, error_code, description);
+        INSERT INTO errors_lookup (name, error_code, description) 
+               SELECT error_name, error_code, meaning FROM errors;
+        
+        DROP TABLE IF EXISTS lua_functions_lookup;
+        CREATE VIRTUAL TABLE lua_functions_lookup USING FTS4(name, summary, description);
+        INSERT INTO lua_functions_lookup (name, summary, description) 
+               SELECT name, summary, description FROM lua_functions;
+        
+        COMMIT;
+    ]])
+    ColourNote ("cyan", "", string.format ("Done. Took %0.3f seconds.", utils.timer () - start))
+    
+  end -- if 
+    
+end -- OnPluginInstall
+
+function OnHelp ()
+  NoteHr ()
+  ColourNote (HELPCOLOUR, "", world.GetPluginInfo (world.GetPluginID (), 3))
+end
+
+]]>
+</script>
+
+</muclient>
