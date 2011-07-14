@@ -7,6 +7,7 @@
 #include "..\MUSHview.h"
 #include "..\genprint.h"
 #include "..\mainfrm.h"
+#include "..\dialogs\ProgDlg.h"
 
 /*
 
@@ -594,10 +595,46 @@ POSITION lpos;
   for (lpos = m_strCurrentIncludeFileList.GetHeadPosition (); lpos; )
     strIncludeList.AddTail (m_strCurrentIncludeFileList.GetNext (lpos));
 
+  int iCount = 0;
+
+  if (bPlugins)
+    {
+    for (POSITION nodepos = (parent).ChildrenList.GetHeadPosition (); nodepos; )    
+      {                                
+      CXMLelement * node = (parent).ChildrenList.GetNext (nodepos);    
+      if (node->strName == "include" && !node->bUsed)        
+        iCount++;
+      }
+    }
+
+  CProgressDlg * pDlg = NULL;
+  
+  if (iCount)
+    {
+    pDlg = new CProgressDlg;
+    pDlg->m_bHideCancel = true;
+    pDlg->Create ();
+    pDlg->SetRange (0, iCount);
+    pDlg->SetStep (1);
+    pDlg->SetWindowText (Translate ("Loading plugins ..."));                              
+    }
+
   // see if we have "include" tag(s)
 
   LOAD_LOOP (parent, "include", pIncludeElement);
   
+  if (pDlg)
+    {
+    Get_XML_string (*pIncludeElement, "name", strFileName, false, true);
+
+    int iSlash = strFileName.ReverseFind ('\\');
+    if (iSlash != -1)
+      strFileName = strFileName.Mid (iSlash + 1);
+
+    pDlg->SetStatus (TFormat ("Loading plugin: %s", (LPCTSTR) strFileName));
+    pDlg->StepIt ();
+    }
+
     try
       {
       Load_One_Include_XML (*pIncludeElement, 
@@ -622,6 +659,8 @@ POSITION lpos;
     CheckUsed (*pIncludeElement);
 
   END_LOAD_LOOP;
+
+  delete pDlg;
 
   // restore current include list tree
   m_strCurrentIncludeFileList.RemoveAll ();

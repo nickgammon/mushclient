@@ -27,6 +27,7 @@ CProgressDlg::CProgressDlg(UINT nCaptionID)
     // NOTE: the ClassWizard will add member initialization here
     //}}AFX_DATA_INIT
     m_bParentDisabled = FALSE;
+    m_bHideCancel = FALSE;
 }
 
 CProgressDlg::~CProgressDlg()
@@ -211,6 +212,9 @@ BOOL CProgressDlg::OnInitDialog()
     m_Progress.SetRange(m_nLower,m_nUpper);
     m_Progress.SetStep(m_nStep);
     m_Progress.SetPos(m_nLower);
+
+    if (m_bHideCancel)
+      GetDlgItem (IDCANCEL)->ShowWindow (SW_HIDE); 
 
     return TRUE;  
 }

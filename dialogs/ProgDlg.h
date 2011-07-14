@@ -26,6 +26,8 @@ public:
     int  OffsetPos(int nPos);
     int  StepIt();
 
+    bool m_bHideCancel;
+
 // Dialog Data
     //{{AFX_DATA(CProgressDlg)
     enum { IDD = CG_IDD_PROGRESS };
