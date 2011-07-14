@@ -180,7 +180,7 @@ end -- text_output
 local P, R, S, C, Cc, Ct = lpeg.P, lpeg.R, lpeg.S, lpeg.C, lpeg.Cc, lpeg.Ct
 local TAG     = (P"<" * P"/"^-1 * R("AZ", "az")^1 * P"/"^-1 * P">")/tag_output
 local NOT_TAG = ((1 - lpeg.P"<")^0/text_output)
-local HTML    = (NOT_TAG * TAG * NOT_TAG)^0
+local HTML    = (NOT_TAG * TAG * NOT_TAG)^1 + NOT_TAG
   
 -- show a help item with a coloured heading, and coloured text
 
@@ -211,7 +211,6 @@ end -- show_item
 
 -- normal functions
 local function show_functions_help (row)
-
   NoteHr ()
   show_item (HEADINGCOLOUR, "Function",      NAMECOLOUR,        row.name)
   show_item (HEADINGCOLOUR, "Summary",       SUMMARYCOLOUR,     row.summary)
@@ -220,27 +219,22 @@ local function show_functions_help (row)
   show_item (HEADINGCOLOUR, "Return Value",  RETURNVALUE,       row.return_value)
   show_item (HEADINGCOLOUR, "Lua Example",   CODECOLOUR,        row.lua_example)
   show_item (HEADINGCOLOUR, "Lua Notes",     NOTESCOLOUR,       row.lua_notes)
-
 end -- show_functions_help
 
 -- general help (major topics)
 local function show_general_help (row)
-
   NoteHr ()
   show_item (NOTESCOLOUR,   "",         NAMECOLOUR,     row.title)
-  show_item (HEADINGCOLOUR, "Summary",  SUMMARYCOLOUR,  row.description,   true)
-  
+  show_item (HEADINGCOLOUR, "Summary",  SUMMARYCOLOUR,  row.description,   true)  -- HTML codes
 end -- show_general_help
 
 -- lua functions
 local function show_lua_functions_help (row)
-
   NoteHr ()
   show_item (HEADINGCOLOUR, "Lua",         NAMECOLOUR,        row.name)
   show_item (HEADINGCOLOUR, "Summary",     SUMMARYCOLOUR,     row.summary)
   show_item (HEADINGCOLOUR, "Prototype",   PROTOTYPECOLOUR,   row.prototype)
-  show_item (HEADINGCOLOUR, "Description", DESCRIPTIONCOLOUR, row.description,  true)
-
+  show_item (HEADINGCOLOUR, "Description", DESCRIPTIONCOLOUR, row.description,  true) -- HTML codes
 end -- show_lua_functions_help
 
 
@@ -306,20 +300,8 @@ function general_help (search_string, want_snippet)
     -- show snippet
            
     if want_snippet then
-    
-      -- fix up snippet ...
-      -- get rid of imbedded tags
-      snippet = snippet:gsub ("</?%a+/?>", "")
-      -- get rid of partial leading tags (eg. b>)
-      snippet = snippet:gsub ("^ %.%.%. /?%a-/?>", "")
-      -- get rid of partial closing tags (eg. <b)
-      snippet = snippet:gsub ("</?%a-/? %.%.%. $", "")
-      
-      -- convert entities ...
-      snippet = snippet:gsub ("&%a-;", entities)
-      
-      -- phew! now show it
-      AnsiNote (RESET .. snippet)
+      -- get rid of newlines, and multiple spaces
+      AnsiNote (RESET .. string.gsub (snippet, "%s+", " "))
       print ""
     end -- if snippet wanted
     
@@ -406,6 +388,20 @@ function help_find_snippet (name, line, wildcards)
   general_help (wildcards [1], true)
 end -- help_find_snippet
 
+local function fix_description (s)
+  if not s then
+    return ""
+  end -- if
+  
+  -- get rid of tags 
+  s = s:gsub ("</?%a+/?>", "")
+  
+  -- convert entities ...
+  s = s:gsub ("&%a-;", entities)
+
+  return s
+end -- fix_description
+
 function OnPluginInstall ()
   -- open database on disk 
   
@@ -438,41 +434,82 @@ function OnPluginInstall ()
   if not fts4 then
     local start = utils.timer ()
     ColourNote ("cyan", "", "Creating help database full-text lookup tables ...")
-    assert (db:execute[[
-        BEGIN TRANSACTION;
-        
-        DROP TABLE IF EXISTS commands_lookup;
-        CREATE VIRTUAL TABLE commands_lookup USING FTS4(name, short_description, description);
-        INSERT INTO commands_lookup (name, short_description, description) 
-               SELECT command_name, short_description, description FROM commands;
-        
-        DROP TABLE IF EXISTS dialogs_lookup;
-        CREATE VIRTUAL TABLE dialogs_lookup USING FTS4(name, title, description);
-        INSERT INTO dialogs_lookup (name, title, description) 
-               SELECT dialog_name, title, description FROM dialogs;
-        
-        DROP TABLE IF EXISTS functions_lookup;
-        CREATE VIRTUAL TABLE functions_lookup USING FTS4(name, summary, description, lua_example, lua_notes);
-        INSERT INTO functions_lookup (name, summary, description, lua_example, lua_notes) 
-               SELECT name, summary, description, lua_example, lua_notes FROM functions;
-        
-        DROP TABLE IF EXISTS general_doc_lookup;
-        CREATE VIRTUAL TABLE general_doc_lookup USING FTS4(name, title, description);
-        INSERT INTO general_doc_lookup (name, title, description) 
-               SELECT doc_name, title, description FROM general_doc;
-        
-        DROP TABLE IF EXISTS errors_lookup;
-        CREATE VIRTUAL TABLE errors_lookup USING FTS4(name, error_code, description);
-        INSERT INTO errors_lookup (name, error_code, description) 
-               SELECT error_name, error_code, meaning FROM errors;
-        
-        DROP TABLE IF EXISTS lua_functions_lookup;
-        CREATE VIRTUAL TABLE lua_functions_lookup USING FTS4(name, summary, description);
-        INSERT INTO lua_functions_lookup (name, summary, description) 
-               SELECT name, summary, description FROM lua_functions;
-        
-        COMMIT;
+    
+    -- START
+    assert (db:execute [[
+      BEGIN TRANSACTION;
+      DROP TABLE IF EXISTS commands_lookup;
+      DROP TABLE IF EXISTS dialogs_lookup;
+      DROP TABLE IF EXISTS functions_lookup;
+      DROP TABLE IF EXISTS general_doc_lookup;
+      DROP TABLE IF EXISTS errors_lookup;
+      DROP TABLE IF EXISTS lua_functions_lookup;
     ]])
+    
+    -- COMMANDS
+    assert (db:execute "CREATE VIRTUAL TABLE commands_lookup USING FTS4(name, summary, description)")
+
+    -- fix up HTML stuff
+    for row in db:nrows("SELECT command_name, short_description, description FROM commands") do 
+      assert (db:execute (string.format ([[
+      INSERT INTO commands_lookup (name, summary, description) 
+             VALUES (%s, %s, %s)]], 
+             fixsql (row.command_name), 
+             fixsql (row.short_description),
+             fixsql (fix_description (row.description)))))
+    end -- for
+        
+    -- DIALOGS
+    assert (db:execute "CREATE VIRTUAL TABLE dialogs_lookup USING FTS4(name, summary, description)")
+
+    -- fix up HTML stuff
+    for row in db:nrows("SELECT dialog_name, title, description FROM dialogs") do 
+      assert (db:execute (string.format ([[
+      INSERT INTO dialogs_lookup (name, summary, description) 
+             VALUES (%s, %s, %s)]], 
+             fixsql (row.dialog_name), 
+             fixsql (row.title),
+             fixsql (fix_description (row.description)))))
+    end -- for
+        
+    -- WORLD FUNCTIONS
+    assert (db:execute "CREATE VIRTUAL TABLE functions_lookup USING FTS4(name, summary, description, lua_example, lua_notes)")
+    assert (db:execute [[INSERT INTO functions_lookup (name, summary, description, lua_example, lua_notes) 
+                         SELECT name, summary, description, lua_example, lua_notes FROM functions]])
+        
+    -- GENERAL TOPICS
+    assert (db:execute "CREATE VIRTUAL TABLE general_doc_lookup USING FTS4(name, summary, description)")
+
+    -- fix up HTML stuff
+    for row in db:nrows("SELECT doc_name, title, description FROM general_doc") do 
+      assert (db:execute (string.format ([[
+      INSERT INTO general_doc_lookup (name, summary, description) 
+             VALUES (%s, %s, %s)]], 
+             fixsql (row.doc_name), 
+             fixsql (row.title),
+             fixsql (fix_description (row.description)))))
+    end -- for
+        
+    -- ERRORS
+    assert (db:execute "CREATE VIRTUAL TABLE errors_lookup USING FTS4(name, error_code, description)")
+    assert (db:execute [[INSERT INTO errors_lookup (name, error_code, description) 
+                         SELECT error_name, error_code, meaning FROM errors ]])
+        
+    -- LUA FUNCTIONS
+    assert (db:execute "CREATE VIRTUAL TABLE lua_functions_lookup USING FTS4(name, summary, description)")
+    
+    -- fix up HTML stuff
+    for row in db:nrows("SELECT name, summary, description FROM lua_functions") do 
+      assert (db:execute (string.format ([[
+      INSERT INTO lua_functions_lookup (name, summary, description) 
+             VALUES (%s, %s, %s)]], 
+             fixsql (row.name), 
+             fixsql (row.summary),
+             fixsql (fix_description (row.description)))))
+    end -- for
+    
+    -- DONE
+    assert (db:execute "COMMIT;")
     ColourNote ("cyan", "", string.format ("Done. Took %0.3f seconds.", utils.timer () - start))
     
   end -- if 
