@@ -623,17 +623,18 @@ POSITION lpos;
 
   LOAD_LOOP (parent, "include", pIncludeElement);
   
-  if (pDlg)
-    {
-    Get_XML_string (*pIncludeElement, "name", strFileName, false, true);
+    // move progress dialog along
+    if (pDlg)
+      {
+      Get_XML_string (*pIncludeElement, "name", strFileName, false, true);
 
-    int iSlash = strFileName.ReverseFind ('\\');
-    if (iSlash != -1)
-      strFileName = strFileName.Mid (iSlash + 1);
+      int iSlash = strFileName.ReverseFind ('\\');
+      if (iSlash != -1)
+        strFileName = strFileName.Mid (iSlash + 1);
 
-    pDlg->SetStatus (TFormat ("Loading plugin: %s", (LPCTSTR) strFileName));
-    pDlg->StepIt ();
-    }
+      pDlg->SetStatus (TFormat ("Loading plugin: %s", (LPCTSTR) strFileName));
+      pDlg->StepIt ();
+      }
 
     try
       {
