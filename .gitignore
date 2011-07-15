@@ -64,3 +64,9 @@ MUSHclient.vcxproj.*
 MUSHclient.sdf
 MUSHclient.opensdf
 ipch
+
+#
+# Help database (generated)
+#
+help.db
+
