@@ -314,19 +314,19 @@ function general_help (search_string, want_snippet)
   -- find matching items using FTS
   for row in db:nrows(string.format (
      [[
-     SELECT name, title, snippet(general_doc_lookup, '%s', '%s', ' ... ', -1, %i) AS snippet 
+     SELECT name, summary, snippet(general_doc_lookup, '%s', '%s', ' ... ', -1, %i) AS snippet 
         FROM general_doc_lookup 
         WHERE general_doc_lookup MATCH %s]], 
       BOLD, UNBOLD, SNIPPETSIZE,
      searchfor)) do
-     general [row.name] = { snippet = row.snippet, title = row.title }
+     general [row.name] = { snippet = row.snippet, summary = row.summary }
      count = count + 1
   end   -- finding item
   
   if next (general) then
     ColourNote (HEADINGCOLOUR, "", "Topics")
     for k, v in pairsByKeys (general) do
-      show_snippet ("general", k, v.title, "", v.snippet)
+      show_snippet ("general", k, v.summary, "", v.snippet)
     end -- for
   end -- if
       
