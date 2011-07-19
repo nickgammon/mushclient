@@ -609,6 +609,7 @@ POSITION lpos;
 
   CProgressDlg * pDlg = NULL;
   
+#if IT_GET_GOATS_BLOOD_OUT
   if (iCount)
     {
     pDlg = new CProgressDlg;
@@ -618,6 +619,7 @@ POSITION lpos;
     pDlg->SetStep (1);
     pDlg->SetWindowText (Translate ("Loading plugins ..."));                              
     }
+#endif
 
   // see if we have "include" tag(s)
 
