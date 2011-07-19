@@ -662,8 +662,10 @@ inline string trim_right (const string & s, const string & t = SPACES)
   string::size_type i (d.find_last_not_of (t));
   if (i == string::npos)
     return "";
+  else if ((i + 1) >= s.size ())
+    return s;
   else
-   return d.erase (d.find_last_not_of (t) + 1) ; 
+   return d.erase (i + 1) ; 
   }  // end of trim_right
 
 inline string trim_left (const string & s, const string & t = SPACES) 
