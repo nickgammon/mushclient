@@ -978,8 +978,11 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     Note (ts.Format ("Client running for:  %Dd %Hh %Mm %Ss"));
     ts = CTime::GetCurrentTime() - m_whenWorldStarted;
     Note (ts.Format ("World opened for:    %Dd %Hh %Mm %Ss"));
-    ts = CTime::GetCurrentTime() - m_tConnectTime;
-    Note (ts.Format ("World connected for: %Dd %Hh %Mm %Ss"));
+    if (m_iConnectPhase == eConnectConnectedToMud)
+      {
+      ts = CTime::GetCurrentTime() - m_tConnectTime;
+      Note (ts.Format ("World connected for: %Dd %Hh %Mm %Ss"));
+      }
     
     // work out operating system
 
