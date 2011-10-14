@@ -393,9 +393,9 @@ bool CPlugin::ExecutePluginScript (CScriptCallInfo & callinfo,
     VARIANT v;
     VariantClear (&v);
     v.vt = VT_BSTR;
-    v.bstrVal = CString (sText.c_str (), sText.size ()).AllocSysString (); 
+    CString str (sText.c_str (), sText.size ());
+    v.bstrVal = str.AllocSysString (); 
     args [eText].Attach (v);
-
     
     COleVariant result;
 
