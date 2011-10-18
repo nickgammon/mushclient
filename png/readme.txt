@@ -2,7 +2,7 @@ PNG built as follows:
 
 1. Download recent version from download.sourceforge.net
 
-    In this case: lpng154.zip
+    In this case: lpng155.zip
 
 2. Uncompress the archive with 7-Zip (if necessary), obtainable from:
 
