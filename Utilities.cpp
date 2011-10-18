@@ -2889,7 +2889,7 @@ int UMessageBox (const char * sText, UINT nType, const char * sTitle)
   iBad = _pcre_valid_utf8 ((unsigned char  *) sTitle, strlen (sTitle));
 
   // use PCRE to validate the title next - if bad, use "MUSHclient" title
-  if (iBad >= 0)
+  if (iBad > 0)
      sTitle = "MUSHclient";
 
   iLength = MultiByteToWideChar (CP_UTF8, 0, sTitle, -1, NULL, 0);

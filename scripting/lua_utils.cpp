@@ -1114,7 +1114,7 @@ const char * data = luaL_checkstring (L, 1);
   int iBad = _pcre_valid_utf8 ((unsigned char  *) data, strlen (data));
 
   // use PCRE to validate the string first
-  if (iBad >= 0)
+  if (iBad > 0)
     luaL_error (L, "Bad UTF-8 string. Error at column %d", iBad + 1);
 
   // find how big table has to be
@@ -1157,7 +1157,7 @@ const char * data = luaL_checkstring (L, 1);
   int iBad = _pcre_valid_utf8 ((unsigned char  *) data, strlen (data));
 
   // use PCRE to validate the string first
-  if (iBad >= 0)
+  if (iBad > 0)
     luaL_error (L, "Bad UTF-8 string. Error at column %d", iBad + 1);
 
   lua_newtable (L);    // table of wide characters
@@ -1348,7 +1348,7 @@ const char * data = luaL_checklstring (L, 1, &length);
 
   int iBad = _pcre_valid_utf8 ((unsigned char  *) data, length);
 
-  if (iBad >= 0)
+  if (iBad > 0)
     {
     lua_pushnil (L);
     lua_pushnumber (L, iBad + 1);
@@ -1393,7 +1393,7 @@ static int utf8sub (lua_State *L) {
 
   int iBad = _pcre_valid_utf8 ((unsigned char  *) s, length);
 
-  if (iBad >= 0)
+  if (iBad > 0)
     {
     lua_pushnil (L);
     lua_pushnumber (L, iBad + 1);

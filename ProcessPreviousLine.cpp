@@ -557,7 +557,7 @@ assemble the full text of the original line.
     {
     iBad = _pcre_valid_utf8 ((const unsigned char *) (const char *) strCurrentLine, 
                              strCurrentLine.GetLength ());
-    if (iBad >= 0)
+    if (iBad > 0)
       {
        m_iUTF8ErrorCount++;
 
