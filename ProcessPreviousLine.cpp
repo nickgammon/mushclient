@@ -572,7 +572,7 @@ assemble the full text of the original line.
     }
 
   // only evaluate if can process them
-  if (iBad < 0)
+  if (iBad <= 0)
     {
 //    timer t ("Process all triggers");
 

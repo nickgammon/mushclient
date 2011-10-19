@@ -2868,7 +2868,7 @@ int UMessageBox (const char * sText, UINT nType, const char * sTitle)
   iBad = _pcre_valid_utf8 ((unsigned char  *) sText, strlen (sText));
 
   // use PCRE to validate the string first - if bad, fall back to standard box
-  if (iBad >= 0)
+  if (iBad > 0)
     return ::AfxMessageBox (sText, nType);
 
   // find how big table has to be
