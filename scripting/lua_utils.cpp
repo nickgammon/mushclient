@@ -1346,12 +1346,13 @@ size_t length;
   // argument is string to be checked
 const char * data = luaL_checklstring (L, 1, &length);
 
-  int iBad = _pcre_valid_utf8 ((unsigned char  *) data, length);
+  int erroroffset;
+  int iBad = _pcre_valid_utf8 ((unsigned char  *) data, length, &erroroffset);
 
   if (iBad > 0)
     {
     lua_pushnil (L);
-    lua_pushnumber (L, iBad + 1);
+    lua_pushnumber (L, erroroffset + 1);
     return 2;  /* return nil and the offset */
     }
 
@@ -1391,12 +1392,13 @@ static int utf8sub (lua_State *L) {
 
   // validate
 
-  int iBad = _pcre_valid_utf8 ((unsigned char  *) s, length);
+  int erroroffset;
+  int iBad = _pcre_valid_utf8 ((unsigned char  *) s, length, &erroroffset);
 
   if (iBad > 0)
     {
     lua_pushnil (L);
-    lua_pushnumber (L, iBad + 1);
+    lua_pushnumber (L, erroroffset + 1);
     return 2;  /* return nil and the offset */
     }
 

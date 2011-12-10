@@ -801,7 +801,7 @@ extern "C"
 
 // stuff we borrow from PCRE
 
-extern "C" int _pcre_valid_utf8(const unsigned char  *buf, int length);
+extern "C" int _pcre_valid_utf8(const unsigned char  *buf, int length, int * erroroffset);
 extern "C" int _pcre_ord2utf8(int cvalue, unsigned char *buffer);
 extern "C" const unsigned char _pcre_utf8_table4[];
 

@@ -2865,9 +2865,9 @@ int UMessageBox (const char * sText, UINT nType, const char * sTitle)
   
   // convert message text to Unicode
 
-  iBad = _pcre_valid_utf8 ((unsigned char  *) sText, strlen (sText));
-
   // use PCRE to validate the string first - if bad, fall back to standard box
+  int erroroffset;
+  iBad = _pcre_valid_utf8 ((unsigned char  *) sText, strlen (sText), &erroroffset);
   if (iBad > 0)
     return ::AfxMessageBox (sText, nType);
 
@@ -2886,7 +2886,7 @@ int UMessageBox (const char * sText, UINT nType, const char * sTitle)
 
   // now do title
 
-  iBad = _pcre_valid_utf8 ((unsigned char  *) sTitle, strlen (sTitle));
+  iBad = _pcre_valid_utf8 ((unsigned char  *) sTitle, strlen (sTitle), &erroroffset);
 
   // use PCRE to validate the title next - if bad, use "MUSHclient" title
   if (iBad > 0)

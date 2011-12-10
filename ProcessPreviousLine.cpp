@@ -555,8 +555,9 @@ assemble the full text of the original line.
   // check for bad UTF8 in the line - otherwise all triggers will fail
   if (m_bUTF_8)
     {
+    int erroroffset;
     iBad = _pcre_valid_utf8 ((const unsigned char *) (const char *) strCurrentLine, 
-                             strCurrentLine.GetLength ());
+                             strCurrentLine.GetLength (), &erroroffset);
     if (iBad > 0)
       {
        m_iUTF8ErrorCount++;
