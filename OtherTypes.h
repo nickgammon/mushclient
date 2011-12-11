@@ -347,6 +347,7 @@ typedef CTypedPtrList <CPtrList, CLine*> CLineList;
 /////////////////////////////////////////////////////////////////////////////
 //  CAlias
 
+// when adding new fields, update operator==
 class CAlias : public CObject
   {
   DECLARE_DYNAMIC(CAlias)
@@ -387,6 +388,8 @@ class CAlias : public CObject
   };
 
   ~CAlias () { delete regexp; };
+
+  bool operator== (const CAlias & rhs) const;
 
   public:
 
@@ -457,6 +460,7 @@ typedef map <CAlias*, string> CAliasRevMap;
 #define TRIGGER_COLOUR_CHANGE_BACKGROUND 2
 
 
+// when adding new fields, update operator==
 class CTrigger : public CObject
   {
   DECLARE_DYNAMIC(CTrigger)
@@ -502,6 +506,8 @@ class CTrigger : public CObject
     };
 
   ~CTrigger () { delete regexp; };
+
+  bool operator== (const CTrigger & rhs) const;
 
   public:
 
@@ -586,6 +592,7 @@ typedef map <CTrigger*, string> CTriggerRevMap;
 /////////////////////////////////////////////////////////////////////////////
 //  CTimer
 
+// when adding new fields, update operator==
 class CTimer : public CObject
   {
   DECLARE_DYNAMIC(CTimer)
@@ -628,6 +635,8 @@ class CTimer : public CObject
      bExecutingScript = false;
 
     };
+
+  bool operator== (const CTimer & rhs) const;
 
   int iType;             // at or interval, see enum above
   CString strContents;               // what to send when it triggers

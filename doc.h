@@ -1637,7 +1637,7 @@ public:
   UINT Load_Triggers_XML (CXMLelement & parent, 
     const unsigned long iMask,
     const unsigned long iFlags);
-  void Load_One_Trigger_XML (CXMLelement & node, 
+  bool Load_One_Trigger_XML (CXMLelement & node, 
     const unsigned long iMask,
     const long iVersion, 
     bool bUseDefault, 
@@ -1645,7 +1645,7 @@ public:
   UINT Load_Aliases_XML (CXMLelement & parent, 
     const unsigned long iMask,
     const unsigned long iFlags);
-  void Load_One_Alias_XML (CXMLelement & node, 
+  bool Load_One_Alias_XML (CXMLelement & node, 
     const unsigned long iMask,
     const long iVersion, 
     bool bUseDefault, 
@@ -1661,7 +1661,7 @@ public:
   UINT Load_Timers_XML (CXMLelement & parent, 
     const unsigned long iMask,
     const unsigned long iFlags);
-  void Load_One_Timer_XML (CXMLelement & node, 
+  bool Load_One_Timer_XML (CXMLelement & node, 
     const unsigned long iMask,
     const long iVersion, 
     bool bUseDefault, 

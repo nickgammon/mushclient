@@ -216,6 +216,108 @@ void CMUSHclientDoc::HandleLoadException (const char * sComment, CException* e)
 
 #endif
 
+// comparison for avoiding loading duplicates
+bool CAlias::operator== (const CAlias & rhs) const
+  {
+  if (
+      bEchoAlias              == rhs.bEchoAlias              &&
+      bEnabled                == rhs.bEnabled                &&
+      bExpandVariables        == rhs.bExpandVariables        &&
+      bIgnoreCase             == rhs.bIgnoreCase             &&
+      bKeepEvaluating         == rhs.bKeepEvaluating         &&
+      bMenu                   == rhs.bMenu                   &&
+      bOmitFromCommandHistory == rhs.bOmitFromCommandHistory &&
+      bOmitFromLog            == rhs.bOmitFromLog            &&
+      bOmitFromOutput         == rhs.bOmitFromOutput         &&
+      bOneShot                == rhs.bOneShot                &&
+      bRegexp                 == rhs.bRegexp                 &&
+      contents                == rhs.contents                &&
+      iSendTo                 == rhs.iSendTo                 &&
+      iSequence               == rhs.iSequence               &&
+      name                    == rhs.name                    &&
+      strGroup                == rhs.strGroup                &&
+      strLabel                == rhs.strLabel                &&
+      strProcedure            == rhs.strProcedure            &&
+      strVariable             == rhs.strVariable                      
+     ) return true;    
+
+  return false;
+  }   // end of CAlias::operator==
+
+// comparison for avoiding loading duplicates
+bool CTrigger::operator== (const CTrigger & rhs) const
+  {
+  if (
+      bEnabled           == rhs.bEnabled           &&
+      bExpandVariables   == rhs.bExpandVariables   &&
+      bKeepEvaluating    == rhs.bKeepEvaluating    &&
+      bLowercaseWildcard == rhs.bLowercaseWildcard &&
+      bMultiLine         == rhs.bMultiLine         &&
+      bOmitFromOutput    == rhs.bOmitFromOutput    &&
+      bOneShot           == rhs.bOneShot           &&
+      bRegexp            == rhs.bRegexp            &&
+      bRepeat            == rhs.bRepeat            &&
+      bSoundIfInactive   == rhs.bSoundIfInactive   &&
+      colour             == rhs.colour             &&
+      contents           == rhs.contents           &&
+      iClipboardArg      == rhs.iClipboardArg      &&
+      iColourChangeType  == rhs.iColourChangeType  &&
+      iLinesToMatch      == rhs.iLinesToMatch      &&
+      iMatch             == rhs.iMatch             &&
+      iOtherBackground   == rhs.iOtherBackground   &&
+      iOtherForeground   == rhs.iOtherForeground   &&
+      iSendTo            == rhs.iSendTo            &&
+      iSequence          == rhs.iSequence          &&
+      iStyle             == rhs.iStyle             &&
+      iUserOption        == rhs.iUserOption        &&
+      ignore_case        == rhs.ignore_case        &&
+      omit_from_log      == rhs.omit_from_log      &&
+      sound_to_play      == rhs.sound_to_play      &&
+      strGroup           == rhs.strGroup           &&
+      strLabel           == rhs.strLabel           &&
+      strProcedure       == rhs.strProcedure       &&
+      strVariable        == rhs.strVariable        &&
+      trigger            == rhs.trigger            
+
+     ) return true;    
+
+  return false;
+  }  // end of CTrigger::operator==
+
+
+// comparison for avoiding loading duplicates
+bool CTimer::operator== (const CTimer & rhs) const
+  {
+  if (
+      bActiveWhenClosed == rhs.bActiveWhenClosed &&
+      bEnabled          == rhs.bEnabled          &&
+      bOmitFromLog      == rhs.bOmitFromLog      &&
+      bOmitFromOutput   == rhs.bOmitFromOutput   &&
+      bOneShot          == rhs.bOneShot          &&
+      fAtSecond         == rhs.fAtSecond         &&
+      fEverySecond      == rhs.fEverySecond      &&
+      fOffsetSecond     == rhs.fOffsetSecond     &&
+      iAtHour           == rhs.iAtHour           &&
+      iAtMinute         == rhs.iAtMinute         &&
+      iEveryHour        == rhs.iEveryHour        &&
+      iEveryMinute      == rhs.iEveryMinute      &&
+      iOffsetHour       == rhs.iOffsetHour       &&
+      iOffsetMinute     == rhs.iOffsetMinute     &&
+      iSendTo           == rhs.iSendTo           &&
+      iType             == rhs.iType             &&
+      iUserOption       == rhs.iUserOption       &&
+      strContents       == rhs.strContents       &&
+      strGroup          == rhs.strGroup          &&
+      strLabel          == rhs.strLabel          &&
+      strProcedure      == rhs.strProcedure      &&
+      strVariable       == rhs.strVariable       
+                         
+     ) return true;    
+
+  return false;
+  }  // end of CTimer::operator==
+
+
 UINT CMUSHclientDoc::Load_World_XML (CArchive& ar, 
                                      const unsigned long iMask,
                                      const unsigned long iFlags,
@@ -1068,7 +1170,7 @@ UINT CMUSHclientDoc::Load_Triggers_XML (CXMLelement & parent,
   }   // end of CMUSHclientDoc::Load_Triggers_XML
 
 
-void CMUSHclientDoc::Load_One_Trigger_XML (CXMLelement & node, 
+bool CMUSHclientDoc::Load_One_Trigger_XML (CXMLelement & node, 
                                            const unsigned long iMask,
                                            const long iVersion, 
                                            bool bUseDefault, 
@@ -1257,6 +1359,25 @@ CString strVariable;
     throw;
     }
 
+  // check if this exact alias already exists (suggested by Fiendish 12 Dec 2011)
+  // version: 4.81
+  if (t->strLabel.IsEmpty ())
+    {
+    CTrigger * pExistingTrigger;
+    CString strExistingTriggerName;
+
+    for (POSITION pos = GetTriggerMap ().GetStartPosition(); pos; )
+      {
+      GetTriggerMap ().GetNextAssoc (pos, strExistingTriggerName, pExistingTrigger);
+      if (*pExistingTrigger == *t)
+        {
+        delete t;  // get rid of duplicate trigger
+        return false;    // and don't add it
+        }  // end of duplicate
+      }    // end of for loop                      
+
+    } // end of un-named trigger
+
   // now add to our internal trigger map
 
   t->nUpdateNumber    = App.GetUniqueNumber ();   // for concurrency checks
@@ -1264,7 +1385,7 @@ CString strVariable;
   GetTriggerMap ().SetAt (strTriggerName, t);
 
   CheckUsed (node);   // check we used all attributes
-
+  return true;  // loaded OK
   } // end of CMUSHclientDoc::Load_One_Trigger_XML
 
 
@@ -1282,8 +1403,8 @@ UINT count = 0;
 
       try
         {
-        Load_One_Alias_XML (*pElement, iMask, iVersion, bUseDefault, iFlags);
-        count++;
+        if (Load_One_Alias_XML (*pElement, iMask, iVersion, bUseDefault, iFlags))
+          count++;
         }
       catch (CException* e)
         {
@@ -1302,7 +1423,7 @@ UINT count = 0;
   }   // end of CMUSHclientDoc::Load_Aliases_XML
 
 
-void CMUSHclientDoc::Load_One_Alias_XML (CXMLelement & node, 
+bool CMUSHclientDoc::Load_One_Alias_XML (CXMLelement & node, 
                                          const unsigned long iMask,
                                          const long iVersion, 
                                          bool bUseDefault, 
@@ -1470,6 +1591,25 @@ CString strVariable;
     throw;
     }
 
+  // check if this exact alias already exists (suggested by Fiendish 12 Dec 2011)
+  // version: 4.81
+  if (a->strLabel.IsEmpty ())
+    {
+    CAlias * pExistingAlias;
+    CString strExistingAliasName;
+
+    for (POSITION pos = GetAliasMap ().GetStartPosition(); pos; )
+      {
+      GetAliasMap ().GetNextAssoc (pos, strExistingAliasName, pExistingAlias);
+      if (*pExistingAlias == *a)
+        {
+        delete a;  // get rid of duplicate alias
+        return false;    // and don't add it
+        }  // end of duplicate
+      }    // end of for loop                      
+
+    } // end of un-named alias
+
   // now add to our internal alias map
 
   a->nUpdateNumber    = App.GetUniqueNumber ();   // for concurrency checks
@@ -1477,7 +1617,7 @@ CString strVariable;
   GetAliasMap ().SetAt (strAliasName, a);
 
   CheckUsed (node);   // check we used all attributes
-
+  return true;  // loaded OK
   } // end of CMUSHclientDoc::Load_One_Alias_XML
 
 
@@ -1515,7 +1655,7 @@ UINT count = 0;
   }   // end of CMUSHclientDoc::Load_Timers_XML
 
 
-void CMUSHclientDoc::Load_One_Timer_XML (CXMLelement & node, 
+bool CMUSHclientDoc::Load_One_Timer_XML (CXMLelement & node, 
                                          const unsigned long iMask,
                                          const long iVersion, 
                                          bool bUseDefault, 
@@ -1657,6 +1797,25 @@ CString strTimerName,
     throw;
     }
 
+  // check if this exact timer already exists (suggested by Fiendish 12 Dec 2011)
+  // version: 4.81
+  if (t->strLabel.IsEmpty ())
+    {
+    CTimer * pExistingTimer;
+    CString strExistingTimerName;
+
+    for (POSITION pos = GetTimerMap ().GetStartPosition(); pos; )
+      {
+      GetTimerMap ().GetNextAssoc (pos, strExistingTimerName, pExistingTimer);
+      if (*pExistingTimer == *t)
+        {
+        delete t;  // get rid of duplicate timer
+        return false;    // and don't add it
+        }  // end of duplicate
+      }    // end of for loop                      
+
+    } // end of un-named timer
+
   // now add to our internal timer map
 
   t->nUpdateNumber    = App.GetUniqueNumber ();   // for concurrency checks
@@ -1665,7 +1824,7 @@ CString strTimerName,
   ResetOneTimer (t);    // make sure it is reset
 
   CheckUsed (node);   // check we used all attributes
-
+  return true;   // loaded OK
   } // end of CMUSHclientDoc::Load_One_Timer_XML
 
 
