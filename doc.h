@@ -1555,6 +1555,7 @@ public:
 #define XML_PLUGINS    0x0400
 #define XML_NO_PLUGINS 0x0800
 #define XML_OVERWRITE  0x1000
+#define XML_PASTE_DUPLICATE 0x2000
 
   // XML saving
   void Save_World_XML (CArchive& ar, 

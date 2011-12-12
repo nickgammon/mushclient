@@ -1794,7 +1794,7 @@ CString strContents;
 
   try
     {
-    iCount = m_doc->Load_World_XML (ar, m_iMask | XML_NO_PLUGINS); 
+    iCount = m_doc->Load_World_XML (ar, m_iMask | XML_NO_PLUGINS | XML_PASTE_DUPLICATE); 
     }
   catch (CArchiveException* e) 
     {

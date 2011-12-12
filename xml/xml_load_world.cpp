@@ -1361,7 +1361,7 @@ CString strVariable;
 
   // check if this exact alias already exists (suggested by Fiendish 12 Dec 2011)
   // version: 4.81
-  if (t->strLabel.IsEmpty ())
+  if (t->strLabel.IsEmpty () && !(iMask & XML_PASTE_DUPLICATE))
     {
     CTrigger * pExistingTrigger;
     CString strExistingTriggerName;
@@ -1593,7 +1593,7 @@ CString strVariable;
 
   // check if this exact alias already exists (suggested by Fiendish 12 Dec 2011)
   // version: 4.81
-  if (a->strLabel.IsEmpty ())
+  if (a->strLabel.IsEmpty () && !(iMask & XML_PASTE_DUPLICATE))
     {
     CAlias * pExistingAlias;
     CString strExistingAliasName;
@@ -1799,7 +1799,7 @@ CString strTimerName,
 
   // check if this exact timer already exists (suggested by Fiendish 12 Dec 2011)
   // version: 4.81
-  if (t->strLabel.IsEmpty ())
+  if (t->strLabel.IsEmpty () && !(iMask & XML_PASTE_DUPLICATE))
     {
     CTimer * pExistingTimer;
     CString strExistingTimerName;
