@@ -7831,7 +7831,7 @@ CArchive * ar = NULL;
 
     if (IsArchiveXML (*ar))
       {
-      iCount = m_doc->Load_World_XML (*ar, XML_VARIABLES | XML_NO_PLUGINS, false); 
+      iCount = m_doc->Load_World_XML (*ar, XML_VARIABLES | XML_NO_PLUGINS | XML_IMPORT_MAIN_FILE_ONLY, false); 
       delete ar;      // delete archive
       ar = NULL;
       delete xmlf;       // delete file

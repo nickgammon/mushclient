@@ -195,7 +195,7 @@ void CImportXMLdlg::ImportArchive (CArchive & ar)
 
       // do it
       m_pDoc->Load_World_XML (ar, 
-                              iMask | XML_NO_PLUGINS, 
+                              iMask | XML_NO_PLUGINS | XML_IMPORT_MAIN_FILE_ONLY, 
                               0,          // load flags
                               &iTriggers,  
                               &iAliases,   

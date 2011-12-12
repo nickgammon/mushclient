@@ -391,13 +391,13 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
       m_strCurrentIncludeFileList.AddTail (strFileName);
       }
 
-    if (iMask & XML_NO_PLUGINS)
+    if ((iMask & XML_NO_PLUGINS) && !(iMask & XML_IMPORT_MAIN_FILE_ONLY))
       {
       if (FindNode (*pMuClientElement, "plugin")) 
         ThrowErrorException ("Plugin not expected here. Use File -> Plugins to load plugins");
       }
 
-    if (iMask & XML_PLUGINS)
+    if ((iMask & XML_PLUGINS) && !(iMask & XML_IMPORT_MAIN_FILE_ONLY))
       if (!(iMask & XML_NO_PLUGINS))
         {    // plugin expected now
         Load_Plugin_XML (*pMuClientElement);    // get <plugin> details
@@ -459,7 +459,7 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
       {
       // we have to do plugins later, so that we know the world ID, amongst other things
       // now load include files that include plugins
-      if (!ar.GetFile ()->GetFilePath ().IsEmpty ())
+      if (!ar.GetFile ()->GetFilePath ().IsEmpty () && !(iMask & XML_IMPORT_MAIN_FILE_ONLY))
         Load_Includes_XML (*pMuClientElement,
                       iMask,
                       iFlags,

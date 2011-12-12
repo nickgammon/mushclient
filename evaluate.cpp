@@ -605,27 +605,27 @@ CArchive * ar = NULL;
         case TRIGGER: 
           if (replace)
             DELETE_MAP (m_TriggerMap, CTrigger);
-          Load_World_XML (*ar, XML_TRIGGERS | XML_NO_PLUGINS);  
+          Load_World_XML (*ar, XML_TRIGGERS | XML_NO_PLUGINS | XML_IMPORT_MAIN_FILE_ONLY);  
           break;  
 
         case ALIAS:   
           if (replace)
             DELETE_MAP (m_AliasMap, CAlias);
-          Load_World_XML (*ar, XML_ALIASES | XML_NO_PLUGINS);  
+          Load_World_XML (*ar, XML_ALIASES | XML_NO_PLUGINS | XML_IMPORT_MAIN_FILE_ONLY);  
           break;  
 
         case COLOUR:  
-          Load_World_XML (*ar, XML_COLOURS | XML_NO_PLUGINS);  
+          Load_World_XML (*ar, XML_COLOURS | XML_NO_PLUGINS | XML_IMPORT_MAIN_FILE_ONLY);  
           break;  
         
         case MACRO:   
-          Load_World_XML (*ar, XML_MACROS | XML_NO_PLUGINS);  
+          Load_World_XML (*ar, XML_MACROS | XML_NO_PLUGINS | XML_IMPORT_MAIN_FILE_ONLY);  
           break;   
 
         case TIMER:   
           if (replace)
             DELETE_MAP (m_TimerMap, CTimer);
-          Load_World_XML (*ar, XML_TIMERS | XML_NO_PLUGINS);  
+          Load_World_XML (*ar, XML_TIMERS | XML_NO_PLUGINS | XML_IMPORT_MAIN_FILE_ONLY);  
           break;  
 
         } // end of switch

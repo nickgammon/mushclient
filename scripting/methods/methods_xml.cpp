@@ -57,7 +57,7 @@ long iCount = 0;
       // do it
       Load_World_XML (ar, 
                       // don't load plugins or general world config here  (note, this sets XML_OVERWRITE)
-                      (unsigned long) ~(XML_PLUGINS | XML_NO_PLUGINS | XML_GENERAL | XML_PASTE_DUPLICATE), 
+                      (unsigned long) ~(XML_PLUGINS | XML_NO_PLUGINS | XML_GENERAL | XML_PASTE_DUPLICATE | XML_IMPORT_MAIN_FILE_ONLY), 
                       0,          // load flags
                       &iTriggers,  
                       &iAliases,   
