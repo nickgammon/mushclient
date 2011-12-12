@@ -80,6 +80,7 @@ public:
   void AdjustCommandWindowSize (void);
   void CheckForSelectionChange (void);
   void CancelSelection (void);
+  void UpdateWrap();
   
   // Overrides
 	// ClassWizard generated virtual function overrides

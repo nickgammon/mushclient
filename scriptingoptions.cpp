@@ -152,7 +152,7 @@ tConfigurationNumericOption OptionsTable [] = {
 {"paste_delay_per_lines",               1,     O(m_nPasteDelayPerLines), 1, 100000}, 
 {"paste_echo",                          false, O(m_bPasteEcho)},
 {"play_sounds_in_background",           false, O(m_bPlaySoundsInBackground)},
-{"pixel_offset",                        1,     O(m_iPixelOffset), 0, 20, OPT_UPDATE_VIEWS},        
+{"pixel_offset",                        1,     O(m_iPixelOffset), 0, 20, OPT_UPDATE_VIEWS | OPT_FIX_INPUT_WRAP},        
 {"port",                                4000,  O(m_port), 1, USHRT_MAX, OPT_PLUGIN_CANNOT_WRITE},                        
 {"proxy_port",                          1080,  O(m_iProxyServerPort), 0, USHRT_MAX, OPT_PLUGIN_CANNOT_WRITE},                        
 {"proxy_type",                          eProxyServerNone,     O(m_iSocksProcessing), eProxyServerNone, eProxyServerLast - 1, OPT_PLUGIN_CANNOT_WRITE},                        
@@ -206,7 +206,9 @@ tConfigurationNumericOption OptionsTable [] = {
 {"validate_incoming_chat_calls",        false,  O(m_bValidateIncomingCalls)},               
 {"warn_if_scripting_inactive",          true,  O(m_bWarnIfScriptingInactive)},            
 {"wrap",                                true,  O(m_wrap)},             
-{"wrap_column",                         80,    O(m_nWrapColumn), 20, MAX_LINE_WIDTH, OPT_FIX_WRAP_COLUMN},         
+{"wrap_input",                          false, O(m_bAutoWrapInput), 0, 0, OPT_FIX_INPUT_WRAP}, // Added this, also fix wrap on column change.
+{"wrap_column",                         80,    O(m_nWrapColumn), 20, MAX_LINE_WIDTH, OPT_FIX_WRAP_COLUMN | OPT_FIX_INPUT_WRAP},         
+        
 {"write_world_name_to_log",             true,  O(m_bWriteWorldNameToLog)},  
 
 {NULL}   // end of table marker            
@@ -516,6 +518,9 @@ long iResult = SetBaseOptionItem (iItem,
   if (OptionsTable [iItem].iFlags & OPT_FIX_OUTPUT_BUFFER)
     if (m_pCurrentLine)     // a new world might not have a line yet
       FixUpOutputBuffer (Value);
+
+  if (OptionsTable [iItem].iFlags & OPT_FIX_INPUT_WRAP)
+	  FixInputWrap();
 
   if (OptionsTable [iItem].iFlags & OPT_FIX_WRAP_COLUMN)
     {

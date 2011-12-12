@@ -7823,3 +7823,19 @@ void CMUSHclientDoc::SortWindows (void)
 
   }   // end of CMUSHclientDoc::SortWindows
 
+
+void CMUSHclientDoc::FixInputWrap()
+{
+  for(POSITION pos=GetFirstViewPosition();pos!=NULL;)
+   {
+   CView* pView = GetNextView(pos);
+
+    if (pView->IsKindOf(RUNTIME_CLASS(CSendView)))
+      {
+      CSendView* pmyView = (CSendView*)pView;
+      pmyView->UpdateWrap();
+      }  // end of if CSendView
+    }  // end of for each view
+} // end of CMUSHclientDoc::FixInputWrap()
+
+

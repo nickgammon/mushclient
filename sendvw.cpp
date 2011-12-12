@@ -1174,6 +1174,7 @@ void CSendView::OnChange()
 
   NotifyPluginCommandChanged ();
 
+  UpdateWrap();
 }   // end of CSendView::OnChange
 
 
@@ -1221,6 +1222,9 @@ void CSendView::OnInitialUpdate()
 
   // if they want auto-command size, put back to 1
   AdjustCommandWindowSize ();
+
+  UpdateWrap();
+
 }   // end of CSendView::OnInitialUpdate
 
 void CSendView::OnContextMenu(CWnd*, CPoint point)
@@ -2960,4 +2964,54 @@ void CSendView::OnEditCopyashtml()
   {
   m_topview->OnEditCopyashtml ();
   } // end of CSendView::OnEditCopyashtml() 
+
+
+void CSendView::UpdateWrap() 
+  {
+  
+  CMUSHclientDoc* pDoc = GetDocument();
+  CEdit& theEdit = GetEditCtrl();
+  
+  int iOffset = pDoc->m_iPixelOffset; // Need this either way.
+  
+  if (pDoc->m_bAutoWrapInput) 
+    {
+    
+    CRect r; 
+    GetClientRect(r); // How big is the input window?
+    
+    int iWidth = pDoc->m_nWrapColumn + 1;  // Letter-width of the line.
+    
+    if (iWidth < 20)
+      iWidth = 20;
+    if (iWidth > MAX_LINE_WIDTH)
+      iWidth = MAX_LINE_WIDTH; // Uses the minimums and maximums from elsewhere.
+    
+    // Subtracts the pixel width of text and the left-side offset to determine what the right side should be.
+    int rMargin = r.Width() - (iWidth * pDoc->m_InputFontWidth) - iOffset;
+    
+    // If the right side isn't at least as big as the offset, use the offset.
+    if (rMargin < iOffset)
+      rMargin = iOffset;
+    
+    // If the margin needs to change, change it.
+    if (rMargin != HIWORD(theEdit.GetMargins()))
+      {
+      theEdit.SetMargins (iOffset, rMargin);
+      theEdit.Invalidate (FALSE); 
+      }  // end if changed
+    
+    }   // end if m_bAutoWrapInput
+  else
+    {
+    iOffset = 0;  // prefer this, Neva
+    // not wrapping
+    if ( HIWORD(theEdit.GetMargins ()) != iOffset) // If the option is off, just using the offset.
+      {
+      theEdit.SetMargins (iOffset, iOffset);
+      theEdit.Invalidate (FALSE); 
+      } // end if changed
+    }  // end if
+    
+  }   // end of CSendView::UpdateWrap() 
 

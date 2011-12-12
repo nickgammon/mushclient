@@ -282,6 +282,7 @@ CMUSHView::CMUSHView()
   m_nLastToolTipColumn = 0;
   m_scroll_position = 0;
   m_mousedover = false;
+  m_bottomview = NULL;
 
   m_iPauseStatus = ePauseUninitialised;
 
@@ -3212,6 +3213,10 @@ if (wp.showCmd != SW_MINIMIZE &&
 
   pDoc->SendWindowSizes (pDoc->m_nWrapColumn);
   EnableScrollBarCtrl (SB_VERT, pDoc->m_bScrollBarWanted);
+
+  // update wrap size
+  if (m_bottomview)
+    m_bottomview->UpdateWrap();
 
 }
 

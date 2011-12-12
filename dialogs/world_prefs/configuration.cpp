@@ -1616,6 +1616,8 @@ void CMUSHclientDoc:: SavePrefsP14 (CPrefsP14 &page14)
 
   m_nWrapColumn     = page14.m_nWrapColumn;
 
+  FixInputWrap();
+
   }   // end of CMUSHclientDoc::SavePrefsP14
 
 void CMUSHclientDoc:: SavePrefsP15 (CPrefsP15 &page15)  

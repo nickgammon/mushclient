@@ -377,6 +377,7 @@ enum {
 #define OPT_PLUGIN_CANNOT_RW    0x300000    // plugin may not read or write its value
 #define OPT_CANNOT_WRITE        0x400000    // cannot be changed by any script
 #define OPT_SERVER_CAN_WRITE    0x800000    // CAN be changed by <recommend_option> tag
+#define OPT_FIX_INPUT_WRAP     0x1000000    // Added for input wrapping.
 
 // for debug.options and MXP <option> tag
 typedef struct
@@ -879,6 +880,9 @@ public:
   unsigned short m_bTreeviewTriggers;         // show triggers in tree view?
   unsigned short m_bTreeviewAliases;          // show aliases in tree view?
   unsigned short m_bTreeviewTimers;           // show timers in tree view?
+
+  // version 4.81
+  unsigned short m_bAutoWrapInput;			      // Match input wrap to output?
 
   // end of stuff saved to disk **************************************************************
 
@@ -1423,6 +1427,7 @@ public:
                            CArgumentList & ArgumentList);
 
   void AddToCommandHistory (LPCTSTR Message);
+  void FixInputWrap();
 
   // simple test to see if we are in secure mode right now
   inline bool MXP_Secure (void)
