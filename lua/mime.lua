@@ -2,7 +2,7 @@
 -- MIME support for the Lua language.
 -- Author: Diego Nehab
 -- Conforming to RFCs 2045-2049
--- RCS ID: $Id: mime.lua,v 1.28 2005/11/22 08:33:29 diego Exp $
+-- RCS ID: $Id: mime.lua,v 1.29 2007/06/11 23:44:54 diego Exp $
 -----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------
@@ -27,7 +27,8 @@ local function choose(table)
             name, opt1, opt2 = "default", name, opt1
         end
         local f = table[name or "nil"]
-        if not f then error("unknown key (" .. base.tostring(name) .. ")", 3)
+        if not f then 
+            base.error("unknown key (" .. base.tostring(name) .. ")", 3)
         else return f(opt1, opt2) end
     end
 end

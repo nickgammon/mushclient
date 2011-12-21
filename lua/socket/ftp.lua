@@ -2,7 +2,7 @@
 -- FTP support for the Lua language
 -- LuaSocket toolkit.
 -- Author: Diego Nehab
--- RCS ID: $Id: ftp.lua,v 1.44 2006/03/14 09:04:15 diego Exp $
+-- RCS ID: $Id: ftp.lua,v 1.45 2007/07/11 19:25:47 diego Exp $
 -----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------
@@ -88,7 +88,7 @@ function metat.__index:port(ip, port)
         ip, port = self.try(self.tp:getcontrol():getsockname())
         self.server = self.try(socket.bind(ip, 0))
         ip, port = self.try(self.server:getsockname())
-        self.try(server:settimeout(TIMEOUT))
+        self.try(self.server:settimeout(TIMEOUT))
     end
     local pl = math.mod(port, 256)
     local ph = (port - pl)/256
@@ -187,9 +187,9 @@ end
 -----------------------------------------------------------------------------
 -- High level FTP API
 -----------------------------------------------------------------------------
-function override(t)
+local function override(t)
     if t.url then
-        u = url.parse(t.url)
+        local u = url.parse(t.url)
         for i,v in base.pairs(t) do
             u[i] = v
         end
@@ -278,3 +278,4 @@ get = socket.protect(function(gett)
     if base.type(gett) == "string" then return sget(gett)
     else return tget(gett) end
 end)
+
