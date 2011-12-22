@@ -1,8 +1,8 @@
 PCRE built as follows:
 
-1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.13.zip
+1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.21.zip
 
-2. Unzip the file pcre-8.13.zip
+2. Unzip the file pcre-8.21.zip
 
 
 3. Copy the following files to the mushclient source "pcre" directory:
