@@ -1,6 +1,6 @@
 Sqlite3 built as follows:
 
-1. Download recent version from http://www.sqlite.org/sqlite-amalgamation-3070800.zip
+1. Download recent version from http://www.sqlite.org/sqlite-amalgamation-3070900.zip
 
 2. Unzip the file
 
@@ -14,7 +14,7 @@ sqlite3ext.h
 3. Edit: sqlite3.c and add the following lines to the start of it:
 
 // These first few lines added by NJG
-// version 3.7.8
+// version 3.7.9
 # pragma warning (disable : 4018)  // signed/unsigned mismatch
 # pragma warning (disable : 4022)  // pointer mismatch for actual parameter x
 # pragma warning (disable : 4047)  // 'void ** ' differs in levels of indirection from 'long *'
@@ -37,28 +37,3 @@ sqlite3ext.h
 #define SQLITE_ENABLE_FTS3_PARENTHESIS 1
 #define SQLITE_ENABLE_RTREE 1
 #define SQLITE_USE_URI 1
-
-
-
-Note: added patch:
-
-http://www.sqlite.org/src/ci/59bb999c8b?sbs=0
-
-
-@@ -379,10 +379,16 @@
-           result = s / scale;
-           result /= 1.0e+308;
-         }else{
-           result = s * scale;
-           result *= 1.0e+308;
-+        }
-+      }else if( e>=342 ){
-+        if( esign<0 ){
-+          result = 0.0*s;
-+        }else{
-+          result = 1e308*1e308*s;  /* Infinity */
-         }
-       }else{
-         /* 1.0e+22 is the largest power of 10 than can be
-         ** represented exactly. */
-         while( e%22 ) { scale *= 1.0e+1; e -= 1; }
