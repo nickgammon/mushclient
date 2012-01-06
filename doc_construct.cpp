@@ -107,7 +107,7 @@ int i;
   m_bNAWS_wanted = false;
   m_bCHARSET_wanted = false;
   m_bSuppressNewline = false;
-  m_echo_colour = 9;
+  m_echo_colour = SAMECOLOUR;
   m_bAlwaysRecordCommandHistory = false;
   m_bDoNotShowOutstandingLines = false;
   m_bDoNotTranslateIACtoIACIAC = false;
