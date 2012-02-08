@@ -116,6 +116,7 @@ class CMiniWindow
   bool    m_bExecutingScript;      // so windows don't delete themselves
 
   string  m_sCallbackPlugin;      // plugin we are using
+  string  m_sCreatingPlugin;      // plugin that created the miniwindow
 
   const long GetWidth ()      const { return m_iWidth; }
   const long GetHeight ()     const { return m_iHeight; }

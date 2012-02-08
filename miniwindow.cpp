@@ -1014,6 +1014,7 @@ void CMiniWindow::Info (long InfoType, VARIANT & vaResult)
     case 21:  SetUpVariantDate    (vaResult, COleDateTime (m_tDateInstalled.GetTime ()));  break;
 
     case 22:  SetUpVariantLong    (vaResult, m_ZOrder);  break; //  Z-Order
+    case 23:  SetUpVariantString  (vaResult, m_sCreatingPlugin.c_str ()); break; // creating plugin ID
 
     default:
       vaResult.vt = VT_NULL;

@@ -127,6 +127,10 @@ long CMUSHclientDoc::WindowCreate(LPCTSTR Name,
                        Position, Flags, 
                        BackgroundColour);
 
+  pMiniWindow->m_sCreatingPlugin.erase ();
+  if (m_CurrentPlugin)
+    pMiniWindow->m_sCreatingPlugin = m_CurrentPlugin->m_strID;
+
   SortWindows ();  // need to re-make sorted list in Z-order
   UpdateAllViews (NULL);
 
