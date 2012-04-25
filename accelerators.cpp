@@ -474,7 +474,7 @@ tVirtualKeyMapping VirtualKeys [] = {
 // extra stuff added 19 June 2006
 
 { VK_OEM_1      , ";" }  ,
-{ VK_OEM_PLUS   , "+" } ,
+{ VK_OEM_PLUS   , "Plus" } ,
 { VK_OEM_COMMA  , "," },
 { VK_OEM_MINUS  , "-" },
 { VK_OEM_PERIOD , "." },
