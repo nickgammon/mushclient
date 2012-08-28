@@ -397,5 +397,15 @@ function movewindow.save_state (win)
   SetVariable ("mw_" .. win .. "_windowy",      mwi.window_top)
   SetVariable ("mw_" .. win .. "_windowmode",   mwi.window_mode)
   SetVariable ("mw_" .. win .. "_windowflags",  mwi.window_flags)
+  
+  -- use actual position, not where we happen to think it is, in case another plugin moves it
+  -- suggested by Fiendish, 27 August 2012.
+  if WindowInfo (win, 10) then
+    SetVariable ("mw_" .. win .. "_windowx",    WindowInfo(win, 10))
+  end
+  if WindowInfo (win, 11) then
+    SetVariable ("mw_" .. win .. "_windowy",    WindowInfo(win, 11))
+  end
+  
 
 end -- movewindow.save_state  
