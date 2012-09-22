@@ -551,7 +551,7 @@ bool CMUSHclientDoc::MXP_StartTagScript  (const CString & strName,
                                 CFormat ("%s,%s",
                                 (LPCTSTR) strName,
                                 (LPCTSTR) strArguments)
-                                ), true)
+                                , true))
       return true;    
 
 
