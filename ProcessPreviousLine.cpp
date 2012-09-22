@@ -556,7 +556,7 @@ assemble the full text of the original line.
   if (m_bUTF_8)
     {
     int erroroffset;
-    iBad = _pcre_valid_utf8 ((const unsigned char *) (const char *) strCurrentLine, 
+    iBad = _pcre_valid_utf ((const unsigned char *) (const char *) strCurrentLine, 
                              strCurrentLine.GetLength (), &erroroffset);
     if (iBad > 0)
       {

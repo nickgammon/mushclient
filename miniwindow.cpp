@@ -764,7 +764,7 @@ static long CalculateUTF8length (LPCTSTR Text, size_t length)
   {
  
   int erroroffset;
-  int iBad = _pcre_valid_utf8 ((unsigned char  *) Text, length, &erroroffset);
+  int iBad = _pcre_valid_utf ((unsigned char  *) Text, length, &erroroffset);
   if (iBad > 0)
     return -1;
 

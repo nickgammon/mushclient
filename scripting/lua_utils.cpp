@@ -1068,7 +1068,7 @@ unsigned char utf8 [10];    // UTF-8 should be max 6 characters
           luaL_error (L,
              "Unicode code (%f) at index [%d] of table at argument #%d to 'utf8encode' has decimal places", f, j, i);
 
-        int iLen = _pcre_ord2utf8 (n, utf8);
+        int iLen = _pcre_ord2utf (n, utf8);
 
         // we do it this way so we can correctly append 0x00
         sOutput.append ((const char *) utf8, iLen);
@@ -1090,7 +1090,7 @@ unsigned char utf8 [10];    // UTF-8 should be max 6 characters
          luaL_error (L, 
           "Unicode code (%f) at argument #%d to 'utf8encode' has decimal places", f, i);
 
-      int iLen = _pcre_ord2utf8 (n, utf8);
+      int iLen = _pcre_ord2utf (n, utf8);
 
       // we do it this way so we can correctly append 0x00
       sOutput.append ((const char *) utf8, iLen);
@@ -1347,7 +1347,7 @@ size_t length;
 const char * data = luaL_checklstring (L, 1, &length);
 
   int erroroffset;
-  int iBad = _pcre_valid_utf8 ((unsigned char  *) data, length, &erroroffset);
+  int iBad = _pcre_valid_utf ((unsigned char  *) data, length, &erroroffset);
 
   if (iBad > 0)
     {
@@ -1393,7 +1393,7 @@ static int utf8sub (lua_State *L) {
   // validate
 
   int erroroffset;
-  int iBad = _pcre_valid_utf8 ((unsigned char  *) s, length, &erroroffset);
+  int iBad = _pcre_valid_utf ((unsigned char  *) s, length, &erroroffset);
 
   if (iBad > 0)
     {

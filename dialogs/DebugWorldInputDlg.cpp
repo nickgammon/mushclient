@@ -195,7 +195,7 @@ int nItem = m_ctlSpecials.GetCurSel ();
 	pCmdUI->Enable(nItem != LB_ERR);
 }
 
-extern "C" int _pcre_ord2utf8(int cvalue, unsigned char *buffer);
+extern "C" int _pcre_ord2utf(int cvalue, unsigned char *buffer);
 
 void CDebugWorldInputDlg::OnInsertUnicode() 
 {
@@ -208,7 +208,7 @@ CInsertUnicodeDlg dlg;
 
 unsigned char utf8 [10];
 
-int iLen = _pcre_ord2utf8 (dlg.m_iCode, utf8);
+int iLen = _pcre_ord2utf (dlg.m_iCode, utf8);
 
 
 CString strText;

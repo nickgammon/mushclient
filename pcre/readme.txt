@@ -1,8 +1,8 @@
 PCRE built as follows:
 
-1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.21.zip
+1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.31.zip
 
-2. Unzip the file pcre-8.21.zip
+2. Unzip the file pcre-8.31.zip
 
 
 3. Copy the following files to the mushclient source "pcre" directory:
@@ -43,6 +43,7 @@ ucp.h
 5. Edit: pcre_compile.c and add:
 
 #pragma warning( disable : 4018)  // '<' : signed/unsigned mismatch
+#pragma warning( disable : 4127)  // conditional expression is constant
 #pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
 #pragma warning( disable : 4701)  // local variable 'othercase' may be used without having been initialized
 
@@ -64,4 +65,10 @@ and add:
 
 to the start of each file.	
 
+
+7. Edit	pcre_exec.c and add:
+
+#pragma warning( disable : 4127)  // conditional expression is constant
+
+to the start of the file.	
 
