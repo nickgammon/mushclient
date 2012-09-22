@@ -44,6 +44,8 @@ ucp.h
 #pragma warning( disable : 4127)  // conditional expression is constant
 #pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
 #pragma warning( disable : 4701)  // local variable 'othercase' may be used without having been initialized
+#pragma warning( disable : 4702)  // unreachable code
+
 
 to the start of the file.	
 
