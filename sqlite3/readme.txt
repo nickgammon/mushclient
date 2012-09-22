@@ -1,6 +1,6 @@
 Sqlite3 built as follows:
 
-1. Download recent version from http://www.sqlite.org/sqlite-amalgamation-3070900.zip
+1. Download recent version from http://www.sqlite.org/sqlite-amalgamation-3071400.zip
 
 2. Unzip the file
 
@@ -14,7 +14,7 @@ sqlite3ext.h
 3. Edit: sqlite3.c and add the following lines to the start of it:
 
 // These first few lines added by NJG
-// version 3.7.9
+// version 3.7.14
 # pragma warning (disable : 4018)  // signed/unsigned mismatch
 # pragma warning (disable : 4022)  // pointer mismatch for actual parameter x
 # pragma warning (disable : 4047)  // 'void ** ' differs in levels of indirection from 'long *'
@@ -24,6 +24,7 @@ sqlite3ext.h
 # pragma warning (disable : 4115)  // named type definition in parentheses
 # pragma warning (disable : 4127)  // conditional expression is constant
 # pragma warning (disable : 4132)  // const object should be initialized
+# pragma warning (disable : 4232)  // address of dllimport 'x' is not static, identity not guaranteed
 # pragma warning (disable : 4244)  // conversion from 'int ' to 'char ', possible loss of data
 # pragma warning (disable : 4305)  // truncation from 'int ' to 'short '
 # pragma warning (disable : 4701)  // 'xxx' may be used without having been initialized
