@@ -4519,7 +4519,9 @@ SCROLLINFO ScrollInfo;
 RECT r;
 int iDeltaY = m_scroll_position.y - pt.y;
 
-  RemoveToolTip ();
+  // only remove tool tip if a miniwindow didn't put it there
+  if (m_nLastToolTipLine || m_nLastToolTipColumn)
+    RemoveToolTip ();
   GetClientRect (&r);
   // if we can do a smooth scroll, well let's do it!
   if (abs (iDeltaY) < GetOutputWindowHeight ())
