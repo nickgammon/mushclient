@@ -1258,12 +1258,6 @@ SOURCE=.\pcre\pcre_globals.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\pcre\pcre_info.c
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-# End Source File
-# Begin Source File
-
 SOURCE=.\pcre\pcre_maketables.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
@@ -1295,12 +1289,6 @@ SOURCE=.\pcre\pcre_study.c
 # Begin Source File
 
 SOURCE=.\pcre\pcre_tables.c
-# ADD CPP /D "HAVE_CONFIG_H"
-# SUBTRACT CPP /YX /Yc /Yu
-# End Source File
-# Begin Source File
-
-SOURCE=.\pcre\pcre_try_flipped.c
 # ADD CPP /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX /Yc /Yu
 # End Source File
@@ -1564,8 +1552,27 @@ SOURCE=.\using_git.txt
 # End Source File
 # End Target
 # End Project
+# Section MUSHclient : {52A03A14-D2CC-0056-A8D2-560020D55600}
+# 	1:21:CG_IDR_POPUP_MUSHVIEW:125
+# End Section
+# Section MUSHclient : {00000000-000C-0000-0C00-00004944445F}
+# 	1:26:CG_IDR_POPUP_ACTIVITY_VIEW:127
+# End Section
 # Section MUSHclient : {00000000-0001-0000-0000-000000000000}
 # 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
+# End Section
+# Section MUSHclient : {F3B1306C-16CC-11D0-B7D0-00A0247B3BFD}
+# 	0:8:Splash.h:D:\SOURCE\MUSHclient\Splash.h
+# 	0:10:Splash.cpp:D:\SOURCE\MUSHclient\Splash.cpp
+# 	1:10:IDB_SPLASH:102
+# 	2:10:ResHdrName:resource.h
+# 	2:11:ProjHdrName:stdafx.h
+# 	2:10:WrapperDef:_SPLASH_SCRN_
+# 	2:12:SplClassName:CSplashWnd
+# 	2:21:SplashScreenInsertKey:4.0
+# 	2:10:HeaderName:Splash.h
+# 	2:10:ImplemName:Splash.cpp
+# 	2:7:BmpID16:IDB_SPLASH
 # End Section
 # Section MUSHclient : {F3B13065-16CC-11D0-B7D0-00A0247B3BFD}
 # 	0:8:TipDlg.h:D:\SOURCE\MUSHclient\TipDlg.h
@@ -1592,25 +1599,6 @@ SOURCE=.\using_git.txt
 # 	2:18:CG_IDS_FILE_ABSENT:CG_IDS_FILE_ABSENT
 # 	2:10:TipDlg.cpp:TipDlg.cpp
 # End Section
-# Section MUSHclient : {F3B1306C-16CC-11D0-B7D0-00A0247B3BFD}
-# 	0:8:Splash.h:D:\SOURCE\MUSHclient\Splash.h
-# 	0:10:Splash.cpp:D:\SOURCE\MUSHclient\Splash.cpp
-# 	1:10:IDB_SPLASH:102
-# 	2:10:ResHdrName:resource.h
-# 	2:11:ProjHdrName:stdafx.h
-# 	2:10:WrapperDef:_SPLASH_SCRN_
-# 	2:12:SplClassName:CSplashWnd
-# 	2:21:SplashScreenInsertKey:4.0
-# 	2:10:HeaderName:Splash.h
-# 	2:10:ImplemName:Splash.cpp
-# 	2:7:BmpID16:IDB_SPLASH
-# End Section
 # Section MUSHclient : {00000000-0000-0000-0000-000000000000}
 # 	1:22:CG_IDR_POPUP_SEND_VIEW:124
-# End Section
-# Section MUSHclient : {52A03A14-D2CC-0056-A8D2-560020D55600}
-# 	1:21:CG_IDR_POPUP_MUSHVIEW:125
-# End Section
-# Section MUSHclient : {00000000-000C-0000-0C00-00004944445F}
-# 	1:26:CG_IDR_POPUP_ACTIVITY_VIEW:127
 # End Section
