@@ -492,7 +492,7 @@ BSTR CMUSHclientDoc::DatabaseLastInsertRowid(LPCTSTR Name)
   if (it != m_Databases.end () &&    // database exists
       it->second->db != NULL)
     {
-    strResult.Format("%I64", sqlite3_last_insert_rowid(it->second->db));
+    strResult.Format("%I64d", sqlite3_last_insert_rowid(it->second->db));
     }
 
 	return strResult.AllocSysString();
