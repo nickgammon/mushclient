@@ -18,6 +18,7 @@
 
 //    ActivateClient
 //    AddFont
+//    Bookmark
 //    DeleteLines
 //    DeleteOutput
 //    FlashIcon
@@ -778,5 +779,41 @@ void windowPositionHelper (CString & str, const RECT & r)
               r.right - r.left,  // Width
               r.bottom - r.top);  // Height
   } // end of windowPositionHelper
+
+
+
+void CMUSHclientDoc::Bookmark(long LineNumber, BOOL Set) 
+{
+  // check line exists
+  if (LineNumber <= 0 || LineNumber > m_LineList.GetCount ())
+    return;
+
+  LineNumber--;  // zero relative
+  // get pointer to line in question
+
+CLine * pLine = m_LineList.GetAt (GetLinePosition (LineNumber));
+
+
+  if (Set)
+    pLine->flags |= BOOKMARK;
+  else
+    pLine->flags &= ~BOOKMARK;
+
+  // alter appearance of all output windows
+
+  for(POSITION pos = GetFirstViewPosition(); pos != NULL; )
+	  {
+	  CView* pView = GetNextView(pos);
+	  
+	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+  	  {
+		  CMUSHView* pmyView = (CMUSHView*)pView;
+
+      pmyView->BookmarkLine (LineNumber);
+
+	    }	  // end of being a CMUSHView
+    }   // end of loop through views
+
+}  // end of CMUSHclientDoc::Bookmark
 
 

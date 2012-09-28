@@ -197,6 +197,7 @@
 3 Base64Decode=FNC_Base64Decode 
 3 Base64Encode=FNC_Base64Encode 
 3 BlendPixel=FNC_BlendPixel
+3 Bookmark=FNC_Bookmark
 3 BoldColour=FNC_BoldColour 
 3 BroadcastPlugin=FNC_BroadcastPlugin 
 3 CallPlugin=FNC_CallPlugin 

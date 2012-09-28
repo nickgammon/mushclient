@@ -4826,12 +4826,20 @@ int nNewLine = m_selstart_line,
 
   startpos = pos;
   pInitialLine = pDoc->m_LineList.GetNext (pos);   // skip current position
+  // if we were at the end, loop back to the start
+  if (!pos)
+    {
+    pos = pDoc->m_LineList.GetHeadPosition ();
+    nNewLine = -1;
+    }
+
   nInitialLine = nNewLine;
 
   while (pos)
     {
     nNewLine++;
     pLine = pDoc->m_LineList.GetNext (pos);
+
     if (pLine->flags & BOOKMARK)
       break;
     else
@@ -4846,11 +4854,11 @@ int nNewLine = m_selstart_line,
 
     if (startpos == pos)
       break;  // reached start again? don't loop forever
-    }   // end of loop
+    }; // end of loop
 
   // if we didn't find one *but* we were on one anyway, re-go to it
 
-  if (!pLine && pInitialLine->flags & BOOKMARK)
+  if (!pLine && (pInitialLine->flags & BOOKMARK))
     {
     pLine = pInitialLine;
     nNewLine = nInitialLine;
@@ -4871,13 +4879,6 @@ ASSERT_VALID(pDoc);
   if (pDoc->m_LineList.IsEmpty ())
     return;
 
-  CRgn oldrgn;
-  CRgn newrgn;
-
-// Get old selection region
-
-  get_selection (oldrgn);
-
   // if no selection (or out of range) select last line in display
   if (m_selstart_line <= 0 || m_selstart_line >= pDoc->m_LineList.GetCount ())
     m_selstart_line = pDoc->GetLastLine () - 1;
@@ -4886,9 +4887,29 @@ ASSERT_VALID(pDoc);
 
   pLine->flags ^= BOOKMARK;   // toggle bookmark
 
+  BookmarkLine (m_selstart_line);
+ 
+}   // end of CMUSHView::OnDisplayBookmarkselection
+
+
+void CMUSHView::BookmarkLine (const long iLine)
+  {
+CMUSHclientDoc* pDoc = GetDocument();
+ASSERT_VALID(pDoc);
+
+  CRgn oldrgn;
+  CRgn newrgn;
+
+// Get old selection region
+
+  get_selection (oldrgn);
+
+  m_selstart_line = iLine;
   m_selstart_col = 0;
   m_selend_col = 0;
   m_selend_line = m_selstart_line;    
+
+  CLine * pLine = pDoc->m_LineList.GetAt (pDoc->GetLinePosition (m_selstart_line));
 
   if (pLine->flags & BOOKMARK)
     m_selend_col = pLine->len;
@@ -4913,8 +4934,7 @@ ASSERT_VALID(pDoc);
   newrgn.DeleteObject ();
   oldrgn.DeleteObject ();
 
-  
-}   // end of CMUSHView::OnDisplayBookmarkselection
+  }   // end of CMUSHView::BookmarkLine 
 
 
 void CMUSHView::doBookmark (void)

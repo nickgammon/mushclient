@@ -2754,6 +2754,7 @@ public:
 	afx_msg VARIANT DatabaseGetField(LPCTSTR Name, LPCTSTR Sql);
 	afx_msg long WindowSetZOrder(LPCTSTR Name, long Order);
 	afx_msg long UnloadPlugin(LPCTSTR PluginID);
+	afx_msg void Bookmark(long LineNumber, BOOL Set);
 	afx_msg long GetNormalColour(short WhichColour);
 	afx_msg void SetNormalColour(short WhichColour, long nNewValue);
 	afx_msg long GetBoldColour(short WhichColour);

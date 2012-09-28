@@ -56,6 +56,7 @@ tInternalFunctionsTable InternalFunctionsTable [] = {
 { "Base64Decode" ,               "( Text )" } ,
 { "Base64Encode" ,               "( Text , MultiLine )" } ,
 { "BlendPixel" ,                 "( Blend , Base , Mode , Opacity )" } ,
+{ "Bookmark" ,                   "( LineNumber , Set )" } ,
 { "BoldColour" ,                 "( WhichColour , NewValue )" } ,
 { "BroadcastPlugin" ,            "( Message , Text )" } ,
 { "CallPlugin" ,                 "( PluginID , Routine , Argument )" } ,

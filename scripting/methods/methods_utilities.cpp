@@ -17,6 +17,7 @@
 //    Activate
 //    Base64Decode
 //    Base64Encode
+//    Bookmark
 //    ChangeDir
 //    Connect
 //    CreateGUID

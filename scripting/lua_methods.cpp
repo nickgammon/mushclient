@@ -943,6 +943,18 @@ static int L_SetBoldColour (lua_State *L)
   return 0;  // number of result fields
   } // end of SetBoldColour
 
+//----------------------------------------
+//  world.Bookmark
+//----------------------------------------
+static int L_Bookmark (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  pDoc->Bookmark (
+                  my_checknumber (L, 1),  // LineNumber
+                  optboolean (L, 2, 1)    // Set flag, defaults to true
+      );
+  return 0;  // number of result fields
+  } // end of L_Bookmark
 
 //----------------------------------------
 //  world.BroadcastPlugin
@@ -6655,6 +6667,7 @@ static const struct luaL_Reg worldlib [] =
   {"Base64Decode", L_Base64Decode},
   {"Base64Encode", L_Base64Encode},
   {"BlendPixel", L_BlendPixel},
+  {"Bookmark", L_Bookmark},
   {"GetBoldColour", L_GetBoldColour},
   {"SetBoldColour", L_SetBoldColour},
   {"BroadcastPlugin", L_BroadcastPlugin},
