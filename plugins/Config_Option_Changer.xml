@@ -80,6 +80,8 @@ numeric_options = {
   default_timer_send_to       = { desc = 'New timers: Default send-to location', min = 0, max = 14 },
   default_trigger_send_to     = { desc = 'New triggers: Default send-to location', min = 0, max = 14 },
   default_trigger_sequence    = { desc = 'New triggers: Default sequence', min = 0, max = 10000 },
+  tool_tip_start_time         = { desc = 'Tool tips: time before show, in milliseconds', min = 0, max = 120000 },
+  tool_tip_visible_time       = { desc = 'Tool tips: time visible, in milliseconds', min = 0, max = 120000 },
   } -- end numeric_options
   
 -- colour options they can change

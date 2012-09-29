@@ -185,6 +185,8 @@ tConfigurationNumericOption OptionsTable [] = {
 {"timestamp_input_back_colour",         RGB (0, 0, 0),        O(m_OutputLinePreambleInputBackColour), 0, 0xFFFFFF, OPT_RGB_COLOUR | OPT_UPDATE_VIEWS},
 {"timestamp_notes_back_colour",         RGB (0, 0, 0),        O(m_OutputLinePreambleNotesBackColour), 0, 0xFFFFFF, OPT_RGB_COLOUR | OPT_UPDATE_VIEWS},
 {"timestamp_output_back_colour",        RGB (0, 0, 0),        O(m_OutputLinePreambleOutputBackColour),0, 0xFFFFFF, OPT_RGB_COLOUR | OPT_UPDATE_VIEWS},
+{"tool_tip_visible_time",               5000,  O(m_iToolTipVisibleTime), 0, 120000},    
+{"tool_tip_start_time",                 400,   O(m_iToolTipStartTime),   0, 120000},    
 {"translate_backslash_sequences",       false, O(m_bTranslateBackslashSequences)},      
 {"translate_german",                    false, O(m_bTranslateGerman)},  
 {"treeview_triggers",                   true,  O(m_bTreeviewTriggers)},  

@@ -884,6 +884,10 @@ public:
   // version 4.81
   unsigned short m_bAutoWrapInput;			      // Match input wrap to output?
 
+  // version 4.82
+  unsigned int m_iToolTipVisibleTime;         // Time tooltip stays visible (milliseconds)
+  unsigned int m_iToolTipStartTime;           // Time before tooltip appears (milliseconds)
+
   // end of stuff saved to disk **************************************************************
 
   // stuff from pre version 11, read from disk but not saved

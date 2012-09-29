@@ -1445,6 +1445,9 @@ previousLineHPtime.QuadPart = 0;
 
 void CMUSHView::OnInitialUpdate()
 {
+CMUSHclientDoc* pDoc = GetDocument();
+ASSERT_VALID(pDoc);
+
   CView::OnInitialUpdate();
 
   CSize sizeTotal;
@@ -1459,9 +1462,9 @@ void CMUSHView::OnInitialUpdate()
   if (m_ToolTip.Create(this, TTS_ALWAYSTIP | TTS_NOPREFIX | 0x40) && m_ToolTip.AddTool(this))
   {
     m_ToolTip.SendMessage(TTM_SETMAXTIPWIDTH, 0, SHRT_MAX);
-    m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_AUTOPOP, 5000);
-    m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_INITIAL, 400);
-    m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_RESHOW, 400);
+    m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_AUTOPOP, pDoc->m_iToolTipVisibleTime - 1);  // zero will be default  (-1)
+    m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_INITIAL, pDoc->m_iToolTipStartTime - 1);    // zero will be default  (-1)
+    m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_RESHOW, -1);
 
     // add icon and title to tooltip
    // TTI_NONE     = 0 - no icon
