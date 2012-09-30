@@ -556,7 +556,7 @@ long iResult = SetBaseOptionItem (iItem,
 
   if (OptionsTable [iItem].iFlags & OPT_FIX_TOOLTIP_VISIBLE)
     {
-    for(pos=GetFirstViewPosition();pos!=NULL;)
+    for(pos = GetFirstViewPosition(); pos != NULL;)
     	{
     	CView* pView = GetNextView(pos);
     	if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
@@ -570,7 +570,7 @@ long iResult = SetBaseOptionItem (iItem,
 
   if (OptionsTable [iItem].iFlags & OPT_FIX_TOOLTIP_START)
     {
-    for(pos=GetFirstViewPosition();pos!=NULL;)
+    for(pos = GetFirstViewPosition (); pos != NULL;)
     	{
     	CView* pView = GetNextView(pos);
     	if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
@@ -580,7 +580,7 @@ long iResult = SetBaseOptionItem (iItem,
       		pmyView->m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_INITIAL, Value - 1);  // zero will be default  (-1)
     	  }	  // end if
       }  // end for
-    } // end of OPT_FIX_TOOLTIP_VISIBLE
+    } // end of OPT_FIX_TOOLTIP_START
 
   if (OptionsTable [iItem].iFlags & OPT_USE_MXP)
     {
