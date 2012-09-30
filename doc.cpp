@@ -1904,7 +1904,7 @@ CString strLine (lpszText, size);
 // affect the rest of the line
 
   if (m_pCurrentLine->len == 0)
-    SetNewLineColour (flags);
+    SetNewLineColour (flags | (m_pCurrentLine->flags & BOOKMARK));
 
   for (p = lpszText; size > 0; p++, size--)
     {
