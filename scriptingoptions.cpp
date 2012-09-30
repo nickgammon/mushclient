@@ -4,6 +4,7 @@
 #include "MUSHclient.h"
 
 #include "doc.h"
+#include "MUSHview.h"
 #include "scripting\errors.h"
 
 #define NL "\r\n"
@@ -185,8 +186,8 @@ tConfigurationNumericOption OptionsTable [] = {
 {"timestamp_input_back_colour",         RGB (0, 0, 0),        O(m_OutputLinePreambleInputBackColour), 0, 0xFFFFFF, OPT_RGB_COLOUR | OPT_UPDATE_VIEWS},
 {"timestamp_notes_back_colour",         RGB (0, 0, 0),        O(m_OutputLinePreambleNotesBackColour), 0, 0xFFFFFF, OPT_RGB_COLOUR | OPT_UPDATE_VIEWS},
 {"timestamp_output_back_colour",        RGB (0, 0, 0),        O(m_OutputLinePreambleOutputBackColour),0, 0xFFFFFF, OPT_RGB_COLOUR | OPT_UPDATE_VIEWS},
-{"tool_tip_visible_time",               5000,  O(m_iToolTipVisibleTime), 0, 120000},    
-{"tool_tip_start_time",                 400,   O(m_iToolTipStartTime),   0, 120000},    
+{"tool_tip_visible_time",               5000,  O(m_iToolTipVisibleTime), 0, 120000, OPT_FIX_TOOLTIP_VISIBLE},    
+{"tool_tip_start_time",                 400,   O(m_iToolTipStartTime),   0, 120000, OPT_FIX_TOOLTIP_START},    
 {"translate_backslash_sequences",       false, O(m_bTranslateBackslashSequences)},      
 {"translate_german",                    false, O(m_bTranslateGerman)},  
 {"treeview_triggers",                   true,  O(m_bTreeviewTriggers)},  
@@ -550,6 +551,36 @@ long iResult = SetBaseOptionItem (iItem,
 
   if (OptionsTable [iItem].iFlags & OPT_FIX_SPEEDWALK_DELAY)
     SetSpeedWalkDelay ((short) Value);
+
+  POSITION pos;
+
+  if (OptionsTable [iItem].iFlags & OPT_FIX_TOOLTIP_VISIBLE)
+    {
+    for(pos=GetFirstViewPosition();pos!=NULL;)
+    	{
+    	CView* pView = GetNextView(pos);
+    	if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+      	{
+    		CMUSHView* pmyView = (CMUSHView*)pView;
+        if (pmyView->m_ToolTip.m_hWnd)
+    		  pmyView->m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_AUTOPOP, Value - 1);  // zero will be default  (-1)
+    	  }	  // end if
+      }  // end for
+    } // end of OPT_FIX_TOOLTIP_VISIBLE
+
+  if (OptionsTable [iItem].iFlags & OPT_FIX_TOOLTIP_START)
+    {
+    for(pos=GetFirstViewPosition();pos!=NULL;)
+    	{
+    	CView* pView = GetNextView(pos);
+    	if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+      	{
+    		CMUSHView* pmyView = (CMUSHView*)pView;
+        if (pmyView->m_ToolTip.m_hWnd)
+      		pmyView->m_ToolTip.SendMessage(TTM_SETDELAYTIME, TTDT_INITIAL, Value - 1);  // zero will be default  (-1)
+    	  }	  // end if
+      }  // end for
+    } // end of OPT_FIX_TOOLTIP_VISIBLE
 
   if (OptionsTable [iItem].iFlags & OPT_USE_MXP)
     {

@@ -362,22 +362,24 @@ enum {
    DBG_ALL,          // a whole lot of useless stuff
   };
 
-#define OPT_CUSTOM_COLOUR       0x000001    // colour number  (add 1 to colour to save, subtract 1 to load)
-#define OPT_RGB_COLOUR          0x000002    // colour is RGB colour
-#define OPT_DOUBLE              0x000004    // option is a double
-#define OPT_UPDATE_VIEWS        0x000100    // if changed, update all views
-#define OPT_UPDATE_INPUT_FONT   0x000200    // if changed, update input font
-#define OPT_UPDATE_OUTPUT_FONT  0x000400    // if changed, update output font
-#define OPT_FIX_OUTPUT_BUFFER   0x000800    // if changed, rework output buffer size
-#define OPT_FIX_WRAP_COLUMN     0x001000    // if changed, wrap column has changed
-#define OPT_FIX_SPEEDWALK_DELAY 0x002000    // if changed, speedwalk delay has changed
-#define OPT_USE_MXP             0x004000    // if changed, use_mxp has changed
-#define OPT_PLUGIN_CANNOT_READ  0x100000    // plugin may not read its value
-#define OPT_PLUGIN_CANNOT_WRITE 0x200000    // plugin may not write its value
-#define OPT_PLUGIN_CANNOT_RW    0x300000    // plugin may not read or write its value
-#define OPT_CANNOT_WRITE        0x400000    // cannot be changed by any script
-#define OPT_SERVER_CAN_WRITE    0x800000    // CAN be changed by <recommend_option> tag
-#define OPT_FIX_INPUT_WRAP     0x1000000    // Added for input wrapping.
+#define OPT_CUSTOM_COLOUR        0x000001    // colour number  (add 1 to colour to save, subtract 1 to load)
+#define OPT_RGB_COLOUR           0x000002    // colour is RGB colour
+#define OPT_DOUBLE               0x000004    // option is a double
+#define OPT_UPDATE_VIEWS         0x000100    // if changed, update all views
+#define OPT_UPDATE_INPUT_FONT    0x000200    // if changed, update input font
+#define OPT_UPDATE_OUTPUT_FONT   0x000400    // if changed, update output font
+#define OPT_FIX_OUTPUT_BUFFER    0x000800    // if changed, rework output buffer size
+#define OPT_FIX_WRAP_COLUMN      0x001000    // if changed, wrap column has changed
+#define OPT_FIX_SPEEDWALK_DELAY  0x002000    // if changed, speedwalk delay has changed
+#define OPT_USE_MXP              0x004000    // if changed, use_mxp has changed
+#define OPT_PLUGIN_CANNOT_READ   0x100000    // plugin may not read its value
+#define OPT_PLUGIN_CANNOT_WRITE  0x200000    // plugin may not write its value
+#define OPT_PLUGIN_CANNOT_RW     0x300000    // plugin may not read or write its value
+#define OPT_CANNOT_WRITE         0x400000    // cannot be changed by any script
+#define OPT_SERVER_CAN_WRITE     0x800000    // CAN be changed by <recommend_option> tag
+#define OPT_FIX_INPUT_WRAP      0x1000000    // Added for input wrapping.
+#define OPT_FIX_TOOLTIP_VISIBLE 0x2000000    // Added for tooltip delay changing.
+#define OPT_FIX_TOOLTIP_START   0x4000000    // Added for tooltip delay changing.
 
 // for debug.options and MXP <option> tag
 typedef struct
