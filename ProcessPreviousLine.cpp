@@ -73,11 +73,17 @@ void CMUSHclientDoc::LogLineInHTMLcolour (POSITION startpos)
            bInSpan = false;
           }
 
-        WriteToLog (CFormat ("</font><font color=\"#%02X%02X%02X\">",
+        // wrap up last colour change
+        if (prevcolour != NO_COLOUR)
+          WriteToLog ("</font>");
+
+        WriteToLog (CFormat ("<font color=\"#%02X%02X%02X\">",
                             GetRValue (colour1),
                             GetGValue (colour1),
                             GetBValue (colour1)
                             ));
+
+        prevcolour = colour1;
 
         // for efficiency we will only use <span> if we need to change the
         // background colour
@@ -122,7 +128,7 @@ void CMUSHclientDoc::LogLineInHTMLcolour (POSITION startpos)
      WriteToLog ("</span>");
 
   // wrap up last colour change
-  if (prevcolour != -1)
+  if (prevcolour != NO_COLOUR)
     WriteToLog ("</font>");
 
   } // end of  CMUSHclientDoc::LogLineInHTMLcolour
