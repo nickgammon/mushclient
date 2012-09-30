@@ -156,7 +156,25 @@ end -- function match
 -- ----------------------------------------------------------
 function make (f)
   assert (type (f) == "function", "wait.make requires a function")
-  assert (GetOption ("enable_timers") == 1, "Timers not enabled")
-  assert (GetOption ("enable_triggers") == 1, "Triggers not enabled")
+  
+  -- More friendly failure, suggested by Fiendish
+  local errors = {}
+  if GetOption ("enable_timers") ~= 1 then
+    table.insert (errors, "TIMERS")
+  end -- if timers disabled
+  if GetOption ("enable_triggers") ~= 1 then
+    table.insert (errors, "TRIGGERS")
+  end  -- if triggers disabled
+  if #errors ~= 0 then
+    ColourNote("white", "red", 
+               "One of your scripts (in '" .. 
+               (GetPluginInfo(GetPluginID(), 1) or "World") ..
+                "') just did something that requires " ..
+                table.concat (errors, " and ") ..
+                " to be enabled, but they aren't. " ..
+                "Please check your configuration settings.")
+    return nil, "Trigger/Timers not enabled"  -- bad return
+  end  -- if have errors
   coroutine.wrap (f) () -- make coroutine, resume it
+  return true  -- good return
 end -- make
