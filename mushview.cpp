@@ -3519,7 +3519,8 @@ ASSERT_VALID(pDoc);
                  pDoc->m_iPixelOffset + 
                  pLine->m_iPreambleOffset;
 
-    if (point.x < pixel &&
+    if ((point.x - pDoc->m_TextRectangle.left) < pixel &&
+        (point.x - pDoc->m_TextRectangle.left) >= 0 &&
         pDoc->FindStyle (pLine, col, iCol, pStyle, foundpos))
       {
       iStyle = pStyle->iFlags;
