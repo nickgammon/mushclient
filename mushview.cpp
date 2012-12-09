@@ -5015,6 +5015,9 @@ BOOL CMUSHView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
+  // allow for negative values, eg. on second monitors
+  pt.x = (int) (short) pt.x;
+  pt.y = (int) (short) pt.y;
 
 CRect rect;
   

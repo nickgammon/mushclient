@@ -2695,6 +2695,10 @@ BOOL CSendView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 CRect rect;
 	
+  // allow for negative values, eg. on second monitors
+  pt.x = (int) (short) pt.x;
+  pt.y = (int) (short) pt.y;
+
   m_topview->GetClientRect (&rect);
   m_topview->ClientToScreen(&rect);
 
