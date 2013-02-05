@@ -107,10 +107,15 @@ CString GetTabText (HWND hwnd)
     {
     CChildFrame * pWorldFrame = (CChildFrame *) pWnd;
     CMUSHclientDoc * pDoc = pWorldFrame->m_pDoc;
-    strName = pDoc->m_mush_name;
-    if (pDoc->m_new_lines && !pDoc->m_bDoNotShowOutstandingLines)
-      strName += CFormat (" (%i)", pDoc->m_new_lines);
-
+    // custom title?
+    if (pDoc->m_strWindowTitle.IsEmpty ())
+      {
+      strName = pDoc->m_mush_name;
+      if (pDoc->m_new_lines && !pDoc->m_bDoNotShowOutstandingLines)
+        strName += CFormat (" (%i)", pDoc->m_new_lines);
+      }
+    else
+      strName = pDoc->m_strWindowTitle;
     }
   else if (pWnd->IsKindOf(RUNTIME_CLASS(CTextChildFrame)))
     {
@@ -122,6 +127,7 @@ CString GetTabText (HWND hwnd)
        strName += " *";
     }
 
+  strName.Replace ("&", "&&");
   return strName;
   }
 
