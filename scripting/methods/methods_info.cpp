@@ -184,7 +184,7 @@ tInfoTypeMapping InfoTypes [] =
  { 85, "State files path (directory)" },
  { 86, "Word under mouse on mouse menu click" },
  { 87, "Last command sent" },
-
+ { 88, "Window title last set by SetTitle" },
 
 
  
@@ -535,6 +535,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case   85: SetUpVariantString (vaResult, App.m_strDefaultStateFilesDirectory); break;
     case   86: SetUpVariantString (vaResult, m_strWordUnderMenu); break;
     case   87: SetUpVariantString (vaResult, m_strLastCommandSent); break;
+    case   88: SetUpVariantString (vaResult, m_strWindowTitle); break;
       
     case  101: SetUpVariantBool (vaResult, m_bNoEcho); break;
     case  102: SetUpVariantBool (vaResult, m_bDebugIncomingPackets); break;
