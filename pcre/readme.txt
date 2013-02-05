@@ -1,8 +1,8 @@
 PCRE built as follows:
 
-1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.31.zip
+1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.32.zip
 
-2. Unzip the file pcre-8.31.zip
+2. Unzip the file pcre-8.32.zip
 
 
 3. Copy the following files to the mushclient source "pcre" directory:
@@ -72,3 +72,10 @@ to the start of each file.
 
 to the start of the file.	
 
+
+
+8. Edit pcre_dfa_exec.c and add:
+
+#pragma warning( disable : 4146)  // unary minus operator applied to unsigned type, result still unsigned
+
+to the start of the file.

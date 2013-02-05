@@ -52,7 +52,7 @@ them both to 0; an emulation function will be used. */
 #define HAVE_DLFCN_H 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
-#define HAVE_INTTYPES_H 0
+#undef HAVE_INTTYPES_H
 
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
@@ -73,7 +73,7 @@ them both to 0; an emulation function will be used. */
 /* #undef HAVE_READLINE_READLINE_H */
 
 /* Define to 1 if you have the <stdint.h> header file. */
-#define HAVE_STDINT_H 0
+#undef HAVE_STDINT_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #define HAVE_STDLIB_H 1
@@ -188,13 +188,13 @@ them both to 0; an emulation function will be used. */
 #define PACKAGE_NAME "PCRE"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "PCRE 8.01"
+#define PACKAGE_STRING "PCRE 8.32"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "pcre"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "8.01"
+#define PACKAGE_VERSION "8.32"
 
 
 /* If you are compiling for a system other than a Unix-like system or
