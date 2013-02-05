@@ -352,6 +352,7 @@ tInternalFunctionsTable InternalFunctionsTable [] = {
 { "SetScroll",                   "( Position ,  Visible )" }, 
 { "SetStatus" ,                  "( Message )" } ,
 { "SetTimerOption" ,             "( TimerName , OptionName , Value )" } ,
+{ "SetTitle" ,                   "( Title )" } ,
 { "SetToolBarPosition" ,         "( Which , Float , Side , Top , Left )" } ,
 { "SetTriggerOption" ,           "( TriggerName , OptionName , Value )" } ,
 { "SetVariable" ,                "( VariableName , Contents )" } ,

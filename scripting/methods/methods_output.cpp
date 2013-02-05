@@ -38,6 +38,7 @@
 //    SetForegroundImage
 //    SetOutputFont
 //    SetScroll
+//    SetTitle
 //    SetToolBarPosition
 //    SetWorldWindowStatus
 //    TextRectangle
@@ -817,3 +818,20 @@ CLine * pLine = m_LineList.GetAt (GetLinePosition (LineNumber));
 }  // end of CMUSHclientDoc::Bookmark
 
 
+void CMUSHclientDoc::SetTitle(LPCTSTR Title) 
+{
+	m_strWindowTitle = Title;
+
+  // now update all views
+  for(POSITION pos = GetFirstViewPosition(); pos != NULL; )
+	  {
+	  CView* pView = GetNextView(pos);
+	  
+	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+  	  {
+		  CMUSHView* pmyView = (CMUSHView*)pView;
+      pmyView->FixupTitle ();
+	    }	  // end of being a CMUSHView
+    }   // end of loop through views
+
+}

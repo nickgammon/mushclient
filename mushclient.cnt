@@ -494,6 +494,7 @@
 3 SetStatus=FNC_SetStatus 
 3 SetScroll=FNC_SetScroll
 3 SetTimerOption=FNC_SetTimerOption 
+3 SetTitle=FNC_SetTitle 
 3 SetToolBarPosition=FNC_SetToolBarPosition
 3 SetTriggerOption=FNC_SetTriggerOption 
 3 SetVariable=FNC_SetVariable 

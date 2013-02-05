@@ -5426,6 +5426,16 @@ static int L_SetTimerOption (lua_State *L)
   } // end of L_SetTimerOption
 
 //----------------------------------------
+//  world.SetTitle
+//----------------------------------------
+static int L_SetTitle (lua_State *L)
+  {
+  CMUSHclientDoc * pDoc = doc (L);  // must do this first
+  pDoc->SetTitle (concatArgs (L).c_str ());
+  return 0;  // number of result fields
+  } // end of L_SetTitle
+
+//----------------------------------------
 //  world.SetToolBarPosition
 //----------------------------------------
 static int L_SetToolBarPosition (lua_State *L)
@@ -6975,6 +6985,7 @@ static const struct luaL_Reg worldlib [] =
   {"SetScroll", L_SetScroll},
   {"SetStatus", L_SetStatus},
   {"SetTimerOption", L_SetTimerOption},
+  {"SetTitle", L_SetTitle},
   {"SetToolBarPosition", L_SetToolBarPosition},
   {"SetTriggerOption", L_SetTriggerOption},
   {"SetVariable", L_SetVariable}, 

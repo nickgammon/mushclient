@@ -3417,6 +3417,9 @@ ASSERT_VALID(pDoc);
 
 CString strTitle = pDoc->m_mush_name;
 
+
+  if (pDoc->m_strWindowTitle.IsEmpty ())
+    {
 // don't bother showing "[open]" if connected - it is kind of annoying
 //  ditto for worlds that will never connect (0.0.0.0)
 
@@ -3449,6 +3452,10 @@ CString strTitle = pDoc->m_mush_name;
 
     strTitle += "]";
     } // end of not connected
+
+    }  // end of no custom title
+  else
+    strTitle = pDoc->m_strWindowTitle;
 
   CString strOldTitle;
 
