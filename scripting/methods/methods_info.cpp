@@ -185,6 +185,7 @@ tInfoTypeMapping InfoTypes [] =
  { 86, "Word under mouse on mouse menu click" },
  { 87, "Last command sent" },
  { 88, "Window title last set by SetTitle" },
+ { 89, "Window title last set by SetMainTitle" },
 
 
  
@@ -536,6 +537,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case   86: SetUpVariantString (vaResult, m_strWordUnderMenu); break;
     case   87: SetUpVariantString (vaResult, m_strLastCommandSent); break;
     case   88: SetUpVariantString (vaResult, m_strWindowTitle); break;
+    case   89: SetUpVariantString (vaResult, m_strMainWindowTitle); break;
       
     case  101: SetUpVariantBool (vaResult, m_bNoEcho); break;
     case  102: SetUpVariantBool (vaResult, m_bDebugIncomingPackets); break;
