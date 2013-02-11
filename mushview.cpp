@@ -1739,6 +1739,12 @@ CPoint pt = GetScrollPosition ();
 #endif
     }
 
+  CString strTitle = pDoc->m_mush_name;
+
+  if (!pDoc->m_strWindowTitle.IsEmpty ())
+    strTitle = pDoc->m_strWindowTitle;
+
+
 // if iconized, show number of lines since it wasn't iconised (in title)
 
   if (GetParentFrame ()->IsIconic ())
@@ -1746,7 +1752,8 @@ CPoint pt = GetScrollPosition ();
     CString str;
     long diff = pDoc->m_total_lines - m_last_line;
 
-    str.Format ("%s [%ld]", (const char *) pDoc->m_mush_name, diff);
+
+    str.Format ("%s [%ld]", (const char *) strTitle, diff);
 
     GetParentFrame ()->SetWindowText (str);
     }
@@ -1762,8 +1769,8 @@ CPoint pt = GetScrollPosition ();
     GetParentFrame ()->GetWindowText (strOldTitle);
 
     // amend title if necessary (avoid flicker)
-    if (strOldTitle != pDoc->m_mush_name)
-      GetParentFrame ()->SetWindowText (pDoc->m_mush_name);
+    if (strOldTitle != strTitle)
+      GetParentFrame ()->SetWindowText (strTitle);
 
     }
 
