@@ -1338,6 +1338,7 @@ public:
   CString m_strWordUnderMenu;   // word under menu in output window
 
   CString m_strWindowTitle;     // for SetTitle
+  CString m_strMainWindowTitle; // for SetMainTitle
 
 #ifdef PANE
   // for pane windows
@@ -2764,6 +2765,7 @@ public:
 	afx_msg long UnloadPlugin(LPCTSTR PluginID);
 	afx_msg void Bookmark(long LineNumber, BOOL Set);
 	afx_msg void SetTitle(LPCTSTR Title);
+	afx_msg void SetMainTitle(LPCTSTR Title);
 	afx_msg long GetNormalColour(short WhichColour);
 	afx_msg void SetNormalColour(short WhichColour, long nNewValue);
 	afx_msg long GetBoldColour(short WhichColour);

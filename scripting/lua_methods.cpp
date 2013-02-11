@@ -5338,6 +5338,15 @@ static int L_SetInputFont (lua_State *L)
   return 0;  // number of result fields
   } // end of L_SetInputFont
 
+//----------------------------------------
+//  world.SetMainTitle
+//----------------------------------------
+static int L_SetMainTitle (lua_State *L)
+  {
+  CMUSHclientDoc * pDoc = doc (L);  // must do this first
+  pDoc->SetMainTitle (concatArgs (L).c_str ());
+  return 0;  // number of result fields
+  } // end of L_SetMainTitle
 
 //----------------------------------------
 //  world.SetNotes
@@ -6979,6 +6988,7 @@ static const struct luaL_Reg worldlib [] =
   {"SetEntity", L_SetEntity},
   {"SetForegroundImage", L_SetForegroundImage},
   {"SetInputFont", L_SetInputFont},
+  {"SetMainTitle", L_SetMainTitle},
   {"SetNotes", L_SetNotes},
   {"SetOption", L_SetOption},
   {"SetOutputFont", L_SetOutputFont},

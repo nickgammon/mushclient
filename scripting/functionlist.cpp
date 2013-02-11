@@ -346,6 +346,7 @@ tInternalFunctionsTable InternalFunctionsTable [] = {
 { "SetEntity" ,                  "( Name , Contents )" } ,
 { "SetForegroundImage" ,         "( FileName , Mode )" } ,
 { "SetInputFont" ,               "( FontName , PointSize , Weight , Italic )" } ,
+{ "SetMainTitle" ,               "( Title )" } ,
 { "SetNotes" ,                   "( Message )" } ,
 { "SetOption" ,                  "( OptionName , Value )" } ,
 { "SetOutputFont" ,              "( FontName , PointSize )" } ,

@@ -865,6 +865,8 @@ void CMainFrame::FixUpTitleBar (void)
   
   CString strTitle;
   CString strName;
+  CString strMainTitle;
+
   int nDocCount = 0;
 
  	POSITION pos = App.m_pWorldDocTemplate->GetFirstDocPosition();
@@ -873,6 +875,7 @@ void CMainFrame::FixUpTitleBar (void)
 	{
     CMUSHclientDoc* pDoc = (CMUSHclientDoc*) App.m_pWorldDocTemplate->GetNextDoc(pos);
 
+    // find the active world
     if (pDoc->m_pActiveCommandView != NULL || pDoc->m_pActiveOutputView != NULL)
       {
       WINDOWPLACEMENT wp;
@@ -883,6 +886,7 @@ void CMainFrame::FixUpTitleBar (void)
         pDoc->m_pActiveOutputView->GetOwner ()->GetOwner ()->GetWindowPlacement (&wp);
 
       strName = pDoc->m_mush_name;    // remember world name
+      strMainTitle = pDoc->m_strMainWindowTitle;
 
       // don't show name again if maximized
       if (wp.showCmd == SW_MAXIMIZE)
@@ -917,6 +921,10 @@ void CMainFrame::FixUpTitleBar (void)
   CString strOldTitle;
 
   GetWindowText (strOldTitle);
+
+  // use the title from SetMainTitle if the active world had one
+  if (!strMainTitle.IsEmpty ())
+    strTitle = strMainTitle;
 
   // only change title if necessary, to avoid flicker
   if (strTitle != strOldTitle)

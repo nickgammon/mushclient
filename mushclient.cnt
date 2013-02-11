@@ -488,6 +488,7 @@
 3 SetEntity=FNC_SetEntity 
 3 SetForegroundImage=FNC_SetForegroundImage
 3 SetInputFont=FNC_SetInputFont 
+3 SetMainTitle=FNC_SetMainTitle 
 3 SetNotes=FNC_SetNotes 
 3 SetOption=FNC_SetOption 
 3 SetOutputFont=FNC_SetOutputFont 

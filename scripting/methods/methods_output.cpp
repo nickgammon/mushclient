@@ -835,3 +835,10 @@ void CMUSHclientDoc::SetTitle(LPCTSTR Title)
     }   // end of loop through views
 
 }
+
+
+void CMUSHclientDoc::SetMainTitle(LPCTSTR Title) 
+{
+	m_strMainWindowTitle = Title;
+  Frame.FixUpTitleBar ();
+}
