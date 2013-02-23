@@ -287,7 +287,14 @@ POSITION pos;
     }
 
 
-// notify view to invalidate this part
+int lastline;
+
+  lastline = GetLastLine ();
+
+
+// notify view that we have "added" stuff (deleted, really)
+// this is so that scroll bar positions are recalculated, and the
+// view now scrolls to the bottom, making the previous lines now end at the end of the window.
 
   for(pos = GetFirstViewPosition(); pos != NULL; )
     {
@@ -297,9 +304,11 @@ POSITION pos;
   	  {
   		CMUSHView* pmyView = (CMUSHView*)pView;
 
-  		pmyView->Invalidate ();
+  		pmyView->addedstuff ();
+
   		}	  // end of being an output view
   	}   // end of doing each view
+
 
 }  // end of DeleteLines
 
