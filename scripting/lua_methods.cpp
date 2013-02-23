@@ -5620,6 +5620,16 @@ static int L_StopSound (lua_State *L)
   } // end of L_StopSound
 
 //----------------------------------------
+//  world.StopEvaluatingTriggers
+//----------------------------------------
+static int L_StopEvaluatingTriggers (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  pDoc->StopEvaluatingTriggers (optboolean (L, 1, 0));
+  return 0;  // number of result fields
+  } // end of L_StopEvaluatingTriggers
+
+//----------------------------------------
 //  world.Tell
 //----------------------------------------
 static int L_Tell (lua_State *L)
@@ -7011,6 +7021,7 @@ static const struct luaL_Reg worldlib [] =
   {"SpellCheckDlg", L_SpellCheckDlg},
   {"StripANSI", L_StripANSI},
   {"StopSound", L_StopSound},
+  {"StopEvaluatingTriggers", L_StopEvaluatingTriggers},
   {"Tell", L_Tell},
   {"TextRectangle", L_TextRectangle},
   {"GetTrace", L_GetTrace},

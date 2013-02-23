@@ -26,6 +26,7 @@
 //    GetTriggerWildcard
 //    IsTrigger
 //    SetTriggerOption
+//    StopEvaluatingTriggers
 
 
 #define TO(arg) offsetof (CTrigger, arg), sizeof (((CTrigger *)NULL)->arg)
@@ -892,3 +893,9 @@ CTrigger * trigger_item;
     }
 	return vaResult;
 }  // end of CMUSHclientDoc::GetTriggerWildcard
+
+void CMUSHclientDoc::StopEvaluatingTriggers(BOOL AllPlugins) 
+  {
+  m_iStopTriggerEvaluation = AllPlugins ? eStopEvaluatingTriggersInAllPlugins : eStopEvaluatingTriggers;
+  }   // end of CMUSHclientDoc::StopEvaluatingTriggers
+

@@ -367,6 +367,7 @@ tInternalFunctionsTable InternalFunctionsTable [] = {
 { "SpellCheckCommand" ,          "( StartCol , EndCol )" } ,
 { "SpellCheckDlg" ,              "( Text )" } ,
 { "StopSound" ,                  "( Buffer )" } ,
+{ "StopEvaluatingTriggers" ,     "( AllPlugins )" } ,
 { "StripANSI" ,                  "( Message )" } ,
 { "Tell" ,                       "( Message )" } ,
 { "TextRectangle" ,              "( Left , Top , Right , Bottom , BorderOffset , BorderColour , BorderWidth , OutsideFillColour , OutsideFillStyle )" } ,

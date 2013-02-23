@@ -584,6 +584,8 @@ assemble the full text of the original line.
 //    timer t ("Process all triggers");
 
     m_CurrentPlugin = NULL;
+    m_iStopTriggerEvaluation = eKeepEvaluatingTriggers;
+
     // do main triggers
     ProcessOneTriggerSequence (strCurrentLine, 
                                StyledLine, 
@@ -599,10 +601,12 @@ assemble the full text of the original line.
 
     // do plugins
    for (PluginListIterator pit = m_PluginList.begin (); 
-         pit != m_PluginList.end (); 
+         pit != m_PluginList.end () &&
+         m_iStopTriggerEvaluation != eStopEvaluatingTriggersInAllPlugins;
          ++pit)
       {
       m_CurrentPlugin = *pit;
+      m_iStopTriggerEvaluation = eKeepEvaluatingTriggers;
       if (m_CurrentPlugin->m_bEnabled)
         ProcessOneTriggerSequence (strCurrentLine, 
                                    StyledLine, 
@@ -1400,6 +1404,10 @@ POSITION pos;
          triggerList.AddTail (trigger_item);
 
       if (!trigger_item->bKeepEvaluating) // exit loop if no more evaluation wanted
+        break;
+
+      // exit loop if this trigger cancelled evaluation
+      if (m_iStopTriggerEvaluation != eKeepEvaluatingTriggers)
         break;
 
       }   // end of successful evaluation

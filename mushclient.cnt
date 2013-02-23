@@ -510,6 +510,7 @@
 3 SpellCheckDlg=FNC_SpellCheckDlg
 3 StripANSI=FNC_StripANSI 
 3 StopSound=FNC_StopSound
+3 StopEvaluatingTriggers=FNT_StopEvaluatingTriggers
 3 Tell=FNC_Tell 
 3 TextRectangle=FNC_TextRectangle
 3 Trace=FNC_Trace 

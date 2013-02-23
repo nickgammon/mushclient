@@ -179,6 +179,15 @@ enum {
       eHotspotCallback = 11,        // miniwindow hotspot callback
   };
 
+
+// value for m_iStopTriggerEvaluation - should we stop trigger evaluation?
+
+enum {
+      eKeepEvaluatingTriggers,
+      eStopEvaluatingTriggers,
+      eStopEvaluatingTriggersInAllPlugins
+      };
+     
 // MCCP (Mud Client Compression Protocol) stuff
 
 // NB 85 is MCCP v1, 86 is MCCP v2
@@ -1339,6 +1348,12 @@ public:
 
   CString m_strWindowTitle;     // for SetTitle
   CString m_strMainWindowTitle; // for SetMainTitle
+
+
+  // see enum above: eKeepEvaluatingTriggers, eStopEvaluatingTriggers, 
+  //                 eStopEvaluatingTriggersInAllPlugins 
+
+  unsigned short m_iStopTriggerEvaluation;   
 
 #ifdef PANE
   // for pane windows
@@ -2766,6 +2781,7 @@ public:
 	afx_msg void Bookmark(long LineNumber, BOOL Set);
 	afx_msg void SetTitle(LPCTSTR Title);
 	afx_msg void SetMainTitle(LPCTSTR Title);
+	afx_msg void StopEvaluatingTriggers(BOOL AllPlugins);
 	afx_msg long GetNormalColour(short WhichColour);
 	afx_msg void SetNormalColour(short WhichColour, long nNewValue);
 	afx_msg long GetBoldColour(short WhichColour);
