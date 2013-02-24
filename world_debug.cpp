@@ -825,6 +825,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       Note (TFormat ("Disk file:  %s", (LPCTSTR) p->m_strSource));
       Note (TFormat ("Language:   %s", (LPCTSTR) p->m_strLanguage));
       Note (TFormat ("Enabled:    %s", SHOW_TRUE (p->m_bEnabled)));
+      Note (TFormat ("Sequence:   %d", p->m_iSequence));
 
       if (!p->m_strScript.IsEmpty ())
         {

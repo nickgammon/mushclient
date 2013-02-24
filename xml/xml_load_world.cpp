@@ -548,8 +548,17 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
 
         }  // end of having a script
 
-      // add to world plugins
-      m_PluginList.push_back (m_CurrentPlugin);
+       PluginListIterator pit;
+
+      // find where to insert it
+       for (pit = m_PluginList.begin (); 
+         pit != m_PluginList.end () &&
+         m_CurrentPlugin->m_iSequence >= (*pit)->m_iSequence;
+         ++pit)
+           { }
+
+      // add to world plugins (in sequence order)
+      m_PluginList.insert (pit, m_CurrentPlugin);
 
       // now call the OnInstall routine (once it is in the list)
 
@@ -2396,6 +2405,7 @@ void CMUSHclientDoc::Load_Plugin_XML (CXMLelement & parent)
       Get_XML_string (*node, "purpose", m_CurrentPlugin->m_strPurpose, false, true);
       Get_XML_date   (*node, "date_written", m_CurrentPlugin->m_tDateWritten, false);
       Get_XML_date   (*node, "date_modified", m_CurrentPlugin->m_tDateModified, false);
+      Get_XML_ushort (*node, "sequence", m_CurrentPlugin->m_iSequence, true, 0, 10000);
       Get_XML_boolean (*node, "save_state", m_CurrentPlugin->m_bSaveState, false);
       Get_XML_double (*node, "requires", m_CurrentPlugin->m_dRequiredVersion, false, 0.0, 1000.0);
       Get_XML_double (*node, "version", m_CurrentPlugin->m_dVersion, false, 0.0);

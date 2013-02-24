@@ -1,6 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
 //  CPlugin - these are world plugins
 
+#define DEFAULT_PLUGIN_SEQUENCE 5000
+
 // for storing dispatch IDs, and how many times each one is called
 // we need a copy constructor and operator =, so it can be moved 
 // around in the STL map it is stored in
@@ -82,6 +84,7 @@ class CPlugin :public CObject
   double  m_dRequiredVersion; // minimum MUSHclient version required
   CTime   m_tDateInstalled;   // date installed
   CString m_strCallingPluginID; // during a CallPlugin - the ID of the calling plugin
+  unsigned short m_iSequence; // evaluation order, lower is sooner
 
   CScriptEngine * m_ScriptEngine; // script engine for script, if any
 

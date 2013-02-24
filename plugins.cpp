@@ -166,6 +166,7 @@ CPlugin::CPlugin (CMUSHclientDoc * pDoc)
   m_iLoadOrder = 0;
   m_iScriptTimeTaken = 0;
   m_bSavingStateNow = false;
+  m_iSequence = DEFAULT_PLUGIN_SEQUENCE;
 
   } // end of constructor
 

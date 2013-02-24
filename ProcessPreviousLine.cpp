@@ -584,6 +584,7 @@ assemble the full text of the original line.
 //    timer t ("Process all triggers");
 
     m_CurrentPlugin = NULL;
+    // allow trigger evaluation for the moment
     m_iStopTriggerEvaluation = eKeepEvaluatingTriggers;
 
     // do main triggers
@@ -599,13 +600,14 @@ assemble the full text of the original line.
                                mapDeferredScripts, 
                                mapOneShotItems);
 
-    // do plugins
+   // do plugins (stop if one stops trigger evaluation, or if it was stopped by the main world triggers)
    for (PluginListIterator pit = m_PluginList.begin (); 
          pit != m_PluginList.end () &&
          m_iStopTriggerEvaluation != eStopEvaluatingTriggersInAllPlugins;
          ++pit)
       {
       m_CurrentPlugin = *pit;
+      // allow trigger evaluation for the moment (ie. the next plugin)
       m_iStopTriggerEvaluation = eKeepEvaluatingTriggers;
       if (m_CurrentPlugin->m_bEnabled)
         ProcessOneTriggerSequence (strCurrentLine, 
