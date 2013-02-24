@@ -161,6 +161,8 @@ VARIANT CMUSHclientDoc::GetPluginInfo(LPCTSTR PluginID, short InfoType)
       break;
       }
 
+    case 25: SetUpVariantShort (vaResult, pPlugin->m_iSequence); break;
+
     default:
       vaResult.vt = VT_NULL;
       break;
