@@ -340,25 +340,25 @@ ASSERT_VALID(pDoc);
 
     // find how big table has to be
 
-    int iLength = MultiByteToWideChar (CP_THREAD_ACP, 0, strText, -1, NULL, 0);
+    int iWideLength = MultiByteToWideChar (CP_THREAD_ACP, 0, strText, strText.GetLength (), NULL, 0);
 
     // vector to hold Unicode message
     vector<WCHAR> vMessage;
 
     // adjust size
-    vMessage.resize (iLength);
+    vMessage.resize (iWideLength);
 
     // do the conversion now
-    MultiByteToWideChar (CP_THREAD_ACP, 0, strText, -1, &vMessage [0], iLength);
+    MultiByteToWideChar (CP_THREAD_ACP, 0, strText, -1, &vMessage [0], iWideLength);
     
     // now convert back to UTF-8
 
-    iLength = WideCharToMultiByte (CP_UTF8, 0, (LPCWSTR) &vMessage [0], -1, NULL, 0, NULL, NULL);
+    int iUTFLength = WideCharToMultiByte (CP_UTF8, 0, (LPCWSTR) &vMessage [0], iWideLength, NULL, 0, NULL, NULL);
                     
     // get a string pointer
-    char * buf = strText.GetBuffer (iLength);
+    char * buf = strText.GetBuffer (iUTFLength);
     // convert into UTF-8
-    WideCharToMultiByte (CP_UTF8, 0, (LPCWSTR) &vMessage [0], -1, buf, iLength, NULL, NULL);
+    WideCharToMultiByte (CP_UTF8, 0, (LPCWSTR) &vMessage [0], iWideLength, buf, iUTFLength, NULL, NULL);
     strText.ReleaseBuffer ();
     }
 
