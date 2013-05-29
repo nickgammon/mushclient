@@ -79,3 +79,21 @@ to the start of the file.
 #pragma warning( disable : 4146)  // unary minus operator applied to unsigned type, result still unsigned
 
 to the start of the file.
+
+
+
+9. In pcre.h at lines 309 to 313 change:
+
+struct real_pcre;                 /* declaration; the definition is private  */
+typedef struct real_pcre pcre;
+
+struct real_pcre16;               /* declaration; the definition is private  */
+typedef struct real_pcre16 pcre16;
+
+to:
+
+struct real_pcre8_or_16;                 /* declaration; the definition is private  */
+typedef struct real_pcre8_or_16 pcre;
+
+struct real_pcre8_or_16;               /* declaration; the definition is private  */
+typedef struct real_pcre8_or_16 pcre16;
