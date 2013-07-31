@@ -317,95 +317,64 @@ void CSendView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
-  // <enter> not hit? Just press on and let the edit view handle it
-	if (nChar != VK_RETURN)
-    {
-     CEditView::OnChar(nChar, nRepCnt, nFlags);
-     return;
-    }
+	if (nChar == VK_RETURN)
+  	{
 
-  // here for <enter>
+    pDoc->m_iCurrentActionSource = eUserTyping;
 
+		CString strText;
+		GetEditCtrl().GetWindowText(strText);
 
-  pDoc->m_iCurrentActionSource = eUserTyping;
-
-	CString strText;
-	GetEditCtrl().GetWindowText(strText);
-
-
-  if (pDoc->m_bUTF_8)
-    {
-    
-    // first convert input text to wide characters
-
-    // find how big table has to be
-
-    int iWideLength = MultiByteToWideChar (CP_THREAD_ACP, 0, strText, strText.GetLength (), NULL, 0);
-
-    // vector to hold Unicode message
-    vector<WCHAR> vMessage;
-
-    // adjust size
-    vMessage.resize (iWideLength);
-
-    // do the conversion now
-    MultiByteToWideChar (CP_THREAD_ACP, 0, strText, -1, &vMessage [0], iWideLength);
-    
-    // now convert back to UTF-8
-
-    int iUTFLength = WideCharToMultiByte (CP_UTF8, 0, (LPCWSTR) &vMessage [0], iWideLength, NULL, 0, NULL, NULL);
-                    
-    // get a string pointer
-    char * buf = strText.GetBuffer (iUTFLength);
-    // convert into UTF-8
-    WideCharToMultiByte (CP_UTF8, 0, (LPCWSTR) &vMessage [0], iWideLength, buf, iUTFLength, NULL, NULL);
-    strText.ReleaseBuffer ();
-    }
-
-  // spell check on send?
-  if (pDoc->m_bSpellCheckOnSend)
-    {
-          // look for scripting prefix
-    if (pDoc->m_bEnableScripts &&            // providing scripting active
-        !pDoc->m_strScriptPrefix.IsEmpty () &&    // and we *have* a script prefix
-        strText.Left (pDoc->m_strScriptPrefix.GetLength ()) == pDoc->m_strScriptPrefix  // and it matches
-        )
-      { } // do nothing  (don't spell check script commands)
-    else
+    // spell check on send?
+    if (pDoc->m_bSpellCheckOnSend)
       {
-      Frame.SetStatusMessageNow (Translate ("Spell check ..."));
-      bool bOK = App.SpellCheck (this, &GetEditCtrl());
-      pDoc->ShowStatusLine ();
-      if (!bOK)
-        return;   // spell check was cancelled
-      // get the text again, as the spell check may have changed it
-		  GetEditCtrl().GetWindowText(strText);
+            // look for scripting prefix
+      if (pDoc->m_bEnableScripts &&            // providing scripting active
+          !pDoc->m_strScriptPrefix.IsEmpty () &&    // and we *have* a script prefix
+          strText.Left (pDoc->m_strScriptPrefix.GetLength ()) == pDoc->m_strScriptPrefix  // and it matches
+          )
+        { } // do nothing  (don't spell check script commands)
+      else
+        {
+        Frame.SetStatusMessageNow (Translate ("Spell check ..."));
+        bool bOK = App.SpellCheck (this, &GetEditCtrl());
+        pDoc->ShowStatusLine ();
+        if (!bOK)
+          return;   // spell check was cancelled
+        // get the text again, as the spell check may have changed it
+		    GetEditCtrl().GetWindowText(strText);
+        }
+
+      }   // end of spell check wanted
+
+    // tell each plugin what we have received
+    // the plugin callback OnPluginCommandEntered gets a chance to attack the entire command
+    pDoc->SendToAllPluginCallbacksRtn (ON_PLUGIN_COMMAND_ENTERED, strText);
+
+    // special string to indicate command should be discarded
+    if (strText == "\t")
+      {
+      if (!pDoc->m_bAutoRepeat)
+        SetCommand ("");
+      return;
       }
 
-    }   // end of spell check wanted
+    // special string to indicate command should be ignored
+    if (strText == "\r")
+      return;
 
-  // tell each plugin what we have received
-  // the plugin callback OnPluginCommandEntered gets a chance to attack the entire command
-  pDoc->SendToAllPluginCallbacksRtn (ON_PLUGIN_COMMAND_ENTERED, strText);
-
-  // special string to indicate command should be discarded
-  if (strText == "\t")
-    {
-    if (!pDoc->m_bAutoRepeat)
-      SetCommand ("");
-    return;
-    }
-
-  // special string to indicate command should be ignored
-  if (strText == "\r")
-    return;
-
-  SendCommand (strText, FALSE);
+    SendCommand (strText, FALSE);
 
 // cancel any previous message on the status line
-  pDoc->ShowStatusLine ();
+    pDoc->ShowStatusLine ();
 
-  pDoc->m_iCurrentActionSource = eUnknownActionSource;
+    pDoc->m_iCurrentActionSource = eUnknownActionSource;
+    return;
+
+  	} // end of return key
+
+	
+  CEditView::OnChar(nChar, nRepCnt, nFlags);
 
 }
 
