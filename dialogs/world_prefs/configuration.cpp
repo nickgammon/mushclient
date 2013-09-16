@@ -585,7 +585,7 @@ void CMUSHclientDoc:: LoadPrefsP16 (CPrefsP16 &page16)
                   page16.CompareObjects,
                   &m_TimersFindInfo,
                   XML_TIMERS,
-                  m_bTreeviewAliases);  // tree control
+                  m_bTreeviewTimers);  // tree control
 
 
   page16.m_iColumnCount      = CPrefsP16::eColumnCount;
