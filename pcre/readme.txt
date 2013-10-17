@@ -1,6 +1,6 @@
 PCRE built as follows:
 
-1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.32.zip
+1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.33.zip
 
 2. Unzip the file pcre-8.32.zip
 
@@ -69,6 +69,7 @@ to the start of each file.
 7. Edit	pcre_exec.c and add:
 
 #pragma warning( disable : 4127)  // conditional expression is constant
+#pragma warning( disable : 4701)  // local variable 'match_partial' may be used without having been initialized
 
 to the start of the file.	
 
@@ -81,7 +82,7 @@ to the start of the file.
 to the start of the file.
 
 
-9. In pcre.h at lines 309 to 313 change:
+9. In pcre.h at lines 320 to 323 change:
 
 struct real_pcre;                 /* declaration; the definition is private  */
 typedef struct real_pcre pcre;
