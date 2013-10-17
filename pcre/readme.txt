@@ -70,6 +70,8 @@ to the start of each file.
 
 #pragma warning( disable : 4127)  // conditional expression is constant
 #pragma warning( disable : 4701)  // local variable 'match_partial' may be used without having been initialized
+#pragma warning( disable : 4702)  // unreachable code
+
 
 to the start of the file.	
 
