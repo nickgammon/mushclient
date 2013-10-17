@@ -1,6 +1,6 @@
 zlib built as follows:
 
-1. Download recent version from http://www.zlib.net/
+1. Download recent version from http://zlib.net/zlib128.zip
 
 2. Unzip and untar the file
 
@@ -24,7 +24,6 @@ inflate.c
 inflate.h
 inftrees.c
 inftrees.h
-minigzip.c
 trees.c
 trees.h
 uncompr.c
