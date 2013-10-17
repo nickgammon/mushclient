@@ -177,6 +177,7 @@ CAliasList AliasList;
 
   int iDeletedCount = 0;
   int iDeletedNonTemporaryCount = 0;
+  set<CPlugin *> pluginsWithDeletions;
 
   for (OneShotItemMap::const_iterator one_shot_it = mapOneShotItems.begin ();
        one_shot_it != mapOneShotItems.end ();
@@ -205,11 +206,18 @@ CAliasList AliasList;
     // now delete its entry
     GetAliasMap ().RemoveKey (strAliasName);
 
-   }  // end of deleting one-shot items
+    pluginsWithDeletions.insert (m_CurrentPlugin);
+
+    }  // end of deleting one-shot items
 
    if (iDeletedCount > 0)
      {
-     SortAliases ();
+     // make sure we sort the correct plugin(s)
+     for ( set<CPlugin *>::iterator i = pluginsWithDeletions.begin (); i != pluginsWithDeletions.end (); i++)
+       {
+       m_CurrentPlugin = *i;
+       SortAliases ();
+       }
 
      if (iDeletedNonTemporaryCount > 0) // plugin mods don't really count
        SetModifiedFlag (TRUE);   // document has changed
