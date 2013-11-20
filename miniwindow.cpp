@@ -314,13 +314,23 @@ long  CMiniWindow::RectOp (short Action, long Left, long Top, long Right, long B
       
     case 6:       // Flood fill border
       {
+      // create brush for fill colour
+      CBrush br;
+      br.CreateSolidBrush (Colour2);
+      CBrush* oldBrush = dc.SelectObject(&br);
       dc.FloodFill (Left, Top, Colour1);
+      dc.SelectObject (oldBrush);
       break; 
       }
 
     case 7:       // Flood fill surface
       {
+      // create brush for fill colour
+      CBrush br;
+      br.CreateSolidBrush (Colour2);
+      CBrush* oldBrush = dc.SelectObject(&br);
       dc.ExtFloodFill (Left, Top, Colour1, FLOODFILLSURFACE);
+      dc.SelectObject (oldBrush);
       break; 
       }
 
