@@ -4113,15 +4113,11 @@ long CMiniWindow::Resize(long Width, long Height, long BackgroundColour)
   if (Width == m_iWidth && Height == m_iHeight)
     return eOK;
 
-  // remember new width and height
-
-  m_iWidth  = Width ;
-  m_iHeight = Height;
 
   CDC bmDC;   // for loading bitmaps into
   bmDC.CreateCompatibleDC(&dc);
 
-  // select original bitmap out of device context
+  // select original bitmap into device context
   dc.SelectObject(m_oldBitmap);
 
   // save old bitmap for copying from
@@ -4134,12 +4130,12 @@ long CMiniWindow::Resize(long Width, long Height, long BackgroundColour)
   m_Bitmap = new CBitmap;
 
   //  CreateBitmap with zero-dimensions creates a monochrome bitmap, so force to be at least 1x1
-  m_Bitmap->CreateBitmap (MAX (m_iWidth, 1), MAX (m_iHeight, 1), 1, GetDeviceCaps(dc, BITSPIXEL), NULL); 
+  m_Bitmap->CreateBitmap (MAX (Width, 1), MAX (Height, 1), 1, GetDeviceCaps(dc, BITSPIXEL), NULL); 
 	m_oldBitmap = dc.SelectObject (m_Bitmap);
 	dc.SetWindowOrg(0, 0);
 
   // fill with requested border colour
-  dc.FillSolidRect (0, 0, m_iWidth, m_iHeight, BackgroundColour);
+  dc.FillSolidRect (0, 0, Width, Height, BackgroundColour);
 
   // copy old contents back
   dc.BitBlt (0, 0, m_iWidth, m_iHeight, &bmDC, 0, 0, SRCCOPY);  
@@ -4148,6 +4144,11 @@ long CMiniWindow::Resize(long Width, long Height, long BackgroundColour)
   // done with previous bitmap from this miniwindow
   previousWindowBitmap->DeleteObject ();
   delete previousWindowBitmap;
+
+  // remember new width and height
+
+  m_iWidth  = Width ;
+  m_iHeight = Height;
 
   return eOK;
 
