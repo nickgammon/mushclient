@@ -616,7 +616,10 @@ void CMUSHclientDoc::LoadError (const char * sType, const char * sMessage, UINT 
                       sType,  // type of thing (eg, trigger)
                       ENDLINE);
 
-  ColourNote (SCRIPTERRORCONTEXTFORECOLOUR, SCRIPTERRORBACKCOLOUR, str);
+  if (m_pLinePositions == NULL)
+    ::AfxMessageBox (str);
+  else
+    ColourNote (SCRIPTERRORCONTEXTFORECOLOUR, SCRIPTERRORBACKCOLOUR, str);
 
   iErrorCount++;
   }   // end of CMUSHclientDoc::LoadError
