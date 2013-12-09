@@ -5770,6 +5770,7 @@ void CMUSHclientDoc::OnFileSave()
 {
 int iCount;
 CString strDirectory;
+CString strOriginalTitle = m_strWindowTitle;
 
   // find length of current directory
   iCount = GetCurrentDirectory (0, NULL);	
@@ -5782,6 +5783,8 @@ CString strDirectory;
   CDocument::OnFileSave ();
   // change back to current directory
   SetCurrentDirectory (strDirectory);
+  // put title back
+  SetTitle (strOriginalTitle);
 }
 
 void CMUSHclientDoc::OnUpdateFileSave(CCmdUI* pCmdUI) 
@@ -5796,6 +5799,7 @@ void CMUSHclientDoc::OnFileSaveAs()
 {
 int iCount;
 CString strDirectory;
+CString strOriginalTitle = m_strWindowTitle;
 
   // find length of current directory
   iCount = GetCurrentDirectory (0, NULL);	
@@ -5808,7 +5812,8 @@ CString strDirectory;
   CDocument::OnFileSaveAs ();
   // change back to current directory
   SetCurrentDirectory (strDirectory);
-	
+  // put title back
+  SetTitle (strOriginalTitle);
 }
 
 void CMUSHclientDoc::OnUpdateFileSaveAs(CCmdUI* pCmdUI) 
