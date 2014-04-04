@@ -390,10 +390,14 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
                 
     case TELOPT_NAWS:
       // option off - must be server initiated
-      if (!m_bNAWS)
+      if (m_bNAWS)
+        {
         Send_IAC_WILL (c);
-      m_bNAWS_wanted = true;
-      SendWindowSizes (m_nWrapColumn);
+        m_bNAWS_wanted = true;
+        SendWindowSizes (m_nWrapColumn);
+        }
+      else
+        Send_IAC_WONT (c);
       break;
 
     case TELOPT_MXP:
