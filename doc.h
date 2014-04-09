@@ -899,6 +899,10 @@ public:
   unsigned int m_iToolTipVisibleTime;         // Time tooltip stays visible (milliseconds)
   unsigned int m_iToolTipStartTime;           // Time before tooltip appears (milliseconds)
 
+
+  // version 4.92
+  unsigned short m_bLogScriptErrors;          // write scripting error messages to log file?
+
   // end of stuff saved to disk **************************************************************
 
   // stuff from pre version 11, read from disk but not saved
@@ -1914,6 +1918,7 @@ public:
                             );
 
   void ShowErrorLines (const int iLine);  // show script file around the error point
+  void WriteErrorLines (const int iLine, FILE * f);  // write script file around the error point to file f
 
   void ShowStatusLine (const bool bNow = false); // update the status line
 

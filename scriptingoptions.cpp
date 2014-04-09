@@ -135,6 +135,7 @@ tConfigurationNumericOption OptionsTable [] = {
 {"log_notes",                           false, O(m_bLogNotes)},
 {"log_output",                          true,  O(m_bLogOutput)},
 {"log_raw",                             false, O(m_bLogRaw)},           
+{"log_script_errors",                   false, O(m_bLogScriptErrors)},           
 {"lower_case_tab_completion",           false, O(m_bLowerCaseTabCompletion)},           
 {"map_failure_regexp",                  false, O(m_bMapFailureRegexp)},                 
 {"max_output_lines",                    5000,  O(m_maxlines), 200, 500000, OPT_FIX_OUTPUT_BUFFER},            

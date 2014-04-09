@@ -532,5 +532,45 @@ vector<string> v;
 
     }  // end of line in range
 
-  }
+  }   // end of CMUSHclientDoc::ShowErrorLines 
+
+
+void CMUSHclientDoc::WriteErrorLines (const int iLine, FILE * f)  // show script file around the error point
+  {
+
+string sScript;
+vector<string> v;
+
+  if (m_CurrentPlugin)
+    sScript = m_CurrentPlugin->m_strScript;
+  else 
+    sScript = m_strScript;
+
+  StringToVector (sScript, v, "\n", false);  // break script into lines so we can easily show each one
+
+  // provided wanted line is in the table
+  if (!sScript.empty () && v.size () >= iLine)
+    {
+    fputs (Translate ("Error context in script:\n"), f);
+
+    int iStart = iLine - 4;   // start 4 lines back
+    if (iStart < 1) 
+      iStart = 1;             // can't be lower than first line
+
+    int iEnd = iLine + 4;     // end 4 lines onwards
+
+    if (iEnd > v.size ())
+      iEnd = v.size ();       // or at last line in script
+
+    // show that range, marking error line with an asterisk
+    for (int i = iStart; i <= iEnd; i++)
+       fputs (CFormat ("%4i%s: %s\n", 
+              i,   // line number
+              i == iLine ? "*" : " ",   // mark current line
+              (v [i - 1]).c_str ()),   // vector is zero-relative
+              f);
+
+    }  // end of line in range
+
+  }   // end of CMUSHclientDoc::WriteErrorLines 
 

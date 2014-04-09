@@ -372,18 +372,36 @@ void LuaError (lua_State *L,
       dlg.m_strRaisedBy = "World: " + pDoc->m_mush_name;
     }
 
+  // work out the line number where the error is
+  bool bImmediate = true;
+  int nLine = 0;
+
+  if (dlg.m_strDescription.Left (18) == "[string \"Plugin\"]:")
+    {
+    bImmediate = false;
+    nLine = atoi (dlg.m_strDescription.Mid (18));
+    }
+  else if (dlg.m_strDescription.Left (23) == "[string \"Script file\"]:")
+    {
+    bImmediate = false;
+    nLine = atoi (dlg.m_strDescription.Mid (23));
+    }
+
+  // if no document, or errors to the output window are not wanted, display the dialog box
   if (!pDoc || !pDoc->m_bScriptErrorsToOutputWindow)
     {
     if (pDoc)
       dlg.m_bHaveDoc = true;
     dlg.DoModal ();
+
+    // do they want to change from the dialog box to the output window?
     if (pDoc && dlg.m_bUseOutputWindow)
       {
       pDoc->m_bScriptErrorsToOutputWindow = true;
       pDoc->SetModifiedFlag (TRUE);
-      }
+      }  // end of future errors wanted in output window
 
-    }
+    }   // end of dialog box wanted
   else
     {
     pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, strEvent);
@@ -391,26 +409,48 @@ void LuaError (lua_State *L,
     pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, dlg.m_strCalledBy);
     pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, dlg.m_strDescription);
 
-// show bad lines?
-
-    bool bImmediate = true;
-    int nLine = 0;
-
-    if (dlg.m_strDescription.Left (18) == "[string \"Plugin\"]:")
-      {
-      bImmediate = false;
-      nLine = atoi (dlg.m_strDescription.Mid (18));
-      }
-    else if (dlg.m_strDescription.Left (23) == "[string \"Script file\"]:")
-      {
-      bImmediate = false;
-      nLine = atoi (dlg.m_strDescription.Mid (23));
-      }
-
+    // show bad lines?
     if (!bImmediate)
       pDoc->ShowErrorLines (nLine);
     
     }  // end of showing in output window
+
+
+  // if option "log_script_errors" is active, append to the error log file
+  if (pDoc && pDoc->m_bLogScriptErrors)
+    {
+    string fileName = App.m_strDefaultLogFileDirectory;
+    fileName += "script_error_log.txt";
+
+    FILE * errorLogFile = fopen (fileName.c_str(), "a+");
+    if (!errorLogFile)
+      {
+      pDoc->ColourTell (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, "Cannot open error log file: ");
+      pDoc->ColourNote (SCRIPTERRORFORECOLOUR, SCRIPTERRORBACKCOLOUR, fileName.c_str());
+      }
+    else
+      {
+      CTime timeNow = CTime::GetCurrentTime();
+
+      CString strConnected = timeNow.Format (
+          TranslateTime ("\n\n--- Scripting error on %A, %B %d, %Y, %#I:%M %p ---\n\n"));
+      fputs ((LPCTSTR) strConnected, errorLogFile); 
+      fputs (strEvent, errorLogFile); 
+      fputs ("\n", errorLogFile);
+      fputs (dlg.m_strRaisedBy, errorLogFile); 
+      fputs ("\n", errorLogFile);
+      fputs (dlg.m_strCalledBy, errorLogFile); 
+      fputs ("\n", errorLogFile);
+      fputs (dlg.m_strDescription, errorLogFile); 
+      fputs ("\n", errorLogFile);
+      // show bad lines?
+      if (!bImmediate)
+        pDoc->WriteErrorLines (nLine, errorLogFile);
+      fclose (errorLogFile);
+      }   // end of file opened OK
+      
+
+    } // end of have a document, and the error file is wanted
 
   }   // end of LuaError
 
