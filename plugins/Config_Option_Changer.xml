@@ -67,6 +67,7 @@ boolean_options = {
   do_not_show_outstanding_lines         = { desc = 'Show outstanding lines count?' , invert = true  },
   do_not_translate_iac_to_iac_iac       = { desc = 'Translate IAC to IAC IAC?' , invert = true  },
   log_script_errors                     = { desc = 'Log scripting errors?' },
+  omit_date_from_save_files             = { desc = 'Omit the date from world file saves?' },
   play_sounds_in_background             = { desc = 'Play sounds in background?' },
   send_keep_alives                      = { desc = 'Send keep-alives?' },
   wrap_input                            = { desc = 'Wrap command window at output wrap column' }, 
