@@ -21,3 +21,4 @@ pngwio.c
 pngwrite.c
 pngwtran.c
 pngwutil.c
+version 1*

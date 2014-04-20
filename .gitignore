@@ -69,4 +69,9 @@ ipch
 # Help database (generated)
 #
 help.db
+documentation_fixed.sql
 
+#
+# TinyGL stuff
+#
+TinyGL*
