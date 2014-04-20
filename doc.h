@@ -902,6 +902,7 @@ public:
 
   // version 4.92
   unsigned short m_bLogScriptErrors;          // write scripting error messages to log file?
+  unsigned short m_bOmitSavedDateFromSaveFiles; // if set, do not write the date saved to save files
 
   // end of stuff saved to disk **************************************************************
 

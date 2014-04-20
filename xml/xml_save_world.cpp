@@ -29,7 +29,8 @@ void CMUSHclientDoc::Save_Version_And_Date_XML (CArchive& ar)
 
   Save_XML_string (ar, "muclient_version", MUSHCLIENT_VERSION);
   Save_XML_number (ar, "world_file_version", VERSION);
-  Save_XML_date   (ar, "date_saved", CTime::GetCurrentTime());
+  if (!m_bOmitSavedDateFromSaveFiles)
+    Save_XML_date   (ar, "date_saved", CTime::GetCurrentTime());
 
   } // end of CMUSHclientDoc::Save_Version_And_Date_XML
 
@@ -43,10 +44,13 @@ void CMUSHclientDoc::Save_World_XML (CArchive& ar,
   // document type is world
   ar.WriteString ("<!DOCTYPE muclient>" NL);
 
-  // when did we save it?
-  ar.WriteString (CFormat ("<!-- Saved on %s -->" NL, 
-        FixHTMLString (CTime::GetCurrentTime().Format 
-        (TranslateTime ("%A, %B %d, %Y, %#I:%M %p")))));
+  if (!m_bOmitSavedDateFromSaveFiles)
+    {
+    // when did we save it?
+    ar.WriteString (CFormat ("<!-- Saved on %s -->" NL, 
+          FixHTMLString (CTime::GetCurrentTime().Format 
+          (TranslateTime ("%A, %B %d, %Y, %#I:%M %p")))));
+    }
 
   // which version was it?
   ar.WriteString (CFormat 
