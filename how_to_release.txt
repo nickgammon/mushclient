@@ -26,15 +26,14 @@ HELP GENERATION
 
 GENERATE DOCUMENTATION SQL FROM DATABASE
 
-1. On Ubuntu server, run this:
+1. On Linux server, run this:
+    cd ~/from_fs
     . dumpdoc.sh
-
-   (Must be done on Ubuntu server, to make documentation.sql available for install step below)
    
        
 UPLOAD AND INSTALL DOCUMENTATION
 
-1. On Ubuntu server, upload:
+1. On Linux server, upload:
 
     sftp username@gammon.com.au
     cd sql

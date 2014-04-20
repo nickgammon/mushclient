@@ -43,7 +43,7 @@ function FixupEscapeSequences (s)
 return s
 end -- function FixupEscapeSequences
  
-fi = assert (io.open ("\\\\10.0.0.222\\general\\documentation.sql", "r"))
+fi = assert (io.open ("\\\\10.0.0.2\\general\\documentation.sql", "r"))
 
 fo = assert (io.open ("documentation_fixed.sql", "w"))
 
@@ -65,8 +65,8 @@ while line do
   --line = string.gsub (line, "\\'", "''")
   
   -- get rid of enum
-  line = string.gsub (line, "  `type_of_object` enum%('Method','Property'%) NOT NULL default 'Method',",
-    "  `type_of_object` varchar(10) NOT NULL default 'Method',")
+  line = string.gsub (line, "  `type_of_object` enum%('Method','Property'%) NOT NULL DEFAULT 'Method',",
+    "  `type_of_object` varchar(10) NOT NULL DEFAULT 'Method',")
 
    -- get rid of comma here   
   line = string.gsub (line, "  UNIQUE  %(`doc_name`,`xref_name`%),",
