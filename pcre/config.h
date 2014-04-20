@@ -188,14 +188,20 @@ them both to 0; an emulation function will be used. */
 #define PACKAGE_NAME "PCRE"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "PCRE 8.32"
+#define PACKAGE_STRING "PCRE 8.35"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "pcre"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "8.32"
+#define PACKAGE_VERSION "8.35"
 
+/* The value of PARENS_NEST_LIMIT specifies the maximum depth of nested
+   parentheses (of any kind) in a pattern. This limits the amount of system
+   stack that is used while compiling a pattern. */
+#ifndef PARENS_NEST_LIMIT
+#define PARENS_NEST_LIMIT 250
+#endif
 
 /* If you are compiling for a system other than a Unix-like system or
    Win32, and it needs some magic to be inserted before the definition
