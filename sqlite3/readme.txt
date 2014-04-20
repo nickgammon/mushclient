@@ -1,6 +1,6 @@
 Sqlite3 built as follows:
 
-1. Download recent version from http://www.sqlite.org/2013/sqlite-amalgamation-3080002.zip
+1. Download recent version from https://sqlite.org/2014/sqlite-amalgamation-3080403.zip
 
 2. Unzip the file
 
@@ -28,6 +28,7 @@ sqlite3ext.h
 # pragma warning (disable : 4232)  // address of dllimport 'x' is not static, identity not guaranteed
 # pragma warning (disable : 4244)  // conversion from 'int ' to 'char ', possible loss of data
 # pragma warning (disable : 4305)  // truncation from 'int ' to 'short '
+# pragma warning (disable : 4550)  // expression evaluates to a function which is missing an argument list 
 # pragma warning (disable : 4701)  // 'xxx' may be used without having been initialized
 # pragma warning (disable : 4702)  // unreachable code
 # pragma warning (disable : 4706)  // assignment within conditional expression
