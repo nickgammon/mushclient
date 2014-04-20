@@ -313,6 +313,16 @@ BOOL CMUSHclientApp::InitInstance()
     }
 
 
+  if (sqlite3_db_readonly (db, "main"))
+    {
+    ::AfxMessageBox ((LPCTSTR) CFormat ("The global preferences database at: <%s> is read-only."
+         "\r\nPlease ensure that you have write-access to that file.", 
+        m_PreferencesDatabaseName.c_str () 
+        ));
+    sqlite3_close(db);
+		return FALSE;
+    }
+
 #define CURRENT_DB_VERSION 1
 
   string db_version;
