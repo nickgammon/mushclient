@@ -90,7 +90,6 @@ long length;
         p++;    // skip the [
 
         while (*p != 0 && 
-               *p != ';' && 
                *p != 'm')
           p++;
 
