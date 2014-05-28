@@ -2118,7 +2118,7 @@ CString strLine (lpszText, size);
 
     // do not display UTF-8 characters until they have completely arrived
     // check if high-order bit is set
-    if (m_bUTF_8 && (c & 0x80) && c != IAC)
+    if (!(flags & NOTE_OR_COMMAND) && m_bUTF_8 && (c & 0x80) && (c != IAC || m_phase == HAVE_IAC))
       {
       m_UTF8Sequence [0] = c;
       m_UTF8Sequence [1] = 0;  // null terminator
