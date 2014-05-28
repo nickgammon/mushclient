@@ -1964,6 +1964,7 @@ CString strLine (lpszText, size);
       switch (m_phase)
         {
         case HAVE_ESC:            Phase_ESC (c); continue;
+        case HAVE_UTF8_CHARACTER: Phase_UTF8 (c); continue;
 
         case HAVE_FOREGROUND_256_START:    // these 4 are similar to Phase_ANSI
         case HAVE_FOREGROUND_256_FINISH:
@@ -2107,9 +2108,32 @@ CString strLine (lpszText, size);
         continue;   // back to main loop
         } // end of Pueblo startup
 
-// here when phase is none
+// here when phase is NONE
 
-    cOneCharacterLine [0] = c;    // in case we need to use it
+    // do not display UTF-8 characters until they have completely arrived
+    // check if high-order bit is set
+    if (m_bUTF_8 && (c & 0x80))
+      {
+      m_UTF8Sequence [0] = c;
+      m_UTF8Sequence [1] = 0;  // null terminator
+      m_phase = HAVE_UTF8_CHARACTER;
+
+      // 0x00000080 - 0x000007FF    110 xxxxx 10 xxxxxx
+      if ((c & 0xE0) == 0xC0)
+        m_iUTF8BytesLeft = 1;
+      // 0x00000800 - 0x0000FFFF    1110 xxxx 10 xxxxxx 10 xxxxxx
+      else if ((c & 0xF0) == 0xE0)
+        m_iUTF8BytesLeft = 2;
+      // 0x00010000 - 0x001FFFFF    11110 xxx 10 xxxxxx 10 xxxxxx 10 xxxxxx
+      else if ((c & 0xF8) == 0xF0)
+        m_iUTF8BytesLeft = 3;
+      else
+      // some bogus byte with the high-order bit set
+        OutputBadUTF8characters ();
+      continue;  // we are done for now with this byte
+      }  // end of high-order bit set with UTF-8 enabled
+
+    cOneCharacterLine [0] = c;    // in case we need to use it as a string
 
     switch (c)
       {

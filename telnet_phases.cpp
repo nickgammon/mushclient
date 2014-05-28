@@ -803,3 +803,64 @@ void CMUSHclientDoc::Phase_COMPRESS_WILL (const unsigned char c)
   m_phase = NONE;
   } // end of Phase_COMPRESS_WILL
 
+// in UTF-8 mode, if we get a "bad" UTF-8 character we assume it is standard ANSI
+// and convert it from ANSI into Unicode, and then into UTF-8 and output that instead
+void CMUSHclientDoc::OutputBadUTF8characters (void)
+  {
+  for (int i = 0; m_UTF8Sequence [i]; i++)
+    {
+    // convert ANSI to Unicode:
+    WCHAR sUnicode [1];
+    MultiByteToWideChar (CP_THREAD_ACP, MB_PRECOMPOSED, (const char *) &m_UTF8Sequence [i], 1, sUnicode, 1); 
+    // now convert Unicode to UTF8
+    char sOutput [5];
+    memset (sOutput, 0, sizeof sOutput);  // ensure trailing null
+    WideCharToMultiByte (CP_UTF8, 0, sUnicode, 1, sOutput, sizeof sOutput, NULL, NULL);
+    AddToLine (sOutput, 0); 
+    m_cLastChar = m_UTF8Sequence [i];
+    }
+
+  m_phase = NONE;
+  }  // end of CMUSHclientDoc::OutputBadUTF8characters
+
+// test data: testing \C5\87\C4\A8\C4\86\C4\B6 Gammon and now: \C6 <---
+
+// here when getting second or subsequent bytes of a UTF8 character
+void CMUSHclientDoc::Phase_UTF8 (const unsigned char c)
+  {
+
+  // append to our UTF8 sequence
+  int i = 0;
+  while (m_UTF8Sequence [i])
+    i++;
+  m_UTF8Sequence [i] = c;
+  m_UTF8Sequence [i + 1] = 0;  // null terminator
+
+  if ((c & 0xC0) != 0x80)
+    {
+    OutputBadUTF8characters ();
+    return;
+    }
+
+  // we are waiting for less of them
+  m_iUTF8BytesLeft--;
+
+  // more to go
+  if (m_iUTF8BytesLeft > 0)
+    return;
+
+  // check the sequence
+
+  int erroroffset;
+  int iBad = _pcre_valid_utf ((const unsigned char *) m_UTF8Sequence, strlen ((const char *) m_UTF8Sequence), &erroroffset);
+  if (iBad > 0)
+    {
+    OutputBadUTF8characters ();
+    return;
+    }
+
+  // valid UTF8 sequence, add to line
+  AddToLine ((const char *) m_UTF8Sequence, 0);
+  m_phase = NONE;
+
+  }  // end of CMUSHclientDoc::Phase_UTF8

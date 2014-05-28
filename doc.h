@@ -96,6 +96,9 @@ enum { NONE,          // normal text
        HAVE_BACKGROUND_256_START,   // received ESC[48;
        HAVE_BACKGROUND_256_FINISH,  // received ESC[48;5;
 
+       // utf-8 modes
+       HAVE_UTF8_CHARACTER,         // received 110 xxxxx, 1110 xxxx, or 11110 xxx
+
 
        // mxp modes
        HAVE_MXP_ELEMENT, // collecting element, eg. < xxxxx >. Starts on <, stops on >
@@ -972,6 +975,9 @@ public:
   long m_iUTF8ErrorCount;               // count of lines with bad UTF8
   long m_iOutputWindowRedrawCount;      // count of times output window redrawn
 
+  unsigned char m_UTF8Sequence [5];     // we collect up to 4 UTF8 bytes here and a null-terminator
+  int  m_iUTF8BytesLeft;                // how many UTF8 bytes to go
+
   long m_iTriggersEvaluatedCount;    // how many triggers we evaluated
   long m_iTriggersMatchedCount;      // how many triggers matched
   long m_iAliasesEvaluatedCount;     // how many aliases we evaluated 
@@ -1383,7 +1389,8 @@ public:
 	void DisplayMsg(LPCTSTR lpszText, int size, const int flags);
   void AddToLine (LPCTSTR lpszText, const int flags);
   void StartNewLine_KeepPreviousStyle (const int flags);
-  void Phase_ESC (const unsigned char c);            
+  void Phase_ESC (const unsigned char c);  
+  void Phase_UTF8 (const unsigned char c);  
   void Phase_ANSI (const unsigned char c);           
   void Phase_IAC (unsigned char & c);            
   void Phase_WILL (const unsigned char c);           
@@ -1545,6 +1552,7 @@ public:
   void WriteToLog (const CString & strText);
   void LogLineInHTMLcolour (POSITION startpos);
   void LogCommand (const char * text);
+  void OutputBadUTF8characters (void);
 
   BOOL OpenSession (void);
   void SetUpOutputWindow (void);
