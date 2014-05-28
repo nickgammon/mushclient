@@ -63,7 +63,6 @@ int i;
   m_nBytesIn = 0;
   m_nBytesOut = 0;
   m_bTabCompleteFunctions = true;
-  m_hSpecialFontHandle = 0;
 
   m_iTriggersEvaluatedCount = 0; 
   m_iTriggersMatchedCount = 0;   
@@ -625,7 +624,7 @@ int i;
     DestroyAcceleratorTable (m_accelerator);
 
   // if they loaded a special font, get rid of it
-  RemoveSpecialFont ();
+  RemoveSpecialFonts ();
 
 #ifdef PANE
 

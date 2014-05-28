@@ -523,7 +523,16 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case   73: SetUpVariantString (vaResult, __DATE__ " " __TIME__); break;
     case   74: SetUpVariantString (vaResult, ExtractDirectory (App.m_strMUSHclientFileName) + "sounds\\"); break;
     case   75: SetUpVariantString (vaResult, m_IAC_subnegotiation_data.c_str ()); break;
-    case   76: SetUpVariantString (vaResult, m_strSpecialFontName); break;
+    case   76: 
+        {
+        // for backwards compatibility, return the first special font
+        ci_set::const_iterator iter = m_strSpecialFontName.begin ();
+        if (iter !=  m_strSpecialFontName.end ())
+          SetUpVariantString (vaResult, iter->c_str ()); 
+        else
+          SetUpVariantString (vaResult, ""); 
+        break;
+        }
     case   77: SetUpVariantString (vaResult, os_version.szCSDVersion);  break;
 
     case   78: SetUpVariantString (vaResult, m_strForegroundImageName); break;

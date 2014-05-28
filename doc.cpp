@@ -7659,12 +7659,12 @@ long CMUSHclientDoc::AddSpecialFont (LPCTSTR PathName)
 		return eNoSuchCommand;
 
 
-  // same one again - just leave well enough alone
-  if (m_strSpecialFontName == PathName)
+  ci_set::const_iterator iter = m_strSpecialFontName.find (PathName);
+
+  // same one as earlier - just leave well enough alone
+  if (iter != m_strSpecialFontName.end ())
     return eOK;
 
-  // get rid of old one, if any
-  RemoveSpecialFont ();
 
 
   void * pbFont = NULL;
@@ -7678,25 +7678,26 @@ long CMUSHclientDoc::AddSpecialFont (LPCTSTR PathName)
   if (cFonts == 0) 
     return eFileNotFound;
 
-  m_strSpecialFontName = PathName;  // remember, so we can remove it
+  m_strSpecialFontName.insert (PathName);  // remember, so we can remove it
 	return eOK;
   }  // end of  CMUSHclientDoc::AddSpecialFont 
 
-void CMUSHclientDoc::RemoveSpecialFont (void) 
+void CMUSHclientDoc::RemoveSpecialFonts (void) 
   { 
-  if (m_strSpecialFontName.IsEmpty ())
-    return;
-
   if (pRemoveFontResourceEx == NULL)
     return;
 
-  void * pbFont = NULL;
+  for (ci_set::const_iterator iter = m_strSpecialFontName.begin (); iter !=  m_strSpecialFontName.end (); iter++)
+    {
 
-  pRemoveFontResourceEx (m_strSpecialFontName,  // original file name
-                         FR_PRIVATE,           // flags 
-                         pbFont);              // Reserved. Must be 0.
-    
-  m_strSpecialFontName.Empty ();
+    void * pbFont = NULL;
+
+    pRemoveFontResourceEx (iter->c_str (),  // original file name
+                           FR_PRIVATE,           // flags 
+                           pbFont);              // Reserved. Must be 0.
+    }
+
+  m_strSpecialFontName.clear ();
   }
 
 
