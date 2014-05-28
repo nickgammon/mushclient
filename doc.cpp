@@ -1914,6 +1914,12 @@ CString strLine (lpszText, size);
 
     c = *p;
 
+    // bail out of UTF-8 collection if a non-high order bit is found in the incoming stream
+    if (!(flags & NOTE_OR_COMMAND) && 
+        m_phase == HAVE_UTF8_CHARACTER && 
+        (c & 0x80) == 0)
+        OutputBadUTF8characters ();
+
     // note that CR, LF, ESC and IAC can appear inside telnet negotiation now (version 4.48)
     if (m_phase != HAVE_SB &&
         m_phase != HAVE_SUBNEGOTIATION && 
