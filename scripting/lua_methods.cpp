@@ -29,11 +29,17 @@ const char mushclient_typename[] = "mushclient.world";
 
    This lets you direct commands to other worlds, like this:
 
-   other = world.GetWorld ("my other world")
+     other = GetWorld ("my other world")   -- get userdata based on world name
 
-   world.Note (other, "hello there")
-   world.AddMapperComment (other, "this is a comment")
-   
+     Note (other, "hello there")  -- direct output to "other" world
+     other:Note ("hello there")   -- alternative method
+     AddMapperComment (other, "this is a comment")
+     other:AddMapperComment ("this is a comment")      -- alternative method
+
+   A side-effect of this is that you can't just print another world userdatum like this:
+
+     print (other)   -- prints a blank line in the other world
+     print (tostring (other))  -- prints "world" in the current world
   ------------------------------------------------------------------------ */
 
 // same as luaL_checkudata but just returns NULL if not correct type
