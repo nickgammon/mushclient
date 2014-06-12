@@ -1820,14 +1820,27 @@ long pixel;
 // calculate which column we must be at
 
   for (col = 0, pixel = pLine->m_iPreambleOffset;
-      pixel < point.x && col <= pLine->len; 
-      col++)
+      pixel < point.x && col <= pLine->len; col++)
         {
         lastx = pixel;
         pixel = calculate_width (line, col, pDoc, dc) + pDoc->m_iPixelOffset + pLine->m_iPreambleOffset;
+
+        // for a UTF-8 character, bypass the whole character not just one byte
+        if (pDoc->m_bUTF_8)
+          {
+          int c = pLine->text [col];
+          if (c >= 128)
+            col += _pcre_utf8_table4 [c & 0x3f];   // number of additional bytes
+          }
+        
+
         }
 
   col--;    // columns are zero-relative
+  // don't stop half-way through a UTF-8 character
+  if (pDoc->m_bUTF_8)
+    while (col && (pLine->text [col] & 0xC0) == 0x80)
+      col--;
 
 // if we are 50% through this character, take the next one, otherwise take the previous one
 
@@ -1836,7 +1849,13 @@ long pixel;
     lastx += (pixel - lastx) / 2;
 
     if (point.x < lastx)
+      {
       col--;
+      // don't stop half-way through a UTF-8 character
+      if (pDoc->m_bUTF_8)
+        while (col && (pLine->text [col] & 0xC0) == 0x80)
+          col--;
+      }
     }
 
 // make sure column is reasonable
