@@ -1544,6 +1544,9 @@ void CMUSHclientDoc:: SavePrefsP13 (CPrefsP13 &page13)
 void CMUSHclientDoc:: SavePrefsP14 (CPrefsP14 &page14)  
   {  
   DelayDebugMsg ("Saving", 14);
+
+  bool utf8Changed = m_bUTF_8 != page14.m_bUTF_8;
+
   m_font_height     = page14.m_font_height;  
   m_font_name       = page14.m_font_name;    
   m_font_weight     = page14.m_font_weight;
@@ -1617,6 +1620,25 @@ void CMUSHclientDoc:: SavePrefsP14 (CPrefsP14 &page14)
   m_nWrapColumn     = page14.m_nWrapColumn;
 
   FixInputWrap();
+
+  // changing to or from UTF-8 will alter the way trigger and alias regular expressions
+  // need to be compiled so we recompile all of them
+  if (utf8Changed)
+    {
+    m_CurrentPlugin = NULL;
+    RecompileRegularExpressions ();     // do main world
+
+   // do plugins 
+   for (PluginListIterator pit = m_PluginList.begin (); 
+         pit != m_PluginList.end ();
+         ++pit)
+      {
+      m_CurrentPlugin = *pit;
+      RecompileRegularExpressions ();   // do this plugin
+      } // end of doing each plugin
+
+    m_CurrentPlugin = NULL; // not in a plugin any more
+    }  // end of  utf8Changed
 
   }   // end of CMUSHclientDoc::SavePrefsP14
 
@@ -2351,10 +2373,103 @@ Frame.DelayDebugStatus ("World config - loading pages");
   Frame.SetStatusNormal ();
 
   return true;    // did it OK
-}
+} // end of CMUSHclientDoc::GamePreferences 
 
 
 void CMUSHclientDoc::OnGamePreferences() 
   {
   GamePreferences (-1);  // use last page, whatever it was
-  }
+  }  // end of CMUSHclientDoc::OnGamePreferences
+
+void CMUSHclientDoc::RecompileRegularExpressions ()
+  {
+    int iTriggerErrors = 0;
+#if ALIASES_USE_UTF8
+    int iAliasErrors = 0;
+#endif // ALIASES_USE_UTF8
+
+    POSITION pos;
+    CString strName;
+    CString strRegexp; 
+
+    for (pos = GetTriggerMap ().GetStartPosition(); pos;)
+      {
+      CTrigger * pTrigger;
+      GetTriggerMap ().GetNextAssoc (pos, strName, pTrigger);
+
+      if (pTrigger->regexp)
+        {
+        delete pTrigger->regexp;    // get rid of old one
+        if (pTrigger->bRegexp)
+          strRegexp = pTrigger->trigger;
+        else
+          strRegexp = ConvertToRegularExpression (pTrigger->trigger);
+        }
+
+        // compile regular expression
+        try 
+          {
+          pTrigger->regexp = regcomp (strRegexp, (pTrigger->ignore_case ? PCRE_CASELESS : 0) |
+                                                 (pTrigger->bMultiLine  ? PCRE_MULTILINE : 0) |
+                                                 (m_bUTF_8 ? PCRE_UTF8 : 0)
+                                                 );
+          }   // end of try
+        catch(CException* e)
+          {
+          e->Delete ();
+          iTriggerErrors++;
+          pTrigger->regexp = NULL;
+          } // end of catch
+      }  // end of for each trigger
+
+#if ALIASES_USE_UTF8
+
+    for (pos = GetAliasMap ().GetStartPosition(); pos;)
+      {
+      CAlias * pAlias;
+      GetAliasMap ().GetNextAssoc (pos, strName, pAlias);
+
+      if (pAlias->regexp)
+        {
+        delete pAlias->regexp;    // get rid of old one
+        if (pAlias->bRegexp)
+          strRegexp = pAlias->name;
+        else
+          strRegexp = ConvertToRegularExpression (pAlias->name);
+        }
+
+        // compile regular expression
+        try 
+          {
+          pAlias->regexp = regcomp (strRegexp, (pAlias->bIgnoreCase ? PCRE_CASELESS : 0) |
+                                                 (m_bUTF_8 ? PCRE_UTF8 : 0)
+                                                 );
+          }   // end of try
+        catch(CException* e)
+          {
+          e->Delete ();
+          iAliasErrors++;
+          pAlias->regexp = NULL;
+          } // end of catch
+      }  // end of for each alias
+
+#endif // ALIASES_USE_UTF8
+
+  const char * sPluginName = "(Main world)";
+
+  if (m_CurrentPlugin)
+    sPluginName = m_CurrentPlugin->m_strName;
+
+  if (iTriggerErrors)
+    ColourNote ("white", "red", 
+                 TFormat ("In plugin %s, %i trigger(s) could not be recompiled.",
+                          sPluginName, iTriggerErrors));
+
+#if ALIASES_USE_UTF8
+  if (iAliasErrors)
+    ColourNote ("white", "red", 
+                 TFormat ("In plugin %s, %i alias(es) could not be recompiled.",
+                          sPluginName, iAliasErrors));
+#endif // ALIASES_USE_UTF8
+
+  } // end of CMUSHclientDoc::RecompileRegularExpressions
