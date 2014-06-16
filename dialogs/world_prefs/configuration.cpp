@@ -2388,88 +2388,97 @@ void CMUSHclientDoc::RecompileRegularExpressions ()
     int iAliasErrors = 0;
 #endif // ALIASES_USE_UTF8
 
-    POSITION pos;
-    CString strName;
-    CString strRegexp; 
+  CString sPluginName = "main world";
 
-    for (pos = GetTriggerMap ().GetStartPosition(); pos;)
+  if (m_CurrentPlugin)
+    {
+    sPluginName = "plugin ";
+    sPluginName += m_CurrentPlugin->m_strName;
+    }
+
+  POSITION pos;
+  CString strName;
+  CString strRegexp; 
+
+  for (pos = GetTriggerMap ().GetStartPosition(); pos;)
+    {
+    CTrigger * pTrigger;
+    GetTriggerMap ().GetNextAssoc (pos, strName, pTrigger);
+
+    if (pTrigger->regexp)
       {
-      CTrigger * pTrigger;
-      GetTriggerMap ().GetNextAssoc (pos, strName, pTrigger);
+      delete pTrigger->regexp;    // get rid of old one
+      if (pTrigger->bRegexp)
+        strRegexp = pTrigger->trigger;
+      else
+        strRegexp = ConvertToRegularExpression (pTrigger->trigger);
+      }
 
-      if (pTrigger->regexp)
+      // compile regular expression
+      try 
         {
-        delete pTrigger->regexp;    // get rid of old one
-        if (pTrigger->bRegexp)
-          strRegexp = pTrigger->trigger;
-        else
-          strRegexp = ConvertToRegularExpression (pTrigger->trigger);
-        }
-
-        // compile regular expression
-        try 
-          {
-          pTrigger->regexp = regcomp (strRegexp, (pTrigger->ignore_case ? PCRE_CASELESS : 0) |
-                                                 (pTrigger->bMultiLine  ? PCRE_MULTILINE : 0) |
-                                                 (m_bUTF_8 ? PCRE_UTF8 : 0)
-                                                 );
-          }   // end of try
-        catch(CException* e)
-          {
-          e->Delete ();
-          iTriggerErrors++;
-          pTrigger->regexp = NULL;
-          } // end of catch
-      }  // end of for each trigger
+        pTrigger->regexp = regcomp (strRegexp, (pTrigger->ignore_case ? PCRE_CASELESS : 0) |
+                                               (pTrigger->bMultiLine  ? PCRE_MULTILINE : 0) |
+                                               (m_bUTF_8 ? PCRE_UTF8 : 0)
+                                               );
+        }   // end of try
+      catch(CException* e)
+        {
+        e->Delete ();
+        iTriggerErrors++;
+        ColourNote ("red", "", 
+                     TFormat ("In %s, could not recompile trigger (%s) matching on: %s.",
+                              (LPCTSTR) sPluginName, (LPCTSTR) pTrigger->strInternalName, (LPCTSTR) strRegexp));
+        pTrigger->regexp = NULL;
+        } // end of catch
+    }  // end of for each trigger
 
 #if ALIASES_USE_UTF8
 
-    for (pos = GetAliasMap ().GetStartPosition(); pos;)
+  for (pos = GetAliasMap ().GetStartPosition(); pos;)
+    {
+    CAlias * pAlias;
+    GetAliasMap ().GetNextAssoc (pos, strName, pAlias);
+
+    if (pAlias->regexp)
       {
-      CAlias * pAlias;
-      GetAliasMap ().GetNextAssoc (pos, strName, pAlias);
+      delete pAlias->regexp;    // get rid of old one
+      if (pAlias->bRegexp)
+        strRegexp = pAlias->name;
+      else
+        strRegexp = ConvertToRegularExpression (pAlias->name);
+      }
 
-      if (pAlias->regexp)
+      // compile regular expression
+      try 
         {
-        delete pAlias->regexp;    // get rid of old one
-        if (pAlias->bRegexp)
-          strRegexp = pAlias->name;
-        else
-          strRegexp = ConvertToRegularExpression (pAlias->name);
-        }
-
-        // compile regular expression
-        try 
-          {
-          pAlias->regexp = regcomp (strRegexp, (pAlias->bIgnoreCase ? PCRE_CASELESS : 0) |
-                                                 (m_bUTF_8 ? PCRE_UTF8 : 0)
-                                                 );
-          }   // end of try
-        catch(CException* e)
-          {
-          e->Delete ();
-          iAliasErrors++;
-          pAlias->regexp = NULL;
-          } // end of catch
-      }  // end of for each alias
+        pAlias->regexp = regcomp (strRegexp, (pAlias->bIgnoreCase ? PCRE_CASELESS : 0) |
+                                               (m_bUTF_8 ? PCRE_UTF8 : 0)
+                                               );
+        }   // end of try
+      catch(CException* e)
+        {
+        e->Delete ();
+        iAliasErrors++;
+        ColourNote ("red", "", 
+                     TFormat ("In %s, could not recompile alias  (%s) matching on: %s.",
+                              (LPCTSTR) sPluginName, (LPCTSTR) pAlias->strInternalName, (LPCTSTR) strRegexp));
+        pAlias->regexp = NULL;
+        } // end of catch
+    }  // end of for each alias
 
 #endif // ALIASES_USE_UTF8
 
-  const char * sPluginName = "(Main world)";
-
-  if (m_CurrentPlugin)
-    sPluginName = m_CurrentPlugin->m_strName;
-
   if (iTriggerErrors)
     ColourNote ("white", "red", 
-                 TFormat ("In plugin %s, %i trigger(s) could not be recompiled.",
-                          sPluginName, iTriggerErrors));
+                 TFormat ("In %s, %i trigger(s) could not be recompiled.",
+                          (LPCTSTR) sPluginName, iTriggerErrors));
 
 #if ALIASES_USE_UTF8
   if (iAliasErrors)
     ColourNote ("white", "red", 
-                 TFormat ("In plugin %s, %i alias(es) could not be recompiled.",
-                          sPluginName, iAliasErrors));
+                 TFormat ("In %s, %i alias(es) could not be recompiled.",
+                          (LPCTSTR) sPluginName, iAliasErrors));
 #endif // ALIASES_USE_UTF8
 
   } // end of CMUSHclientDoc::RecompileRegularExpressions
