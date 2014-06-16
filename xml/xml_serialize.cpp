@@ -149,11 +149,23 @@ void SeeIfBase64 (CString & strText)
   bool bBase64 = true;
   int iCount;
 
+  // locale-independent tests (see decodeBase64)
   for (iCount = 0 ; c = *p; p++)
-    if (isspace (c))
+    if (c == ' '  || 
+        c == '\t' || 
+        c == '\n' || 
+        c == '\r' || 
+        c == '\f' || 
+        c == '\v' 
+       )
       continue;
     else
-    if (isalnum (c) || c == '+' || c == '/' || c == '=')
+    if ((c >= 'A' && c <= 'Z') ||        
+        (c >= 'a' && c <= 'z') ||
+        (c >= '0' && c <= '9') ||
+         c == '+' || 
+         c == '/' || 
+         c == '=')
       iCount++;
     else
       {
