@@ -94,6 +94,11 @@ CDC dc;
   AddOtherSpecial ("WONT", WONT);
   AddOtherSpecial ("SB", SB);
   AddOtherSpecial ("SE", SE);
+  m_ctlSpecials.AddString (CFormat ("IAC SB xx IAC SE - \\%02X\\%02Xxx\\%02X\\%02X",IAC, SB, IAC, SE));
+  m_ctlSpecials.AddString (CFormat ("IAC WILL xx - \\%02X\\%02Xxx",IAC, WILL));
+  m_ctlSpecials.AddString (CFormat ("IAC WONT xx - \\%02X\\%02Xxx",IAC, WONT));
+  m_ctlSpecials.AddString (CFormat ("IAC DO xx - \\%02X\\%02Xxx",IAC, DO));
+  m_ctlSpecials.AddString (CFormat ("IAC DONT xx - \\%02X\\%02Xxx",IAC, DONT));
 
   AddAnsiSpecial ("Reset",                   ANSI_RESET);
   AddAnsiSpecial ("Bold",                    ANSI_BOLD);
