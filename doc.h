@@ -1060,7 +1060,8 @@ public:
 
   int m_view_number;  // sequence in activity view
 
-  int m_phase;        // telnet negotiation phase
+  int m_phase;           // telnet negotiation phase
+  int m_ttype_sequence;  // for MTTS
 
   // MCCP (MUD Client Compression Protocol) stuff
   z_stream m_zCompress;         // compression structure

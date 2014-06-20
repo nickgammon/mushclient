@@ -6711,6 +6711,7 @@ void CMUSHclientDoc::ConnectionEstablished (void)
   m_newlines_received = 0;
   m_strLastCommandSent.Empty ();  // no command sent yet
   m_iNoteStyle = NORMAL;    // back to default style
+  m_ttype_sequence = 0;     // back to sending terminal name
 
 
   ZeroMemory (&m_bClient_sent_IAC_DO,   sizeof m_bClient_sent_IAC_DO);

@@ -202,6 +202,7 @@ int i;
   m_nTotalLinesSent = 0;
   m_nTotalLinesReceived = 0;
   m_phase = NONE;
+  m_ttype_sequence = 0;
 
   m_bVariablesChanged = false;
 

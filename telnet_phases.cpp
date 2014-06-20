@@ -382,12 +382,17 @@ void CMUSHclientDoc::Phase_DO (const unsigned char c)
     {
     case SGA:
     case TELOPT_MUD_SPECIFIC:
-    case TELOPT_TERMINAL_TYPE:   
     case TELOPT_ECHO:
     case TELOPT_CHARSET:
         Send_IAC_WILL (c);
         break; // end of things we will do 
-                
+            
+    // for MTTS start back at sequence 0
+    case TELOPT_TERMINAL_TYPE:   
+        m_ttype_sequence = 0;
+        Send_IAC_WILL (c);
+        break;
+
     case TELOPT_NAWS:
       // option off - must be server initiated
       if (m_bNAWS)
@@ -444,6 +449,11 @@ void CMUSHclientDoc::Phase_DONT (const unsigned char c)
           if (m_bMXP)
             MXP_Off (true);
           break;  // end of MXP
+
+    // for MTTS start back at sequence 0
+    case TELOPT_TERMINAL_TYPE:   
+        m_ttype_sequence = 0;
+        break;
 
     }   // end of switch
 
@@ -696,6 +706,8 @@ void CMUSHclientDoc::Handle_TELOPT_MUD_SPECIFIC ()
   SendToAllPluginCallbacks (ON_PLUGIN_TELNET_OPTION, strReceived);
   } // end of CMUSHclientDoc::Handle_TELOPT_MUD_SPECIFIC ()
 
+#define TTYPE_IS 0
+#define TTYPE_SEND 1
 
 // terminal type request
 void CMUSHclientDoc::Handle_TELOPT_TERMINAL_TYPE ()
@@ -703,13 +715,15 @@ void CMUSHclientDoc::Handle_TELOPT_TERMINAL_TYPE ()
 
   int tt = m_IAC_subnegotiation_data [0];
 
-  if (tt != 1) 
+  if (tt != TTYPE_SEND) 
     return;  // not a SEND
 
   TRACE ("<SEND>");
   // we reply: IAC SB TERMINAL-TYPE IS ... IAC SE
   // see: RFC 930 and RFC 1060
-  unsigned char p1 [] = { IAC, SB, TELOPT_TERMINAL_TYPE, 0 }; 
+  // also see: http://tintin.sourceforge.net/mtts/
+
+  unsigned char p1 [] = { IAC, SB, TELOPT_TERMINAL_TYPE, TTYPE_IS }; 
   unsigned char p2 [] = { IAC, SE }; 
   unsigned char sResponse [40];
   int iLength = 0;
@@ -721,7 +735,58 @@ void CMUSHclientDoc::Handle_TELOPT_TERMINAL_TYPE ()
   iLength += sizeof p1;
 
   // ensure max of 20 so we don't overflow the field
-  CString strTemp = m_strTerminalIdentification.Left (20);
+  CString strTemp;
+  
+
+  /*
+  On the first TTYPE SEND request the client should return its name, preferably without a version number and in all caps.
+
+  On the second TTYPE SEND request the client should return a terminal type, preferably in all caps. 
+    Console clients should report the name of the terminal emulator, 
+    other clients should report one of the four most generic terminal types.
+
+      "DUMB"              Terminal has no ANSI color or VT100 support.
+      "ANSI"              Terminal supports all ANSI color codes. Supporting blink and underline is optional.
+      "VT100"             Terminal supports most VT100 codes, including ANSI color codes.
+      "XTERM"             Terminal supports all VT100 and ANSI color codes, xterm 256 colors, mouse tracking, and the OSC color palette.
+
+  If 256 color detection for non MTTS compliant servers is a must it's an option 
+    to report "ANSI-256COLOR", "VT100-256COLOR", or "XTERM-256COLOR". 
+    The terminal is expected to support VT100, mouse tracking, and the OSC color palette if "XTERM-256COLOR" is reported.
+
+  On the third TTYPE SEND request the client should return MTTS followed by a bitvector. The bit values and their names are defined below.
+
+          1 "ANSI"              Client supports all ANSI color codes. Supporting blink and underline is optional.
+          2 "VT100"             Client supports most VT100 codes.
+          4 "UTF-8"             Client is using UTF-8 character encoding.
+          8 "256 COLORS"        Client supports all xterm 256 color codes.
+         16 "MOUSE TRACKING"    Client supports xterm mouse tracking.
+         32 "OSC COLOR PALETTE" Client supports the OSC color palette.
+         64 "SCREEN READER"     Client is using a screen reader.
+        128 "PROXY"             Client is a proxy allowing different users to connect from the same IP address.
+         
+  */
+
+  switch (m_ttype_sequence)
+    {
+    case 0:  
+        strTemp = m_strTerminalIdentification.Left (20);
+        m_ttype_sequence++;
+        break;
+
+    case 1:
+        strTemp = "ANSI";
+        m_ttype_sequence++;
+        break;
+
+    case 2:
+        if (m_bUTF_8)
+          strTemp = "MTTS 13";
+        else
+          strTemp = "MTTS 9";
+        break;
+
+    } // end of switch
 
   memcpy (&sResponse [iLength], strTemp, strTemp.GetLength ());
   iLength += strTemp.GetLength ();
