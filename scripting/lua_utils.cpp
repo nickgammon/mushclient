@@ -15,6 +15,7 @@
 //   utils.functionargs
 //   utils.functionlist
 //   utils.getfontfamilies
+//   utils.glyph_available
 //   utils.info
 //   utils.infotypes
 //   utils.inputbox
@@ -31,6 +32,7 @@
 //   utils.umsgbox
 //   utils.utf8decode
 //   utils.utf8encode
+//   utils.utf8convert
 //   utils.utf8sub
 //   utils.utf8valid
 //   utils.xmlread
@@ -50,6 +52,7 @@
 #include "..\dialogs\FunctionListDlg.h"
 #include "..\dmetaph.h"
 #include <direct.h>
+#include <wingdi.h>
 
 extern char working_dir [_MAX_PATH];
 extern tInfoTypeMapping InfoTypes [];
@@ -1028,7 +1031,7 @@ static int edit_distance (lua_State *L)
   return 1;
 }   // end of edit_distance
 
-// convert the arguments (which should be numbers in the range 0 to 7FFFFFFF into UTF-8
+// convert the arguments (which should be numbers in the range 0 to 7FFFFFFF) into UTF-8
 
 static int utf8encode (lua_State *L) {
 
@@ -1102,6 +1105,32 @@ unsigned char utf8 [10];    // UTF-8 should be max 6 characters
 
   return 1;  /* return the string */
 }  // utf8encode
+
+// convert the supplied string into UTF-8
+
+// / print (utils.utf8convert ("^You put (.*?) (.*?) FaetorAde ® into a Bag of Aardwolf\.$"))
+
+static int utf8convert (lua_State *L) {
+  const unsigned char * s = (const unsigned char *) luaL_checkstring (L, 1);
+  string sOutput;
+
+unsigned char utf8 [10];    // UTF-8 should be max 6 characters
+
+  for (const unsigned char * p = s; *p; p++) 
+    {
+
+    int iLen = _pcre_ord2utf (*p, utf8);
+
+    // we do it this way so we can correctly append 0x00
+    sOutput.append ((const char *) utf8, iLen);
+
+    }  // end of doing each argument
+
+  lua_pushlstring (L, sOutput.c_str (), sOutput.size ());
+
+  return 1;  /* return the string */
+}  // utf8convert
+
 
 
 /* ORIGINAL ONE using Windows calls - only good from 1 to 0xFFFF
@@ -1889,6 +1918,130 @@ static int reload_global_prefs (lua_State *L)
   return 0;   // no results
   } // end of reload_global_prefs
 
+#define GGI_MARK_NONEXISTING_GLYPHS  0X0001
+
+/*
+typedef struct tagWCRANGE
+{
+    WCHAR  wcLow;
+    USHORT cGlyphs;
+} WCRANGE, *PWCRANGE,FAR *LPWCRANGE;
+
+typedef struct tagGLYPHSET
+{
+    DWORD    cbThis;
+    DWORD    flAccel;
+    DWORD    cGlyphsSupported;
+    DWORD    cRanges;
+    WCRANGE  ranges[1];
+} GLYPHSET, *PGLYPHSET, FAR *LPGLYPHSET;
+
+*/
+
+// sees if a glyph is available in the current font
+static int glyph_available (lua_State *L) 
+  {
+  // which glyph?
+  const char * fontName   = luaL_checkstring (L, 1);
+
+  // this DLL might not be available
+	HMODULE hDLL = LoadLibrary ("gdi32");
+  if (!hDLL)
+    {
+    lua_pushnil (L); 
+    return 1;
+    }
+
+  // make a device contect
+  CDC dc;
+  dc.CreateCompatibleDC (NULL);
+
+  int lfHeight = -MulDiv(5, dc.GetDeviceCaps(LOGPIXELSY), 72);
+  CFont font;
+
+  // select requested font into it
+  font.CreateFont(lfHeight, // int nHeight, 
+        0,                  // int nWidth, 
+        0,                  // int nEscapement, 
+        0,                  // int nOrientation, 
+        FW_DONTCARE,        // int nWeight, 
+        0,                  // BYTE bItalic, 
+        0,                  // BYTE bUnderline, 
+        0,                  // BYTE cStrikeOut, 
+        DEFAULT_CHARSET,    // BYTE nCharSet, 
+        OUT_DEVICE_PRECIS,  // BYTE nOutPrecision, 
+        CLIP_DEFAULT_PRECIS,// BYTE nClipPrecision, 
+        DEFAULT_QUALITY,    // BYTE nQuality, 
+        FF_DONTCARE,        // BYTE nPitchAndFamily,  
+        fontName);          // LPCTSTR lpszFacename
+
+  dc.SelectObject(font);
+
+  // test a single character
+  WORD glyph = luaL_checknumber(L, 2);    // which Unicode character
+
+  typedef DWORD (CALLBACK* GetGlyphIndicesW_PROC)(HDC, LPCWSTR, int, LPWORD, DWORD);
+  GetGlyphIndicesW_PROC pGetGlyphIndicesW = NULL;
+
+  // get function address
+  pGetGlyphIndicesW = (GetGlyphIndicesW_PROC) GetProcAddress(hDLL, "GetGlyphIndicesW");
+
+  // if it exists, call it
+  if (pGetGlyphIndicesW)
+    {
+	  WORD indice;
+
+	  if ((*pGetGlyphIndicesW)(dc.m_hDC, &glyph, 1,
+	                            &indice, GGI_MARK_NONEXISTING_GLYPHS ) != GDI_ERROR &&
+	          indice != 0xffff)
+      lua_pushnumber (L, indice);  
+    else
+      lua_pushnumber (L, 0); 
+    }
+  else
+    lua_pushnumber (L, 0); 
+  
+  return 1;   // one result
+
+  /*
+  // return a table of what glyphs are available
+
+  typedef GLYPHSET * (CALLBACK* GetFontUnicodeRanges_PROC)(HDC, void *);
+  GetFontUnicodeRanges_PROC pGetFontUnicodeRanges = NULL;
+
+	pGetFontUnicodeRanges = (GetFontUnicodeRanges_PROC) GetProcAddress(hDLL, "GetFontUnicodeRanges");
+
+  if (pGetFontUnicodeRanges)
+    {
+    DWORD requiredSize = (DWORD) (*pGetFontUnicodeRanges) (dc.m_hDC, NULL);
+    GLYPHSET * pGlyphSet = (GLYPHSET * ) malloc (requiredSize);
+    pGlyphSet->cbThis = requiredSize;
+    pGlyphSet->flAccel = 0;
+    (*pGetFontUnicodeRanges) (dc.m_hDC, pGlyphSet);
+
+    lua_newtable(L);    // table  
+
+    for (int i = 0; i < pGlyphSet->cRanges; i++)
+      {
+      lua_newtable(L);    // table for the ranges 
+      MakeTableItem (L, "from", pGlyphSet->ranges [i].wcLow);
+      MakeTableItem (L, "to",   pGlyphSet->ranges [i].wcLow + pGlyphSet->ranges [i].cGlyphs - 1);
+      lua_rawseti(L, -2, i + 1);  // make 1-relative
+      }
+
+    free (pGlyphSet);
+
+    return 1;  // one table
+    }
+
+  lua_pushnumber (L, 0); 
+  return 1;   // one result (namely 0)
+
+  */
+
+
+  } // end of glyph_available
+
 #if 0
 static int registry (lua_State *L)
   {
@@ -1927,6 +2080,7 @@ static const struct luaL_Reg xmllib [] =
   {"functionargs",      functionargs},
   {"functionlist",      functionlist},
   {"getfontfamilies",   getfontfamilies},
+  {"glyph_available",   glyph_available},
   {"info",              info},
   {"infotypes",         infotypes},
   {"inputbox",          inputbox},
@@ -1943,6 +2097,7 @@ static const struct luaL_Reg xmllib [] =
   {"umsgbox",           umsgbox},      // msgbox - UTF8
   {"utf8decode",        utf8decode}, 
   {"utf8encode",        utf8encode}, 
+  {"utf8convert",       utf8convert}, 
   {"utf8sub",           utf8sub},
   {"utf8valid",         utf8valid},
   {"xmlread",           xmlread},
