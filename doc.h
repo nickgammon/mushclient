@@ -2149,7 +2149,7 @@ public:
   void DebugShowD  (const char * sTitle, const double fNumber);
 
   // in case we switch to/from UTF-8 mode
-  void RecompileRegularExpressions ();
+  int RecompileRegularExpressions ();
 
   // helper routines to get the appropriate map
   CTriggerMap & GetTriggerMap (void)

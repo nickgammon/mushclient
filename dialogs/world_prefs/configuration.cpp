@@ -1625,8 +1625,9 @@ void CMUSHclientDoc:: SavePrefsP14 (CPrefsP14 &page14)
   // need to be compiled so we recompile all of them
   if (utf8Changed)
     {
+    int counter;
     m_CurrentPlugin = NULL;
-    RecompileRegularExpressions ();     // do main world
+    counter = RecompileRegularExpressions ();     // do main world
 
    // do plugins 
    for (PluginListIterator pit = m_PluginList.begin (); 
@@ -1634,10 +1635,31 @@ void CMUSHclientDoc:: SavePrefsP14 (CPrefsP14 &page14)
          ++pit)
       {
       m_CurrentPlugin = *pit;
-      RecompileRegularExpressions ();   // do this plugin
+      counter += RecompileRegularExpressions ();   // do this plugin
       } // end of doing each plugin
 
     m_CurrentPlugin = NULL; // not in a plugin any more
+
+    if (counter && m_bUTF_8)
+      {
+      ColourNote ("red", "", 
+      Translate ("You have activated UTF-8 mode, but the above trigger(s) could not be automatically converted to UTF-8 "
+       "safely due to the use of extended ASCII characters. Please perform the following actions to convert "
+       "your trigger(s) to safe UTF-8:"));
+      ColourNote ("cyan", "", Translate ("1. Locate the trigger(s) from the list above."));
+      ColourNote ("cyan", "", Translate ("2. Copy the trigger \"Trigger match\" text to the clipboard."));
+      ColourNote ("cyan", "", Translate ("3. Open an Immediate scripting window (Ctrl+I)."));
+      ColourTell ("cyan", "", Translate ("4. Enter this script command: "));
+      ColourNote ("deepskyblue", "",     "print (utils.utf8convert ([==[XXX]==]))");
+      ColourNote ("cyan", "", Translate ("   (Note: this requires Lua to be the selected scripting language)"));
+      ColourNote ("cyan", "", Translate ("5. Replace XXX by pasting in the trigger match text from step 2."));
+      ColourNote ("cyan", "", Translate ("6. Execute this script command (Click the \"Run\" button)."));
+      ColourNote ("cyan", "", Translate ("7. The converted trigger match text (in UTF-8) will be echoed to the output window."));
+      ColourNote ("cyan", "", Translate ("8. Copy that from there and paste back into your trigger \"Trigger match\" text."));
+      ColourNote ("cyan", "", Translate ("9. Save the updated trigger."));
+      ColourNote ("cyan", "", Translate ("10. Repeat the above steps for all triggers mentioned above."));
+
+      }
     }  // end of  utf8Changed
 
   }   // end of CMUSHclientDoc::SavePrefsP14
@@ -2381,7 +2403,7 @@ void CMUSHclientDoc::OnGamePreferences()
   GamePreferences (-1);  // use last page, whatever it was
   }  // end of CMUSHclientDoc::OnGamePreferences
 
-void CMUSHclientDoc::RecompileRegularExpressions ()
+int CMUSHclientDoc::RecompileRegularExpressions ()
   {
     int iTriggerErrors = 0;
 #if ALIASES_USE_UTF8
@@ -2481,4 +2503,5 @@ void CMUSHclientDoc::RecompileRegularExpressions ()
                           (LPCTSTR) sPluginName, iAliasErrors));
 #endif // ALIASES_USE_UTF8
 
+  return iTriggerErrors;
   } // end of CMUSHclientDoc::RecompileRegularExpressions
