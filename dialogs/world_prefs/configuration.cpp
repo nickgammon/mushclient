@@ -2446,12 +2446,12 @@ int CMUSHclientDoc::RecompileRegularExpressions ()
         }   // end of try
       catch(CException* e)
         {
+        pTrigger->regexp = NULL;
         e->Delete ();
         iTriggerErrors++;
         ColourNote ("red", "", 
                      TFormat ("In %s, could not recompile trigger (%s) matching on: %s.",
                               (LPCTSTR) sPluginName, (LPCTSTR) pTrigger->strInternalName, (LPCTSTR) strRegexp));
-        pTrigger->regexp = NULL;
         } // end of catch
     }  // end of for each trigger
 
@@ -2480,12 +2480,12 @@ int CMUSHclientDoc::RecompileRegularExpressions ()
         }   // end of try
       catch(CException* e)
         {
+        pAlias->regexp = NULL;
         e->Delete ();
         iAliasErrors++;
         ColourNote ("red", "", 
                      TFormat ("In %s, could not recompile alias  (%s) matching on: %s.",
                               (LPCTSTR) sPluginName, (LPCTSTR) pAlias->strInternalName, (LPCTSTR) strRegexp));
-        pAlias->regexp = NULL;
         } // end of catch
     }  // end of for each alias
 
