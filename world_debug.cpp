@@ -1583,6 +1583,15 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
                                   m_LineList.GetCount (),
                                   m_maxlines));
 
+    if (m_strSpecialFontName.size ())
+      {
+      ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Custom fonts loaded --");
+      for (ci_set::const_iterator font_it = m_strSpecialFontName.begin ();
+           font_it != m_strSpecialFontName.end ();
+           font_it++)
+        Note (font_it->c_str ());
+      } // end of for each custom font
+
     ColourNote  (SCRIPTERRORCONTEXTFORECOLOUR, "", "-- Miscellaneous --");
 
     // logging?
