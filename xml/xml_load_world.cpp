@@ -1371,7 +1371,7 @@ CString strVariable;
     throw;
     }
 
-  // check if this exact alias already exists (suggested by Fiendish 12 Dec 2011)
+  // check if this exact trigger already exists (suggested by Fiendish 12 Dec 2011)
   // version: 4.81
   if (t->strLabel.IsEmpty () && !(iMask & XML_PASTE_DUPLICATE))
     {
