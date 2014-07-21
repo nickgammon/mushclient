@@ -288,10 +288,13 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
 
     case TELOPT_ECHO:
           if (!m_bNoEchoOff)
-              {
-              m_bNoEcho = true;
-              TRACE ("Echo turned off\n");
-              }
+            {
+            m_bNoEcho = true;
+            TRACE ("Echo turned off\n");
+            Send_IAC_DO (c);
+            }
+          else
+            Send_IAC_DONT (c);
           break; // end of TELOPT_ECHO
 
     case TELOPT_MXP:
@@ -352,7 +355,8 @@ void CMUSHclientDoc::Phase_WONT (const unsigned char c)
           m_bNoEcho = false;
           TRACE ("Echo turned on\n");
           }
-          break; // end of TELOPT_ECHO
+        Send_IAC_DONT (c);
+        break; // end of TELOPT_ECHO
 
     default:
       Send_IAC_DONT (c);
