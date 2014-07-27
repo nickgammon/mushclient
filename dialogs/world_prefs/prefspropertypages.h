@@ -1044,8 +1044,6 @@ public:
   CMUSHclientDoc * m_doc;
   int m_page_number;
 
-  bool m_bFirstTime;
-
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CPrefsP12)
