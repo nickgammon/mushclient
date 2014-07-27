@@ -5473,7 +5473,6 @@ CPrefsP12::CPrefsP12() : CPropertyPage(CPrefsP12::IDD)
 	//}}AFX_DATA_INIT
   m_page_number = 1;
   m_doc = NULL;
-  m_bFirstTime = true;
 
 }
 
@@ -5484,24 +5483,44 @@ CPrefsP12::~CPrefsP12()
 void CPrefsP12::DoDataExchange(CDataExchange* pDX)
 {
 
-  // start with normal keys
   if(!pDX->m_bSaveAndValidate)
     {
-    m_keypad_0     = m_keypad [eKeypad_0    ];   
-    m_keypad_1     = m_keypad [eKeypad_1    ]; 
-    m_keypad_2     = m_keypad [eKeypad_2    ];    
-    m_keypad_3     = m_keypad [eKeypad_3    ]; 
-    m_keypad_4     = m_keypad [eKeypad_4    ];   
-    m_keypad_5     = m_keypad [eKeypad_5    ];  
-    m_keypad_6     = m_keypad [eKeypad_6    ];   
-    m_keypad_7     = m_keypad [eKeypad_7    ]; 
-    m_keypad_8     = m_keypad [eKeypad_8    ];    
-    m_keypad_9     = m_keypad [eKeypad_9    ]; 
-    m_keypad_dot   = m_keypad [eKeypad_Dot  ]; 
-    m_keypad_slash = m_keypad [eKeypad_Slash];    
-    m_keypad_star  = m_keypad [eKeypad_Star ]; 
-    m_keypad_dash  = m_keypad [eKeypad_Dash ]; 
-    m_keypad_plus  = m_keypad [eKeypad_Plus ]; 
+    if (m_bControl)
+      {   // control keys
+      m_keypad_0     = m_keypad [eCtrl_Keypad_0    ];   
+      m_keypad_1     = m_keypad [eCtrl_Keypad_1    ]; 
+      m_keypad_2     = m_keypad [eCtrl_Keypad_2    ];    
+      m_keypad_3     = m_keypad [eCtrl_Keypad_3    ]; 
+      m_keypad_4     = m_keypad [eCtrl_Keypad_4    ];   
+      m_keypad_5     = m_keypad [eCtrl_Keypad_5    ];  
+      m_keypad_6     = m_keypad [eCtrl_Keypad_6    ];   
+      m_keypad_7     = m_keypad [eCtrl_Keypad_7    ]; 
+      m_keypad_8     = m_keypad [eCtrl_Keypad_8    ];    
+      m_keypad_9     = m_keypad [eCtrl_Keypad_9    ]; 
+      m_keypad_dot   = m_keypad [eCtrl_Keypad_Dot  ]; 
+      m_keypad_slash = m_keypad [eCtrl_Keypad_Slash];    
+      m_keypad_star  = m_keypad [eCtrl_Keypad_Star ]; 
+      m_keypad_dash  = m_keypad [eCtrl_Keypad_Dash ]; 
+      m_keypad_plus  = m_keypad [eCtrl_Keypad_Plus ];
+      }
+    else
+      {   // normal keys
+      m_keypad_0     = m_keypad [eKeypad_0    ];   
+      m_keypad_1     = m_keypad [eKeypad_1    ]; 
+      m_keypad_2     = m_keypad [eKeypad_2    ];    
+      m_keypad_3     = m_keypad [eKeypad_3    ]; 
+      m_keypad_4     = m_keypad [eKeypad_4    ];   
+      m_keypad_5     = m_keypad [eKeypad_5    ];  
+      m_keypad_6     = m_keypad [eKeypad_6    ];   
+      m_keypad_7     = m_keypad [eKeypad_7    ]; 
+      m_keypad_8     = m_keypad [eKeypad_8    ];    
+      m_keypad_9     = m_keypad [eKeypad_9    ]; 
+      m_keypad_dot   = m_keypad [eKeypad_Dot  ]; 
+      m_keypad_slash = m_keypad [eKeypad_Slash];    
+      m_keypad_star  = m_keypad [eKeypad_Star ]; 
+      m_keypad_dash  = m_keypad [eKeypad_Dash ]; 
+      m_keypad_plus  = m_keypad [eKeypad_Plus ]; 
+      }
     }
 
 	CPropertyPage::DoDataExchange(pDX);
@@ -5583,25 +5602,25 @@ void CPrefsP12::OnControlKey()
  if (m_ctlControl.GetCheck () == 0)
    {
    // control is not checked, so it must have been before
-   if (!m_bFirstTime)
-     {
-     // save old values
-     GetDlgItem (IDC_KEYPAD_0     )->GetWindowText (m_keypad [eCtrl_Keypad_0    ]);
-     GetDlgItem (IDC_KEYPAD_1     )->GetWindowText (m_keypad [eCtrl_Keypad_1    ]);
-     GetDlgItem (IDC_KEYPAD_2     )->GetWindowText (m_keypad [eCtrl_Keypad_2    ]);
-     GetDlgItem (IDC_KEYPAD_3     )->GetWindowText (m_keypad [eCtrl_Keypad_3    ]);
-     GetDlgItem (IDC_KEYPAD_4     )->GetWindowText (m_keypad [eCtrl_Keypad_4    ]);
-     GetDlgItem (IDC_KEYPAD_5     )->GetWindowText (m_keypad [eCtrl_Keypad_5    ]);
-     GetDlgItem (IDC_KEYPAD_6     )->GetWindowText (m_keypad [eCtrl_Keypad_6    ]);
-     GetDlgItem (IDC_KEYPAD_7     )->GetWindowText (m_keypad [eCtrl_Keypad_7    ]);
-     GetDlgItem (IDC_KEYPAD_8     )->GetWindowText (m_keypad [eCtrl_Keypad_8    ]);
-     GetDlgItem (IDC_KEYPAD_9     )->GetWindowText (m_keypad [eCtrl_Keypad_9    ]);
-     GetDlgItem (IDC_KEYPAD_DASH  )->GetWindowText (m_keypad [eCtrl_Keypad_Dash ]);
-     GetDlgItem (IDC_KEYPAD_DOT   )->GetWindowText (m_keypad [eCtrl_Keypad_Dot  ]);
-     GetDlgItem (IDC_KEYPAD_PLUS  )->GetWindowText (m_keypad [eCtrl_Keypad_Plus ]);
-     GetDlgItem (IDC_KEYPAD_SLASH )->GetWindowText (m_keypad [eCtrl_Keypad_Slash]);
-     GetDlgItem (IDC_KEYPAD_STAR  )->GetWindowText (m_keypad [eCtrl_Keypad_Star ]);
-     }    // end of not first time
+
+   // save old values
+   GetDlgItem (IDC_KEYPAD_0     )->GetWindowText (m_keypad [eCtrl_Keypad_0    ]);
+   GetDlgItem (IDC_KEYPAD_1     )->GetWindowText (m_keypad [eCtrl_Keypad_1    ]);
+   GetDlgItem (IDC_KEYPAD_2     )->GetWindowText (m_keypad [eCtrl_Keypad_2    ]);
+   GetDlgItem (IDC_KEYPAD_3     )->GetWindowText (m_keypad [eCtrl_Keypad_3    ]);
+   GetDlgItem (IDC_KEYPAD_4     )->GetWindowText (m_keypad [eCtrl_Keypad_4    ]);
+   GetDlgItem (IDC_KEYPAD_5     )->GetWindowText (m_keypad [eCtrl_Keypad_5    ]);
+   GetDlgItem (IDC_KEYPAD_6     )->GetWindowText (m_keypad [eCtrl_Keypad_6    ]);
+   GetDlgItem (IDC_KEYPAD_7     )->GetWindowText (m_keypad [eCtrl_Keypad_7    ]);
+   GetDlgItem (IDC_KEYPAD_8     )->GetWindowText (m_keypad [eCtrl_Keypad_8    ]);
+   GetDlgItem (IDC_KEYPAD_9     )->GetWindowText (m_keypad [eCtrl_Keypad_9    ]);
+   GetDlgItem (IDC_KEYPAD_DASH  )->GetWindowText (m_keypad [eCtrl_Keypad_Dash ]);
+   GetDlgItem (IDC_KEYPAD_DOT   )->GetWindowText (m_keypad [eCtrl_Keypad_Dot  ]);
+   GetDlgItem (IDC_KEYPAD_PLUS  )->GetWindowText (m_keypad [eCtrl_Keypad_Plus ]);
+   GetDlgItem (IDC_KEYPAD_SLASH )->GetWindowText (m_keypad [eCtrl_Keypad_Slash]);
+   GetDlgItem (IDC_KEYPAD_STAR  )->GetWindowText (m_keypad [eCtrl_Keypad_Star ]);
+
+   // load alternative values
    GetDlgItem (IDC_KEYPAD_0     )->SetWindowText (m_keypad [eKeypad_0    ]);
    GetDlgItem (IDC_KEYPAD_1     )->SetWindowText (m_keypad [eKeypad_1    ]);
    GetDlgItem (IDC_KEYPAD_2     )->SetWindowText (m_keypad [eKeypad_2    ]);
@@ -5622,25 +5641,25 @@ void CPrefsP12::OnControlKey()
  else
    {
    // control is checked, so it must not have been before
-   if (!m_bFirstTime)
-     {
-     // save old values
-     GetDlgItem (IDC_KEYPAD_0     )->GetWindowText (m_keypad [eKeypad_0    ]);
-     GetDlgItem (IDC_KEYPAD_1     )->GetWindowText (m_keypad [eKeypad_1    ]);
-     GetDlgItem (IDC_KEYPAD_2     )->GetWindowText (m_keypad [eKeypad_2    ]);
-     GetDlgItem (IDC_KEYPAD_3     )->GetWindowText (m_keypad [eKeypad_3    ]);
-     GetDlgItem (IDC_KEYPAD_4     )->GetWindowText (m_keypad [eKeypad_4    ]);
-     GetDlgItem (IDC_KEYPAD_5     )->GetWindowText (m_keypad [eKeypad_5    ]);
-     GetDlgItem (IDC_KEYPAD_6     )->GetWindowText (m_keypad [eKeypad_6    ]);
-     GetDlgItem (IDC_KEYPAD_7     )->GetWindowText (m_keypad [eKeypad_7    ]);
-     GetDlgItem (IDC_KEYPAD_8     )->GetWindowText (m_keypad [eKeypad_8    ]);
-     GetDlgItem (IDC_KEYPAD_9     )->GetWindowText (m_keypad [eKeypad_9    ]);
-     GetDlgItem (IDC_KEYPAD_DASH  )->GetWindowText (m_keypad [eKeypad_Dash ]);
-     GetDlgItem (IDC_KEYPAD_DOT   )->GetWindowText (m_keypad [eKeypad_Dot  ]);
-     GetDlgItem (IDC_KEYPAD_PLUS  )->GetWindowText (m_keypad [eKeypad_Plus ]);
-     GetDlgItem (IDC_KEYPAD_SLASH )->GetWindowText (m_keypad [eKeypad_Slash]);
-     GetDlgItem (IDC_KEYPAD_STAR  )->GetWindowText (m_keypad [eKeypad_Star ]);
-     }    // end of not first time
+
+   // save old values
+   GetDlgItem (IDC_KEYPAD_0     )->GetWindowText (m_keypad [eKeypad_0    ]);
+   GetDlgItem (IDC_KEYPAD_1     )->GetWindowText (m_keypad [eKeypad_1    ]);
+   GetDlgItem (IDC_KEYPAD_2     )->GetWindowText (m_keypad [eKeypad_2    ]);
+   GetDlgItem (IDC_KEYPAD_3     )->GetWindowText (m_keypad [eKeypad_3    ]);
+   GetDlgItem (IDC_KEYPAD_4     )->GetWindowText (m_keypad [eKeypad_4    ]);
+   GetDlgItem (IDC_KEYPAD_5     )->GetWindowText (m_keypad [eKeypad_5    ]);
+   GetDlgItem (IDC_KEYPAD_6     )->GetWindowText (m_keypad [eKeypad_6    ]);
+   GetDlgItem (IDC_KEYPAD_7     )->GetWindowText (m_keypad [eKeypad_7    ]);
+   GetDlgItem (IDC_KEYPAD_8     )->GetWindowText (m_keypad [eKeypad_8    ]);
+   GetDlgItem (IDC_KEYPAD_9     )->GetWindowText (m_keypad [eKeypad_9    ]);
+   GetDlgItem (IDC_KEYPAD_DASH  )->GetWindowText (m_keypad [eKeypad_Dash ]);
+   GetDlgItem (IDC_KEYPAD_DOT   )->GetWindowText (m_keypad [eKeypad_Dot  ]);
+   GetDlgItem (IDC_KEYPAD_PLUS  )->GetWindowText (m_keypad [eKeypad_Plus ]);
+   GetDlgItem (IDC_KEYPAD_SLASH )->GetWindowText (m_keypad [eKeypad_Slash]);
+   GetDlgItem (IDC_KEYPAD_STAR  )->GetWindowText (m_keypad [eKeypad_Star ]);
+
+   // load alternative values
    GetDlgItem (IDC_KEYPAD_0     )->SetWindowText (m_keypad [eCtrl_Keypad_0    ]);
    GetDlgItem (IDC_KEYPAD_1     )->SetWindowText (m_keypad [eCtrl_Keypad_1    ]);
    GetDlgItem (IDC_KEYPAD_2     )->SetWindowText (m_keypad [eCtrl_Keypad_2    ]);
@@ -5658,8 +5677,6 @@ void CPrefsP12::OnControlKey()
    GetDlgItem (IDC_KEYPAD_STAR  )->SetWindowText (m_keypad [eCtrl_Keypad_Star ]);
 
    }
-
- m_bFirstTime = false;
 
 }
 
