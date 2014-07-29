@@ -7703,6 +7703,7 @@ static flags_pair miniwindow_flags [] =
   {  "hotspot_got_rh_mouse",   0x20  },          
   {  "hotspot_got_dbl_click",  0x40  },          
   {  "hotspot_got_not_first",  0x80  },          
+  {  "hotspot_got_middle_mouse",   0x200  },          
 
   // WindowMergeImageAlpha Mode (argument 8)
 

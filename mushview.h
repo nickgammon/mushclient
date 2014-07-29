@@ -7,6 +7,16 @@
 #define MXP_FIRST_MENU 10000
 #define MXP_MENU_COUNT 100   // number of MXP menu items we support
 
+#define MW_MOUSE_SHIFT 0x01
+#define MW_MOUSE_CTRL 0x02
+#define MW_MOUSE_ALT 0x04
+#define MW_MOUSE_LH 0x10
+#define MW_MOUSE_RH 0x20
+#define MW_MOUSE_DBL 0x40
+#define MW_MOUSE_NOT_FIRST 0x80
+#define MW_MOUSE_SCROLL_BACK 0x100
+#define MW_MOUSE_MIDDLE 0x200
+
 class CMUSHView : public CView
 {
 
@@ -260,6 +270,9 @@ protected:
   afx_msg void OnMXPMenu(UINT nID);    
   afx_msg void OnAcceleratorCommand(UINT nID);    
 	afx_msg void OnUpdateNeedSelectionForCopy(CCmdUI* pCmdUI);
+	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
+
 	DECLARE_MESSAGE_MAP()
 };
 

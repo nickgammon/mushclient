@@ -262,6 +262,11 @@ BEGIN_MESSAGE_MAP(CMUSHView, CView)
                    ACCELERATOR_FIRST_COMMAND + ACCELERATOR_COUNT - 1, 
                    OnAcceleratorCommand)
 
+  // middle mouse button
+  ON_WM_MBUTTONDOWN()
+  ON_WM_MBUTTONUP()
+
+
   END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2098,7 +2103,7 @@ int line,
   dc.DPtoLP(&point);
 
   // if click in mini-window, don't continue
-  if (Mouse_Down_MiniWindow (pDoc, point, 0x10))  // LH mouse, single click
+  if (Mouse_Down_MiniWindow (pDoc, point, MW_MOUSE_LH))  // LH mouse, single click
     return;
 
   // check for the rectangle, now we are past the miniwindow stuff
@@ -2359,12 +2364,32 @@ ASSERT_VALID(pDoc);
   dc.DPtoLP(&mwpoint);
 
   // if click in mini-window, don't continue
-  if (Mouse_Down_MiniWindow (pDoc, mwpoint, 0x20))  // RH mouse, single click
+  if (Mouse_Down_MiniWindow (pDoc, mwpoint, MW_MOUSE_RH))  // RH mouse, single click
     return;
   
   CView::OnRButtonDown(nFlags, point);
 }
 
+void CMUSHView::OnMButtonDown(UINT nFlags, CPoint point) 
+{
+CMUSHclientDoc* pDoc = GetDocument();
+ASSERT_VALID(pDoc);
+
+
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
+  CPoint mwpoint = point;
+  CClientDC dc(this);
+  OnPrepareDC(&dc);
+  dc.DPtoLP(&mwpoint);
+
+  // if click in mini-window, don't continue
+  if (Mouse_Down_MiniWindow (pDoc, mwpoint, MW_MOUSE_MIDDLE))  // middle mouse, single click
+    return;
+  
+  CView::OnMButtonDown(nFlags, point);
+}
 
 void CMUSHView::OnLButtonUp(UINT nFlags, CPoint point) 
 {
@@ -2388,7 +2413,7 @@ int line,
 
 
   // if miniwindow handles it, don't continue
-  if (Mouse_Up_MiniWindow (pDoc, point, 0x10))
+  if (Mouse_Up_MiniWindow (pDoc, point, MW_MOUSE_LH))
     return;
 
   if (GetCapture() != this)
@@ -2454,13 +2479,36 @@ ASSERT_VALID(pDoc);
 
 
   // if miniwindow handles it, don't continue
-  if (Mouse_Up_MiniWindow (pDoc, mwpoint, 0x20))
+  if (Mouse_Up_MiniWindow (pDoc, mwpoint, MW_MOUSE_RH))
     return;
 
   
   CView::OnRButtonUp(nFlags, point);
 }
 
+void CMUSHView::OnMButtonUp(UINT nFlags, CPoint point) 
+{
+CMUSHclientDoc* pDoc = GetDocument();
+ASSERT_VALID(pDoc);
+
+
+  CClientDC dc(this);
+
+  // CView changes the viewport origin and mapping mode.
+  // It's necessary to convert the point from device coordinates
+  // to logical coordinates, such as are stored in the document.
+  CPoint mwpoint = point;
+  OnPrepareDC(&dc);  // set up mapping mode and viewport origin
+  dc.DPtoLP(&mwpoint);
+
+
+  // if miniwindow handles it, don't continue
+  if (Mouse_Up_MiniWindow (pDoc, mwpoint, MW_MOUSE_MIDDLE))
+    return;
+
+  
+  CView::OnMButtonUp(nFlags, point);
+}
 
 
 void CMUSHView::OnMouseMove(UINT nFlags, CPoint point) 
@@ -4667,7 +4715,7 @@ int line,
   dc.DPtoLP(&point);
 
   // if click in mini-window, don't continue
-  if (Mouse_Down_MiniWindow (pDoc, point, 0x50))  // LH mouse - double click
+  if (Mouse_Down_MiniWindow (pDoc, point, MW_MOUSE_LH | MW_MOUSE_DBL))  // LH mouse - double click
     return;
 
 
@@ -4830,7 +4878,7 @@ ASSERT_VALID(pDoc);
   dc.DPtoLP(&mwpoint);
 
   // if click in mini-window, don't continue
-  if (Mouse_Down_MiniWindow (pDoc, mwpoint, 0x60))  // RH mouse - double click
+  if (Mouse_Down_MiniWindow (pDoc, mwpoint, MW_MOUSE_RH | MW_MOUSE_DBL))  // RH mouse - double click
     return;
   
   CView::OnRButtonDblClk(nFlags, point);
@@ -5081,7 +5129,7 @@ unsigned int iScrollLines;
 
   // if over miniwindow, don't keep going
 
-  if (Mouse_Wheel_MiniWindow (pDoc, point, zDelta < 0 ? 0x100 : 0))
+  if (Mouse_Wheel_MiniWindow (pDoc, point, zDelta < 0 ? MW_MOUSE_SCROLL_BACK : 0))
     return 1;
 
     /*
@@ -6424,13 +6472,13 @@ ASSERT_VALID(pDoc);
 if (!dont_modify_flags)
   {
   if (GetKeyState (VK_SHIFT) < 0)     // shift+click
-     Flags |= 1;
+     Flags |= MW_MOUSE_SHIFT;
 
   if (GetKeyState (VK_CONTROL) < 0)   // ctrl+click
-     Flags |= 2;
+     Flags |= MW_MOUSE_CTRL;
 
   if (GetKeyState (VK_MENU) < 0)      // alt+click
-     Flags |= 4;
+     Flags |= MW_MOUSE_ALT;
   }  // can modify flags
 
 
@@ -6784,7 +6832,7 @@ bool CMUSHView::Mouse_Move_MiniWindow (CMUSHclientDoc* pDoc, CPoint point)
           Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseOver,
                                       mw->m_sCallbackPlugin, 
                                       pHotspot->m_sMouseOver, 
-                                      sHotspotId, 0x80);
+                                      sHotspotId, MW_MOUSE_NOT_FIRST);
           mw->m_bExecutingScript = false;
           }
 
@@ -6882,7 +6930,7 @@ bool CMUSHView::Mouse_Down_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long 
     // now, are we now over a hotspot?
     if (pHotspot)
       {
-      mw->m_FlagsOnMouseDown = flags & 0x70; // remember mouse flags 
+      mw->m_FlagsOnMouseDown = flags & (MW_MOUSE_LH | MW_MOUSE_RH | MW_MOUSE_DBL | MW_MOUSE_MIDDLE); // remember mouse flags 
       mw->m_bExecutingScript = true;
       Send_Mouse_Event_To_Plugin (pHotspot->m_dispid_MouseDown, 
                                   mw->m_sCallbackPlugin, 
@@ -7094,7 +7142,7 @@ bool CMUSHView::Mouse_Up_MiniWindow (CMUSHclientDoc* pDoc, CPoint point, long fl
                                     mw->m_sCallbackPlugin, 
                                     pHotspot->m_sMouseUp, 
                                     sHotspotId, 
-                                    mw->m_FlagsOnMouseDown);  // LH / RH mouse?
+                                    mw->m_FlagsOnMouseDown);  // LH / RH / middle mouse?
         mw->m_bExecutingScript = false;
       }
 
