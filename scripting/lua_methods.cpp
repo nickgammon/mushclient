@@ -3059,10 +3059,21 @@ static void luaWindowPositionHelper (lua_State *L, const RECT & r)
 //----------------------------------------
 static int L_GetMainWindowPosition (lua_State *L)
   {
-  CWindowPlacement wp;
-  Frame.GetWindowPlacement(&wp);  
+  bool useGetWindowRect = optboolean (L, 1, 0);  // if true use GetWindowRect
 
-  luaWindowPositionHelper (L, wp.rcNormalPosition);
+  if (useGetWindowRect)
+    {
+    CRect rect;
+    Frame.GetWindowRect (&rect);
+    luaWindowPositionHelper (L, rect);
+    }
+  else
+    {
+    CWindowPlacement wp;
+    Frame.GetWindowPlacement(&wp);
+    luaWindowPositionHelper (L, wp.rcNormalPosition);
+    }
+
   return 1;  // number of result fields
   } // end of L_GetMainWindowPosition
 
@@ -3109,9 +3120,9 @@ static int L_GetWorldWindowPosition (lua_State *L)
   CMUSHclientDoc *pDoc = doc (L);
   int which = my_optnumber (L, 1, 1);  // Which
   bool screen = optboolean (L, 2, 0);  // client or screen
+  bool useGetWindowRect = optboolean (L, 3, 0);  // if true use GetWindowRect
   int count = 0;
 
-  CWindowPlacement wp;
 
   for(POSITION pos=pDoc->GetFirstViewPosition();pos!=NULL;)
     {
@@ -3126,13 +3137,22 @@ static int L_GetWorldWindowPosition (lua_State *L)
         continue;      // wrong one
 
 //        pmyView->GetParentFrame ()->GetClientRect (&wp.rcNormalPosition);
-      pmyView->GetParentFrame ()->GetWindowPlacement(&wp); 
+
+      CRect rect;
+      if (useGetWindowRect)
+        {
+        pmyView->GetParentFrame ()->GetWindowRect (&rect);
+        }
+      else
+        {
+        CWindowPlacement wp;
+        pmyView->GetParentFrame ()->GetWindowPlacement(&wp);
+        rect = wp.rcNormalPosition;
+        }
 
       if (screen)
-        {
-        pmyView->GetParentFrame ()->ClientToScreen (&wp.rcNormalPosition);
-        }
-      luaWindowPositionHelper (L, wp.rcNormalPosition);
+        pmyView->GetParentFrame ()->ClientToScreen (&rect);
+      luaWindowPositionHelper (L, rect);
       return 1;  // number of result fields
 
       }	
