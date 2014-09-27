@@ -9,8 +9,9 @@
    language="Lua"
    purpose="Provides a simple calculator"
    date_written="2010-08-25 14:55:13"
+   date_modified="2014-09-27 10:09:00"
    requires="4.50"
-   version="1.0"
+   version="1.1"
    >
 <description trim="y">
 <![CDATA[
@@ -30,6 +31,13 @@ eg.
 = match ("fruit", "u")
 = shl (4, 4)
 
+In addition, you can use hex, oct, bin functions to convert to those bases for printing.
+
+eg.
+
+= hex (1234)
+= oct (5678)
+= bin (15)
 ]]>
 </description>
 
@@ -46,6 +54,11 @@ eg.
    sequence="100"
   >
   <send>
+-- useful number conversions
+bit.hex = function (num) return bit.tostring (num, 16) end
+bit.oct = function (num) return bit.tostring (num, 8) end
+bit.bin = function (num) return bit.tostring (num, 2) end
+
 print ("%1 =", setfenv (assert (loadstring "return %1"), setmetatable ({}, 
     {__index = function (_, n) return math [n] or bit [n] or string [n] or utils [n] or world [n] end}) ) () )
 </send>
