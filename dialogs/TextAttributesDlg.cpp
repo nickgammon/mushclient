@@ -215,12 +215,26 @@ void CTextAttributesDlg::OnLineInfo()
     switch (pStyle->iFlags & COLOURTYPE)
       {
       case COLOUR_ANSI: 
-        INFO (TFormat (" Foreground colour ANSI  : %i (%s)", 
-              pStyle->iForeColour,
-              sColours [pStyle->iForeColour & 7]));
-        INFO (TFormat (" Background colour ANSI  : %i (%s)", 
-              pStyle->iBackColour,
-              sColours [pStyle->iBackColour & 7]));
+        if (pStyle->iForeColour >= 8)
+          INFO (TFormat (" Foreground colour 256-ANSI   : R=%i, G=%i, B=%i", 
+                          GetRValue (xterm_256_colours [pStyle->iForeColour]),
+                          GetGValue (xterm_256_colours [pStyle->iForeColour]),
+                          GetBValue (xterm_256_colours [pStyle->iForeColour])
+                ));
+        else
+          INFO (TFormat (" Foreground colour ANSI  : %i (%s)", 
+                pStyle->iForeColour,
+                sColours [pStyle->iForeColour & 7]));
+        if (pStyle->iBackColour >= 8)
+          INFO (TFormat (" Background colour 256-ANSI   : R=%i, G=%i, B=%i", 
+                          GetRValue (xterm_256_colours [pStyle->iBackColour]),
+                          GetGValue (xterm_256_colours [pStyle->iBackColour]),
+                          GetBValue (xterm_256_colours [pStyle->iBackColour])
+                ));
+        else
+          INFO (TFormat (" Background colour ANSI  : %i (%s)", 
+                pStyle->iBackColour,
+                sColours [pStyle->iBackColour & 7]));
         break;
       case COLOUR_CUSTOM: 
         INFO (TFormat (" Custom colour: %i (%s)", 

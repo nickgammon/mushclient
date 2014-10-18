@@ -1299,12 +1299,22 @@ previousLineHPtime.QuadPart = 0;
             clrBackground = iBackColour;
         else
           {
-          ASSERT (iForeColour >= 0 && iForeColour < 8);
-          ASSERT (iBackColour >= 0 && iBackColour < 8);
+          ASSERT (iForeColour >= 0 && iForeColour < 256);
+          ASSERT (iBackColour >= 0 && iBackColour < 256);
           if (style & INVERSE)    // inverse inverts foreground and background
-            clrBackground = pDoc->m_normalcolour [iForeColour];
+            {
+            if (iForeColour >= 8)
+              clrBackground = xterm_256_colours [iForeColour];
+            else
+              clrBackground = pDoc->m_normalcolour [iForeColour];
+            }
           else
-            clrBackground = pDoc->m_normalcolour [iBackColour];
+            {
+            if (iBackColour >= 8)
+              clrBackground = xterm_256_colours [iBackColour];
+            else
+              clrBackground = pDoc->m_normalcolour [iBackColour];
+            }
           }   // not custom
 
         SetRect (&r, 
@@ -1341,14 +1351,24 @@ previousLineHPtime.QuadPart = 0;
             clrBackground = iForeColour;
           else
             clrBackground = iBackColour;
-        else
+        else  // ie. COLOUR_ANSI
           {
-          ASSERT (iForeColour >= 0 && iForeColour < 8);
-          ASSERT (iBackColour >= 0 && iBackColour < 8);
+          ASSERT (iForeColour >= 0 && iForeColour < 256);
+          ASSERT (iBackColour >= 0 && iBackColour < 256);
           if (style & INVERSE)    // inverse inverts foreground and background
-            clrBackground = pDoc->m_normalcolour [iForeColour];
+            {
+            if (iForeColour >= 8)
+              clrBackground = xterm_256_colours [iForeColour];
+            else
+              clrBackground = pDoc->m_normalcolour [iForeColour];
+            }
           else
-            clrBackground = pDoc->m_normalcolour [iBackColour];
+            {
+            if (iBackColour >= 8)
+              clrBackground = xterm_256_colours [iBackColour];
+            else
+              clrBackground = pDoc->m_normalcolour [iBackColour];
+            }
           }   // not custom
 
         GetClientRect (&cr);
@@ -5315,8 +5335,7 @@ CTextAttributesDlg dlg;
     dlg.m_strBackColour = "Custom";
     dlg.m_strCustomColour = pDoc->m_strCustomColourName [pStyle->iForeColour];
     }
-  else
-  if ((iStyle & COLOURTYPE) == COLOUR_RGB)
+  else if ((iStyle & COLOURTYPE) == COLOUR_RGB)
     {
     dlg.m_strTextColour = CFormat ("R=%i, G=%i, B=%i", 
                                    GetRValue (pStyle->iForeColour),
@@ -5328,12 +5347,25 @@ CTextAttributesDlg dlg;
                                    GetBValue (pStyle->iBackColour));                                  
     dlg.m_strCustomColour = "RGB";
     }
-  else
+  else   // ie. COLOUR_ANSI
     {
-    ASSERT (pStyle->iForeColour >= 0 && pStyle->iForeColour < 8);
-    ASSERT (pStyle->iBackColour >= 0 && pStyle->iBackColour < 8);
-    dlg.m_strTextColour = sColours [pStyle->iForeColour & 7];
-    dlg.m_strBackColour = sColours [pStyle->iBackColour & 7];
+    ASSERT (pStyle->iForeColour >= 0 && pStyle->iForeColour < 256);
+    ASSERT (pStyle->iBackColour >= 0 && pStyle->iBackColour < 256);
+
+    if (pStyle->iForeColour >= 8)
+      dlg.m_strTextColour = CFormat ("R=%i, G=%i, B=%i", 
+                                     GetRValue (xterm_256_colours [pStyle->iForeColour]),
+                                     GetGValue (xterm_256_colours [pStyle->iForeColour]),
+                                     GetBValue (xterm_256_colours [pStyle->iForeColour]));
+    else
+      dlg.m_strTextColour = sColours [pStyle->iForeColour & 7];
+    if (pStyle->iBackColour >= 8)
+      dlg.m_strBackColour = CFormat ("R=%i, G=%i, B=%i", 
+                                     GetRValue (xterm_256_colours [pStyle->iBackColour]),
+                                     GetGValue (xterm_256_colours [pStyle->iBackColour]),
+                                     GetBValue (xterm_256_colours [pStyle->iBackColour]));
+    else
+      dlg.m_strBackColour = sColours [pStyle->iBackColour & 7];
     dlg.m_strCustomColour = "n/a";
     }
 

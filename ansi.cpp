@@ -323,33 +323,59 @@ COLORREF       iBackColour  = pOldStyle->iBackColour;
 CAction *      pAction      = pOldStyle->pAction;
 
 
-  // if they are not in RGB mode, have to switch to it
+  // if they are in custom mode, we'll have to switch to RGB mode
 
-  if ((iFlags & COLOURTYPE) != COLOUR_RGB)
+  if ((iFlags & COLOURTYPE) == COLOUR_CUSTOM)
     {
     GetStyleRGB (pOldStyle, iForeColour, iBackColour);
     iFlags &= ~COLOURTYPE;  // clear custom bits
     iFlags |= COLOUR_RGB;
     } // end of switching to RGB mode
 
-  // change foreground or background as appropriate (honouring inverse flag)
-  switch (m_phase)
+
+
+    // if they are in RGB mode we have to do the RGB conversion now, not at display time
+  if ((iFlags & COLOURTYPE) == COLOUR_RGB)
     {
-    case HAVE_FOREGROUND_256_FINISH:
+    switch (m_phase)
+      {
+      case HAVE_FOREGROUND_256_FINISH:
+        if (iFlags & INVERSE)
+          iBackColour = xterm_256_colours [iCode];
+        else
+          iForeColour = xterm_256_colours [iCode];
+        break;
+
+       case HAVE_BACKGROUND_256_FINISH:
+        if (iFlags & INVERSE)
+          iForeColour = xterm_256_colours [iCode];
+        else  
+          iBackColour = xterm_256_colours [iCode];
+        break;
+      } // end of switch
+    }   // end style in RGB
+  else
+    {
+    // must be in ANSI mode
+    switch (m_phase)
+      {
+      case HAVE_FOREGROUND_256_FINISH:
       if (iFlags & INVERSE)
-        iBackColour = xterm_256_colours [iCode];
+        iBackColour = iCode;
       else
-        iForeColour = xterm_256_colours [iCode];
+        iForeColour = iCode;
       break;
 
-    case HAVE_BACKGROUND_256_FINISH:
+     case HAVE_BACKGROUND_256_FINISH:
       if (iFlags & INVERSE)
-        iForeColour = xterm_256_colours [iCode];
+        iForeColour = iCode;
       else  
-        iBackColour = xterm_256_colours [iCode];
+        iBackColour = iCode;
       break;
+      } // end of switch
 
-    } // end of switch on m_phase
+
+    }
 
   m_phase = DOING_CODE;
 

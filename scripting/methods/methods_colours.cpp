@@ -79,6 +79,14 @@ BSTR CMUSHclientDoc::RGBColourToName(long Colour)
 46: Cyan   
 47: White 
  
+// 256 colour ANSI foreground
+38;5;n  where n is 0 to 255
+
+// 256 colour ANSI background
+48;5;n  where n is 0 to 255
+
+See: http://www.gammon.com.au/forum/?id=7761
+
 */
 
 

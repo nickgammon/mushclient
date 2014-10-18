@@ -5230,8 +5230,8 @@ int iForeground,
     }
   else
     {
-    ASSERT (pStyle->iForeColour >= 0 && pStyle->iForeColour < 8);
-    ASSERT (pStyle->iBackColour >= 0 && pStyle->iBackColour < 8);
+    ASSERT (pStyle->iForeColour >= 0 && pStyle->iForeColour < 256);
+    ASSERT (pStyle->iBackColour >= 0 && pStyle->iBackColour < 256);
 
 // display bold inverse differently according to user taste
 
@@ -5242,19 +5242,35 @@ int iForeground,
 
       if (style & INVERSE)    // inverse inverts foreground and background
         {
-        if (style & HILITE)
-          colour2 = m_boldcolour [iForeground];
+        if (iForeground >= 8)
+          colour2 = xterm_256_colours [iForeground];
         else
-          colour2 = m_normalcolour [iForeground];
-        colour1 = m_normalcolour [iBackground];
+          {
+          if (style & HILITE)
+            colour2 = m_boldcolour [iForeground];
+          else
+            colour2 = m_normalcolour [iForeground];
+          }
+        if (iBackground >= 8)
+          colour1 = xterm_256_colours [iBackground];
+        else
+          colour1 = m_normalcolour [iBackground];
         }
       else
         {
-        if (style & HILITE)
-          colour1 = m_boldcolour [iForeground];
+        if (iForeground >= 8)
+          colour1 = xterm_256_colours [iForeground];
         else
-          colour1 = m_normalcolour [iForeground];
-        colour2 = m_normalcolour [iBackground];
+          {
+          if (style & HILITE)
+            colour1 = m_boldcolour [iForeground];
+          else
+            colour1 = m_normalcolour [iForeground];
+          }
+        if (iBackground >= 8)
+          colour2 = xterm_256_colours [iBackground];
+        else
+          colour2 = m_normalcolour [iBackground];
         }   // end of not inverse
 
 
@@ -5273,10 +5289,23 @@ int iForeground,
         }
 
       if (style & HILITE)
-        colour1 = m_boldcolour [iForeground];
+        {
+        if (iForeground >= 8)
+          colour1 = xterm_256_colours [iForeground];
+        else
+          colour1 = m_boldcolour [iForeground];
+        }
       else
-        colour1 = m_normalcolour [iForeground];
-      colour2 = m_normalcolour [iBackground];
+        {
+        if (iForeground >= 8)
+          colour1 = xterm_256_colours [iForeground];
+        else
+          colour1 = m_normalcolour [iForeground];
+        }
+      if (iBackground >= 8)
+        colour2 = xterm_256_colours [iBackground];
+      else
+        colour2 = m_normalcolour [iBackground];
 
       } // end of old way
 
@@ -5392,8 +5421,8 @@ void CMUSHclientDoc::RememberStyle (const CStyle * pStyle)
   else
   if ((pStyle->iFlags & COLOURTYPE) == COLOUR_ANSI)
     {
-    ASSERT (pStyle->iForeColour >= 0 && pStyle->iForeColour < 8);
-    ASSERT (pStyle->iBackColour >= 0 && pStyle->iBackColour < 8);
+    ASSERT (pStyle->iForeColour >= 0 && pStyle->iForeColour < 256);
+    ASSERT (pStyle->iBackColour >= 0 && pStyle->iBackColour < 256);
     }
 
 
