@@ -1,4 +1,4 @@
-MUSHclient version 4.95
+MUSHclient version 4.96
 =======================
 
 Monday, 18th October 2014
