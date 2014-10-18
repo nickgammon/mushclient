@@ -279,6 +279,10 @@ bool bItalic = false;
 bool bUnderline = false;
 int iCurrentForeGround = WHITE;
 int iCurrentBackGround = BLACK;
+bool gotANSI_TEXT_256_COLOUR = false;
+bool gotANSI_BACK_256_COLOUR = false;
+bool nextANSI_TEXT_256_COLOUR = false;
+bool nextANSI_BACK_256_COLOUR = false;
 
 m_iNoteStyle = NORMAL;   // start off with normal style
 
@@ -314,111 +318,171 @@ long length;
           else
             if (c == ';' || c == 'm')
               {
-              switch (iCode)
+
+              // here if we have had ESC [ 38;5;n  or ESC [ 48;5;n
+              //  n is the colour in the range 0 to 255
+              if (nextANSI_TEXT_256_COLOUR || nextANSI_BACK_256_COLOUR)
                 {
-                // reset colours to defaults
-                case ANSI_RESET:
-                   iCurrentForeGround = WHITE;
-                   iCurrentBackGround = BLACK;
-                   bBold = false;     
-                   bInverse = false;
-                   bItalic = false;   
-                   bUnderline = false;
-                   break;
-
-                // bold
-                case ANSI_BOLD:
-                   bBold = true;
-                   break;
-
-                // inverse
-                case ANSI_INVERSE:
-                   bInverse = true;
-                   break;
-
-                // blink
-                case ANSI_BLINK:
-                case ANSI_SLOW_BLINK:
-                case ANSI_FAST_BLINK:
-                   bItalic = true;
-                   break;
-
-                // underline
-                case ANSI_UNDERLINE:
-                   bUnderline = true;
-                   break;
-
-                // not bold
-                case ANSI_CANCEL_BOLD:
-                   bBold = false;
-                   break;
-
-                // not inverse
-                case ANSI_CANCEL_INVERSE:
-                   bInverse = false;
-                   break;
-
-                // not blink
-                case ANSI_CANCEL_BLINK:
-                case ANSI_CANCEL_SLOW_BLINK:
-                   bItalic = false;
-                   break;
-
-                // not underline
-                case ANSI_CANCEL_UNDERLINE:
-                   bUnderline = false;
-                   break;
-
-                // different foreground colour
-                case ANSI_TEXT_BLACK:
-                case ANSI_TEXT_RED    :
-                case ANSI_TEXT_GREEN  :
-                case ANSI_TEXT_YELLOW :
-                case ANSI_TEXT_BLUE   :
-                case ANSI_TEXT_MAGENTA:
-                case ANSI_TEXT_CYAN   :
-                case ANSI_TEXT_WHITE  :
-                   iCurrentForeGround = iCode - ANSI_TEXT_BLACK;
-                   break;
-
-                // different background colour
-                case ANSI_BACK_BLACK  :
-                case ANSI_BACK_RED    :
-                case ANSI_BACK_GREEN  :
-                case ANSI_BACK_YELLOW :
-                case ANSI_BACK_BLUE   :
-                case ANSI_BACK_MAGENTA:
-                case ANSI_BACK_CYAN   :
-                case ANSI_BACK_WHITE  :
-                   iCurrentBackGround = iCode - ANSI_BACK_BLACK;
-                   break;
-
-                } // end of switch
-
-              m_iNoteStyle = NORMAL;
-
-              // select colours
-              if (bBold)
+                if (nextANSI_TEXT_256_COLOUR)
+                  {
+                  iCurrentForeGround = iCode & 0xFF;
+                  SetNoteColourFore (xterm_256_colours [iCurrentForeGround]);
+                  }
+                else
+                  {
+                  iCurrentBackGround = iCode & 0xFF;
+                  SetNoteColourBack (xterm_256_colours [iCurrentBackGround]);
+                  }
+                }
+              // here if we have had ESC [ 38 or ESC [ 48
+              //  we expect a 5 to follow, otherwise cancel
+              else if (gotANSI_TEXT_256_COLOUR || gotANSI_BACK_256_COLOUR)
                 {
-                SetNoteColourFore (m_boldcolour [iCurrentForeGround]);
-                SetNoteColourBack (m_normalcolour [iCurrentBackGround]);
-                m_iNoteStyle |= HILITE;
+                if (iCode == 5)
+                  {
+                  if (gotANSI_TEXT_256_COLOUR)
+                    nextANSI_TEXT_256_COLOUR = true;
+                  else  
+                    nextANSI_BACK_256_COLOUR = true;
+                  }
+                else
+                  {
+                  gotANSI_TEXT_256_COLOUR = false;
+                  gotANSI_BACK_256_COLOUR = false;
+                  nextANSI_TEXT_256_COLOUR = false;
+                  nextANSI_BACK_256_COLOUR = false;
+                  } // not 5
                 }
               else
+                {  // we are not doing 256-colour ANSI right now
+                switch (iCode)
+                  {
+                  // reset colours to defaults
+                  case ANSI_RESET:
+                     iCurrentForeGround = WHITE;
+                     iCurrentBackGround = BLACK;
+                     bBold = false;     
+                     bInverse = false;
+                     bItalic = false;   
+                     bUnderline = false;
+                     break;
+
+                  // bold
+                  case ANSI_BOLD:
+                     bBold = true;
+                     break;
+
+                  // inverse
+                  case ANSI_INVERSE:
+                     bInverse = true;
+                     break;
+
+                  // blink
+                  case ANSI_BLINK:
+                  case ANSI_SLOW_BLINK:
+                  case ANSI_FAST_BLINK:
+                     bItalic = true;
+                     break;
+
+                  // underline
+                  case ANSI_UNDERLINE:
+                     bUnderline = true;
+                     break;
+
+                  // not bold
+                  case ANSI_CANCEL_BOLD:
+                     bBold = false;
+                     break;
+
+                  // not inverse
+                  case ANSI_CANCEL_INVERSE:
+                     bInverse = false;
+                     break;
+
+                  // not blink
+                  case ANSI_CANCEL_BLINK:
+                  case ANSI_CANCEL_SLOW_BLINK:
+                     bItalic = false;
+                     break;
+
+                  // not underline
+                  case ANSI_CANCEL_UNDERLINE:
+                     bUnderline = false;
+                     break;
+
+                  // different foreground colour
+                  case ANSI_TEXT_BLACK:
+                  case ANSI_TEXT_RED    :
+                  case ANSI_TEXT_GREEN  :
+                  case ANSI_TEXT_YELLOW :
+                  case ANSI_TEXT_BLUE   :
+                  case ANSI_TEXT_MAGENTA:
+                  case ANSI_TEXT_CYAN   :
+                  case ANSI_TEXT_WHITE  :
+                     iCurrentForeGround = iCode - ANSI_TEXT_BLACK;
+                     break;
+
+                  // different background colour
+                  case ANSI_BACK_BLACK  :
+                  case ANSI_BACK_RED    :
+                  case ANSI_BACK_GREEN  :
+                  case ANSI_BACK_YELLOW :
+                  case ANSI_BACK_BLUE   :
+                  case ANSI_BACK_MAGENTA:
+                  case ANSI_BACK_CYAN   :
+                  case ANSI_BACK_WHITE  :
+                     iCurrentBackGround = iCode - ANSI_BACK_BLACK;
+                     break;
+
+                  case ANSI_TEXT_256_COLOUR :
+                    gotANSI_TEXT_256_COLOUR = true;  // 256-colour ANSI
+                    break;
+
+                  case ANSI_BACK_256_COLOUR :
+                    gotANSI_BACK_256_COLOUR = true;  // 256-colour ANSI
+                    break;
+
+                  } // end of switch
+                }   // end of not gotANSI_TEXT_256_COLOUR  || gotANSI_BACK_256_COLOUR ||
+                    //            nextANSI_TEXT_256_COLOUR || nextANSI_BACK_256_COLOUR
+  
+              // skip this stuff for 256-colour ANSI
+              if (!gotANSI_TEXT_256_COLOUR && 
+                  !gotANSI_BACK_256_COLOUR &&
+                  !nextANSI_TEXT_256_COLOUR &&
+                  !nextANSI_BACK_256_COLOUR)
                 {
-                SetNoteColourFore (m_normalcolour [iCurrentForeGround]);
-                SetNoteColourBack (m_normalcolour [iCurrentBackGround]);
-                }
+                m_iNoteStyle = NORMAL;
 
-              // select other style bits
-              if (bInverse)
-                m_iNoteStyle |= INVERSE;
+                // select colours
+                if (bBold)
+                  {
+                  SetNoteColourFore (m_boldcolour [iCurrentForeGround]);
+                  SetNoteColourBack (m_normalcolour [iCurrentBackGround]);
+                  m_iNoteStyle |= HILITE;
+                  }
+                else
+                  {
+                  SetNoteColourFore (m_normalcolour [iCurrentForeGround]);
+                  SetNoteColourBack (m_normalcolour [iCurrentBackGround]);
+                  }
 
-              if (bItalic)
-                m_iNoteStyle |= BLINK;
+                // select other style bits
+                if (bInverse)
+                  m_iNoteStyle |= INVERSE;
 
-              if (bUnderline)
-                m_iNoteStyle |= UNDERLINE;
+                if (bItalic)
+                  m_iNoteStyle |= BLINK;
+
+                if (bUnderline)
+                  m_iNoteStyle |= UNDERLINE;
+                } // not starting 256-colour ANSI
+
+              // if we got the whole 256-colour ANSI sequence, cancel ready for something else
+              if (gotANSI_TEXT_256_COLOUR && nextANSI_TEXT_256_COLOUR)
+                gotANSI_TEXT_256_COLOUR = false;
+              if (gotANSI_BACK_256_COLOUR && nextANSI_BACK_256_COLOUR)
+                gotANSI_BACK_256_COLOUR = false;
 
               p++;  // skip m or ;
               }   // end of ESC [ nn ; or ESC [ nn m
