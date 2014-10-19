@@ -1574,7 +1574,14 @@ STDMETHODIMP CMUSHclientApp::XLocalClass::ShowWindow()
 void Generate256colours (void)
   {
   int red, green, blue;
-//  const BYTE values [6] = { 0x00, 0x5F, 0x87, 0xAF, 0xD7, 0xFF };
+  const BYTE values [6] = { 
+      0, 
+     95, 
+     95 + 40, 
+     95 + 40 + 40, 
+     95 + 40 + 40 + 40, 
+     95 + 40 + 40 + 40 + 40
+      };
 
   xterm_256_colours   [0] = RGB (0, 0, 0);         // (black)       
   xterm_256_colours   [1] = RGB (128, 0, 0);       // (maroon)      
@@ -1594,28 +1601,14 @@ void Generate256colours (void)
   xterm_256_colours   [14] = RGB (0, 255, 255);    // (cyan)        
   xterm_256_colours   [15] = RGB (255, 255, 255);  // (white)             
 
-  /*
   for (red = 0; red < 6; red++)
     for (green = 0; green < 6; green++)
       for (blue = 0; blue < 6; blue++)
-         xterm_256_colours [16 + (red * 36) + (blue * 6) + green] =
-            RGB (values [red], values [blue], values [green]);
-  */
+         xterm_256_colours [16 + (red * 36) + (green * 6) + blue] =
+            RGB (values [red], values [green], values [blue]);
 
-// alternate algorithm - gives even 6x6x6 colour cube
-//  there are 6 colours in the cube, but only 5 gaps:
-//   Thus the colours will be: 0x00 / 0x33 / 0x66 / 0x99 / 0xCC / 0xFF
-
-const BYTE colour_increment = 255 / 5;     // that is, 51 (0x33)
-
-  for (red = 0; red < 6; red++)
-      for (green = 0; green < 6; green++)
-        for (blue = 0; blue < 6; blue++)
-           xterm_256_colours [16 + (red * 36) + (blue * 6) + green] =
-              RGB (red   * colour_increment, 
-                   blue  * colour_increment, 
-                   green * colour_increment);
-  
+  // see: utils.colourcube in scripting/lua_utils.cpp
+  // That lets you change from the xterm colour cube to the Netscape colour cube
 
   int grey;
   for (grey = 0; grey < 24; grey++)
