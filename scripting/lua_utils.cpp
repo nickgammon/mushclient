@@ -2042,6 +2042,50 @@ static int glyph_available (lua_State *L)
 
   } // end of glyph_available
 
+extern  COLORREF xterm_256_colours [256];
+  
+static int colourcube (lua_State *L) {
+  int which = luaL_checknumber (L, 1);
+  int red, green, blue;
+  const BYTE values [6] = { 
+      0, 
+     95, 
+     95 + 40, 
+     95 + 40 + 40, 
+     95 + 40 + 40 + 40, 
+     95 + 40 + 40 + 40 + 40
+      };
+  const BYTE colour_increment = 255 / 5;     // that is, 51 (0x33)
+
+  switch (which)
+    {
+
+    case 1:  // Xterm colour cube (the default - favours brighter colours)
+      for (red = 0; red < 6; red++)
+        for (green = 0; green < 6; green++)
+          for (blue = 0; blue < 6; blue++)
+             xterm_256_colours [16 + (red * 36) + (green * 6) + blue] =
+                RGB (values [red], values [green], values [blue]);
+
+      break;
+
+    case 2:  // Netscape colour cube - evenly spaced colour cube
+      for (red = 0; red < 6; red++)
+          for (green = 0; green < 6; green++)
+            for (blue = 0; blue < 6; blue++)
+               xterm_256_colours [16 + (red * 36) + (green * 6) + blue] =
+                  RGB (red   * colour_increment, 
+                       green * colour_increment, 
+                       blue  * colour_increment);
+
+      break;
+
+    default: luaL_error (L, "Unknown option");
+    } // end of switch
+
+  return 0;  /* no return */
+}
+
 #if 0
 static int registry (lua_State *L)
   {
@@ -2071,6 +2115,7 @@ static const struct luaL_Reg xmllib [] =
   {"appendtonotepad",   appendtonotepad},
   {"callbackslist",     callbackslist},
   {"choose",            choose},
+  {"colourcube",        colourcube},
   {"directorypicker",   directorypicker},
   {"edit_distance",     edit_distance},
   {"editbox",           editbox},
