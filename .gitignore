@@ -75,3 +75,9 @@ documentation_fixed.sql
 # TinyGL stuff
 #
 TinyGL*
+
+#
+# temporary files
+#
+git_diff_output.txt
+git_log_output.txt
