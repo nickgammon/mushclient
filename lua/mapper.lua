@@ -10,7 +10,8 @@ Amended: 18th October 2010 to added find callback
 Amended: 16th November 2010 to add symbolic constants (miniwin.xxxx)
 Amended: 18th November 2010 to add more timing and count of times called
          Also added zooming with the mouse wheel.
-Amended: 26th November 2010 to check timers are enabled when speedwalking.       
+Amended: 26th November 2010 to check timers are enabled when speedwalking. 
+Amended: 11th November 2014 to allow for detecting mouse-overs of rooms      
 
 Generic MUD mapper.
 
@@ -21,6 +22,8 @@ init (t)            -- call once, supply:
                           t.get_room    -- info about room (uid)
                           t.show_help   -- function that displays some help
                           t.room_click  -- function that handles RH click on room (uid, flags)
+                          t.room_mouseover -- function that handles mouse-over a room (uid, flags)
+                          t.room_cancelmouseover -- function that handles cancelled mouse-over of a room (uid, flags)
                           t.timing      -- true to show timing
                           t.show_completed  -- true to show "Speedwalk completed."
                           t.show_other_areas -- true to show non-current areas
@@ -67,7 +70,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 2.5   -- for querying by plugins
+VERSION = 2.6   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -88,6 +91,8 @@ local DISTANCE_TO_NEXT_ROOM = 15
 local config  -- configuration table 
 local supplied_get_room
 local room_click
+local room_mouseover
+local room_cancelmouseover
 local timing            -- true to show timing and other info
 local show_completed    -- true to show "Speedwalk completed."
 local show_other_areas  -- true to draw other areas
@@ -707,9 +712,9 @@ local function draw_room (uid, path, x, y)
   speedwalks [uid] = path  -- so we know how to get here
   
   WindowAddHotspot(win, uid,  
-                 left, top, right, bottom,   -- rectangle
-                 "",  -- mouseover
-                 "",  -- cancelmouseover
+                 left, top, right, bottom,       -- rectangle
+                 "mapper.mouseover_room",        -- mouseover
+                 "mapper.cancelmouseover_room",  -- cancelmouseover
                  "",  -- mousedown
                  "",  -- cancelmousedown
                  "mapper.mouseup_room",  -- mouseup
@@ -939,7 +944,16 @@ function draw (uid)
   last_visited [uid] = os.time ()
 
   current_area = room.area
-    
+
+  -- we are recreating the window so any mouse-over is not valid any more
+  if WindowInfo (win, 19) and WindowInfo (win, 19) ~= "" then
+    if type (room_cancelmouseover) == "function" then
+      room_cancelmouseover (WindowInfo (win, 19), 0)  -- cancelled mouse over
+    end -- if 
+  end -- have a hotspot
+      
+  WindowDeleteAllHotspots (win)
+  
   WindowCreate (win, 
                  windowinfo.window_left, 
                  windowinfo.window_top, 
@@ -1122,6 +1136,8 @@ function init (t)
      
   show_help = t.show_help     -- "help" function
   room_click = t.room_click   -- RH mouse-click function
+  room_mouseover = t.room_mouseover -- mouse-over function
+  room_cancelmouseover = t.room_cancelmouseover -- cancel mouse-over function
   timing = t.timing           -- true for timing info
   show_completed = t.show_completed  -- true to show "Speedwalk completed." message
   show_other_areas = t.show_other_areas  -- true to show other areas
@@ -1483,6 +1499,23 @@ function mouseup_room (flags, hotspot_id)
   start_speedwalk (speedwalks [uid])
    
 end -- mouseup_room
+
+-- ------------------------------------------------------------------
+-- mouse-over handlers (need to be exposed)
+-- these are for mousing over a room
+-- ------------------------------------------------------------------
+
+function mouseover_room (flags, hotspot_id)
+  if type (room_mouseover) == "function" then
+    room_mouseover (hotspot_id, flags)  -- moused over
+  end -- if 
+end -- mouseover_room
+
+function cancelmouseover_room (flags, hotspot_id)
+  if type (room_cancelmouseover) == "function" then
+    room_cancelmouseover (hotspot_id, flags)  -- cancled mouse over
+  end -- if 
+end -- cancelmouseover_room
 
 function mouseup_configure (flags, hotspot_id)
   draw_configure_box = true
