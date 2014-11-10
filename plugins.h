@@ -233,7 +233,10 @@ extern const string ON_PLUGIN_CHAT_MESSAGE_OUT;     //  "OnPluginChatMessageOut"
 extern const string ON_PLUGIN_CHAT_DISPLAY;         //  "OnPluginChatDisplay"          
 extern const string ON_PLUGIN_CHAT_NEWUSER;         //  "OnPluginChatNewUser"          
 extern const string ON_PLUGIN_CHAT_USERDISCONNECT;  //  "OnPluginChatUserDisconnect"   
-                                                                                     
+
+// drawing
+extern const string ON_PLUGIN_DRAW_OUTPUT_WINDOW;   //  "OnPluginDrawOutputWindow"
+
 // table of callbacks
 extern string PluginCallbacksNames [];
 

@@ -857,7 +857,6 @@ void CMUSHView::DrawImage (CDC* pDC, CBitmap & bitmap, const short iMode)
 
   } // end of CMUSHView::DrawImage
 
-
 void CMUSHView::OnDraw(CDC* dc)
 {
 
@@ -1035,6 +1034,11 @@ RECT r;
 
   if (startline > lastline)
     startline = lastline - 20;
+
+  // give the user a chance to update miniwindows to match text in the output window
+  pDoc->SendToAllPluginCallbacks (ON_PLUGIN_DRAW_OUTPUT_WINDOW,
+                                  startline + 1, pt.y - pDoc->m_iPixelOffset,
+                                  "", false, false);
 
 POSITION pos = pDoc->GetLinePosition (startline);
 unsigned short style = 0;    // background (bleed) style

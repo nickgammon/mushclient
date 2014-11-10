@@ -87,6 +87,8 @@ const string ON_PLUGIN_CHAT_DISPLAY          ("OnPluginChatDisplay");
 const string ON_PLUGIN_CHAT_NEWUSER          ("OnPluginChatNewUser");
 const string ON_PLUGIN_CHAT_USERDISCONNECT   ("OnPluginChatUserDisconnect");
 
+// drawing
+const string ON_PLUGIN_DRAW_OUTPUT_WINDOW    ("OnPluginDrawOutputWindow");
 
 // possible plugin callbacks
 string PluginCallbacksNames [] = {
@@ -106,7 +108,8 @@ string PluginCallbacksNames [] = {
    ON_PLUGIN_COMMAND_ENTERED,       
    ON_PLUGIN_CONNECT,               
    ON_PLUGIN_DISABLE,               
-   ON_PLUGIN_DISCONNECT,            
+   ON_PLUGIN_DISCONNECT,
+   ON_PLUGIN_DRAW_OUTPUT_WINDOW,
    ON_PLUGIN_ENABLE,                
    ON_PLUGIN_GETFOCUS,              
    ON_PLUGIN_IAC_GA,                
@@ -674,10 +677,10 @@ void RemoveTrailingBackslash (CString& str);
 // function prototypes needed for folder browsing
 
 int __stdcall BrowseCallbackProc(
-    HWND hwnd, 	
-    UINT uMsg, 	
-    LPARAM lParam, 	
-    LPARAM lpData	
+    HWND hwnd,  
+    UINT uMsg,  
+    LPARAM lParam,  
+    LPARAM lpData 
    );
 
 // The field below is needed to initialise the browse directory dialog 
@@ -709,7 +712,7 @@ bool bError = true;
 
   // sigh ... check plugin state folder exists
 
-  CFileStatus	status;
+  CFileStatus status;
   CString strError;
   CString strFolder = strFilename;
   RemoveTrailingBackslash (strFolder);     // trailing slash not wanted, thanks
@@ -738,47 +741,47 @@ bool bError = true;
 
     // BROWSE FOR STATE FOLDER
 
-	  // Gets the Shell's default allocator
-	  LPMALLOC pMalloc;
-	  if (::SHGetMalloc(&pMalloc) == NOERROR)
-	  {
-		  char	pszBuffer[MAX_PATH];
-		  BROWSEINFO		bi;
-		  LPITEMIDLIST	pidl;
+    // Gets the Shell's default allocator
+    LPMALLOC pMalloc;
+    if (::SHGetMalloc(&pMalloc) == NOERROR)
+    {
+      char  pszBuffer[MAX_PATH];
+      BROWSEINFO    bi;
+      LPITEMIDLIST  pidl;
 
       // Get help on BROWSEINFO struct - it's got all the bit settings.
-		  bi.hwndOwner = NULL;
-		  bi.pidlRoot = NULL;
-		  bi.pszDisplayName = pszBuffer;
-		  bi.lpszTitle = "Folder for saving plugin state files";
-		  bi.ulFlags = BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS;
+      bi.hwndOwner = NULL;
+      bi.pidlRoot = NULL;
+      bi.pszDisplayName = pszBuffer;
+      bi.lpszTitle = "Folder for saving plugin state files";
+      bi.ulFlags = BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS;
 
       // if possible, let them create one
       if (!bWine)  
-	  	  bi.ulFlags |= BIF_NEWDIALOGSTYLE | BIF_EDITBOX;     // requires CoInitialize
+        bi.ulFlags |= BIF_NEWDIALOGSTYLE | BIF_EDITBOX;     // requires CoInitialize
   
-		  bi.lpfn = BrowseCallbackProc;
-		  bi.lParam = 0;
+      bi.lpfn = BrowseCallbackProc;
+      bi.lParam = 0;
       strStartingDirectory = App.m_strPluginsDirectory; // really should be under plugins directory
 
-		  // This next call issues the dialog box.
-		  if ((pidl = ::SHBrowseForFolder(&bi)) != NULL)
-		  {
-			  if (::SHGetPathFromIDList(pidl, pszBuffer))
+      // This next call issues the dialog box.
+      if ((pidl = ::SHBrowseForFolder(&bi)) != NULL)
+      {
+        if (::SHGetPathFromIDList(pidl, pszBuffer))
           {
           App.m_strDefaultStateFilesDirectory = pszBuffer;
           App.m_strDefaultStateFilesDirectory += "\\";
-				  strFilename = App.m_strDefaultStateFilesDirectory;
+          strFilename = App.m_strDefaultStateFilesDirectory;
           // save back to database
           App.SaveGlobalsToDatabase ();
 
           }
 
-			  // Free the PIDL allocated by SHBrowseForFolder.
-			  pMalloc->Free(pidl);
-		  }
-		  // Release the shell's allocator.
-		  pMalloc->Release();
+        // Free the PIDL allocated by SHBrowseForFolder.
+        pMalloc->Free(pidl);
+      }
+      // Release the shell's allocator.
+      pMalloc->Release();
       }
 
     }  // end of no save state folder
@@ -858,13 +861,13 @@ bool bError = true;
 
 void CMUSHclientDoc::OnFilePluginwizard() 
 {
-	// TODO: The property sheet attached to your project
-	// via this function is not hooked up to any message
-	// handler.  In order to actually use the property sheet,
-	// you will need to associate this function with a control
-	// in your project such as a menu item or tool bar button.
+  // TODO: The property sheet attached to your project
+  // via this function is not hooked up to any message
+  // handler.  In order to actually use the property sheet,
+  // you will need to associate this function with a control
+  // in your project such as a menu item or tool bar button.
 
-	CPluginWizardSheet propSheet;
+  CPluginWizardSheet propSheet;
 
   propSheet.m_Page1.m_doc = this;
   propSheet.m_Page2.m_doc = this;
@@ -926,8 +929,8 @@ void CMUSHclientDoc::OnFilePluginwizard()
   // load script file
   if (!m_strScriptFilename.IsEmpty ())
     {
-	  try
-	    {
+    try
+      {
       CFile f (m_strScriptFilename, CFile::modeRead | CFile::shareDenyWrite);
       UINT iLength = f.GetLength ();
       if (iLength > 0)
@@ -941,33 +944,33 @@ void CMUSHclientDoc::OnFilePluginwizard()
         propSheet.m_Page7.m_strScript.ReleaseBuffer (iLength);
         }   // end of non zero-length script file
       }      // end of try block
-	  catch (CException* e)
-	    {
-		    e->ReportError();
-		    e->Delete();
-	    }       // end of catch
+    catch (CException* e)
+      {
+        e->ReportError();
+        e->Delete();
+      }       // end of catch
     }  // end of having a script file
 
-	if (propSheet.DoModal() != IDOK)
+  if (propSheet.DoModal() != IDOK)
     return;
 
-	// write plugin
+  // write plugin
 
 #define NL "\r\n"
 
-	try
-	  {
+  try
+    {
 
     CString strFilename = propSheet.m_Page1.m_strName + ".xml";
 
     // now find output file name
-  	CFileDialog	dlg(FALSE,						// FALSE for FileSave
-					  "xml",						// default extension
-					  strFilename,    // suggest obvious name
-					  OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_PATHMUSTEXIST,
-					  "Plugin files (*.xml)|*.xml||",
-					  NULL);
-	  dlg.m_ofn.lpstrTitle = "Save plugin as";
+    CFileDialog dlg(FALSE,            // FALSE for FileSave
+            "xml",            // default extension
+            strFilename,    // suggest obvious name
+            OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_PATHMUSTEXIST,
+            "Plugin files (*.xml)|*.xml||",
+            NULL);
+    dlg.m_ofn.lpstrTitle = "Save plugin as";
     // use default plugins directory
     dlg.m_ofn.lpstrInitialDir = Make_Absolute_Path (App.m_strPluginsDirectory);
 
@@ -975,12 +978,12 @@ void CMUSHclientDoc::OnFilePluginwizard()
     int nResult = dlg.DoModal();
     ChangeToStartupDirectory ();
 
-	  if (nResult != IDOK)
+    if (nResult != IDOK)
       return;
 
     strFilename = dlg.GetPathName();
 
-    CFile	f (strFilename, CFile::modeCreate|CFile::modeWrite|CFile::shareExclusive);
+    CFile f (strFilename, CFile::modeCreate|CFile::modeWrite|CFile::shareExclusive);
     CArchive ar(&f, CArchive::store);
 
     // xml prolog
@@ -1377,11 +1380,11 @@ void CMUSHclientDoc::OnFilePluginwizard()
         }  // end of doing all Variables
       } // end of removing wanted
     }      // end of try block
-	catch (CException* e)
-	{
-		e->ReportError();
-		e->Delete();
-	}       // end of catch
+  catch (CException* e)
+  {
+    e->ReportError();
+    e->Delete();
+  }       // end of catch
 
 }  // end of CMUSHclientDoc::OnFilePluginwizard
 
