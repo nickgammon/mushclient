@@ -15,7 +15,7 @@ Exposed functions are:
    mw.popup             - make a popup window
    mw.tooltip           - make a tooltip window
 
-Example of making a popup window:
+  EXAMPLE OF MAKING A POPUP WINDOW:
 
   require "mw"
 
@@ -50,13 +50,16 @@ Example of making a popup window:
     font_name = "Courier"
   end -- if
 
-  -- load fonts - mouseover window
-  WindowCreate (infowin, 0, 0, 1, 1, 0, 0, 0)   -- make 1-pixel wide window
+  -- load fonts
+  WindowCreate (infowin, 0, 0, 0, 0, 0, 0, 0)   -- make initial window
 
-  -- install the fonts  (49 is modern / fixed pitch)
-  WindowFont (infowin, font_id, font_name, font_size, false, false, false, false, 0, 49)
-  WindowFont (infowin, heading_font_id, font_name, font_size + 2, false, false, false, false, 0, 49)
-
+  -- install the fonts
+  WindowFont (infowin, font_id, font_name, font_size, false, false, false, false,
+              miniwin.font_charset_ansi,
+              miniwin.font_family_modern + miniwin.font_pitch_fixed)
+  WindowFont (infowin, heading_font_id, font_name, font_size + 2, false, false, false, false,
+              miniwin.font_charset_ansi,
+              miniwin.font_family_modern + miniwin.font_pitch_fixed)
 
   -- NOW DISPLAY A WINDOW
 
@@ -87,10 +90,32 @@ Example of making a popup window:
             align_bottom)      -- if true, align bottom side on "Top" parameter
 
 
+  EXAMPLE OF MAKING A TOOLTIP WINDOW:
 
+  -- SET UP FOR TOOLTIP WINDOWS - define colours, add font, make window id
+  -- (DO THIS ONCE ONLY, eg. in OnPluginInstall)
+
+  -- Example setup code:
+  require "mw"
+  -- get ready for tooltips
+  win_tooltip = GetPluginID () .. "_tooltip"
+  font_tooltip = "tooltip_font"
+  -- make the window
+  WindowCreate (win_tooltip, 0, 0, 0, 0, 0, 0, 0)
+  -- load some font into it
+  WindowFont (win_tooltip, font_tooltip, "Tahoma", 8)
+
+  -- NOW DISPLAY A tooltip
+
+  mw.tooltip (win_tooltip,    -- window name to use
+            font_tooltip,   -- font to use for each line
+            "Hello, world!\nHave fun.",        -- tooltip text
+            45, 55,      -- where to put it (x, y)
+            0,  -- colour for text   (black)
+            0,  -- colour for border (black)
+            ColourNameToRGB ("#FFFFE1")) -- colour for background
 
 --]]
-
 
 module (..., package.seeall)
 
@@ -252,44 +277,6 @@ function popup (win,    -- window name to use
                 align_right,       -- if true, align right side on "Left" parameter
                 align_bottom)      -- if true, align bottom side on "Top" parameter
 
---[[
-
-  A prerequisite is to create the window first and load the two fonts into it.
-  This only needs to be done once, and as it may take a bit of code to select a font that actually
-  exists, I prefer to not do it here.
-
-  Example code:
-
-  infowin = GetPluginID () .. "_info"
-  font_id = "popup_font"
-  heading_font_id = "popup_heading_font"
-
-  font_size = 8
-
-  -- use 8 pt Dina or Lucida Sans, or 10 pt Courier
-  local fonts = utils.getfontfamilies ()
-
-  if fonts.Dina then
-    font_name = "Dina"
-  elseif fonts ["Lucida Sans Unicode"] then
-    font_name = "Lucida Sans Unicode"
-  else
-    font_size = 10
-    font_name = "Courier"
-  end -- if
-
-
-  -- load fonts - mouseover window
-  WindowCreate (infowin, 0, 0, 1, 1, 0, 0, 0)   -- make 1-pixel wide window
-
-  -- install the fonts  (49 is modern / fixed pitch)
-  WindowFont (infowin, font_id, font_name, font_size, false, false, false, false, 0, 49)
-  WindowFont (infowin, heading_font_id, font_name, font_size + 2, false, false, false, false, 0, 49)
-
-
---]]
-
-
   assert (WindowInfo (win, 1), "Window " .. win .. " must already exist")
   assert (WindowFontInfo (win, heading_font_id, 1), "No font " .. heading_font_id .. " in " .. win)
   assert (WindowFontInfo (win, font_id, 1), "No font " .. font_id .. " in " .. win)
@@ -299,7 +286,6 @@ function popup (win,    -- window name to use
   local heading_font_height = WindowFontInfo (win, heading_font_id, 1)
 
   -- find text width - minus colour codes
-
   local infowidth = 0
   local infoheight = 0
 
@@ -334,14 +320,14 @@ function popup (win,    -- window name to use
                 Left, Top,    -- where
                 infowidth,    -- width  (gap of 5 pixels per side)
                 infoheight,   -- height
-                4,            -- position mode: can't be 0 to 3
-                2 + 4,        -- absolute location + transparent
+                miniwin.pos_top_left,  -- position mode: can't be 0 to 3
+                miniwin.create_absolute_location + miniwin.create_transparent,
                 TRANSPARENCY_COLOUR)   -- background (transparent) colour
 
-  WindowCircleOp (win, 3, -- round rectangle
+  WindowCircleOp (win, miniwin.circle_round_rectangle,
         BORDER_WIDTH, BORDER_WIDTH, -BORDER_WIDTH, -BORDER_WIDTH,  -- border inset
-        border_colour, 0, BORDER_WIDTH,  -- solid line
-        background_colour, 0, -- solid
+        border_colour, miniwin.pen_solid, BORDER_WIDTH,  -- line
+        background_colour, miniwin.brush_solid,          -- fill
         5, 5)  -- diameter of ellipse
 
   local x = BORDER_WIDTH + WindowFontInfo (win, font_id, 6) / 2    -- start 1/2 character in
@@ -375,56 +361,80 @@ function tooltip (win,    -- window name to use
                   border_colour,  -- colour for border
                   background_colour) -- colour for background
 
---[[
-
-  A prerequisite is to create the window first and load a font into it.
-  This only needs to be done once, and as it may take a bit of code to select a font that actually
-  exists, I prefer to not do it here.
-
-  Example code:
-
-  -- get ready for tooltips
-  win_tooltip = GetPluginID () .. "_tooltip"
-  font_tooltip = "tooltip_font"
-  -- make the window
-  WindowCreate (win_tooltip, 0, 0, 0, 0, 0, 0, 0)
-  -- load some font into it
-  WindowFont (win_tooltip, font_tooltip, "Tahoma", 8)
-
---]]
-
   assert (WindowInfo (win, 1), "Window " .. win .. " must already exist")
   assert (WindowFontInfo (win, font_id, 1), "No font " .. font_id .. " in " .. win)
   local font_height = WindowFontInfo (win, font_id, 1)
+  local MARGIN = 8
 
   -- break text into lines
   local t = utils.split (text, "\n")
 
   -- tooltip height
-  local height = (#t * font_height) + 10  -- 5 pixels margin at top and bottom
+  local height = (#t * font_height) + (MARGIN * 2)  -- margin at top and bottom
   -- tooltip width
-  local width = 30  -- must be at least 30 for the pointy thing
+  local width = 30  -- must be at least 30 for the tip part
   for k, v in ipairs (t) do
     width = math.max (width, WindowTextWidth (win, font_id, v, true))
   end -- for
-  width = width + 10  -- 5 pixel margin per side
+  width = width + (MARGIN * 2)  -- margin per side
 
   -- the tooltip pointer starts 15 pixels to the right and descends 15 pixels
   WindowCreate (win,
                 Left - 15, Top - height - 15,
-                width + 2, height + 17,  -- 2 pixels margin to allow for border + 15 downwards for the pointy thing
-                0,    -- position
+                width + 2, height + 17,  -- 2 pixels margin to allow for border + 15 downwards for the tip
+                miniwin.pos_top_left,    -- position
                 miniwin.create_absolute_location + miniwin.create_transparent + miniwin.create_ignore_mouse,
-                0x010101)  -- for transparency (almost black)
+                TRANSPARENCY_COLOUR)
 
+  -- mucking around here to get rounded rectangle
   local points = {
-    1, 1,             -- top left (x, y)
-    width, 1,         -- top right
-    width, height,    -- bottom right
-    31, height,       -- RH side of pointy thing
-    16, height + 15,  -- bottom of pointy thing
-    16, height,       -- LH side of pointy thing
-    1, height,        -- bottom left
+    -- top LH corner
+    1, 6,
+    2, 6,
+    2, 4,
+    3, 4,
+    3, 3,
+    4, 3,
+    4, 2,
+    6, 2,
+    6, 1,
+
+    -- top RH corner
+    width - 5, 1,
+    width - 5, 2,
+    width - 3, 2,
+    width - 3, 3,
+    width - 2, 3,
+    width - 2, 4,
+    width - 1, 4,
+    width - 1, 6,
+    width,     6,
+
+    -- bottom RH corner
+    width,     height - 5,
+    width - 1, height - 5,
+    width - 1, height - 3,
+    width - 2, height - 3,
+    width - 2, height - 2,
+    width - 3, height - 2,
+    width - 3, height - 1,
+    width - 5, height - 1,
+    width - 5, height,
+
+    31, height,       -- RH side of tip
+    16, height + 15,  -- bottom of  tip
+    16, height,       -- LH side of tip
+
+    -- bottom LH corner
+    6, height,
+    6, height - 1,
+    4, height - 1,
+    4, height - 2,
+    3, height - 2,
+    3, height - 3,
+    2, height - 3,
+    2, height - 5,
+    1, height - 5,
     }
 
   -- make the tooltip polygon
@@ -436,9 +446,9 @@ function tooltip (win,    -- window name to use
                 true)  -- close it
 
   -- put the text into it
-  local top = 6
+  local top = MARGIN + 1
   for _, v in ipairs (t) do
-    WindowText (win, font_id, v, 6, top, 0, 0, text_colour, true)
+    WindowText (win, font_id, v, MARGIN + 1, top, 0, 0, text_colour, true)
     top = top + font_height
   end -- for
 
