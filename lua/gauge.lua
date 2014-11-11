@@ -18,7 +18,8 @@ function gauge (win,                        -- miniwindow ID to draw in
                 fg_colour, bg_colour,       -- colour for bar, colour for unfilled part
                 ticks, tick_colour,         -- number of ticks to draw, and in what colour
                 frame_colour,               -- colour for frame around bar
-                shadow_colour)              -- colour for shadow, nil for no shadow
+                shadow_colour,              -- colour for shadow, nil for no shadow
+                no_gradient)                -- don't use the gradient fill effect
 
   local Fraction
   
@@ -50,11 +51,11 @@ function gauge (win,                        -- miniwindow ID to draw in
 
   -- shadow
   if shadow_colour then
-    WindowRectOp (win, 2, left + 2, top + 2, left + width + 2, top + height + 2, shadow_colour)  
+    WindowRectOp (win, miniwin.rect_fill, left + 2, top + 2, left + width + 2, top + height + 2, shadow_colour)  
   end -- if 
 
   -- background colour - for un-filled part
-  WindowRectOp (win, 2, left, top, left + width, top + height, bg_colour)  -- fill entire box
+  WindowRectOp (win, miniwin.rect_fill, left, top, left + width, top + height, bg_colour)  -- fill entire box
     
   -- how big filled part is
   local gauge_width = (width - 2) * Fraction
@@ -62,18 +63,22 @@ function gauge (win,                        -- miniwindow ID to draw in
    -- box size must be > 0 or WindowGradient fills the whole thing 
   if math.floor (gauge_width) > 0 then
     
-    -- top half
-    WindowGradient (win, left, top, 
-                    left + gauge_width, top + height / 2, 
-                    0x000000, -- black
-                    fg_colour, 2)  -- vertical top to bottom
-    
-    -- bottom half
-    WindowGradient (win, left, top + height / 2, 
-                    left + gauge_width, top + height,   
-                    fg_colour,
-                    0x000000, -- black
-                    2) -- vertical top to bottom
+    if no_gradient then
+        WindowRectOp (win, miniwin.rect_fill, left+1, top, left+1+gauge_width, top+height, fg_colour)
+    else 
+        -- top half
+        WindowGradient (win, left, top, 
+                        left + gauge_width, top + height / 2, 
+                        0x000000, -- black
+                        fg_colour, 2)  -- vertical top to bottom
+        
+        -- bottom half
+        WindowGradient (win, left, top + height / 2, 
+                        left + gauge_width, top + height-1,   
+                        fg_colour,
+                        0x000000, -- black
+                        2) -- vertical top to bottom
+        end
 
   end -- non-zero
   
@@ -93,7 +98,7 @@ function gauge (win,                        -- miniwindow ID to draw in
   end -- ticks wanted
 
   -- draw a box around it (frame)
-  WindowRectOp (win, 1, left, top, left + width, top + height, frame_colour)
+  WindowRectOp (win, miniwin.rect_frame, left, top, left + width, top + height, frame_colour)
   
   if name and #name > 0 then
     -- mouse-over information: add hotspot
@@ -149,9 +154,9 @@ function draw_3d_box (win, left, top, width, height)
   local right = left + width
   local bottom = top + height
   
-  WindowCircleOp (win, 3, left,     top,     right,     bottom,     0x505050, 0, 3, 0, 1)   -- dark grey border (3 pixels)
-  WindowCircleOp (win, 3, left + 1, top + 1, right - 1, bottom - 1, 0x7C7C7C, 0, 1, 0, 1)  -- lighter inner border
-  WindowCircleOp (win, 3, left + 2, top + 2, right - 2, bottom - 2, 0x000000, 0, 1, 0, 1)  -- black inside that
+  WindowCircleOp (win, miniwin.circle_round_rectangle, left,     top,     right,     bottom,     0x505050, 0, 3, 0, 1)   -- dark grey border (3 pixels)
+  WindowCircleOp (win, miniwin.circle_round_rectangle, left + 1, top + 1, right - 1, bottom - 1, 0x7C7C7C, 0, 1, 0, 1)  -- lighter inner border
+  WindowCircleOp (win, miniwin.circle_round_rectangle, left + 2, top + 2, right - 2, bottom - 2, 0x000000, 0, 1, 0, 1)  -- black inside that
   WindowLine     (win,    left + 1, top + 1, right - 1, top + 1,    0xC2C2C2, 0, 1)  -- light top edge
   WindowLine     (win,    left + 1, top + 1, left + 1,  bottom - 1, 0xC2C2C2, 0, 1)  -- light left edge (for 3D look)
 end -- draw_3d_box
@@ -160,9 +165,22 @@ function draw_text_box (win, font, left, top, text, utf8, text_colour, fill_colo
 local width       = WindowTextWidth (win, font, text, utf8)
 local font_height = WindowFontInfo (win, font, 1) 
 
-  WindowRectOp (win, 2, left - 3, top, left + width + 3, top + font_height, fill_colour)  -- fill
-  WindowText   (win, font, text, left, top, 0, 0, text_colour, utf8)   -- draw text
-  WindowRectOp (win, 1, left - 3, top, left + width + 3, top + font_height, border_colour)  -- border
-  
+  WindowRectOp (win, miniwin.rect_fill, left - 3, top, left + width + 3, top + font_height + 4, fill_colour)  -- fill
+  WindowText   (win, font, text, left, top + 2, 0, 0, text_colour, utf8)   -- draw text
+  WindowRectOp (win, miniwin.rect_frame, left - 3, top, left + width + 3, top + font_height + 4, border_colour)  -- border
   return width
 end -- draw_text_box
+
+-- text with a black outline
+function outlined_text(win, font, text, startx, starty, endx, endy, color, utf8)
+    WindowText(win, font, text, startx-1, starty-1, endx, endy, 0x000000, utf8)
+    WindowText(win, font, text, startx-1, starty, endx, endy, 0x000000, utf8)
+    WindowText(win, font, text, startx-1, starty+1, endx, endy, 0x000000, utf8)
+    WindowText(win, font, text, startx, starty-1, endx, endy, 0x000000, utf8)
+    WindowText(win, font, text, startx, starty+1, endx, endy, 0x000000, utf8)
+    WindowText(win, font, text, startx+1, starty-1, endx, endy, 0x000000, utf8)
+    WindowText(win, font, text, startx+1, starty, endx, endy, 0x000000, utf8)
+    WindowText(win, font, text, startx+1, starty+1, endx, endy, 0x000000, utf8)
+    WindowText(win, font, text, startx, starty, endx, endy, color, utf8)
+end
+
