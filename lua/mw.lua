@@ -387,7 +387,7 @@ function tooltip (win,    -- window name to use
     if boldText then
       width = math.max (width, WindowTextWidth (win, bold_font_id, boldText, true))
       height = height + bold_font_height
-    else    
+    else
       width = math.max (width, WindowTextWidth (win, font_id, v, true))
       height = height + font_height
     end -- if
@@ -468,10 +468,11 @@ function tooltip (win,    -- window name to use
     local boldText = string.match (v, "^%*(.*)%*$")
     if boldText then
       WindowText (win, bold_font_id, boldText, MARGIN + 1, top, 0, 0, text_colour, true)
+      top = top + bold_font_height
     else
       WindowText (win, font_id, v, MARGIN + 1, top, 0, 0, text_colour, true)
+      top = top + font_height
     end -- if
-    top = top + font_height
   end -- for
 
   WindowShow (win, true)
