@@ -92,28 +92,31 @@ Exposed functions are:
 
   EXAMPLE OF MAKING A TOOLTIP WINDOW:
 
-  -- SET UP FOR TOOLTIP WINDOWS - define colours, add font, make window id
+  -- SET UP FOR TOOLTIP WINDOWS - define colours, add fonts, make window id
   -- (DO THIS ONCE ONLY, eg. in OnPluginInstall)
 
   -- Example setup code:
   require "mw"
   -- get ready for tooltips
-  win_tooltip = GetPluginID () .. "_tooltip"
-  font_tooltip = "tooltip_font"
+  win_tooltip       = GetPluginID () .. "_tooltip"
+  font_tooltip      = "tf"
+  bold_font_tooltip = "tfb"
   -- make the window
   WindowCreate (win_tooltip, 0, 0, 0, 0, 0, 0, 0)
-  -- load some font into it
-  WindowFont (win_tooltip, font_tooltip, "Tahoma", 8)
+  -- load some fonts into it
+  WindowFont (win_tooltip, font_tooltip,      "Tahoma", 8)
+  WindowFont (win_tooltip, bold_font_tooltip, "Tahoma", 8, true)
 
-  -- NOW DISPLAY A tooltip
+  -- NOW DISPLAY A tooltip (Put bold lines inside asterisks)
 
-  mw.tooltip (win_tooltip,    -- window name to use
-            font_tooltip,   -- font to use for each line
-            "Hello, world!\nHave fun.",        -- tooltip text
-            45, 55,      -- where to put it (x, y)
-            0,  -- colour for text   (black)
-            0,  -- colour for border (black)
-            ColourNameToRGB ("#FFFFE1")) -- colour for background
+  mw.tooltip (win_tooltip,     -- window name to use
+              font_tooltip,      -- font to use for each line
+              bold_font_tooltip, -- bold font
+              "*Info*\nHello, world!\nHave fun.",        -- tooltip text
+              45, 75,      -- where to put it (x, y)
+              0,  -- colour for text   (black)
+              0,  -- colour for border (black)
+              ColourNameToRGB ("#FFFFE1")) -- colour for background
 
 --]]
 
@@ -352,36 +355,49 @@ end -- popup
 
 -- --------------------------------------------------------------
 -- Displays a tooltip (small box with "arrow" pointing to something of interest)
+-- Bold lines are surrounded by asterisks (eg. *Info*)
 -- --------------------------------------------------------------
 function tooltip (win,    -- window name to use
                   font_id,        -- font to use for each line
-                  text,           -- heading text
-                  Left, Top,      -- where to put it
+                  bold_font_id,   -- font to use for bold lines
+                  text,           -- tooltip text
+                  Left, Top,      -- where to put it (x, y)
                   text_colour,    -- colour for text
                   border_colour,  -- colour for border
                   background_colour) -- colour for background
 
   assert (WindowInfo (win, 1), "Window " .. win .. " must already exist")
   assert (WindowFontInfo (win, font_id, 1), "No font " .. font_id .. " in " .. win)
-  local font_height = WindowFontInfo (win, font_id, 1)
+  assert (WindowFontInfo (win, bold_font_id, 1), "No font " .. bold_font_id .. " in " .. win)
+  local font_height      = WindowFontInfo (win, font_id, 1)
+  local bold_font_height = WindowFontInfo (win, bold_font_id, 1)
   local MARGIN = 8
+  local TIPSIZE = 12
 
   -- break text into lines
   local t = utils.split (text, "\n")
 
   -- tooltip height
-  local height = (#t * font_height) + (MARGIN * 2)  -- margin at top and bottom
+  local height = MARGIN * 2  -- margin at top and bottom
   -- tooltip width
-  local width = 30  -- must be at least 30 for the tip part
+  local width = TIPSIZE * 2  -- must be at least large enough for the tip part
   for k, v in ipairs (t) do
-    width = math.max (width, WindowTextWidth (win, font_id, v, true))
+    -- bold lines start and end with an asterisk
+    local boldText = string.match (v, "^%*(.*)%*$")
+    if boldText then
+      width = math.max (width, WindowTextWidth (win, bold_font_id, boldText, true))
+      height = height + bold_font_height
+    else    
+      width = math.max (width, WindowTextWidth (win, font_id, v, true))
+      height = height + font_height
+    end -- if
   end -- for
   width = width + (MARGIN * 2)  -- margin per side
 
-  -- the tooltip pointer starts 15 pixels to the right and descends 15 pixels
+  -- the tooltip pointer starts TIPSIZE pixels to the right and descends TIPSIZE pixels
   WindowCreate (win,
-                Left - 15, Top - height - 15,
-                width + 2, height + 17,  -- 2 pixels margin to allow for border + 15 downwards for the tip
+                Left - TIPSIZE, Top - height - TIPSIZE,
+                width + 2, height + TIPSIZE + 2,  -- 2 pixels margin to allow for border + TIPSIZE downwards for the tip
                 miniwin.pos_top_left,    -- position
                 miniwin.create_absolute_location + miniwin.create_transparent + miniwin.create_ignore_mouse,
                 TRANSPARENCY_COLOUR)
@@ -421,9 +437,9 @@ function tooltip (win,    -- window name to use
     width - 5, height - 1,
     width - 5, height,
 
-    31, height,       -- RH side of tip
-    16, height + 15,  -- bottom of  tip
-    16, height,       -- LH side of tip
+    (TIPSIZE * 2) + 1, height,     -- RH side of tip
+    TIPSIZE + 1, height + TIPSIZE, -- bottom of  tip
+    TIPSIZE + 1, height,           -- LH side of tip
 
     -- bottom LH corner
     6, height,
@@ -448,7 +464,13 @@ function tooltip (win,    -- window name to use
   -- put the text into it
   local top = MARGIN + 1
   for _, v in ipairs (t) do
-    WindowText (win, font_id, v, MARGIN + 1, top, 0, 0, text_colour, true)
+    -- bold lines start and end with an asterisk
+    local boldText = string.match (v, "^%*(.*)%*$")
+    if boldText then
+      WindowText (win, bold_font_id, boldText, MARGIN + 1, top, 0, 0, text_colour, true)
+    else
+      WindowText (win, font_id, v, MARGIN + 1, top, 0, 0, text_colour, true)
+    end -- if
     top = top + font_height
   end -- for
 
