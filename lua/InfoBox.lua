@@ -39,7 +39,7 @@ local tonumber, tostring, rawget, rawset, type, print = tonumber, tostring, rawg
 local unpack, assert, require, getmetatable, setmetatable = unpack, assert, require, getmetatable, setmetatable
 local pairs, ipairs, check = pairs, ipairs, check
 local Global = _G
-local capitalize, CalcShades, SplitRGB, idx, newidx, idx
+local capitalize, CalcShades, SplitRGB, idx, newidx
 local CalcWindowHeight, strip_colours, sidewindows, Draw, DoFade, PrintText, ResizeOutput
 local fontProps = {"fontID", "fontName", "fontSize", "fontBold", "fontItalic", "fontUnderline", "fontStrikeout", "fontCharset", "fontPitchAndFamily"}
 local commas, CheckStyle, DoFade, PrintText
@@ -487,6 +487,7 @@ local function idx (self, k)
     if (k == "value" or k == "caption" ) then
         for z in  varName:gmatch("([^%.%[%]]+)") do
             local parent = val or Global
+            z = tonumber(z) or z
             val = parent[z]
         end
         return val
