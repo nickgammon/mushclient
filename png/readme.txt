@@ -2,7 +2,7 @@ PNG built as follows:
 
 1. Download recent version from download.sourceforge.net
 
-    In this case: lpng1514.zip
+    In this case: lpng1615.zip 
 
 2. Uncompress the archive with 7-Zip (if necessary), obtainable from:
 
@@ -35,8 +35,10 @@ PNG built as follows:
 	pngwtran.c
 	pngwutil.c
 
+5.  Copy scripts/pnglibconf.h.prebuilt to pnglibconf.h
 
-5. Edit: pngstruct.h and change
+
+6. Edit: pngstruct.h and change
 
 #include "zlib.h"
 
@@ -49,3 +51,4 @@ Also add to the very start of png.h:
 
 // pragmas added by Nick Gammon
 #pragma warning( disable : 4115)  // named type definition in parentheses
+#pragma warning( disable : 4701)  // local variable 'x' may be used without having been initialized

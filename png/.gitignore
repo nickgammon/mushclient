@@ -21,4 +21,5 @@ pngwio.c
 pngwrite.c
 pngwtran.c
 pngwutil.c
+pnglibconf.h
 version 1*
