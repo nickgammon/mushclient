@@ -110,15 +110,7 @@ end -- function time
 -- ----------------------------------------------------------
 function regexp (regexp, timeout, flags, multi, multi_lines)
   if type(regexp) == "table" then
-    local s="("
-    for k,v in pairs(regexp) do
-      if k~=1 then
-        s=s.."|"
-      end
-      s=s..v
-    end
-    s=s..")"
-    regexp=s
+    regexp = "(" .. table.concat (regexp, "|") .. ")"
   end
   local id = "wait_trigger_" .. GetUniqueNumber ()
   threads [id] = assert (coroutine.running (), "Must be in coroutine")
@@ -135,9 +127,9 @@ function regexp (regexp, timeout, flags, multi, multi_lines)
             0, "",  -- wildcard number, sound file name
             "wait.trigger_resume",
             12, 100))  -- send to script (in case we have to delete the timer)
-  if (multi ~= nil) and multi then
+  if multi then
     SetTriggerOption (id, "multi_line", multi)
-    if (multi_lines ~= nil) then
+    if multi_lines then
       SetTriggerOption (id, "lines_to_match", multi_lines)
     end
   end
@@ -176,6 +168,7 @@ end -- function match
 -- wait.make: makes a coroutine and resumes it
 -- ----------------------------------------------------------
 function make (f)
+
   assert (type (f) == "function", "wait.make requires a function")
 
   -- More friendly failure, suggested by Fiendish
@@ -244,10 +237,10 @@ end -- function trigger_mulresume
 ------------------------------------------
 -- This function waits for a trigger multiple regular return.
 -- After a trigger to return any other triggers will also fail.
---@regexps   List of regular expressions.
+--  @regexps   List of regular expressions.
 --           {Regular expressions, whether multi-line trigger, trigger rows}
---@timeout   Timeout
---@flags     Trigger characteristic mark
+--  @timeout   Timeout in seconds
+--  @flags     user-supplied extra flags, like omit from output
 --
 --Returns the newly created object
 ------------------------------------------
@@ -258,24 +251,24 @@ function mulregexp (regexps, timeout, flags)
   for k,v in pairs(regexps) do
       id = "wait_trigger_" .. GetUniqueNumber ()
       check (AddTriggerEx (id, v[1],
-		"-- added by wait.mulregexp",
-		bit.bor (flags or 0, -- user-supplied extra flags, like omit from output
-			 trigger_flag.Enabled,
-			 trigger_flag.RegularExpression,
-			 trigger_flag.Temporary,
-			 trigger_flag.Replace,
-			 trigger_flag.OneShot),
-		custom_colour.NoChange,
-		0, "",  -- wildcard number, sound file name
-		"wait.trigger_mulresume",
-		12, 100))  -- send to script (in case we have to delete the timer)
-      SetTriggerOption (id, "group", gp)
-      if (v[2] ~= nil) and v[2] then
-	SetTriggerOption (id, "multi_line", v[2])
-	if (v[3] ~= nil) then
-	  SetTriggerOption (id, "lines_to_match", v[3])
-	end
+      "-- added by wait.mulregexp",
+      bit.bor (flags or 0, -- user-supplied extra flags, like omit from output
+         trigger_flag.Enabled,
+         trigger_flag.RegularExpression,
+         trigger_flag.Temporary,
+         trigger_flag.Replace,
+         trigger_flag.OneShot),
+      custom_colour.NoChange,
+      0, "",  -- wildcard number, sound file name
+      "wait.trigger_mulresume",
+      12, 100))  -- send to script (in case we have to delete the timer)
+    SetTriggerOption (id, "group", gp)
+    if v [2] then
+      SetTriggerOption (id, "multi_line", true)
+      if v[3] then
+        SetTriggerOption (id, "lines_to_match", v[3])
       end
+    end
   end
 
   -- if timeout specified, also add a timer
@@ -284,7 +277,7 @@ function mulregexp (regexps, timeout, flags)
 
     -- if timer fires, it deletes this trigger
     check (AddTimer (gp, hours, minutes, seconds,
-		   "-- added by wait.mulregexp",
+       "-- added by wait.mulregexp",
                    bit.bor (timer_flag.Enabled,
                             timer_flag.OneShot,
                             timer_flag.Temporary,
@@ -300,8 +293,8 @@ function mulregexp (regexps, timeout, flags)
 end
 ------------------------------------------
 --Restore a specified process
---@sign  Pause logo
---@text  Returns a string to suspend location
+--  @sign  Pause logo
+--  @text  Returns a string to suspend location
 --
 --Returns the newly created object
 ------------------------------------------
@@ -371,20 +364,20 @@ end
 ------------------------------------------
 function subwait:close ()
     for key,value in pairs(self.list["timer"]) do
-	DeleteTimer(value)
-	threads[value]=nil
+      DeleteTimer(value)
+      threads[value]=nil
     end
     self.list["timer"]={}
     for key,value in pairs(self.list["trigger"]) do
-	DeleteTrigger(value)
-	DeleteTimer(value)
-	threads[value]=nil
+      DeleteTrigger(value)
+      DeleteTimer(value)
+      threads[value]=nil
     end
     self.list["trigger"]={}
     for key,value in pairs(self.list["group"]) do
-        DeleteTriggerGroup(value)
-	DeleteTimer(value)
-	threads[value]=nil
+      DeleteTriggerGroup(value)
+      DeleteTimer(value)
+      threads[value]=nil
     end
     self.list["group"]={}
 end
@@ -421,15 +414,7 @@ end
 ------------------------------------------
 function subwait:regexp (regexp, timeout, flags, multi, multi_lines)
   if type(regexp) == "table" then
-    local s="("
-    for k,v in pairs(regexp) do
-      if k~=1 then
-        s=s.."|"
-      end
-      s=s..v
-    end
-    s=s..")"
-    regexp=s
+    regexp = "(" .. table.concat (regexp, "|") .. ")"
   end
   local id = "subwait_trigger_" .. GetUniqueNumber ()
   threads [id] = assert (coroutine.running (), "Must be in coroutine")
@@ -446,9 +431,9 @@ function subwait:regexp (regexp, timeout, flags, multi, multi_lines)
             0, "",  -- wildcard number, sound file name
             "wait.trigger_resume",
             12, 100))  -- send to script (in case we have to delete the timer)
-  if (multi ~= nil) and multi then
-    SetTriggerOption (id, "multi_line", multi)
-    if (multi_lines ~= nil) then
+  if multi then
+    SetTriggerOption (id, "multi_line", true)
+    if multi_lines then
       SetTriggerOption (id, "lines_to_match", multi_lines)
     end
   end
@@ -483,10 +468,10 @@ end
 ------------------------------------------
 -- This function waits for multiple regular trigger returned.
 -- After a trigger to return any other triggers will also fail.
---@regexps    list of regular expressions.
+--  @regexps    list of regular expressions.
 --            {Regular expressions, whether multi-line trigger, trigger rows}
---@timeout   timeout
---@flags      trigger characteristic mark
+--  @timeout   timeout in seconds
+--  @flags     user-supplied extra flags, like omit from output
 --
 --return  return the new object
 ------------------------------------------
@@ -497,24 +482,24 @@ function subwait:mulregexp (regexps, timeout, flags)
   for k,v in pairs(regexps) do
       id = "wait_trigger_" .. GetUniqueNumber ()
       check (AddTriggerEx (id, v[1],
-		"-- added by wait.mulregexp",
-		bit.bor (flags or 0, -- user-supplied extra flags, like omit from output
-			 trigger_flag.Enabled,
-			 trigger_flag.RegularExpression,
-			 trigger_flag.Temporary,
-			 trigger_flag.Replace,
-			 trigger_flag.OneShot),
-		custom_colour.NoChange,
-		0, "",  -- wildcard number, sound file name
-		"wait.trigger_mulresume",
-		12, 100))  -- send to script (in case we have to delete the timer)
-      SetTriggerOption (id, "group", gp)
-      if (v[2] ~= nil) and v[2] then
-	SetTriggerOption (id, "multi_line", v[2])
-	if (v[3] ~= nil) then
-	  SetTriggerOption (id, "lines_to_match", v[3])
-	end
+    "-- added by wait.mulregexp",
+    bit.bor (flags or 0, -- user-supplied extra flags, like omit from output
+       trigger_flag.Enabled,
+       trigger_flag.RegularExpression,
+       trigger_flag.Temporary,
+       trigger_flag.Replace,
+       trigger_flag.OneShot),
+    custom_colour.NoChange,
+    0, "",  -- wildcard number, sound file name
+    "wait.trigger_mulresume",
+    12, 100))  -- send to script (in case we have to delete the timer)
+    SetTriggerOption (id, "group", gp)
+    if  v[2] then
+      SetTriggerOption (id, "multi_line", true)
+      if v[3] then
+        SetTriggerOption (id, "lines_to_match", v[3])
       end
+    end
   end
 
   -- if timeout specified, also add a timer
@@ -523,7 +508,7 @@ function subwait:mulregexp (regexps, timeout, flags)
 
     -- if timer fires, it deletes this trigger
     check (AddTimer (gp, hours, minutes, seconds,
-		   "-- added by wait.mulregexp",
+       "-- added by wait.mulregexp",
                    bit.bor (timer_flag.Enabled,
                             timer_flag.OneShot,
                             timer_flag.Temporary,
