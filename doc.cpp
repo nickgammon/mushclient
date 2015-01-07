@@ -2622,8 +2622,8 @@ void CMUSHclientDoc::ExecuteTriggerScript (CTrigger * trigger_item,
      return;
 
   CString strType = "trigger";
-  CString strReason =  TFormat ("processing trigger \"%s\"", 
-                            (LPCTSTR) trigger_item->strLabel);
+  CString strReason =  TFormat ("processing trigger \"%s\" when matching line: \"%s\"", 
+                            (LPCTSTR) trigger_item->strLabel, (LPCTSTR) strCurrentLine);
 
   // get unlabelled trigger's internal name
   const char * pLabel = trigger_item->strLabel;
