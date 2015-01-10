@@ -9,9 +9,9 @@
    language="Lua"
    purpose="Provides a simple calculator"
    date_written="2010-08-25 14:55:13"
-   date_modified="2014-09-27 10:09:00"
+   date_modified="2015-01-10 14:11:00"
    requires="4.50"
-   version="1.1"
+   version="1.2"
    >
 <description trim="y">
 <![CDATA[
@@ -38,6 +38,11 @@ eg.
 = hex (1234)
 = oct (5678)
 = bin (15)
+
+If the number is small (with an exponent shown) it is echoed again with up to 15 decimal places.
+
+eg. 28 * 16e-9 = 4.48e-007 (0.000000448)
+
 ]]>
 </description>
 
@@ -59,8 +64,22 @@ bit.hex = function (num) return bit.tostring (num, 16) end
 bit.oct = function (num) return bit.tostring (num, 8) end
 bit.bin = function (num) return bit.tostring (num, 2) end
 
-print ("%1 =", setfenv (assert (loadstring "return %1"), setmetatable ({}, 
-    {__index = function (_, n) return math [n] or bit [n] or string [n] or utils [n] or world [n] end}) ) () )
+result = setfenv (assert (loadstring "return %1"), setmetatable ({}, 
+    {__index = function (_, n) return math [n] or bit [n] or string [n] or utils [n] or world [n] end}) ) ()
+    
+-- turn result into a string, to see if it has "e-xxx" in it.
+formatted_result = tostring (result)
+
+-- if an exponent shown, recalculate as a decimal without exponent
+if string.match (formatted_result, "e%%-") then
+  local extra = string.format (" (%%0.15f)", result)
+  
+  -- append number without exponent, omitting trailing zeroes
+  formatted_result = formatted_result .. string.gsub (extra, "0+%%)", ")")
+end -- if
+
+-- display result
+print ("%1 =", formatted_result)
 </send>
   </alias>
 </aliases>
