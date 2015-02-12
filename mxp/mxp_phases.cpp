@@ -82,8 +82,8 @@ void CMUSHclientDoc::Phase_MXP_ENTITY (const unsigned char c)
   switch (c)
     {
     case ';':
-        MXP_collected_entity (); // we have an entity now
         m_phase = NONE;
+        MXP_collected_entity (); // we have an entity now
         break;
 
         // shouldn't have a & inside a &

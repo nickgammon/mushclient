@@ -47,7 +47,12 @@ void CMUSHclientDoc::MXP_collected_entity (void)
 CString strEntityContents = MXP_GetEntity (m_strMXPstring);
   
   if (!strEntityContents.IsEmpty ())
-    AddToLine (strEntityContents, 0);
+    {
+//  if the entity happens to be < & > etc. don't reprocess it
+    m_bMXP = false;
+    DisplayMsg (strEntityContents, strEntityContents.GetLength (), 0);
+    m_bMXP = true;
+    }
 
   } // end of CMUSHclientDoc::MXP_collected_entity
 
@@ -109,7 +114,7 @@ CString strEntityContents;
         iResult *= 10;
         iResult += strName [i] - '0';
         }
-    if (iResult != 9  && iResult != 10 )       // we will accept tabs and newlines ;)
+    if (iResult != 9  && iResult != 10  && iResult != 13 )       // we will accept tabs, newlines and carriage-returns ;)
       if (iResult < 32 ||   // don't allow nonprintable characters
           iResult > 255)   // don't allow characters more than 1 byte
           {
