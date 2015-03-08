@@ -84,7 +84,8 @@ class CPlugin :public CObject
   double  m_dRequiredVersion; // minimum MUSHclient version required
   CTime   m_tDateInstalled;   // date installed
   CString m_strCallingPluginID; // during a CallPlugin - the ID of the calling plugin
-  unsigned short m_iSequence; // evaluation order, lower is sooner
+  short m_iSequence; // evaluation order, lower is sooner
+                     // negative sequences get evaluated before the main world triggers/aliases
 
   CScriptEngine * m_ScriptEngine; // script engine for script, if any
 

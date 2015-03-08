@@ -70,6 +70,31 @@ CAliasList AliasList;
 
   if (m_enable_aliases)
     {
+
+    PluginListIterator pit;
+
+   // Do plugins (stop if one stops trigger evaluation).
+   // Do only negative sequence number plugins at this point
+   // Suggested by Fiendish. Added in version 4.97.
+    for (pit = m_PluginList.begin (); 
+         pit != m_PluginList.end () &&
+        (*pit)->m_iSequence < 0;
+         ++pit)
+      {
+      m_CurrentPlugin = *pit;
+      if (m_CurrentPlugin->m_bEnabled)
+        if (ProcessOneAliasSequence (input,
+                                     bCountThem,
+                                     bOmitFromLog,
+                                     bEchoAlias,
+                                     AliasList,
+                                     mapOneShotItems))
+          {
+          m_CurrentPlugin = NULL;
+          return true;
+          }
+      } // end of doing each plugin
+
     m_CurrentPlugin = NULL;
     if (ProcessOneAliasSequence (input,
                                  bCountThem,
@@ -78,8 +103,10 @@ CAliasList AliasList;
                                  AliasList,
                                  mapOneShotItems))
        return true;
-    // do plugins
-    for (PluginListIterator pit = m_PluginList.begin (); 
+
+     // do plugins (stop if one stops alias evaluation)
+     for ( // pit should now be pointing at plugins with a sequence number >= 0
+         ;
          pit != m_PluginList.end (); 
          ++pit)
       {

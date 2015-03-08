@@ -587,8 +587,39 @@ assemble the full text of the original line.
     // allow trigger evaluation for the moment
     m_iStopTriggerEvaluation = eKeepEvaluatingTriggers;
 
+   PluginListIterator pit;
+
+   // Do plugins (stop if one stops trigger evaluation).
+   // Do only negative sequence number plugins at this point
+   // Suggested by Fiendish. Added in version 4.97.
+   for (pit = m_PluginList.begin (); 
+        pit != m_PluginList.end () &&
+        (*pit)->m_iSequence < 0 &&
+        m_iStopTriggerEvaluation != eStopEvaluatingTriggersInAllPlugins;
+        ++pit)
+      {
+      m_CurrentPlugin = *pit;
+      // allow trigger evaluation for the moment (ie. the next plugin)
+      m_iStopTriggerEvaluation = eKeepEvaluatingTriggers;
+      if (m_CurrentPlugin->m_bEnabled)
+        ProcessOneTriggerSequence (strCurrentLine, 
+                                   StyledLine, 
+                                   strResponse, 
+                                   prevpos, 
+                                   bNoLog, 
+                                   bNoOutput, 
+                                   bChangedColour, 
+                                   triggerList, 
+                                   strExtraOutput, 
+                                   mapDeferredScripts, 
+                                   mapOneShotItems);
+      } // end of doing each plugin
+
+    m_CurrentPlugin = NULL; // not in a plugin any more
+
     // do main triggers
-    ProcessOneTriggerSequence (strCurrentLine, 
+    if (m_iStopTriggerEvaluation == eKeepEvaluatingTriggers)
+         ProcessOneTriggerSequence (strCurrentLine, 
                                StyledLine, 
                                strResponse, 
                                prevpos, 
@@ -601,7 +632,8 @@ assemble the full text of the original line.
                                mapOneShotItems);
 
    // do plugins (stop if one stops trigger evaluation, or if it was stopped by the main world triggers)
-   for (PluginListIterator pit = m_PluginList.begin (); 
+   for ( // pit should now be pointing at plugins with a sequence number >= 0
+         ;
          pit != m_PluginList.end () &&
          m_iStopTriggerEvaluation != eStopEvaluatingTriggersInAllPlugins;
          ++pit)
@@ -624,7 +656,7 @@ assemble the full text of the original line.
       } // end of doing each plugin
 
     m_CurrentPlugin = NULL; // not in a plugin any more
-    }
+    } // if iBad <= 0
 
 // if we have changed the colour of this trigger, or omitted it from output,
 //        we must force an update or they won't see it
