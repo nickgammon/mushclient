@@ -618,18 +618,21 @@ assemble the full text of the original line.
     m_CurrentPlugin = NULL; // not in a plugin any more
 
     // do main triggers
-    if (m_iStopTriggerEvaluation == eKeepEvaluatingTriggers)
-         ProcessOneTriggerSequence (strCurrentLine, 
-                               StyledLine, 
-                               strResponse, 
-                               prevpos, 
-                               bNoLog, 
-                               bNoOutput, 
-                               bChangedColour, 
-                               triggerList, 
-                               strExtraOutput, 
-                               mapDeferredScripts, 
-                               mapOneShotItems);
+    if (m_iStopTriggerEvaluation != eStopEvaluatingTriggersInAllPlugins)
+      {
+      m_iStopTriggerEvaluation = eKeepEvaluatingTriggers;
+      ProcessOneTriggerSequence (strCurrentLine, 
+                             StyledLine, 
+                             strResponse, 
+                             prevpos, 
+                             bNoLog, 
+                             bNoOutput, 
+                             bChangedColour, 
+                             triggerList, 
+                             strExtraOutput, 
+                             mapDeferredScripts, 
+                             mapOneShotItems);
+      } // end of trigger evaluation not stopped
 
    // do plugins (stop if one stops trigger evaluation, or if it was stopped by the main world triggers)
    for ( // pit should now be pointing at plugins with a sequence number >= 0
