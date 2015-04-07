@@ -84,7 +84,7 @@ See the <a href="http://www.gammon.com.au/forum/?id=7953">How to localize MUSHcl
 
 <p><a href="http://github.com/nickgammon/mushclient/tree/v<<version>>">http://github.com/nickgammon/mushclient/tree/v<<version>></a></p>
 
-<p>You can directly download the source from the Downloads page (<a href="http://github.com/nickgammon/mushclient/downloads">http://github.com/nickgammon/mushclient/downloads</a>), or preferably install Git and use the appropriate commands to clone or pull the source. For some suggestions about getting the source from Git see <a href="http://www.gammon.com.au/forum/?id=10019">MUSHclient source being made available on GitHub</a> forum posting.</p>
+<p>You can directly download the source from the Downloads page (<a href="https://github.com/nickgammon/mushclient/archive/master.zip">https://github.com/nickgammon/mushclient/archive/master.zip</a>), or preferably install Git and use the appropriate commands to clone or pull the source. For some suggestions about getting the source from Git see <a href="http://www.gammon.com.au/forum/?id=10019">MUSHclient source being made available on GitHub</a> forum posting.</p>
 
 <p>If you install Git, subsequent downloads (of new versions) will be much faster as it only needs to download the changes, not the whole source. Also by using Git you can find out exactly what has changed from version to the next.</p>
 
