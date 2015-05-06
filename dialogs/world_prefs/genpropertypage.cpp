@@ -1813,6 +1813,10 @@ CString strContents;
   // reload the list - we don't know how many were added, and indeed, what they were
   m_bReloadList = true;       // full reload because it may have changed filter requirements
 
+    // if scripting active, find entry points
+  if (m_doc->m_ScriptEngine)
+    m_doc->FindAllEntryPoints ();
+
   } // end of CGenPropertyPage::OnPasteItem
 
 /////////////////////////////////////////////////////////////////////////////
