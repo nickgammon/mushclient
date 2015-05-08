@@ -110,7 +110,7 @@ CAliasList AliasList;
          ++pit)
       {
       // skip past negative sequence numbers
-      if ((*pit)->m_iSequence > 0)
+      if ((*pit)->m_iSequence < 0)
          continue;
       m_CurrentPlugin = *pit;
       if (m_CurrentPlugin->m_bEnabled)

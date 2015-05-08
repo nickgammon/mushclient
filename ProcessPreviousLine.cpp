@@ -641,7 +641,7 @@ assemble the full text of the original line.
          ++pit)
       {
       // skip past negative sequence numbers
-      if ((*pit)->m_iSequence > 0)
+      if ((*pit)->m_iSequence < 0)
          continue;
       m_CurrentPlugin = *pit;
       // allow trigger evaluation for the moment (ie. the next plugin)
