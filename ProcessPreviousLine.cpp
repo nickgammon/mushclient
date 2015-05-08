@@ -592,7 +592,7 @@ assemble the full text of the original line.
    // Do plugins (stop if one stops trigger evaluation).
    // Do only negative sequence number plugins at this point
    // Suggested by Fiendish. Added in version 4.97.
-   for (pit = m_PluginList.begin (); 
+   for (pit = m_PluginList.begin ();
         pit != m_PluginList.end () &&
         (*pit)->m_iSequence < 0 &&
         m_iStopTriggerEvaluation != eStopEvaluatingTriggersInAllPlugins;
@@ -635,12 +635,14 @@ assemble the full text of the original line.
       } // end of trigger evaluation not stopped
 
    // do plugins (stop if one stops trigger evaluation, or if it was stopped by the main world triggers)
-   for ( // pit should now be pointing at plugins with a sequence number >= 0
-         ;
-         pit != m_PluginList.end () &&
+   for (pit = m_PluginList.begin ();
+        pit != m_PluginList.end () &&
          m_iStopTriggerEvaluation != eStopEvaluatingTriggersInAllPlugins;
          ++pit)
       {
+      // skip past negative sequence numbers
+      if ((*pit)->m_iSequence > 0)
+         continue;
       m_CurrentPlugin = *pit;
       // allow trigger evaluation for the moment (ie. the next plugin)
       m_iStopTriggerEvaluation = eKeepEvaluatingTriggers;
