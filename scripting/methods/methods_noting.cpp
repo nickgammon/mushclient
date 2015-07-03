@@ -46,7 +46,9 @@ void CMUSHclientDoc::Tell(LPCTSTR Message)
     return;
 
   // if output buffer doesn't exist yet, remember note for later
-  if (m_pCurrentLine == NULL || m_pLinePositions == NULL)
+  // or ... if this isn't a good time to be doing notes, like in a telnet
+  // negotiation sequence callback
+  if (m_pCurrentLine == NULL || m_pLinePositions == NULL || m_bNotesNotWantedNow)
     {
     COLORREF fore = m_iNoteColourFore, 
              back = m_iNoteColourBack;

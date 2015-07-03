@@ -1372,6 +1372,8 @@ public:
   map<COLORREF, COLORREF> m_ColourTranslationMap;
 
   list<CPaneStyle> m_OutstandingLines;
+  bool m_bNotesNotWantedNow;
+
   BOOL m_bScrollBarWanted;      // true if we want to see scroll bars
 
   long m_nCount_IAC_DO;         // count of IAC DO we got

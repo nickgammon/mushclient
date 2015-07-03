@@ -205,6 +205,7 @@ int i;
   m_ttype_sequence = 0;
 
   m_bVariablesChanged = false;
+  m_bNotesNotWantedNow = false;
 
   m_view_number = 0;
   m_LastFlushTime = CTime::GetCurrentTime();
