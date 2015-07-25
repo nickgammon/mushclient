@@ -555,7 +555,7 @@ CTimer * timer_item;
   for (pos = GetTimerMap ().GetStartPosition(); pos; )
     {
     GetTimerMap ().GetNextAssoc (pos, strTimerName, timer_item);
-    if (timer_item->bTemporary)
+    if (timer_item->bTemporary && !timer_item->bExecutingScript)
       {
       delete timer_item;
       GetTimerMap ().RemoveKey (strTimerName);

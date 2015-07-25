@@ -483,7 +483,7 @@ CAlias * alias_item;
   for (pos = GetAliasMap ().GetStartPosition(); pos; )
     {
     GetAliasMap ().GetNextAssoc (pos, strAliasName, alias_item);
-    if (alias_item->bTemporary)
+    if (alias_item->bTemporary && !alias_item->bExecutingScript)
       {
       delete alias_item;
       GetAliasMap ().RemoveKey (strAliasName);

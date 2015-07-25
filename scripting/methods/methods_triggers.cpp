@@ -545,7 +545,7 @@ CTrigger * trigger_item;
   for (pos = GetTriggerMap ().GetStartPosition(); pos; )
     {
     GetTriggerMap ().GetNextAssoc (pos, strTriggerName, trigger_item);
-    if (trigger_item->bTemporary)
+    if (trigger_item->bTemporary && !trigger_item->bExecutingScript)
       {
       delete trigger_item;
       GetTriggerMap ().RemoveKey (strTriggerName);
