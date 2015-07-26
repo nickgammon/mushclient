@@ -1,4 +1,4 @@
--- $Id: re.lua,v 1.39 2010/11/04 19:44:18 roberto Exp $
+-- $Id: re.lua,v 1.44 2013/03/26 20:11:40 roberto Exp $
 
 -- imported functions and modules
 local tonumber, type, print, error = tonumber, type, print, error
@@ -10,7 +10,7 @@ local m = require"lpeg"
 -- on 'mm'
 local mm = m
 
--- pattern's metatable 
+-- pattern's metatable
 local mt = getmetatable(mm.P(0))
 
 
@@ -71,8 +71,8 @@ updatelocale()
 local I = m.P(function (s,i) print(i, s:sub(1, i-1)); return i end)
 
 
-local function getdef (id, Defs)
-  local c = Defs and Defs[id]
+local function getdef (id, defs)
+  local c = defs and defs[id]
   if not c then error("undefined name: " .. id) end
   return c
 end
@@ -102,19 +102,19 @@ local function equalcap (s, i, c)
 end
 
 
-local S = (m.S(" \f\n\r\t\v") + "--" * (any - Predef.nl)^0)^0
+local S = (Predef.space + "--" * (any - Predef.nl)^0)^0
 
-local name = m.R("AZ", "az") * m.R("AZ", "az", "__", "09")^0
+local name = m.R("AZ", "az", "__") * m.R("AZ", "az", "__", "09")^0
 
 local arrow = S * "<-"
 
-local exp_follow = m.P"/" + ")" + "}" + ":}" + "~}" + (name * arrow) + -1
+local seq_follow = m.P"/" + ")" + "}" + ":}" + "~}" + "|}" + (name * arrow) + -1
 
 name = m.C(name)
 
 
--- identifiers only have meaning in a given environment
-local Identifier = name * m.Carg(1)
+-- a defined name only have meaning in a given environment
+local Def = name * m.Carg(1)
 
 local num = m.C(m.R"09"^1) * S / tonumber
 
@@ -122,7 +122,7 @@ local String = "'" * m.C((any - "'")^0) * "'" +
                '"' * m.C((any - '"')^0) * '"'
 
 
-local defined = "%" * Identifier / function (c,Defs)
+local defined = "%" * Def / function (c,Defs)
   local cat =  Defs and Defs[c] or Predef[c]
   if not cat then error ("name '" .. c .. "' undefined") end
   return cat
@@ -139,7 +139,7 @@ local Class =
                           function (c, p) return c == "^" and any - p or p end
   * "]"
 
-local function adddef (t, k, Defs, exp)
+local function adddef (t, k, exp)
   if t[k] then
     error("'"..k.."' already defined as a rule")
   else
@@ -148,15 +148,22 @@ local function adddef (t, k, Defs, exp)
   return t
 end
 
-local function firstdef (n, Defs, r) return adddef({n}, n, Defs, r) end
+local function firstdef (n, r) return adddef({n}, n, r) end
 
+
+local function NT (n, b)
+  if not b then
+    error("rule '"..n.."' used outside a grammar")
+  else return mm.V(n)
+  end
+end
 
 
 local exp = m.P{ "Exp",
   Exp = S * ( m.V"Grammar"
             + m.Cf(m.V"Seq" * ("/" * S * m.V"Seq")^0, mt.__add) );
   Seq = m.Cf(m.Cc(m.P"") * m.V"Prefix"^0 , mt.__mul)
-        * (#exp_follow + patt_error);
+        * (#seq_follow + patt_error);
   Prefix = "&" * S * m.V"Prefix" / mt.__len
          + "!" * S * m.V"Prefix" / mt.__unm
          + m.V"Suffix";
@@ -167,11 +174,11 @@ local exp = m.P{ "Exp",
             + "^" * ( m.Cg(num * m.Cc(mult))
                     + m.Cg(m.C(m.S"+-" * m.R"09"^1) * m.Cc(mt.__pow))
                     )
-            + "->" * S * ( m.Cg(String * m.Cc(mt.__div))
+            + "->" * S * ( m.Cg((String + num) * m.Cc(mt.__div))
                          + m.P"{}" * m.Cc(nil, m.Ct)
-                         + m.Cg(Identifier / getdef * m.Cc(mt.__div))
+                         + m.Cg(Def / getdef * m.Cc(mt.__div))
                          )
-            + "=>" * S * m.Cg(Identifier / getdef * m.Cc(m.Cmt))
+            + "=>" * S * m.Cg(Def / getdef * m.Cc(m.Cmt))
             ) * S
           )^0, function (a,b,f) return f(a,b) end );
   Primary = "(" * m.V"Exp" * ")"
@@ -183,16 +190,17 @@ local exp = m.P{ "Exp",
             + "=" * name / function (n) return mm.Cmt(mm.Cb(n), equalcap) end
             + m.P"{}" / mm.Cp
             + "{~" * m.V"Exp" * "~}" / mm.Cs
+            + "{|" * m.V"Exp" * "|}" / mm.Ct
             + "{" * m.V"Exp" * "}" / mm.C
             + m.P"." * m.Cc(any)
-            + name * -arrow / mm.V
-            + "<" * name * ">" / mm.V;
-  Definition = Identifier * arrow * m.V"Exp";
-  Grammar = m.Cf(m.V"Definition" / firstdef * m.Cg(m.V"Definition")^0, adddef) /
-                mm.P
+            + (name * -arrow + "<" * name * ">") * m.Cb("G") / NT;
+  Definition = name * arrow * m.V"Exp";
+  Grammar = m.Cg(m.Cc(true), "G") *
+            m.Cf(m.V"Definition" / firstdef * m.Cg(m.V"Definition")^0,
+              adddef) / mm.P
 }
 
-local pattern = S * exp / mm.P * (-any + patt_error)
+local pattern = S * m.Cg(m.Cc(false), "G") * exp / mm.P * (-any + patt_error)
 
 
 local function compile (p, defs)
@@ -214,11 +222,14 @@ end
 local function find (s, p, i)
   local cp = fmem[p]
   if not cp then
-    cp = compile(p)
-    cp = mm.P{ mm.Cp() * cp + 1 * mm.V(1) }
+    cp = compile(p) / 0
+    cp = mm.P{ mm.Cp() * cp * mm.Cp() + 1 * mm.V(1) }
     fmem[p] = cp
   end
-  return cp:match(s, i or 1)
+  local i, e = cp:match(s, i or 1)
+  if i then return i, e - 1
+  else return i
+  end
 end
 
 local function gsub (s, p, rep)
