@@ -1005,22 +1005,31 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
         {
         case 3: sVersion = "Windows NT 3.51"; break;
         case 4: sVersion = "Windows NT";      break;
-        case 5: 
+        case 5:   // Major version 5
           switch (os_version.dwMinorVersion)
             {
             case 0: sVersion = "Windows 2000";        break;
             case 1: sVersion = "Windows XP";          break;
             case 2: sVersion = "Windows Server 2003"; break;
             } // end of switch on dwMinorVersion
-          break;  // end case 5 of dwMinorVersion
+          break;  // end case 5 of dwMajorVersion
 
-        case 6: 
+        case 6:   // Major version 6
           switch (os_version.dwMinorVersion)
             {
             case 0: sVersion = "Windows Vista"; break;
             case 1: sVersion = "Windows 7";     break;
+            case 2: sVersion = "Windows 8";     break;
+            case 3: sVersion = "Windows 8.1";   break;
             } // end of switch on dwMinorVersion
-          break;  // end case 6 of dwMinorVersion
+          break;  // end case 6 of dwMajorVersion
+
+        case 10:  // Major version 10
+          switch (os_version.dwMinorVersion)
+            {
+            case 0: sVersion = "Windows 10"; break;
+            } // end of switch on dwMinorVersion
+          break;  // end case 10 of dwMajorVersion
 
         }  // end of switch on dwMajorVersion
       }  // end of dwPlatformId == 2
