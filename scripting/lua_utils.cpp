@@ -1991,7 +1991,7 @@ static int glyph_available (lua_State *L)
     {
 	  WORD indice;
 
-	  if ((*pGetGlyphIndicesW)(dc.m_hDC, &glyph, 1,
+	  if ((*pGetGlyphIndicesW)((HDC) dc.m_hDC, (LPCWSTR) &glyph, 1,
 	                            &indice, GGI_MARK_NONEXISTING_GLYPHS ) != GDI_ERROR &&
 	          indice != 0xffff)
       lua_pushnumber (L, indice);  
