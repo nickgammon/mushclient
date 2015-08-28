@@ -1,7 +1,7 @@
 MUSHclient version 4.99
 =======================
 
-Sunday, 10th May 2015
+Friday, 28th August 2015
 
 
 Author: Nick Gammon
