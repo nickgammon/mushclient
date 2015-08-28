@@ -1,6 +1,6 @@
 PCRE built as follows:
 
-1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.36.zip
+1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.37.zip
 
 2. Unzip the file pcre-8.36.zip
 
