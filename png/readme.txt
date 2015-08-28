@@ -2,7 +2,8 @@ PNG built as follows:
 
 1. Download recent version from download.sourceforge.net
 
-    In this case: ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng16/lpng1617.zip
+    In this case: http://internode.dl.sourceforge.net/project/libpng/libpng16/1.6.18/lpng1618.zip
+
 
 2. Uncompress the archive with 7-Zip (if necessary), obtainable from:
 
