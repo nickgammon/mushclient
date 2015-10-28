@@ -1,11 +1,11 @@
 --[[
 	Licensed according to the included 'LICENSE' document
 	Author: Thomas Harning Jr <harningt@gmail.com>
---]]
+]]
 local type = type
 local assert, error = assert, error
 local table_concat = require("table").concat
-local loadstring = loadstring
+local loadstring = loadstring or load
 
 local io = require("io")
 
@@ -13,7 +13,7 @@ local setmetatable = setmetatable
 
 local output_utility = require("json.encode.output_utility")
 
-module("json.encode.output")
+local _ENV = nil
 
 local tableCompositeCache = setmetatable({}, {__mode = 'v'})
 
@@ -27,7 +27,7 @@ local TABLE_INNER_WRITER = ""
 	nextValues can output a max of two values to throw into the data stream
 	expected to be called until nil is first return value
 	value separator should either be attached to v1 or in innerValue
---]]
+]]
 local function defaultTableCompositeWriter(nextValues, beginValue, closeValue, innerValue, composite, encode, state)
 	if type(nextValues) == 'string' then
 		local fun = output_utility.prepareEncoder(defaultTableCompositeWriter, nextValues, innerValue, TABLE_VALUE_WRITER, TABLE_INNER_WRITER)
@@ -38,7 +38,7 @@ local function defaultTableCompositeWriter(nextValues, beginValue, closeValue, i
 end
 
 -- no 'simple' as default action is just to return the value
-function getDefault()
+local function getDefault()
 	return { composite = defaultTableCompositeWriter }
 end
 
@@ -77,8 +77,15 @@ local function buildIoWriter(output)
 	end
 	return { composite = ioWriter, simple = ioSimpleWriter }
 end
-function getIoWriter(output)
+local function getIoWriter(output)
 	return function()
 		return buildIoWriter(output)
 	end
 end
+
+local output = {
+	getDefault = getDefault,
+	getIoWriter = getIoWriter
+}
+
+return output
