@@ -427,7 +427,9 @@ SetModifiedFlag (ChangedFlag);
 
 void CMUSHclientDoc::Simulate(LPCTSTR Text) 
 {
-   DisplayMsg(Text, strlen (Text), 0);
+  m_bDoingSimulate = true;
+  DisplayMsg(Text, strlen (Text), 0);
+  m_bDoingSimulate = false;
 }   // end of CMUSHclientDoc::Simulate
 
 

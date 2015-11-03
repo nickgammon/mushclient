@@ -1373,6 +1373,7 @@ public:
 
   list<CPaneStyle> m_OutstandingLines;
   bool m_bNotesNotWantedNow;
+  bool m_bDoingSimulate;
 
   BOOL m_bScrollBarWanted;      // true if we want to see scroll bars
 

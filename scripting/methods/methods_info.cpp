@@ -579,6 +579,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case  120: SetUpVariantBool (vaResult, m_bScrollBarWanted); break;
     case  121: SetUpVariantBool (vaResult, App.m_iCounterFrequency != 0); break;
     case  122: SetUpVariantBool (vaResult, sqlite3_threadsafe() != 0); break;
+    case  123: SetUpVariantBool (vaResult, m_bDoingSimulate); break;
 
     case  201: SetUpVariantLong (vaResult, m_total_lines); break;
     case  202: SetUpVariantLong (vaResult, m_new_lines); break;
