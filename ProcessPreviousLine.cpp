@@ -452,13 +452,13 @@ assemble the full text of the original line.
 
   // triggers might set these
   bool bNoLog = !m_bLogOutput;
-  bool bNoOutput = false;
+  bool m_bLineOmittedFromOutput = false;
   bool bChangedColour = false;
 
   m_iCurrentActionSource = eInputFromServer;
 
   if (!SendToAllPluginCallbacks (ON_PLUGIN_LINE_RECEIVED, strCurrentLine))
-    bNoOutput = true;
+    m_bLineOmittedFromOutput = true;
 
   m_iCurrentActionSource = eUnknownActionSource;
 
@@ -607,7 +607,7 @@ assemble the full text of the original line.
                                    strResponse, 
                                    prevpos, 
                                    bNoLog, 
-                                   bNoOutput, 
+                                   m_bLineOmittedFromOutput,
                                    bChangedColour, 
                                    triggerList, 
                                    strExtraOutput, 
@@ -626,7 +626,7 @@ assemble the full text of the original line.
                              strResponse, 
                              prevpos, 
                              bNoLog, 
-                             bNoOutput, 
+                             m_bLineOmittedFromOutput,
                              bChangedColour, 
                              triggerList, 
                              strExtraOutput, 
@@ -652,7 +652,7 @@ assemble the full text of the original line.
                                    strResponse, 
                                    prevpos, 
                                    bNoLog, 
-                                   bNoOutput, 
+                                   m_bLineOmittedFromOutput,
                                    bChangedColour, 
                                    triggerList, 
                                    strExtraOutput, 
@@ -665,7 +665,7 @@ assemble the full text of the original line.
 
 // if we have changed the colour of this trigger, or omitted it from output,
 //        we must force an update or they won't see it
-  if (bNoOutput || bChangedColour)
+  if (m_bLineOmittedFromOutput || bChangedColour)
     {
   // notify view to update their selection ranges
 
@@ -735,7 +735,7 @@ assemble the full text of the original line.
 
 // if omitting from output do that now
 
-  if (bNoOutput)
+  if (m_bLineOmittedFromOutput)
     {
 
   // delete all lines in this set
@@ -984,7 +984,7 @@ assemble the full text of the original line.
   // check memory still OK
 //  _ASSERTE( _CrtCheckMemory( ) );
 
-  return bNoOutput;
+  return m_bLineOmittedFromOutput;
 
   }   // end of CMUSHclientDoc::ProcessPreviousLine
 

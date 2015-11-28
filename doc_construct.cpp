@@ -207,6 +207,7 @@ int i;
   m_bVariablesChanged = false;
   m_bNotesNotWantedNow = false;
   m_bDoingSimulate = false;
+  m_bLineOmittedFromOutput = false;
   
   m_view_number = 0;
   m_LastFlushTime = CTime::GetCurrentTime();
