@@ -452,7 +452,7 @@ assemble the full text of the original line.
 
   // triggers might set these
   bool bNoLog = !m_bLogOutput;
-  bool m_bLineOmittedFromOutput = false;
+  m_bLineOmittedFromOutput = false;
   bool bChangedColour = false;
 
   m_iCurrentActionSource = eInputFromServer;
