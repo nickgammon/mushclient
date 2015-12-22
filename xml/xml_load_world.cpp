@@ -515,7 +515,8 @@ LONGLONG iCounterFrequency = large_int_frequency.QuadPart;
         if (m_CurrentPlugin->m_ScriptEngine->CreateScriptEngine ())
           ThrowErrorException ("Could not initialise script engine");
 
-        if (m_CurrentPlugin->m_ScriptEngine->Parse (m_CurrentPlugin->m_strScript, "Plugin"))
+        if (m_CurrentPlugin->m_ScriptEngine->Parse (m_CurrentPlugin->m_strScript, 
+            CFormat ("Plugin: %s", (LPCTSTR) m_CurrentPlugin->m_strName)))
           ThrowErrorException ("Error parsing script");
       
         if (FindAllEntryPoints ())
