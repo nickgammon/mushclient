@@ -233,9 +233,9 @@ CSize textsize;
 
   textsize = dc.GetTextExtent (strVersion);
 
-  dc.SetTextColor (RGB (120, 0, 0));  
+  dc.SetTextColor (RGB (240, 240, 240));
 
-  dc.TextOut (15, bm.bmHeight + textsize.cy - 38, strVersion);
+  dc.TextOut (bm.bmWidth / 2 - textsize.cx / 2, bm.bmHeight + textsize.cy - 35, strVersion);
 
 }
 
