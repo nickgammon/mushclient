@@ -96,7 +96,7 @@ BEGIN
             VALUE "FileDescription", "MUSHclient\0"
             VALUE "FileVersion", "5.00\0"
             VALUE "InternalName", "MUSHCLIENT\0"
-            VALUE "LegalCopyright", "Copyright © 2015 Nick Gammon\0"
+            VALUE "LegalCopyright", "Copyright © 2016 Nick Gammon\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "MUSHCLIENT.EXE\0"
             VALUE "PrivateBuild", "\0"

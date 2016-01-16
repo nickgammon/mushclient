@@ -179,7 +179,7 @@ int CSplashWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// Set a timer to destroy the splash screen.
   SetTimer(SPLASH_SCREEN_TIMER_ID, m_bNick ? 10000 : 
 #ifdef _DEBUG
-  500,
+  5000,
 #else
   4000, 
 #endif
@@ -235,7 +235,7 @@ CSize textsize;
 
   dc.SetTextColor (RGB (240, 240, 240));
 
-  dc.TextOut (bm.bmWidth / 2 - textsize.cx / 2, bm.bmHeight + textsize.cy - 35, strVersion);
+  dc.TextOut (bm.bmWidth - textsize.cx - 8, 0, strVersion);  //  bm.bmHeight + textsize.cy - 35
 
 }
 
