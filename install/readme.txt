@@ -1,4 +1,4 @@
-MUSHclient version 5.00
+MUSHclient version 5.01
 =======================
 
 Sunday, 17 January 2016
