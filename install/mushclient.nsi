@@ -13,7 +13,7 @@
 ; The name of the installer
 Name "MUSHclient"
 Caption "MUSHclient Installer"
-; BGGradient FE8100 FCFC04  771F0E 
+; BGGradient FE8100 FCFC04  771F0E
 ; InstallColors FF8080 000030
 
 ; Use compression
@@ -21,7 +21,7 @@ SetCompressor /SOLID lzma
 
 
 ; The file to write
-OutFile mushclient40x.exe
+OutFile mushclient50x.exe
 
 ; Modern interface settings
 !include "MUI.nsh"
@@ -32,7 +32,7 @@ OutFile mushclient40x.exe
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "..\docs\agreement.txt"
-!insertmacro MUI_PAGE_DIRECTORY      
+!insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 
@@ -47,7 +47,7 @@ OutFile mushclient40x.exe
 ; The default installation directory
 InstallDir $PROGRAMFILES\MUSHclient
 
-; Registry key to check for directory (so if you install again, it will 
+; Registry key to check for directory (so if you install again, it will
 ; overwrite the old one automatically)
 InstallDirRegKey HKCU "SOFTWARE\Gammon Software Solutions\MUSHclient\General Options" "InstallDir"
 
@@ -71,7 +71,7 @@ SetDateSave on
 InstType Typical  ; 1
 InstType Full     ; 2
 InstType Compact  ; 3
-CheckBitmap  "${NSISDIR}\Contrib\Graphics\Checks\simple-round2.bmp" 
+CheckBitmap  "${NSISDIR}\Contrib\Graphics\Checks\simple-round2.bmp"
 
 Function .onInit
 
@@ -82,8 +82,8 @@ Function .onInit
 ;
 ;    File /oname=$PLUGINSDIR\splash.bmp "MUSHclient Installer.bmp"
 ;    splash::show 3000 $PLUGINSDIR\splash
-; 
-; Pop $0 
+;
+; Pop $0
 
 FunctionEnd
 
@@ -136,7 +136,7 @@ Section "-MUSHclient program (required)"
     ; not needed
     NoCreateWorldDirectory:
 
-  
+
   ; directory for plugin files (worlds\plugins subdirectory)
 
     ReadRegStr $1 HKCU "Software\Gammon Software Solutions\MUSHclient\Global prefs" "PluginsDirectory"
@@ -149,7 +149,7 @@ Section "-MUSHclient program (required)"
 
     ; not needed
     NoCreatePluginsDirectory:
-      
+
   ; directory for log files (logs subdirectory)
 
     ReadRegStr $1 HKCU "Software\Gammon Software Solutions\MUSHclient\Global prefs" "DefaultLogFileDirectory"
@@ -167,27 +167,27 @@ Section "-MUSHclient program (required)"
   ;
   CreateDirectory "$INSTDIR\locale"
   SetOutPath $INSTDIR\locale
-   
+
   File "..\Localize_template.lua"
   File "..\WinRel\locale\en.dll"
   File "..\WinRel\locale\en_small.dll"
   File "..\count_locale_usage.lua"
   File "..\detect_locale_changes.lua"
   File "..\locale_notes.txt"
-  
+
   SetOutPath $INSTDIR
 
   ;
   ;  put sounds here, hint hint
   ;
   CreateDirectory "$INSTDIR\sounds"
-    
+
  ;
   ;  directory for name generation files
   ;
   CreateDirectory "$INSTDIR\names"
   SetOutPath $INSTDIR\names
-   
+
   File "..\names\ALBION.NAM"
   File "..\names\ALVER.NAM"
   File "..\names\ALVER1.NAM"
@@ -216,9 +216,9 @@ Section "-MUSHclient program (required)"
   File "..\names\kerrel.nam"
   File "..\names\orc.nam"
   File "..\names\sparhawk.nam"
-  
+
   SetOutPath $INSTDIR
-    
+
 SectionEnd
 
 Section "Spell checker"
@@ -241,7 +241,7 @@ Section "Spell checker"
   File "..\spell\american-words.20"
   File "..\spell\english-contractions.10"
   File "..\spell\english-contractions.35"
- 
+
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
@@ -273,7 +273,7 @@ Section "Documentation"
   File "..\docs\luacom.pdf"
   File "..\docs\mersenne_twister.txt"
   File "..\docs\re.html"
-  
+
   CreateDirectory "$INSTDIR\docs\LuaSocket_documentation"
   SetOutPath $INSTDIR\docs\LuaSocket_documentation
 
@@ -293,7 +293,7 @@ Section "Documentation"
   File "..\docs\LuaSocket_documentation\tcp.html"
   File "..\docs\LuaSocket_documentation\udp.html"
   File "..\docs\LuaSocket_documentation\url.html"
-   
+
 SectionEnd
 
 Section "Fonts"
@@ -336,44 +336,44 @@ Section "Scripting"
   ;  directory for Lua scripts
   ;
   CreateDirectory "$INSTDIR\lua"
-    
+
   ; Set output path to the lua subdirectory.
   SetOutPath $INSTDIR\lua
 
 SetOverwrite ifnewer
- 
-   File "..\lua\InfoBox.lua" 
+
+   File "..\lua\InfoBox.lua"
    File "..\lua\addxml.lua"
    File "..\lua\alphanum.lua"
    File "..\lua\check.lua"
    File "..\lua\checkplugin.lua"
-   File "..\lua\colors.lua"  
+   File "..\lua\colors.lua"
    File "..\lua\commas.lua"
    File "..\lua\copytable.lua"
    File "..\lua\declare.lua"
-   File "..\lua\gauge.lua"  
+   File "..\lua\gauge.lua"
    File "..\lua\getlines.lua"
    File "..\lua\getstyle.lua"
    File "..\lua\getworld.lua"
-   File "..\lua\mapper.lua"  
+   File "..\lua\mapper.lua"
    File "..\lua\movewindow.lua"
    File "..\lua\mw.lua"
    File "..\lua\pairsbykeys.lua"
    File "..\lua\ppi.lua"
    File "..\lua\re.lua"
-   File "..\lua\sandbox.lua"  
+   File "..\lua\sandbox.lua"
    File "..\lua\serialize.lua"
-   File "..\lua\show_loaded.lua"  
+   File "..\lua\show_loaded.lua"
    File "..\lua\strict.lua"
    File "..\lua\string_indexing.lua"
    File "..\lua\tprint.lua"
    File "..\lua\var.lua"
    File "..\lua\wait.lua"
    File "..\lua\words_to_numbers.lua"
-   File "..\luacom\luacom5.lua"  
-      
+   File "..\luacom\luacom5.lua"
+
    ; LuaSocket
-   
+
    File "..\lua\socket.lua"
    File "..\lua\ltn12.lua"
    File "..\lua\mime.lua"
@@ -382,7 +382,7 @@ SetOverwrite ifnewer
   SetOutPath $INSTDIR\mime
 
    File "..\lua\mime\core.dll"
- 
+
   CreateDirectory "$INSTDIR\socket"
   SetOutPath $INSTDIR\socket
 
@@ -392,24 +392,24 @@ SetOverwrite ifnewer
    File "..\lua\socket\smtp.lua"
    File "..\lua\socket\tp.lua"
    File "..\lua\socket\url.lua"
-        
-   ; JSON stuff from http://luaforge.net/projects/luajson/ 
+
+   ; JSON stuff from http://luaforge.net/projects/luajson/
    ; version 1.1
-   
+
   SetOutPath $INSTDIR\lua
-   
+
    File "..\lua\json.lua"
 
   CreateDirectory "$INSTDIR\lua\json"
   SetOutPath $INSTDIR\lua\json
-  
+
     File "..\lua\json\encode.lua"
     File "..\lua\json\decode.lua"
     File "..\lua\json\util.lua"
-  
+
   CreateDirectory "$INSTDIR\lua\json\encode"
   SetOutPath $INSTDIR\lua\json\encode
-  
+
     File "..\lua\json\encode\array.lua"
     File "..\lua\json\encode\calls.lua"
     File "..\lua\json\encode\number.lua"
@@ -418,10 +418,10 @@ SetOverwrite ifnewer
     File "..\lua\json\encode\output.lua"
     File "..\lua\json\encode\output_utility.lua"
     File "..\lua\json\encode\strings.lua"
-  
+
   CreateDirectory "$INSTDIR\lua\json\decode"
   SetOutPath $INSTDIR\lua\json\decode
-  
+
     File "..\lua\json\decode\array.lua"
     File "..\lua\json\decode\calls.lua"
     File "..\lua\json\decode\number.lua"
@@ -429,7 +429,7 @@ SetOverwrite ifnewer
     File "..\lua\json\decode\others.lua"
     File "..\lua\json\decode\strings.lua"
     File "..\lua\json\decode\util.lua"
-        
+
   ; Set output path to the scripts subdirectory.
   SetOutPath $INSTDIR\scripts
 
@@ -447,7 +447,7 @@ SectionEnd
 Section "Plugins"
   ; Which section type it is in
   SectionIn 1 2   ; typical, full
-  
+
   SetOutPath $INSTDIR\worlds\plugins
 
   ; Put files there
@@ -456,7 +456,7 @@ Section "Plugins"
   File "..\plugins\constants.pl"
   File "..\plugins\constants.pys"
   File "..\plugins\constants.lua"
-  
+
   ; plugins - alphabetic order
   File "..\plugins\ANSI_Log.xml"
   File "..\plugins\ATCP_Mapper.xml"
@@ -464,9 +464,9 @@ Section "Plugins"
   File "..\plugins\Automatic_Backup.xml"
   File "..\plugins\Calculator.xml"
   File "..\plugins\Chat.xml"
-  File "..\plugins\Code_Chart.xml"  
+  File "..\plugins\Code_Chart.xml"
   File "..\plugins\ColourNote.xml"
-  File "..\plugins\Config_Option_Changer.xml"  
+  File "..\plugins\Config_Option_Changer.xml"
   File "..\plugins\Current_Output_Window.xml"
   File "..\plugins\Gag.xml"
   File "..\plugins\Health_Bar.xml"
@@ -482,7 +482,7 @@ Section "Plugins"
   File "..\plugins\SMAUG_automapper_helper.xml"
   File "..\plugins\ShowActivity.xml"
   File "..\plugins\Status_Bar_Prompt.xml"
-  File "..\plugins\Summary.xml"  
+  File "..\plugins\Summary.xml"
   File "..\plugins\Text_To_Speech.xml"
   File "..\plugins\Timer.xml"
   File "..\plugins\Timestamps.xml"
@@ -539,7 +539,7 @@ Section Uninstall
   ; readme and tips
   Delete "$INSTDIR\readme.txt"
   Delete "$INSTDIR\tips.txt"
-  
+
   ; example trigger/alias/timer list filters
   Delete "$INSTDIR\Example_Filters.lua"
 
@@ -548,7 +548,7 @@ Section Uninstall
 
   ; and Dina font
   Delete "$INSTDIR\Dina.fon"
- 
+
   ; scripting stuff
   Delete "$INSTDIR\scripts\MUSHclient.tlb"
   Delete "$INSTDIR\scripts\exampscript.vbs"
@@ -558,38 +558,38 @@ Section Uninstall
   Delete "$INSTDIR\scripts\exampscript.lua"
 
   RMDir  "$INSTDIR\scripts"
-  
+
   ; lua stuff
-  Delete "$INSTDIR\lua\InfoBox.lua" 
+  Delete "$INSTDIR\lua\InfoBox.lua"
   Delete "$INSTDIR\lua\addxml.lua"
-  Delete "$INSTDIR\lua\alphanum.lua" 
+  Delete "$INSTDIR\lua\alphanum.lua"
   Delete "$INSTDIR\lua\check.lua"
-  Delete "$INSTDIR\lua\checkplugin.lua" 
-  Delete "$INSTDIR\lua\colors.lua" 
+  Delete "$INSTDIR\lua\checkplugin.lua"
+  Delete "$INSTDIR\lua\colors.lua"
   Delete "$INSTDIR\lua\commas.lua"
   Delete "$INSTDIR\lua\copytable.lua"
   Delete "$INSTDIR\lua\declare.lua"
-  Delete "$INSTDIR\lua\gauge.lua" 
+  Delete "$INSTDIR\lua\gauge.lua"
   Delete "$INSTDIR\lua\getlines.lua"
   Delete "$INSTDIR\lua\getstyle.lua"
   Delete "$INSTDIR\lua\getworld.lua"
-  Delete "$INSTDIR\lua\luacom5.lua"  
-  Delete "$INSTDIR\lua\mapper.lua"  
-  Delete "$INSTDIR\lua\movewindow.lua" 
-  Delete "$INSTDIR\lua\mw.lua" 
+  Delete "$INSTDIR\lua\luacom5.lua"
+  Delete "$INSTDIR\lua\mapper.lua"
+  Delete "$INSTDIR\lua\movewindow.lua"
+  Delete "$INSTDIR\lua\mw.lua"
   Delete "$INSTDIR\lua\pairsbykeys.lua"
   Delete "$INSTDIR\lua\ppi.lua"
-  Delete "$INSTDIR\lua\re.lua" 
-  Delete "$INSTDIR\lua\sandbox.lua"  
+  Delete "$INSTDIR\lua\re.lua"
+  Delete "$INSTDIR\lua\sandbox.lua"
   Delete "$INSTDIR\lua\serialize.lua"
-  Delete "$INSTDIR\lua\show_loaded.lua"  
+  Delete "$INSTDIR\lua\show_loaded.lua"
   Delete "$INSTDIR\lua\strict.lua"
   Delete "$INSTDIR\lua\string_indexing.lua"
   Delete "$INSTDIR\lua\tprint.lua"
   Delete "$INSTDIR\lua\var.lua"
   Delete "$INSTDIR\lua\wait.lua"
   Delete "$INSTDIR\lua\words_to_numbers.lua"
-     
+
   Delete "$INSTDIR\lua\socket.lua"
   Delete "$INSTDIR\lua\ltn12.lua"
   Delete "$INSTDIR\lua\mime.lua"
@@ -603,7 +603,7 @@ Section Uninstall
 
   RMDir  "$INSTDIR\mime"
   RMDir  "$INSTDIR\socket"
-    
+
   Delete "$INSTDIR\lua\json.lua"
   Delete "$INSTDIR\lua\json\encode.lua"
   Delete "$INSTDIR\lua\json\decode.lua"
@@ -627,7 +627,7 @@ Section Uninstall
   RMDir  "$INSTDIR\lua\json\decode"
   RMDir  "$INSTDIR\lua\json\encode"
   RMDir  "$INSTDIR\lua\json"
-        
+
   ; spell checker stuff
   Delete "$INSTDIR\spellchecker.lua"
   Delete "$INSTDIR\spell\english-words.10"
@@ -641,7 +641,7 @@ Section Uninstall
   Delete "$INSTDIR\spell\american-words.20"
   Delete "$INSTDIR\spell\english-contractions.10"
   Delete "$INSTDIR\spell\english-contractions.35"
-  
+
   RMDir  "$INSTDIR\spell"
 
   ; docs
@@ -679,7 +679,7 @@ Section Uninstall
   Delete "$INSTDIR\docs\LuaSocket_documentation\url.html"
 
   RMDir  "$INSTDIR\docs\LuaSocket_documentation"
-      
+
   RMDir  "$INSTDIR\docs"
 
   ; fonts
@@ -692,17 +692,17 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\constants.pl"
   Delete "$INSTDIR\worlds\plugins\constants.pys"
   Delete "$INSTDIR\worlds\plugins\constants.lua"
-  
+
   ; plugins - alphabetic order
   Delete "$INSTDIR\worlds\plugins\ANSI_Log.xml"
-  Delete "$INSTDIR\worlds\plugins\ATCP_Mapper.xml"  
+  Delete "$INSTDIR\worlds\plugins\ATCP_Mapper.xml"
   Delete "$INSTDIR\worlds\plugins\ATCP_NJG.xml"
   Delete "$INSTDIR\worlds\plugins\Automatic_Backup.xml"
   Delete "$INSTDIR\worlds\plugins\Calculator.xml"
   Delete "$INSTDIR\worlds\plugins\Chat.xml"
-  Delete "$INSTDIR\worlds\plugins\Code_Chart.xml"  
+  Delete "$INSTDIR\worlds\plugins\Code_Chart.xml"
   Delete "$INSTDIR\worlds\plugins\ColourNote.xml"
-  Delete "$INSTDIR\worlds\plugins\Config_Option_Changer.xml"  
+  Delete "$INSTDIR\worlds\plugins\Config_Option_Changer.xml"
   Delete "$INSTDIR\worlds\plugins\Current_Output_Window.xml"
   Delete "$INSTDIR\worlds\plugins\Gag.xml"
   Delete "$INSTDIR\worlds\plugins\Health_Bar.xml"
@@ -719,7 +719,7 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\SMAUG_automapper_helper.xml"
   Delete "$INSTDIR\worlds\plugins\ShowActivity.xml"
   Delete "$INSTDIR\worlds\plugins\Status_Bar_Prompt.xml"
-  Delete "$INSTDIR\worlds\plugins\Summary.xml"  
+  Delete "$INSTDIR\worlds\plugins\Summary.xml"
   Delete "$INSTDIR\worlds\plugins\Text_To_Speech.xml"
   Delete "$INSTDIR\worlds\plugins\Timer.xml"
   Delete "$INSTDIR\worlds\plugins\Timestamps.xml"
@@ -732,18 +732,18 @@ Section Uninstall
   Delete "$INSTDIR\worlds\plugins\reverse_speedwalk.xml"
   Delete "$INSTDIR\worlds\plugins\scan.xml"
   Delete "$INSTDIR\worlds\Version_Check.xml"
-  
+
   ; locale stuff
-  
+
   Delete "$INSTDIR\locale\Localize_template.lua"
   Delete "$INSTDIR\locale\en.dll"
   Delete "$INSTDIR\locale\en_small.dll"
   Delete "$INSTDIR\locale\count_locale_usage.lua"
   Delete "$INSTDIR\locale\detect_locale_changes.lua"
   Delete "$INSTDIR\locale\locale_notes.txt"
-  
+
    ; names files
-   
+
   Delete "$INSTDIR\names\ALBION.NAM"
   Delete "$INSTDIR\names\ALVER.NAM"
   Delete "$INSTDIR\names\ALVER1.NAM"
@@ -772,10 +772,10 @@ Section Uninstall
   Delete "$INSTDIR\names\kerrel.nam"
   Delete "$INSTDIR\names\orc.nam"
   Delete "$INSTDIR\names\sparhawk.nam"
-    
+
   RMDir  "$INSTDIR\names"
   RMDir  "$INSTDIR\sounds"
-  
+
   ; MUST REMOVE UNINSTALLER, too
   Delete $INSTDIR\uninstall.exe
 
@@ -808,9 +808,9 @@ SectionEnd
 
 Function .onInstSuccess
 ;  MessageBox MB_YESNO "Installation of MUSHclient is complete. View the readme file?" IDNO NoReadme
-;    Exec 'notepad "$INSTDIR\readme.txt"' 
+;    Exec 'notepad "$INSTDIR\readme.txt"'
 ;  NoReadme:
-  
+
   MessageBox MB_YESNO "Launch MUSHclient now?" IDNO NoLaunch
     SetOutPath $INSTDIR
     ExecShell "open" "$INSTDIR\mushclient.exe"

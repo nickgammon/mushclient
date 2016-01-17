@@ -63,7 +63,7 @@ MAKE INSTALLER
 
 1. Open directory: \source\mushclient\install
 2. Run shortcut: Make Installer
-3. Rename resulting file 'mushclient40x.exe' as appropriate (eg. mushclient454.exe)
+3. Rename resulting file 'mushclient50x.exe' as appropriate (eg. mushclient502.exe)
 
 
 COMMIT FINAL CHANGES TO GIT
@@ -73,14 +73,14 @@ COMMIT FINAL CHANGES TO GIT
     git push
     
 2. Tag this release and push tags:
-    git tag -a v4.54 -m "Version 4.54 as released"
+    git tag -a v5.01 -m "Version 5.01 as released"
     git push --tags  
     
 
 FIND INSTALLER MD5 SUM
 
 1. Switch to install directory and type:
-   md5sum *454*    (version number here)
+   md5sum *501*    (version number here)
    
    
 UPLOAD INSTALLER
@@ -89,15 +89,15 @@ UPLOAD INSTALLER
 
    sftp username@gammon.com.au
    cd www/files/mushclient
-   put mushclient454.exe
-   chmod 644 mushclient454.exe
+   put mushclient501.exe
+   chmod 644 mushclient501.exe
    Ctrl+D
    
 2. Check upload:
 
    ssh username@gammon.com.au
    cd www/files/mushclient
-   md5sum *454*     (version number here)
+   md5sum *501*     (version number here)
    
 
 DO ANNOUNCEMENT
