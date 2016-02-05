@@ -424,9 +424,11 @@ SetOverwrite ifnewer
 
     File "..\lua\json\decode\array.lua"
     File "..\lua\json\decode\calls.lua"
+    File "..\lua\json\decode\composite.lua"
     File "..\lua\json\decode\number.lua"
     File "..\lua\json\decode\object.lua"
     File "..\lua\json\decode\others.lua"
+    File "..\lua\json\decode\state.lua"
     File "..\lua\json\decode\strings.lua"
     File "..\lua\json\decode\util.lua"
 
