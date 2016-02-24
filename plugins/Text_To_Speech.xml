@@ -99,7 +99,12 @@ function OnPluginInstall ()
   require "luacom"
   
   -- Instantiate a SAPI voice obejct
-  talk = assert (luacom.CreateObject ("SAPI.SpVoice"), "cannot open SAPI")
+  talk = assert (luacom.CreateObject ("SAPI.SpVoice"), [[
+  Cannot open SAPI.
+  Note for Linux and Mac OS users. Text to speech functionality depends on the Microsoft Speech API.
+  This is not included by default in Wine, and SpeechSDK51.exe must be separately installed.
+  You can download it from http://download.microsoft.com/download/B/4/3/B4314928-7B71-4336-9DE7-6FA4CF00B7B3/SpeechSDK51.exe
+  ]])
   
   -- Method call
   talk:Speak ("SAPI Plug-in installed and is ready.", 1)
