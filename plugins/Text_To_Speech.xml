@@ -11,18 +11,24 @@
    date_written="2010-09-01"
    requires="4.60"
    version="1.1"
+   save_state="y"
    >
    
 <description trim="y">
 Type:
 
- sapi on    --> turn on speaking (the default)
- sapi off   --> turn off speaking of MUD output
- sapi skip  --> skips one sentence in output stream
-
+ sapi on            --> turn on speaking
+ sapi off           --> turn off speaking of MUD output
+ sapi skip          --> skips one sentence in output stream
+ sapi faster        --> speeds speech up
+ sapi slower        --> slows speech down
+ sapi rate [number] --> set speech rate to [number]
+ sapi voice         --> switch to the next available TTS voice
+ sapi test          --> speak a test phrase
+ 
 Other scripts can speak stuff by doing:
 
-  CallPlugin ("463242566069ebfd1b379ec1", "say", "What to say")
+ CallPlugin ("463242566069ebfd1b379ec1", "say", "What to say")
 
 </description>
 </plugin>
@@ -52,8 +58,68 @@ Other scripts can speak stuff by doing:
    group="speech"
   >
   </alias>
+  
+  <alias
+   match="sapi faster"
+   enabled="n"
+   omit_from_command_history="y"
+   omit_from_log="y"
+   omit_from_output="y"
+   script="speak_faster"
+   sequence="100"
+   group="speech"
+  >
+  </alias>
+  
+  <alias
+   match="sapi slower"
+   enabled="n"
+   omit_from_command_history="y"
+   omit_from_log="y"
+   omit_from_output="y"
+   script="speak_slower"
+   sequence="100"
+   group="speech"
+  >
+  </alias>
     
- <alias
+  <alias
+   match="sapi voice"
+   enabled="n"
+   omit_from_command_history="y"
+   omit_from_log="y"
+   omit_from_output="y"
+   script="speak_next_voice"
+   sequence="100"
+   group="speech"
+  >
+  </alias>
+    
+  <alias
+   match="sapi test"
+   enabled="n"
+   omit_from_command_history="y"
+   omit_from_log="y"
+   omit_from_output="y"
+   script="speak_test"
+   sequence="100"
+   group="speech"
+  >
+  </alias>
+  
+  <alias
+   match="sapi rate *"
+   enabled="n"
+   omit_from_command_history="y"
+   omit_from_log="y"
+   omit_from_output="y"
+   script="speak_rate"
+   sequence="100"
+   group="speech"
+  >
+  </alias>
+  
+  <alias
    match="sapi skip"
    enabled="n"
    omit_from_log="y"
@@ -78,69 +144,130 @@ Other scripts can speak stuff by doing:
 -- turn on speaking
 function speak_on (name, line, wildcards)
   speak = true
-  talk:Speak ("Sapi auto speak now on.", 1)
+  SetVariable("speak", speak and "1" or "0")
+  talk:Speak("Sapi auto speak now activated.", SAPI_ENUMS.SpeechVoiceSpeakFlags.SVSFlagsAsync)
 end -- function speak_on
 
 -- turn off speaking
 function speak_off (name, line, wildcards)
   speak = false
-  talk:Speak ("Sapi auto speak now off.",1)
+  SetVariable("speak", speak and "1" or "0")
+  talk:Speak("Sapi auto speak now deactivated.", SAPI_ENUMS.SpeechVoiceSpeakFlags.SVSFlagsAsync)
 end -- function speak_off
 
 -- skip a sentence
 function speak_skip (name, line, wildcards)
-  talk:Skip ("Sentence", 1)
+  talk:Skip("Sentence", 1)
 end -- function speak_skip
+
+function speak_faster (name, line, wildcards)
+  talk.Rate = talk.Rate + 1
+  SetVariable("talk_Rate", talk.Rate)
+  speak_test()
+end
+
+function speak_slower (name, line, wildcards)
+  talk.Rate = talk.Rate - 1
+  SetVariable("talk_Rate", talk.Rate)
+  speak_test()
+end
+
+function speak_rate (name, line, wildcards)
+  if tonumber(wildcards[1]) then
+    talk.Rate = tonumber(wildcards[1])
+    SetVariable("talk_Rate", talk.Rate)
+    speak_test()
+  else
+    talk:Speak("Invalid Sapi rate \""..wildcards[1].."\"")
+  end
+end
+
+function speak_next_voice (name, line, wildcards)
+  current_voice_index = current_voice_index + 1
+  if current_voice_index >= NUM_SAPI_VOICES then
+    current_voice_index = 0
+  end
+  local new_voice = talk:GetVoices():Item(current_voice_index)
+  if NUM_SAPI_VOICES > 1 and new_voice.ID == "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\SampleTTSVoice" then
+    -- sample TTS voice from the SDK uselessly just says "blah blah blah"
+    speak_next_voice()
+    return
+  end
+  talk:setVoice(new_voice) -- luacom can't do `talk.Voice =`
+  SetVariable("talk_Voice_ID", talk.Voice.ID)
+  speak_test()
+end
+
+function speak_test (name, line, wildcards)
+  say("This is a demonstration of "..talk.Voice:GetDescription().." speaking at rate " .. tostring(talk.Rate))
+end
 
 -- installation
 function OnPluginInstall ()
 
   -- load Lua COM
   require "luacom"
-  
+
   -- Instantiate a SAPI voice obejct
-  talk = assert (luacom.CreateObject ("SAPI.SpVoice"), [[
+  talk = assert(luacom.CreateObject("SAPI.SpVoice"), [[
   Cannot open SAPI.
-  Note for Linux and Mac OS users. Text to speech functionality depends on the Microsoft Speech API.
+  Note for Linux and Mac OS users.
+  Text to speech functionality depends on the Microsoft Speech API.
   This is not included by default in Wine, and SpeechSDK51.exe must be separately installed.
   You can download it from http://download.microsoft.com/download/B/4/3/B4314928-7B71-4336-9DE7-6FA4CF00B7B3/SpeechSDK51.exe
   ]])
-  
-  -- Method call
-  talk:Speak ("SAPI Plug-in installed and is ready.", 1)
 
-  speak = true
-  EnableGroup ("speech", true)
-  
+  SAPI_ENUMS = luacom.GetTypeInfo(talk):GetTypeLib():ExportEnumerations()
+  NUM_SAPI_VOICES = talk:GetVoices().Count
+  assert(NUM_SAPI_VOICES > 0, "No SAPI voices found.")
+
+  current_voice = GetVariable("talk_Voice_ID") or talk.Voice.ID
+
+  -- find index of saved voice
+  current_voice_index = 0
+  local enumerate_voices = luacom.GetEnumerator(talk:GetVoices())
+  local voice = enumerate_voices:Next()
+  local i = 0
+  while voice do
+    if voice.ID == current_voice then
+      current_voice_index = i
+      break
+    end
+    i = i + 1
+    voice = enumerate_voices:Next()
+  end
+
+  talk:setVoice(talk:GetVoices():Item(current_voice_index)) -- luacom can't do `talk.Voice =`
+  talk.Rate = GetVariable("talk_Rate") or talk.Rate
+  speak = (GetVariable("speak") == "1")
+
+  EnableGroup("speech", true)
+
+  -- Method call
+  say("SAPI Plug-in installed and is ready.")
 end -- function OnPluginInstall
 
 -- here to draw the screen
 function OnPluginScreendraw (t, log, line)
 
-  -- check loaded
-  if not talk then
-    return
-  end -- if not installed
-
   if (t == 0 or t == 1) and speak then
-     talk:Speak (line, 1)
+    say(line)
   end -- if
-  
+
 end -- function
-  
+
 -- Speak from other scripts
 -- eg. CallPlugin ("463242566069ebfd1b379ec1", "say", "What to say")
-
 function say (what)
 
   -- check loaded
   if not talk then
-    return false  -- failure
+    return false -- failure
   end -- if not installed
 
-  talk:Speak (what, 1)
-  
-  return true  -- OK
+  talk:Speak(what, SAPI_ENUMS.SpeechVoiceSpeakFlags.SVSFlagsAsync)
+
+  return true -- OK
 end -- function say
 
 ]]>
