@@ -6112,7 +6112,7 @@ CTrigger * pTrigger;
 POSITION pos;
 
   GetTriggerArray ().SetSize (iCount);
-  CTriggerRevMap ().empty ();
+  CTriggerRevMap ().clear ();
 
   // extract pointers into a simple array
   for (i = 0, pos = GetTriggerMap ().GetStartPosition(); pos; i++)
