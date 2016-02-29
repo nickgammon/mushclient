@@ -391,7 +391,7 @@ CString strTimerName;
 CTimer * pTimer;
 POSITION pos;
 
-  CTimerRevMap ().empty ();
+  GetTimerRevMap ().clear ();
 
   // extract pointers into a simple array
   for (i = 0, pos = GetTimerMap ().GetStartPosition(); pos; i++)
