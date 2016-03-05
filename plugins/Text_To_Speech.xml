@@ -1,39 +1,43 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE muclient>
 
+<!-- Based on work by Nick Gammon based on work by Tyler Spivey -->
+<!-- See: http://www.gammon.com.au/forum/bbshowpost.php?bbsubject_id=7767 -->
 <muclient>
 <plugin
    name="Text_To_Speech"
-   author="Nick Gammon"
+   author="Avi Kelman (Fiendish)"
    id="463242566069ebfd1b379ec1"
    language="Lua"
    purpose="Speaks incoming text using SAPI."
    date_written="2010-09-01"
    requires="4.60"
-   version="1.1"
+   version="2.0"
    save_state="y"
    >
    
 <description trim="y">
-Type:
+Text To Speech Plug-in Commands:
 
- sapi on            --> turn on speaking
- sapi off           --> turn off speaking of MUD output
- sapi skip          --> skips one sentence in output stream
- sapi faster        --> speeds speech up
- sapi slower        --> slows speech down
- sapi rate [number] --> set speech rate to [number]
- sapi voice         --> switch to the next available TTS voice
- sapi test          --> speak a test phrase
- 
-Other scripts can speak stuff by doing:
+ sapi on                   : turn on automatic speaking of MUD output.
+ sapi off                  : turn off automatic speaking of MUD output.
+ sapi skip                 : skips one sentence in output stream.
+ sapi clear                : clear the speech output queue.
+ sapi faster               : speeds speech up.
+ sapi slower               : slows speech down.
+ sapi rate [number]        : set speech rate to [number].
+ sapi list voices          : list the available TTS voices.
+ sapi voice [number]       : switch to the given TTS voice number.
+ sapi test                 : speak a test phrase.
+ sapi punctuation [number] : set punctuation filtering level to [number].
+ sapi say [text]           : speak the given text.
+
+Scripts can also speak stuff by doing:
 
  CallPlugin ("463242566069ebfd1b379ec1", "say", "What to say")
-
 </description>
 </plugin>
 
-<!--  Triggers  -->
 <aliases>
   <alias
    match="sapi on"
@@ -84,12 +88,25 @@ Other scripts can speak stuff by doing:
   </alias>
     
   <alias
-   match="sapi voice"
+   match="^sapi voice( .+)?$"
+   regexp="y"
    enabled="n"
    omit_from_command_history="y"
    omit_from_log="y"
    omit_from_output="y"
-   script="speak_next_voice"
+   script="speak_choose_voice"
+   sequence="100"
+   group="speech"
+  >
+  </alias>
+  
+  <alias
+   match="sapi list voices"
+   enabled="n"
+   omit_from_command_history="y"
+   omit_from_log="y"
+   omit_from_output="y"
+   script="list_voices"
    sequence="100"
    group="speech"
   >
@@ -108,8 +125,9 @@ Other scripts can speak stuff by doing:
   </alias>
   
   <alias
-   match="sapi rate *"
+   match="^sapi rate( .+)?$"
    enabled="n"
+   regexp="y"
    omit_from_command_history="y"
    omit_from_log="y"
    omit_from_output="y"
@@ -129,7 +147,75 @@ Other scripts can speak stuff by doing:
    group="speech"
   >
   </alias>
+
+  <alias
+   match="sapi clear"
+   enabled="n"
+   omit_from_log="y"
+   omit_from_output="y"
+   script="speak_skip_all"
+   sequence="100"
+   group="speech"
+  >
+  </alias>
+  
+  <alias
+   match="^sapi say (.*)$"
+   regexp="y"
+   enabled="n"
+   omit_from_log="y"
+   omit_from_output="y"
+   sequence="100"
+   group="speech"
+   send_to="12"
+  >
+  <send>
+    say("%1")
+  </send>
+  </alias>
     
+  <alias
+   match="^sapi help( printed)?$"
+   regexp="y"
+   enabled="n"
+   omit_from_log="y"
+   omit_from_output="y"
+   sequence="100"
+   group="speech"
+   send_to="12"
+  ><send>
+     if "%1" == "" then
+       say("This help is being spoken but not printed to the screen. To print it to the screen, use: sapi help printed.")
+       say(GetPluginInfo(GetPluginID(), 3), true)
+     else
+       NoteSilent(GetPluginInfo(GetPluginID(), 3))
+     end
+   </send>
+  </alias>
+
+  <alias
+   match="sapi debug"
+   enabled="n"
+   omit_from_log="y"
+   omit_from_output="y"
+   sequence="100"
+   group="speech"
+   send_to="12"
+  ><send>
+     show_spoken_lines = not show_spoken_lines
+   </send>
+  </alias>
+  
+  <alias
+   match="sapi punctuation( .+)?"
+   regexp="y"
+   enabled="n"
+   omit_from_log="y"
+   omit_from_output="y"
+   sequence="100"
+   group="speech"
+   script="speak_punctuation_level"
+  ></alias>
 </aliases>
 
 <triggers>
@@ -137,28 +223,66 @@ Other scripts can speak stuff by doing:
 
 <!--  Script  -->
 
-
 <script>
 <![CDATA[
+
+local punc_descs = {
+  "Say all punctuation.",
+  "Say only non-standard punctuation.",
+  "Extra filtering to mask symbols and other garbage."
+}
+
+function current_punctuation_level()
+  return "SAPI punctuation level is currently "..tostring(punctuation_level)..". "..punc_descs[punctuation_level]
+end
+
+function speak_punctuation_level(name, line, wildcards)
+  local function list_options()
+    say("Punctuation level options are:")
+    for i,v in ipairs(punc_descs) do say("Level "..tostring(i)..": "..v) end
+    say("Level "..tostring(#punc_descs).." is recommended.")
+  end
+  
+  local arg = Trim(wildcards[1])
+  if arg == "" then
+    say(current_punctuation_level())
+    list_options()
+    return
+  end
+  arg = tonumber(arg)
+  if (arg == nil) or (punc_descs[arg] == nil) then
+    say("SAPI punctuation level must be an index number between 1 and 3.")
+    list_options()
+    return
+  end
+  punctuation_level = arg
+  SetVariable("punctuation_level", tostring(punctuation_level))
+  say("SAPI punctuation level set to "..tostring(punctuation_level)..". "..punc_descs[punctuation_level])
+end
 
 -- turn on speaking
 function speak_on (name, line, wildcards)
   speak = true
   SetVariable("speak", speak and "1" or "0")
-  talk:Speak("Sapi auto speak now activated.", SAPI_ENUMS.SpeechVoiceSpeakFlags.SVSFlagsAsync)
+  say("SAPI auto speak now activated.")
 end -- function speak_on
 
 -- turn off speaking
 function speak_off (name, line, wildcards)
   speak = false
   SetVariable("speak", speak and "1" or "0")
-  talk:Speak("Sapi auto speak now deactivated.", SAPI_ENUMS.SpeechVoiceSpeakFlags.SVSFlagsAsync)
+  speak_skip_all()
+  say("SAPI auto speak now deactivated.")
 end -- function speak_off
 
 -- skip a sentence
 function speak_skip (name, line, wildcards)
   talk:Skip("Sentence", 1)
 end -- function speak_skip
+
+function speak_skip_all (name, line, wildcards)
+  talk:Speak(' ', SAPI_ENUMS.SpeechVoiceSpeakFlags.SVSFPurgeBeforeSpeak)
+end
 
 function speak_faster (name, line, wildcards)
   talk.Rate = talk.Rate + 1
@@ -173,33 +297,82 @@ function speak_slower (name, line, wildcards)
 end
 
 function speak_rate (name, line, wildcards)
-  if tonumber(wildcards[1]) then
+  local input = Trim(wildcards[1])
+  if input == "" then
+    say("SAPI rate currently set to "..talk.Rate)
+    return
+  end
+  if tonumber(input) then
     talk.Rate = tonumber(wildcards[1])
     SetVariable("talk_Rate", talk.Rate)
     speak_test()
   else
-    talk:Speak("Invalid Sapi rate \""..wildcards[1].."\"")
+    say("Invalid SAPI rate \""..wildcards[1].."\"")
   end
 end
 
-function speak_next_voice (name, line, wildcards)
-  current_voice_index = current_voice_index + 1
-  if current_voice_index >= NUM_SAPI_VOICES then
-    current_voice_index = 0
+western_happy_faces = "[8:]%-?[D%)%]]" -- arbitrary heuristics
+western_sad_faces = "[8:;]%-?[%(%[]" -- arbitrary heuristics
+another_sad_face = "%-_%-" -- arbitrary heuristics
+another_happy_face = "%^_%^" -- arbitrary heuristics
+western_wink_faces = ";%-?[D%)%]]" -- arbitrary heuristics
+western_tongue_faces = "[8:;]%-?[pP9b]" -- arbitrary heuristics
+remove_two_or_more_of_these = "[%-%+%^#$~><*`_]" -- arbitrary heuristics
+remove_three_or_more_of_these = "[%p\\/|_%-%(%)%[]{}%%%+%^#%$~><*`_]" -- arbitrary heuristics
+silent_if_only_these = "[%p%s]+" -- arbitrary heuristics
+two_or_more_pattern = remove_two_or_more_of_these:rep(2).."+" -- arbitrary heuristics
+three_or_more_pattern = remove_three_or_more_of_these:rep(3).."+" -- arbitrary heuristics
+pad_left_braces = "([%[%(%{])" -- arbitrary heuristics
+pad_right_braces = "([%]%}%)])" -- arbitrary heuristics
+function filter_more_punctuation(msg) -- uses arbitrary heuristics
+  msg = msg:gsub(western_happy_faces, ", smiley. "):gsub(western_sad_faces, ", sad-face. "):gsub(western_wink_faces, ", winks. "):gsub(western_tongue_faces, ", sticks-tongue-out. "):gsub(another_sad_face, ", sad-face. "):gsub(another_happy_face, ", smiley. "):gsub(three_or_more_pattern, " "):gsub(two_or_more_pattern, " "):gsub("|", " "):gsub(pad_left_braces, " %1"):gsub(pad_right_braces, "%1 ")
+  if msg:gsub(silent_if_only_these, "") == "" then
+    return ""
+  else
+    return msg
   end
-  local new_voice = talk:GetVoices():Item(current_voice_index)
-  if NUM_SAPI_VOICES > 1 and new_voice.ID == "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\SampleTTSVoice" then
-    -- sample TTS voice from the SDK uselessly just says "blah blah blah"
-    speak_next_voice()
+end
+
+function speak_choose_voice (name, line, wildcards)
+  local new_voice = nil
+  local param = Trim(wildcards[1])
+  local voice_number = tonumber(param)
+  if voice_number~=nil and voice_number >= 1 and voice_number <= NUM_SAPI_VOICES and talk:GetVoices():Item(voice_number-1).ID ~= "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\SampleTTSVoice" then
+    current_voice_index = voice_number-1
+    new_voice = talk:GetVoices():Item(current_voice_index)
+  else
+    if param ~= "" then
+      say(param.." is not a valid SAPI voice number.")
+    else
+      say("The SAPI voice command must be given a number corresponding to the desired voice.")
+    end
+    list_voices()
     return
   end
+  
   talk:setVoice(new_voice) -- luacom can't do `talk.Voice =`
   SetVariable("talk_Voice_ID", talk.Voice.ID)
   speak_test()
 end
 
 function speak_test (name, line, wildcards)
-  say("This is a demonstration of "..talk.Voice:GetDescription().." speaking at rate " .. tostring(talk.Rate))
+  say("SAPI speech is set to voice "..tostring(current_voice_index+1)..", "..talk.Voice:GetDescription()..", speaking at rate " .. tostring(talk.Rate))
+end
+
+function list_voices (name, line, wildcards)
+  local enumerate_voices = luacom.GetEnumerator(talk:GetVoices())
+  local voice = enumerate_voices:Next()
+  local i = 0
+  while voice do
+    if voice.ID ~= "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\SampleTTSVoice" then
+      talk:setVoice(voice)
+      say("Voice number "..tostring(i+1).." is "..voice:GetDescription())
+    end
+    i = i + 1
+    voice = enumerate_voices:Next()
+  end
+  talk:setVoice(talk:GetVoices():Item(current_voice_index))
+  say("Type sapi voice [number] to set the desired SAPI voice.")
 end
 
 -- installation
@@ -237,35 +410,61 @@ function OnPluginInstall ()
     voice = enumerate_voices:Next()
   end
 
-  talk:setVoice(talk:GetVoices():Item(current_voice_index)) -- luacom can't do `talk.Voice =`
+  talk:setVoice(voice) -- luacom can't do `talk.Voice =`
   talk.Rate = GetVariable("talk_Rate") or talk.Rate
-  speak = (GetVariable("speak") == "1")
-
+  speak = ((GetVariable("speak") or "1") == "1")
+  punctuation_level = tonumber(GetVariable("punctuation_level"))
+  if punc_descs[punctuation_level] == nil then
+    punctuation_level = 3
+  end
+  show_spoken_lines = false
   EnableGroup("speech", true)
 
   -- Method call
-  say("SAPI Plug-in installed and is ready.")
+  say("SAPI Plug-in installed and is ready")
+  say(current_punctuation_level())
 end -- function OnPluginInstall
 
 -- here to draw the screen
 function OnPluginScreendraw (t, log, line)
 
   if (t == 0 or t == 1) and speak then
-    say(line)
+    say(line, true)
   end -- if
 
 end -- function
 
+function NoteSilent(what)
+   local prev_speak = speak
+   speak = false
+   Note(what)
+   speak = prev_speak
+end
+
 -- Speak from other scripts
 -- eg. CallPlugin ("463242566069ebfd1b379ec1", "say", "What to say")
-function say (what)
+function say (what, force_debug_off)
 
   -- check loaded
   if not talk then
     return false -- failure
   end -- if not installed
 
-  talk:Speak(what, SAPI_ENUMS.SpeechVoiceSpeakFlags.SVSFlagsAsync)
+  if show_spoken_lines and not force_debug_off then
+    local escaped_what = what:gsub("\\","\\\\"):gsub("\"","\\\"")
+    -- this uses DoAfterSpecial instead of Note directly, because of http://www.gammon.com.au/forum/?id=12915&reply=38#reply38
+    DoAfterSpecial(0.1, "CallPlugin (\"463242566069ebfd1b379ec1\", \"NoteSilent\", \""..escaped_what.."\")", 12)
+  end
+  if punctuation_level == 1 then
+     talk:Speak(what, SAPI_ENUMS.SpeechVoiceSpeakFlags.SVSFlagsAsync + SAPI_ENUMS.SpeechVoiceSpeakFlags.SVSFNLPSpeakPunc)
+  elseif punctuation_level == 2 then
+     talk:Speak(what, SAPI_ENUMS.SpeechVoiceSpeakFlags.SVSFlagsAsync)
+  else
+     local cleaned_speech = filter_more_punctuation(what)
+     if cleaned_speech ~= "" then
+        talk:Speak(cleaned_speech, SAPI_ENUMS.SpeechVoiceSpeakFlags.SVSFlagsAsync)
+     end
+  end
 
   return true -- OK
 end -- function say
