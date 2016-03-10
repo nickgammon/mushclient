@@ -50,7 +50,7 @@ unsigned long tLuaVector::get_Dimensions()
 unsigned long tLuaVector::get_Nth_Dimension(unsigned long n)
 {
   // precond
-  CHECKPRECOND(length >= 0 && n >= 0 && (n == 1 || elem_type == VECTOR));
+  CHECKPRECOND(n == 1 || elem_type == VECTOR);
   
   if(n == 1)
     return length;
@@ -323,7 +323,7 @@ void tLuaVector::InitVectorFromTable(lua_State* L, stkIndex table)
     // Itera em tabela ou userdata, criando LuaVectors recursivamente
     while(1)
     {
-      CHECKPRECOND((length <= 0 || elem_type != UNKNOWN) &&
+      CHECKPRECOND((elem_type != UNKNOWN) &&
          (length != 0 || elem_type == UNKNOWN));
   
       lua_pushvalue(L, table);

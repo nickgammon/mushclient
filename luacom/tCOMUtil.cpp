@@ -367,9 +367,8 @@ ITypeLib* tCOMUtil::LoadTypeLibFromProgID(const char* ProgID,
     return NULL;
 
   bool version_found = false;
-  int version = -1;
 
-  if(major_version <= 0)
+  if(major_version == 0)
   {
     if(sscanf(ProgID, "%*s.%*s.%d", &major_version) == 1)
       version_found = true;
@@ -497,8 +496,7 @@ ITypeLib* tCOMUtil::LoadTypeLibFromCLSID(CLSID clsid,
 
   if(major_version > 0 &&
       (
-        (!version_info_found) ||
-        (version_info_found && found == 0)
+        (!version_info_found) || (found == 0)
       )
     )
   {
@@ -707,7 +705,6 @@ bool tCOMUtil::DelRegKey(const char *key,
                          const char *subkey)
 {
 
-  bool ok = false;
   LONG ec = 0;
 
   const int bufsize = 10000;
