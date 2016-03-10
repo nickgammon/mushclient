@@ -471,6 +471,7 @@ ITypeLib* tCOMUtil::LoadTypeLibFromCLSID(CLSID clsid,
 
     if(pcClsid)
       free(pcClsid);
+    free(bLibID);
 
     return NULL;
   }
@@ -513,8 +514,11 @@ ITypeLib* tCOMUtil::LoadTypeLibFromCLSID(CLSID clsid,
       &version_major,
       &version_minor);
 
-    if(!result)
+    if(!result) {
+      free(bLibID);
+      free(wcTypelib);
       return NULL;
+    }
   }
 
   free(bLibID);
