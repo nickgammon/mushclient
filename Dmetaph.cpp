@@ -109,8 +109,10 @@ bool MString::StringAt(int start, int length, ... )
         do
         {
                 test = va_arg(sstrings, char*);
-                if(*test AND (target == test))
+                if(*test AND (target == test)) {
+                        va_end(sstrings);
                         return true;
+                }
 
         }while(strcmp(test, ""));
 
