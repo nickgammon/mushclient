@@ -2045,7 +2045,7 @@ CPoint point;
       strName += CFormat (" (%i)", pDoc->m_new_lines);
     
     if ((pDoc->m_view_number - 1) < TRAY_MENU_COUNT)
-     sWorlds.insert (make_pair (strName, pDoc->m_view_number - 1));
+     sWorlds.insert (make_pair (std::basic_string<TCHAR>(strName), pDoc->m_view_number - 1));
 
     }   // end of doing each world
 
