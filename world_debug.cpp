@@ -213,7 +213,7 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
       CColours * pColour;
       CString strColourName;
       App.m_ColoursMap.GetNextAssoc (pos, strColourName, pColour);
-      mColours.insert (make_pair (pColour->iColour, strColourName));
+      mColours.insert (make_pair (pColour->iColour, std::basic_string<TCHAR>(strColourName)));
       }
 
     for (multimap<COLORREF, string, colour_less>::const_iterator it = mColours.begin ();
