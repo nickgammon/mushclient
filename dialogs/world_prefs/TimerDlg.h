@@ -17,6 +17,7 @@ class CTimerDlg : public CDialog
 // Construction
 public:
 	CTimerDlg(CWnd* pParent = NULL);   // standard constructor
+  ~CTimerDlg() { delete m_font; };
 
 // Dialog Data
 	//{{AFX_DATA(CTimerDlg)
@@ -52,6 +53,7 @@ public:
 
   CTimerMap * m_pTimerMap;
   CTimer * m_current_timer;
+  CFont * m_font;
   CMUSHclientDoc * m_pDoc;
 
 
