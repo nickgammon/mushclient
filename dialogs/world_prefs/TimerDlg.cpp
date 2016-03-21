@@ -50,6 +50,7 @@ CTimerDlg::CTimerDlg(CWnd* pParent /*=NULL*/)
 
   m_current_timer = NULL;
   m_pTimerMap = NULL;
+  m_font = NULL;
   m_pDoc = NULL;
 
 }
@@ -253,6 +254,13 @@ void CTimerDlg::DoDataExchange(CDataExchange* pDX)
       }   // end of having non-blank procedure
 
     }   // end of saving and validating
+  else
+    {
+    if (App.m_bFixedFontForEditing)
+      {
+      FixFont(m_font, m_ctlContents, App.m_strFixedPitchFont, App.m_iFixedPitchFontSize, FW_NORMAL, DEFAULT_CHARSET);
+      }
+    }
 
 }
 

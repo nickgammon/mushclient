@@ -86,7 +86,7 @@ void CMultiLineTriggerDlg::DoDataExchange(CDataExchange* pDX)
 
      }    // end of save and validate
    else
-     FixFont (m_font, m_ctlTriggerText, "Courier New", 9, FW_NORMAL, DEFAULT_CHARSET);
+     FixFont (m_font, m_ctlTriggerText, App.m_strFixedPitchFont, App.m_iFixedPitchFontSize, FW_NORMAL, DEFAULT_CHARSET);
 
 }
 
