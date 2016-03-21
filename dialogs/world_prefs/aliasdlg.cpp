@@ -171,11 +171,7 @@ void CAliasDlg::DoDataExchange(CDataExchange* pDX)
     if (m_bRegexp)
       {
       if (!CheckRegularExpression (m_name, (m_bIgnoreCase ?  0 : PCRE_CASELESS) 
-          | (m_pDoc->m_bUTF_8 ? PCRE_UTF8 : 0)
-#if ALIASES_USE_UTF8
-                                  | (m_pDoc->m_bUTF_8 ? PCRE_UTF8 : 0)
-#endif // ALIASES_USE_UTF8
-          
+          | (m_pDoc->m_bUTF_8 ? PCRE_UTF8 : 0)          
           ))
         {   // failed check
         DDX_Text(pDX, IDC_ALIAS_NAME, m_name);

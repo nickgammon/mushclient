@@ -682,7 +682,7 @@ inline string trim (const string & s, const string & t = SPACES)
 
 // string find-and-replace
 inline string FindAndReplace
-  (const string& source, const string target, const string replacement)
+  (const string& source, const string& target, const string& replacement)
   {
   string str = source;
   string::size_type pos = 0,   // where we are now

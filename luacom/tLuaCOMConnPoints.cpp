@@ -44,7 +44,7 @@ tLuaCOMEnumConnPoints::tLuaCOMEnumConnPoints(IUnknown* pHostObj)
   cRefs = 0;
 
   // Assign the Host Object pointer.
-  pHostObj = pHostObj;
+  this->pHostObj = pHostObj;
 
   // Initialize the Connection Point enumerator variables.
   iEnumIndex = 0;
@@ -453,7 +453,7 @@ tLuaCOMConnPoint::tLuaCOMConnPoint(lua_State *p_L,
   // this connection point. Since this connection point object's lifetime
   // is geared to that of the connectable object there is no need to
   // AddRef the following copied pointer to the connectable object.
-  pHostObj = pHostObj;
+  this->pHostObj = pHostObj;
 
   // Initialize the Connection Point variables.
   dwNextCookie = COOKIE_START_VALUE;
@@ -973,7 +973,7 @@ tLuaCOMEnumConnections::tLuaCOMEnumConnections(
   cRefs = 0;
 
   // Assign the Host Object pointer.
-  pHostObj = pHostObj;
+  this->pHostObj = pHostObj;
 
   // Initialize the Connection Point enumerator variables.
   iEnumIndex = 0;

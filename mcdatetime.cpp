@@ -70,13 +70,13 @@ CmcDateTime CmcDateTime::operator-(const CmcDateTimeSpan& dateSpan) const
   }  // end of CmcDateTime CmcDateTime::operator-
 
 
-const CmcDateTime& CmcDateTime::operator+=(const CmcDateTimeSpan dateSpan)
+const CmcDateTime& CmcDateTime::operator+=(const CmcDateTimeSpan& dateSpan)
   { 
   *this = *this + dateSpan; 
   return *this; 
   }   // end of CmcDateTime& CmcDateTime::operator+=
 
-const CmcDateTime& CmcDateTime::operator-=(const CmcDateTimeSpan dateSpan)
+const CmcDateTime& CmcDateTime::operator-=(const CmcDateTimeSpan& dateSpan)
   { 
   *this = *this - dateSpan; 
   return *this; 
@@ -392,10 +392,10 @@ CmcDateTimeSpan CmcDateTimeSpan::operator-(const CmcDateTimeSpan& dateSpan) cons
 	return dateSpanTemp;
   }
 
-const CmcDateTimeSpan& CmcDateTimeSpan::operator+=(const CmcDateTimeSpan dateSpan)
+const CmcDateTimeSpan& CmcDateTimeSpan::operator+=(const CmcDateTimeSpan& dateSpan)
 	{ *this = *this + dateSpan; return *this; }
 
-const CmcDateTimeSpan& CmcDateTimeSpan::operator-=(const CmcDateTimeSpan dateSpan)
+const CmcDateTimeSpan& CmcDateTimeSpan::operator-=(const CmcDateTimeSpan& dateSpan)
 	{ *this = *this - dateSpan; return *this; }
 CmcDateTimeSpan CmcDateTimeSpan::operator-() const
 	{ return -this->m_span; }

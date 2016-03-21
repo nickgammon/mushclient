@@ -74,7 +74,7 @@ class t_regexp
     };
 
   // returns a named wildcard
-  string GetWildcard (const string sName) const
+  string GetWildcard (const string& sName) const
     {
     int iNumber;
     if (IsStringNumber (sName))
