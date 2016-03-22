@@ -142,13 +142,13 @@ void CTimerDlg::DoDataExchange(CDataExchange* pDX)
         }   // end of doing a periodical timer
 
 
-    CString strTimerName;
     CTimer * timer_item;
-    POSITION pos;
 
-    for (pos = m_pTimerMap->GetStartPosition (); pos; )
+    for (CTimerMapIterator timerIt = m_pTimerMap->begin ();
+         timerIt != m_pTimerMap->end ();
+         timerIt++)
       {
-      m_pTimerMap->GetNextAssoc (pos, strTimerName, timer_item);
+      timer_item = timerIt->second;
 
 // don't compare against itself
 

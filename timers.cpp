@@ -9,6 +9,8 @@
 #include "mainfrm.h"
 #include "sendvw.h"
 
+unsigned long CTimer::nNextCreateSequence = 0;
+
 void CMUSHclientDoc::ResetOneTimer (CTimer * timer_item)
   {
 CmcDateTime tNow = CmcDateTime::GetTimeNow();
@@ -49,21 +51,17 @@ CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
 
 void CMUSHclientDoc::ResetAllTimers (CTimerMap & TimerMap)
   {
-  CTimer * pTimer;
-  CString strTimerName;
-
-  for (POSITION pos = TimerMap.GetStartPosition(); pos; )
+  for (CTimerMapIterator timerIt = TimerMap.begin ();
+       timerIt != TimerMap.end ();
+       timerIt++)
     {
-    TimerMap.GetNextAssoc (pos, strTimerName, pTimer);
-    ResetOneTimer (pTimer);
+    ResetOneTimer (timerIt->second);
     }
-
   } // end of CMUSHclientDoc::ResetAllTimers
 
 void CMUSHclientDoc::CheckTimerList (CTimerMap & TimerMap)
   {
 CTimer * timer_item;
-CString strTimerName;
 CmcDateTime tNow = CmcDateTime::GetTimeNow();
 CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
 
@@ -81,16 +79,15 @@ CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
       }
     }
 
-  CStringList firedTimersList;
-  POSITION pos;
+  list<string> firedTimersList;
 
 // iterate through all timers for this document - first build list of them
 
-  for (pos = TimerMap.GetStartPosition(); pos; )
+  for (CTimerMapIterator timerIt = TimerMap.begin ();
+       timerIt != TimerMap.end ();
+       timerIt++)
     {
-
-
-    TimerMap.GetNextAssoc (pos, strTimerName, timer_item);
+    timer_item = timerIt->second; 
 
     if (!timer_item->bEnabled)    // ignore un-enabled timers
       continue;
@@ -106,7 +103,7 @@ CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
     if (timer_item->tFireTime > tNow)
       continue;
 
-    firedTimersList.AddTail (strTimerName);       // add to list of fired timers
+    firedTimersList.push_back (timerIt->first);       // add to list of fired timers
 
     }
 
@@ -114,14 +111,18 @@ CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
   // now process list, checking timer still exists in case a script deleted one
   // see: http://www.gammon.com.au/forum/?id=10358
 
-  for (pos = firedTimersList.GetHeadPosition (); pos; )
+   for (list<string>::iterator firedIt = firedTimersList.begin (); 
+        firedIt != firedTimersList.end (); 
+        firedIt++)
     {
     // get next fired timer from list
-    strTimerName = firedTimersList.GetNext (pos);
+    string strTimerName = *firedIt;
 
     // check still exists, get pointer if so
-    if (!TimerMap.Lookup (strTimerName, timer_item))
+    CTimerMapIterator timerIt = TimerMap.find (strTimerName);
+    if (timerIt == TimerMap.end ())
       continue;
+    timer_item = timerIt->second;
 
     timer_item->nMatched++;   // count timer matches
     timer_item->tWhenFired = tNow;  // when it fired
@@ -254,14 +255,16 @@ CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
     // do this code, in which case the timer has gone.
     // Just get it again to be sure ...  [#430]
 
-    if (!TimerMap.Lookup (strTimerName, timer_item))
+    timerIt = TimerMap.find (strTimerName);
+    if (timerIt == TimerMap.end ())
       return;
+    timer_item = timerIt->second;
 
 // if one-shot timer, delete from list
 
     if (timer_item->bOneShot)
       {
-      TimerMap.RemoveKey (strTimerName);
+      TimerMap.erase (timerIt);
       delete timer_item;
       SortTimers ();
       }
@@ -379,25 +382,21 @@ void CMUSHclientDoc::OnGameResetalltimers()
 void CMUSHclientDoc::OnUpdateGameResetalltimers(CCmdUI* pCmdUI) 
 {
   DoFixMenus (pCmdUI);  // remove accelerators from menus
-  pCmdUI->Enable (!m_TimerMap.IsEmpty ());
+  pCmdUI->Enable (!m_TimerMap.empty ());
 }
 
 
 void  CMUSHclientDoc::SortTimers (void)
   {
 
-int i;
-CString strTimerName;
-CTimer * pTimer;
-POSITION pos;
-
   GetTimerRevMap ().clear ();
 
   // extract pointers into a simple array
-  for (i = 0, pos = GetTimerMap ().GetStartPosition(); pos; i++)
+  for (CTimerMapIterator timerIt = GetTimerMap ().begin ();
+       timerIt != GetTimerMap ().end ();
+       timerIt++)
     {
-     GetTimerMap ().GetNextAssoc (pos, strTimerName, pTimer);
-     GetTimerRevMap () [pTimer] = strTimerName;
+     GetTimerRevMap () [timerIt->second] = timerIt->first;
     }
 
   } // end of CMUSHclientDoc::SortTimers

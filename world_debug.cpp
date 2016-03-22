@@ -866,9 +866,13 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
            Note (CFormat ("--> Script sub %s NOT active <--", (LPCTSTR) pAlias->strProcedure)); 
          } // end of aliases
 
-      for (pos = p->m_TimerMap.GetStartPosition(), iCount2 = 1; pos; iCount2++)
+      iCount2 = 1;
+      for (CTimerMapIterator timerIt = p->m_TimerMap.begin ();
+           timerIt != p->m_TimerMap.end ();
+           timerIt++, iCount2++)
          {
-         p->m_TimerMap.GetNextAssoc (pos, strName, pTimer);
+         strName = timerIt->first.c_str ();
+         pTimer = timerIt->second;
          Note (TFormat ("Timer %i: %02i:%02i:%04.2f=%s",
                         iCount2,
                         pTimer->iAtHour + pTimer->iEveryHour,
@@ -1191,9 +1195,11 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
     nEnabled = 0;
 
     // count number of timers fired
-    for (pos = m_TimerMap.GetStartPosition(); pos; )
+    for (CTimerMapIterator timerIt = m_TimerMap.begin ();
+         timerIt != m_TimerMap.end ();
+         timerIt++)
       {
-      m_TimerMap.GetNextAssoc (pos, strName, pTimer);
+      pTimer = timerIt->second;
       nTotal++;
 
       nTotalMatches += pTimer->nMatched;
@@ -1338,11 +1344,11 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
       // no quick way of finding timers count
       int nTotalTimers = 0;
-      for (POSITION timerpos = pPlugin->m_TimerMap.GetStartPosition(); timerpos; nTotalTimers++)
+      for (CTimerMapIterator timerIt = pPlugin->m_TimerMap.begin ();
+           timerIt != pPlugin->m_TimerMap.end ();
+           timerIt++)
         {
-        CTimer * pTimer;
-        CString strName;
-        pPlugin->m_TimerMap.GetNextAssoc (timerpos, strName, pTimer);
+        nTotalTimers++;
         } // end of for loop
 
 
@@ -1821,8 +1827,6 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
   if (m_iNoteTextColour >= 0 && m_iNoteTextColour < MAX_CUSTOM)
     enabledFore = ColourToName (m_customtext [m_iNoteTextColour]);
 
-  POSITION pos;
-
 //-----------------------------------------------------------------------
 //          triggerlist
 //-----------------------------------------------------------------------
@@ -1969,14 +1973,11 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
     map<double,CTimer *> sortedTimers;
 
     // put into map for sorting into firing order
-    for (pos = GetTimerMap ().GetStartPosition(); pos; )
+    for (CTimerMapIterator timerIt = GetTimerMap ().begin ();
+         timerIt != GetTimerMap ().end ();
+         timerIt++)
       {
-      CTimer * pTimer;
-      CString strName;
-
-      GetTimerMap ().GetNextAssoc (pos, strName, pTimer);
-
-      sortedTimers [pTimer->tFireTime.GetTime ()] = pTimer;
+      sortedTimers [timerIt->second->tFireTime.GetTime ()] = timerIt->second;
       } // end of for loop
 
       
@@ -2396,14 +2397,15 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
   else if (strAction == "showtimer")
     {
 
-    CTimer * pTimer;
 
-    if (!GetTimerMap ().Lookup (strArgument, pTimer))
+    CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strArgument);
+    if (timerIt == GetTimerMap ().end ())
       {
       Note (TFormat ("Timer %s does not exist.", (LPCTSTR) strArgument));
       return;
       }    // if not found
 
+    CTimer * pTimer = timerIt->second;
     char * p = NULL;
 
     try

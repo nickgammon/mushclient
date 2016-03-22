@@ -530,12 +530,11 @@ void CMUSHclientDoc::Save_Timers_XML (CArchive& ar)
   {
   Save_Header_XML (ar, "timers");
 
-  for (POSITION pos = m_TimerMap.GetStartPosition(); pos; )
+  for (CTimerMapIterator timerIt = m_TimerMap.begin ();
+       timerIt != m_TimerMap.end ();
+       timerIt++)
     {
-    CString strTimerName;
-    CTimer * t;
-
-    m_TimerMap.GetNextAssoc (pos, strTimerName, t);
+    CTimer * t = timerIt->second;
 
     if (t->bTemporary || t->bIncluded)   // don't save temporary timers
       continue;

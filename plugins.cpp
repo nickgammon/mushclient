@@ -159,7 +159,6 @@ CPlugin::CPlugin (CMUSHclientDoc * pDoc)
   m_VariableMap.InitHashTable (293); // allow for 300 variables in this plugin
   m_AliasMap.InitHashTable (293);    // ditto for aliases
   m_TriggerMap.InitHashTable (293);  // ditto for triggers
-  m_TimerMap.InitHashTable (293);    // ditto for timers
   m_tDateInstalled = CTime::GetCurrentTime();  // when plugin loaded
 
   m_dRequiredVersion = 0.0;
@@ -186,7 +185,12 @@ CPlugin::~CPlugin ()
   SaveState ();
   DELETE_MAP (m_TriggerMap, CTrigger); 
   DELETE_MAP (m_AliasMap, CAlias); 
-  DELETE_MAP (m_TimerMap, CTimer); 
+  for (CTimerMapIterator timerIt = m_TimerMap.begin ();
+       timerIt != m_TimerMap.end ();
+       timerIt++)
+    delete timerIt->second;
+  m_TimerMap.clear ();
+  m_TimerRevMap.clear ();
   DELETE_MAP (m_VariableMap, CVariable); 
   delete m_ScriptEngine;
 
@@ -907,11 +911,11 @@ void CMUSHclientDoc::OnFilePluginwizard()
     a->bSelected = true;
     }                                               
   // timers
-  for (pos = m_TimerMap.GetStartPosition(); pos; )
+  for (CTimerMapIterator timerIt = m_TimerMap.begin ();
+       timerIt != m_TimerMap.end ();
+       timerIt++)
     {                                               
-    CTimer * t;
-    m_TimerMap.GetNextAssoc (pos, strName, t);  
-    t->bSelected = true;
+    timerIt->second->bSelected = true;
     }                                               
   // variables
   for (pos = m_VariableMap.GetStartPosition(); pos; iCount++)
@@ -1122,11 +1126,11 @@ void CMUSHclientDoc::OnFilePluginwizard()
     // ---------- timers ----------
 
     iCount = 0;
-    for (pos = m_TimerMap.GetStartPosition(); pos; )
+    for (CTimerMapIterator timerIt = m_TimerMap.begin ();
+         timerIt != m_TimerMap.end ();
+         timerIt++)
       {                                               
-      CTimer * t;
-      m_TimerMap.GetNextAssoc (pos, strName, t);  
-      if (t->bSelected)
+      if (timerIt->second->bSelected)
          iCount++;
       }                                               
 
@@ -1134,12 +1138,12 @@ void CMUSHclientDoc::OnFilePluginwizard()
       {    
       ar.WriteString (NL "<!--  Timers  -->" NL NL);
       Save_Header_XML (ar, "timers", false);
-      for (pos = m_TimerMap.GetStartPosition(); pos; )
+      for (CTimerMapIterator timerIt = m_TimerMap.begin ();
+           timerIt != m_TimerMap.end ();
+           timerIt++)
         {                                               
-        CTimer * t;
-        m_TimerMap.GetNextAssoc (pos, strName, t);  
-        if (t->bSelected)
-          Save_One_Timer_XML (ar, t);
+        if (timerIt->second->bSelected)
+          Save_One_Timer_XML (ar, timerIt->second);
         }                                               
       Save_Footer_XML (ar, "timers");
       } // end of having some
@@ -1334,17 +1338,19 @@ void CMUSHclientDoc::OnFilePluginwizard()
       // ---------- timers ----------
 
       iCount = 0;
-      for (pos = m_TimerMap.GetStartPosition(); pos; )
+      for (CTimerMapIterator timerIt = m_TimerMap.begin ();
+           timerIt != m_TimerMap.end ();
+           )
         {                                               
-        CTimer * t;
-        m_TimerMap.GetNextAssoc (pos, strName, t);  
+        CTimer * t = timerIt->second;
         if (t->bSelected)
           {
+          CTimerMapIterator it = timerIt++;  // make copy before deleting 
           iCount++;
           // delete its pointer
           delete t;
           // now delete its entry
-          m_TimerMap.RemoveKey (strName);
+          m_TimerMap.erase (it);
           }   // end of selected Timer
     
         // show document modified

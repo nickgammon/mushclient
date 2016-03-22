@@ -633,7 +633,6 @@ class CTimer : public CObject
      bOmitFromOutput = false;
      bOmitFromLog = false;
      bExecutingScript = false;
-
     };
 
   bool operator== (const CTimer & rhs) const;
@@ -686,6 +685,8 @@ class CTimer : public CObject
   long  nInvocationCount; // how many times procedure called
   long  nMatched;         // how many times the timer fired
 
+  unsigned long nCreateSequence;  // for keeping timers in sequence of creation
+
 // calculated field - when timer is next to go off (fire)
 
   CmcDateTime tFireTime;        // when to fire it
@@ -695,9 +696,16 @@ class CTimer : public CObject
   bool bSelected;       // if true, selected for use in a plugin
   bool bExecutingScript;    // if true, executing a script and cannot be deleted
 
+  static unsigned long GetNextTimerSequence () { return nNextCreateSequence++; }
+
+  private:
+    static unsigned long nNextCreateSequence;
+
   };
 
-typedef CTypedPtrMap <CMapStringToPtr, CString, CTimer*> CTimerMap;
+typedef map <string, CTimer*> CTimerMap;
+typedef CTimerMap::iterator CTimerMapIterator;
+
 // map for lookup name from pointer
 typedef map <CTimer*, string> CTimerRevMap;
 

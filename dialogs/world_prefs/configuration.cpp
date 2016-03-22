@@ -441,7 +441,6 @@ void CMUSHclientDoc:: LoadPrefsP15 (CPrefsP15 &page15)
 
   CTrigger * pTrigger;
   CAlias * pAlias;
-  CTimer * pTimer;
   CString strName;
   POSITION pos;
   LONGLONG iTimeTaken = 0;
@@ -466,10 +465,11 @@ void CMUSHclientDoc:: LoadPrefsP15 (CPrefsP15 &page15)
     }
 
   // count number of timers fired
-  for (pos = m_TimerMap.GetStartPosition(); pos; )
+  for (CTimerMapIterator timerIt = m_TimerMap.begin ();
+       timerIt != m_TimerMap.end ();
+       timerIt++)
     {
-    m_TimerMap.GetNextAssoc (pos, strName, pTimer);
-    nTotalTimers += pTimer->nMatched;
+    nTotalTimers += timerIt->second->nMatched;
     }
 
   page15.m_strBufferLines.Format ("%i / %ld", 
@@ -500,7 +500,7 @@ void CMUSHclientDoc:: LoadPrefsP15 (CPrefsP15 &page15)
                               m_AliasMap.GetCount (),
                               nTotalAliases);
   page15.m_strTimers.Format ("%i   (%I64d fired)", 
-                              m_TimerMap.GetCount (),
+                              m_TimerMap.size (),
                               nTotalTimers);
 
   if (m_sockAddr.sin_addr.s_addr == INADDR_NONE)

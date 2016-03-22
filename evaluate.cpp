@@ -613,7 +613,7 @@ if (strFileName.IsEmpty ())
           replace = FALSE;
       }
     else
-    if (set_type == TIMER && !m_TimerMap.IsEmpty ())
+    if (set_type == TIMER && !m_TimerMap.empty ())
       {
         if (::TMessageBox ("Replace existing timers?\n"
                             "If you reply \"No\", then timers from the file"
@@ -661,7 +661,14 @@ CArchive * ar = NULL;
 
         case TIMER:   
           if (replace)
-            DELETE_MAP (m_TimerMap, CTimer);
+            {
+            for (CTimerMapIterator timerIt = m_TimerMap.begin ();
+                 timerIt != m_TimerMap.end ();
+                 timerIt++)
+              delete timerIt->second;
+            m_TimerMap.clear ();
+            m_TimerRevMap.clear ();
+            }
           Load_World_XML (*ar, XML_TIMERS | XML_NO_PLUGINS | XML_IMPORT_MAIN_FILE_ONLY);  
           break;  
 

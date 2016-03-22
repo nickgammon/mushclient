@@ -586,13 +586,12 @@ BOOL CPluginWizardPage5::OnInitDialog()
   m_ctlList.InsertColumn(3, TranslateHeading ("Group"), LVCFMT_LEFT, 50);
  
   int iItem = 0;
-  POSITION pos;  
-  CString strName;
 
-  for (pos = m_doc->m_TimerMap.GetStartPosition(); pos; )
+  for (CTimerMapIterator timerIt = m_doc->m_TimerMap.begin ();
+       timerIt != m_doc->m_TimerMap.end ();
+       timerIt++)
     {
-    CTimer * t;
-    m_doc->m_TimerMap.GetNextAssoc (pos, strName, t);  
+    CTimer * t = timerIt->second;
 
     if (t->bTemporary)
       continue;   // ignore temporary ones
@@ -643,14 +642,13 @@ void CPluginWizardPage5::OnSelectNone()
 
 void CPluginWizardPage5::OnOK() 
 {
-  POSITION pos;  
-  CString strName;
 
   // first deselect everything
-  for (pos = m_doc->m_TimerMap.GetStartPosition(); pos; )
+  for (CTimerMapIterator timerIt = m_doc->m_TimerMap.begin ();
+       timerIt != m_doc->m_TimerMap.end ();
+       timerIt++)
     {
-    CTimer * t;
-    m_doc->m_TimerMap.GetNextAssoc (pos, strName, t); 
+    CTimer * t = timerIt->second;
     t->bSelected = false;
     }
   
@@ -659,15 +657,16 @@ void CPluginWizardPage5::OnOK()
     {
     CTimer * t = (CTimer *) m_ctlList.GetItemData (nItem);
     // find in Timer array (in case it doesn't exist any more) and select it
-    for (pos = m_doc->m_TimerMap.GetStartPosition(); pos; )
+    for (CTimerMapIterator timerIt = m_doc->m_TimerMap.begin ();
+         timerIt != m_doc->m_TimerMap.end ();
+         timerIt++)
       {
-      CTimer * t2;
-      m_doc->m_TimerMap.GetNextAssoc (pos, strName, t2); 
-        if (t == t2)
-          {
-          t->bSelected = true;
-          break;
-          }
+      CTimer * t2 = timerIt->second;
+      if (t == t2)
+        {
+        t->bSelected = true;
+        break;
+        }
       }
     }   // end of each list item
 

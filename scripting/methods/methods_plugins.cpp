@@ -115,7 +115,7 @@ VARIANT CMUSHclientDoc::GetPluginInfo(LPCTSTR PluginID, short InfoType)
     case   8: SetUpVariantString (vaResult, pPlugin->m_strPurpose); break;
     case   9: SetUpVariantLong   (vaResult, pPlugin->m_TriggerMap.GetCount ()); break;
     case  10: SetUpVariantLong   (vaResult, pPlugin->m_AliasMap.GetCount ()); break;
-    case  11: SetUpVariantLong   (vaResult, pPlugin->m_TimerMap.GetCount ()); break;
+    case  11: SetUpVariantLong   (vaResult, pPlugin->m_TimerMap.size ()); break;
     case  12: SetUpVariantLong   (vaResult, pPlugin->m_VariableMap.GetCount ()); break;
     case  13: 
       if (pPlugin->m_tDateWritten.GetTime ())     // only if non-zero, otherwise return empty

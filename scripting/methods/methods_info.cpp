@@ -602,7 +602,7 @@ VARIANT CMUSHclientDoc::GetInfo(long InfoType)
     case  217: SetUpVariantLong (vaResult, (long) m_nBytesOut); break;
     case  218: SetUpVariantLong (vaResult, GetVariableMap ().GetCount ()); break;
     case  219: SetUpVariantLong (vaResult, GetTriggerMap ().GetCount ()); break;
-    case  220: SetUpVariantLong (vaResult, GetTimerMap ().GetCount ()); break;
+    case  220: SetUpVariantLong (vaResult, GetTimerMap ().size ()); break;
     case  221: SetUpVariantLong (vaResult, GetAliasMap ().GetCount ()); break;
     case  222: SetUpVariantLong (vaResult, m_QueuedCommandsList.GetCount ()); break;
     case  223: SetUpVariantLong (vaResult, m_strMapList.GetCount ()); break;
