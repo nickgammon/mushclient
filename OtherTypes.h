@@ -703,8 +703,7 @@ class CTimer : public CObject
 
   };
 
-typedef map <string, CTimer*> CTimerMap;
-typedef CTimerMap::iterator CTimerMapIterator;
+typedef CTypedPtrMap <CMapStringToPtr, CString, CTimer*> CTimerMap;
 
 // map for lookup name from pointer
 typedef map <CTimer*, string> CTimerRevMap;

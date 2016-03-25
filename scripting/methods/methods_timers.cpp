@@ -89,10 +89,8 @@ CTimer * Timer_item;
   // trim spaces from name, make lower-case
   CheckObjectName (strTimerName, false);
 
-  CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strTimerName);
-  if (timerIt == GetTimerMap ().end ())
+  if (!GetTimerMap ().Lookup (strTimerName, Timer_item))
     return eTimerNotFound;
-  Timer_item = timerIt->second;
 
   if (Timer_item->bEnabled && Enabled)
     return eOK;   // already enabled, document hasn't changed
@@ -124,10 +122,8 @@ CTimer * Timer_item;
   // trim spaces from name, make lower-case
   CheckObjectName (strTimerName, false);
 
-  CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strTimerName);
-  if (timerIt == GetTimerMap ().end ())
+  if (!GetTimerMap ().Lookup (strTimerName, Timer_item))
     return eTimerNotFound;
-  Timer_item = timerIt->second;
 
   ResetOneTimer (Timer_item);
 
@@ -151,25 +147,18 @@ long nStatus;
 bool bReplace = false;
 
   if (strTimerName.IsEmpty ())
-    {
-    strTimerName.Format ("*timer%010ld", CTimer::GetNextTimerSequence ());
-    }
+    strTimerName.Format ("*timer%010ld", CTimer::GetNextTimerSequence ()); 
   else
     // return if bad name
     if (nStatus = CheckObjectName (strTimerName))
       return nStatus;
 
-  CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strTimerName);
-  if (timerIt != GetTimerMap ().end ())
-    {
-    timer_item = timerIt->second;
-
-    // if it already exists, error
+  // if it already exists, error
+  if (GetTimerMap ().Lookup (strTimerName, timer_item))
     if (Flags & eReplace)
       bReplace = true;
     else
       return eTimerAlreadyExists;
-    }
 
 
   if (Hour < 0 || Hour > 23)
@@ -203,12 +192,11 @@ bool bReplace = false;
     delete timer_item;
 
     // now delete its entry
-    GetTimerMap ().erase (timerIt);
+    GetTimerMap ().RemoveKey (strTimerName);
     }
 
   // create new timer item and insert in timer map
-  timer_item = new CTimer;
-  GetTimerMap () [(LPCTSTR) strTimerName] = timer_item;
+  GetTimerMap ().SetAt (strTimerName, timer_item = new CTimer);
  
   if ((Flags & eTemporary) == 0)
     if (!m_CurrentPlugin) // plugin mods don't really count
@@ -260,11 +248,8 @@ CTimer * timer_item;
   // trim spaces from name, make lower-case
   CheckObjectName (strTimerName, false);
 
-  CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strTimerName);
-  if (timerIt == GetTimerMap ().end ())
+  if (!GetTimerMap ().Lookup (strTimerName, timer_item))
     return eTimerNotFound;
-
-  timer_item = timerIt->second;
 
   // can't if executing a script
   if (timer_item->bExecutingScript)
@@ -274,7 +259,8 @@ CTimer * timer_item;
   delete timer_item;
 
   // now delete its entry
-  GetTimerMap ().erase (timerIt);
+  if (!GetTimerMap ().RemoveKey (strTimerName))
+    return eTimerNotFound;
 
   SortTimers ();
 
@@ -286,12 +272,12 @@ CTimer * timer_item;
 long CMUSHclientDoc::IsTimer(LPCTSTR TimerName) 
 {
 CString strTimerName = TimerName;
+CTimer * timer_item;
 
   // trim spaces from name, make lower-case
   CheckObjectName (strTimerName, false);
 
-  CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strTimerName);
-  if (timerIt == GetTimerMap ().end ())
+  if (!GetTimerMap ().Lookup (strTimerName, timer_item))
     return eTimerNotFound;
 
 	return eOK;
@@ -300,21 +286,24 @@ CString strTimerName = TimerName;
 VARIANT CMUSHclientDoc::GetTimerList() 
 {
   COleSafeArray sa;   // for wildcard list
-  long iCount = 0;
 
-  iCount = GetTimerMap ().size ();
+  CString strTimerName;
+  CTimer * timer_item;
+  long iCount = 0;
+  POSITION pos;
+
+  iCount = GetTimerMap ().GetCount ();
 
   if (iCount) // cannot create empty array dimension
     {
     sa.CreateOneDim (VT_VARIANT, iCount);
   
-    iCount = 0;
-    for (CTimerMapIterator timerIt = GetTimerMap ().begin ();
-         timerIt != GetTimerMap ().end ();
-         timerIt++, iCount++)
+    for (iCount = 0, pos = GetTimerMap ().GetStartPosition(); pos; iCount++)
       {
+      GetTimerMap ().GetNextAssoc (pos, strTimerName, timer_item);
+
       // the array must be a bloody array of variants, or VBscript kicks up
-      COleVariant v (timerIt->first.c_str ());
+      COleVariant v (strTimerName);
       sa.PutElement (&iCount, &v);
       }      // end of looping through each timer
     } // end of having at least one
@@ -336,10 +325,8 @@ CTimer * timer_item;
   // trim spaces from name, make lower-case
   CheckObjectName (strTimerName, false);
 
-  CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strTimerName);
-  if (timerIt == GetTimerMap ().end ())
+  if (!GetTimerMap ().Lookup (strTimerName, timer_item))
     return eTimerNotFound;
-  timer_item = timerIt->second;
 
   if (timer_item->iType == CTimer::eAtTime)
     {
@@ -390,10 +377,9 @@ CTimer * timer_item;
 
   vaResult.vt = VT_EMPTY;
 
-  CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strTimerName);
-  if (timerIt == GetTimerMap ().end ())
-    return vaResult;
-  timer_item = timerIt->second;
+  // see if timer exists, if not return EMPTY
+  if (!GetTimerMap ().Lookup (strTimerName, timer_item))
+	  return vaResult;
 
   switch (InfoType)
     {
@@ -495,7 +481,7 @@ CString strTimerName;
 CTimer * timer_item;
 
   // this is a temporary unlabelled timer, make up a name
-  strTimerName.Format ("*timer%010ld", CTimer::GetNextTimerSequence ());
+  strTimerName.Format ("*timer%010ld", CTimer::GetNextTimerSequence ()); 
 
   if (iHours < 0 || iHours > 23)
     return eTimeInvalid;
@@ -507,8 +493,7 @@ CTimer * timer_item;
     return eTimeInvalid;
 
   // create new timer item and insert in timer map
-  timer_item = new CTimer;
-  GetTimerMap () [(LPCTSTR) strTimerName] = timer_item;;
+  GetTimerMap ().SetAt (strTimerName, timer_item = new CTimer);
 
   timer_item->nUpdateNumber    = App.GetUniqueNumber ();   // for concurrency checks
 
@@ -563,18 +548,17 @@ long CMUSHclientDoc::DoAfterNote(double Seconds, LPCTSTR NoteText)
 long CMUSHclientDoc::DeleteTemporaryTimers() 
 {
 long iCount = 0;
+POSITION pos;
+CString strTimerName;
 CTimer * timer_item;
 
-  for (CTimerMapIterator timerIt = GetTimerMap ().begin ();
-       timerIt != GetTimerMap ().end ();
-       )
+  for (pos = GetTimerMap ().GetStartPosition(); pos; )
     {
-    timer_item = timerIt->second;
-    CTimerMapIterator it = timerIt++;  // make copy before deleting
+    GetTimerMap ().GetNextAssoc (pos, strTimerName, timer_item);
     if (timer_item->bTemporary && !timer_item->bExecutingScript)
       {
       delete timer_item;
-      GetTimerMap ().erase (it);
+      GetTimerMap ().RemoveKey (strTimerName);
       iCount++;
       }
     }   // end of deleting timers
@@ -588,19 +572,19 @@ CTimer * timer_item;
 
 long CMUSHclientDoc::EnableTimerGroup(LPCTSTR GroupName, BOOL Enabled) 
 {
+  CString strTimerName;
   CTimer * timer_item;
   long iCount = 0;
+  POSITION pos;
 
   // no group name, affect nothing
   if (strlen (GroupName) == 0)
     return 0;
 
   // count timers
-  for (CTimerMapIterator timerIt = GetTimerMap ().begin ();
-       timerIt != GetTimerMap ().end ();
-       timerIt++)
+  for (pos = GetTimerMap ().GetStartPosition(); pos; )
     {
-    timer_item = timerIt->second;
+    GetTimerMap ().GetNextAssoc (pos, strTimerName, timer_item);
     if (timer_item->strGroup == GroupName)
       {
       timer_item->bEnabled = Enabled != 0;
@@ -619,40 +603,48 @@ long CMUSHclientDoc::EnableTimerGroup(LPCTSTR GroupName, BOOL Enabled)
 
 long CMUSHclientDoc::DeleteTimerGroup(LPCTSTR GroupName) 
 {
+  CString strTimerName;
   CTimer * timer_item;
-  int count = 0;
+  POSITION pos;
 
   // no group name, affect nothing
   if (strlen (GroupName) == 0)
     return 0;
 
-  for (CTimerMapIterator timerIt = GetTimerMap ().begin ();
-       timerIt != GetTimerMap ().end ();
-       )
+  vector<string> vToDelete;
+
+  // count timers
+  for (pos = GetTimerMap ().GetStartPosition(); pos; )
     {
-    CTimerMapIterator it = timerIt++;   // make copy before deleting
-    timer_item = timerIt->second;
+    GetTimerMap ().GetNextAssoc (pos, strTimerName, timer_item);
     if (timer_item->strGroup == GroupName)
       {
+
       // can't if executing a script
       if (timer_item->bExecutingScript)
         continue;
 
       delete timer_item;
-      GetTimerMap ().erase (it);
-      count++;
+
+      // remember to delete from timer map
+      vToDelete.push_back ((LPCTSTR) strTimerName);
       }
     }   // end of timers
 
+  // now delete from map, do it this way in case deleting whilst looping throws things out
+  for (vector<string>::const_iterator it = vToDelete.begin (); 
+       it != vToDelete.end ();
+       it++)
+      GetTimerMap ().RemoveKey (it->c_str ());
 
-  if (count)
+  if (!vToDelete.empty ())
     {
     SortTimers ();
     if (!m_CurrentPlugin) // plugin mods don't really count
       SetModifiedFlag (TRUE);   // document has changed
     }
 
-  return count;
+  return vToDelete.size ();
 }   // end of DeleteTimerGroup
 
 
@@ -672,10 +664,10 @@ CTimer * Timer_item;
 
   vaResult.vt = VT_EMPTY;
 
-  CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strTimerName);
-  if (timerIt == GetTimerMap ().end ())
-    return vaResult;
-  Timer_item = timerIt->second;
+  // see if Timer exists, if not return EMPTY
+  if (!GetTimerMap ().Lookup (strTimerName, Timer_item))
+	  return vaResult;
+
 
 CString strOptionName = OptionName;
 
@@ -763,10 +755,8 @@ CTimer * Timer_item;
   // trim spaces from name, make lower-case
   CheckObjectName (strTimerName, false);
 
-  CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strTimerName);
-  if (timerIt == GetTimerMap ().end ())
+  if (!GetTimerMap ().Lookup (strTimerName, Timer_item))
     return eTimerNotFound;
-  Timer_item = timerIt->second;
 
 CString strOptionName = OptionName;
 

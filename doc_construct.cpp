@@ -39,6 +39,7 @@ int i;
   m_VariableMap.InitHashTable (997); // allow for 1000 variables (at least)
   m_AliasMap.InitHashTable (293);    // probably won't have many more than 300 aliases
   m_TriggerMap.InitHashTable (293);  // probably won't have many more than 300 triggers
+  m_TimerMap.InitHashTable (293);    // probably won't have many more than 300 timers
 
   SetDefaults (false);        // set up numeric/boolean defaults
   SetAlphaDefaults (false);   // set up alpha defaults
@@ -560,14 +561,8 @@ int i;
 
 // delete timer map
 
-  for (CTimerMapIterator timerIt = m_TimerMap.begin ();
-       timerIt != m_TimerMap.end ();
-       timerIt++)
-    delete timerIt->second;
-  m_TimerMap.clear ();
-  m_TimerRevMap.clear ();
-
-
+  DELETE_MAP (m_TimerMap, CTimer); 
+  
 // delete variables map
 
   DELETE_MAP (m_VariableMap, CVariable); 

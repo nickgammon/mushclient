@@ -149,10 +149,8 @@ BSTR CMUSHclientDoc::ExportXML(short Type, LPCTSTR Name)
       case 2:   // timer
         {
         CTimer * t;
-        CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strName);
-        if (timerIt != GetTimerMap ().end ())
+        if (GetTimerMap ().Lookup (strName, t))
           {
-          t = timerIt->second;
           Save_Header_XML (ar, "timers", false);
           Save_One_Timer_XML (ar, t);
           Save_Footer_XML (ar, "timers");

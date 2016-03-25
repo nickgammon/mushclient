@@ -204,11 +204,9 @@ bool CMUSHclientDoc::FindAllEntryPoints (void)
   CTimer * pTimer;
   CString strTimerName;
 
-  for (CTimerMapIterator timerIt = GetTimerMap ().begin ();
-       timerIt != GetTimerMap ().end ();
-       timerIt++)
+  for (pos = GetTimerMap ().GetStartPosition (); pos; )
     {
-    pTimer = timerIt->second;
+    GetTimerMap ().GetNextAssoc (pos, strTimerName, pTimer);
     pTimer->dispid = GetProcedureDispid (pTimer->strProcedure,
                                            "timer", 
                                            pTimer->strLabel,

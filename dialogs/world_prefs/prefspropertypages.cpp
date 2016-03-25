@@ -6203,10 +6203,10 @@ void CPrefsP16::DoDataExchange(CDataExchange* pDX)
   if (pDX->m_bSaveAndValidate)
     if (m_ctlUseDefaultTimers.GetCheck ())
       if (m_ctlUseDefaultTimers.GetCheck () != m_bUseDefaultTimers)
-        if (m_doc->m_TimerMap.size () > 0)
+        if (m_doc->m_TimerMap.GetCount () > 0)
          if (::UMessageBox (TFormat ("By checking the option \"Override with default timers\" "
              " your existing %i timer%s will be PERMANENTLY discarded next time you open this world.\n\n"
-             "Are you SURE you want to do this?", PLURAL (m_doc->m_TimerMap.size ())),
+             "Are you SURE you want to do this?", PLURAL (m_doc->m_TimerMap.GetCount ())),
              MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2 ) != IDYES)
              pDX->Fail ();
 

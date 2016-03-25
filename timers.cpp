@@ -51,17 +51,21 @@ CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
 
 void CMUSHclientDoc::ResetAllTimers (CTimerMap & TimerMap)
   {
-  for (CTimerMapIterator timerIt = TimerMap.begin ();
-       timerIt != TimerMap.end ();
-       timerIt++)
+  CTimer * pTimer;
+  CString strTimerName;
+
+  for (POSITION pos = TimerMap.GetStartPosition(); pos; )
     {
-    ResetOneTimer (timerIt->second);
+    TimerMap.GetNextAssoc (pos, strTimerName, pTimer);
+    ResetOneTimer (pTimer);
     }
+
   } // end of CMUSHclientDoc::ResetAllTimers
 
 void CMUSHclientDoc::CheckTimerList (CTimerMap & TimerMap)
   {
 CTimer * timer_item;
+CString strTimerName;
 CmcDateTime tNow = CmcDateTime::GetTimeNow();
 CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
 
@@ -79,15 +83,16 @@ CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
       }
     }
 
-  list<string> firedTimersList;
+  set <string> firedTimersList;
+  POSITION pos;
 
 // iterate through all timers for this document - first build list of them
 
-  for (CTimerMapIterator timerIt = TimerMap.begin ();
-       timerIt != TimerMap.end ();
-       timerIt++)
+  for (pos = TimerMap.GetStartPosition(); pos; )
     {
-    timer_item = timerIt->second; 
+
+
+    TimerMap.GetNextAssoc (pos, strTimerName, timer_item);
 
     if (!timer_item->bEnabled)    // ignore un-enabled timers
       continue;
@@ -103,26 +108,23 @@ CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
     if (timer_item->tFireTime > tNow)
       continue;
 
-    firedTimersList.push_back (timerIt->first);       // add to list of fired timers
-
+    firedTimersList.insert ((LPCTSTR) strTimerName);       // add to list of fired timers
     }
 
 
   // now process list, checking timer still exists in case a script deleted one
   // see: http://www.gammon.com.au/forum/?id=10358
 
-   for (list<string>::iterator firedIt = firedTimersList.begin (); 
-        firedIt != firedTimersList.end (); 
-        firedIt++)
+  for (set <string>::iterator it = firedTimersList.begin ();
+       it != firedTimersList.end ();
+       it++)
     {
     // get next fired timer from list
-    string strTimerName = *firedIt;
+    strTimerName = it->c_str ();
 
     // check still exists, get pointer if so
-    CTimerMapIterator timerIt = TimerMap.find (strTimerName);
-    if (timerIt == TimerMap.end ())
+    if (!TimerMap.Lookup (strTimerName, timer_item))
       continue;
-    timer_item = timerIt->second;
 
     timer_item->nMatched++;   // count timer matches
     timer_item->tWhenFired = tNow;  // when it fired
@@ -255,16 +257,14 @@ CmcDateTimeSpan tsOneDay (1, 0, 0, 0);
     // do this code, in which case the timer has gone.
     // Just get it again to be sure ...  [#430]
 
-    timerIt = TimerMap.find (strTimerName);
-    if (timerIt == TimerMap.end ())
+    if (!TimerMap.Lookup (strTimerName, timer_item))
       return;
-    timer_item = timerIt->second;
 
 // if one-shot timer, delete from list
 
     if (timer_item->bOneShot)
       {
-      TimerMap.erase (timerIt);
+      TimerMap.RemoveKey (strTimerName);
       delete timer_item;
       SortTimers ();
       }
@@ -382,21 +382,25 @@ void CMUSHclientDoc::OnGameResetalltimers()
 void CMUSHclientDoc::OnUpdateGameResetalltimers(CCmdUI* pCmdUI) 
 {
   DoFixMenus (pCmdUI);  // remove accelerators from menus
-  pCmdUI->Enable (!m_TimerMap.empty ());
+  pCmdUI->Enable (!m_TimerMap.IsEmpty ());
 }
 
 
 void  CMUSHclientDoc::SortTimers (void)
   {
 
+int i;
+CString strTimerName;
+CTimer * pTimer;
+POSITION pos;
+
   GetTimerRevMap ().clear ();
 
   // extract pointers into a simple array
-  for (CTimerMapIterator timerIt = GetTimerMap ().begin ();
-       timerIt != GetTimerMap ().end ();
-       timerIt++)
+  for (i = 0, pos = GetTimerMap ().GetStartPosition(); pos; i++)
     {
-     GetTimerRevMap () [timerIt->second] = timerIt->first;
+     GetTimerMap ().GetNextAssoc (pos, strTimerName, pTimer);
+     GetTimerRevMap () [pTimer] = strTimerName;
     }
 
   } // end of CMUSHclientDoc::SortTimers

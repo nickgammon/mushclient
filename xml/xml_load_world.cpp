@@ -1783,22 +1783,21 @@ CString strTimerName,
     // generate a name if it doesn't have one
 
     if (strTimerName.IsEmpty () || strTimerName.Left (1) == "*")
-      strTimerName.Format ("*timer%010ld", CTimer::GetNextTimerSequence ());
+      strTimerName.Format ("*timer%s", (LPCTSTR) App.GetUniqueString ());
     else
       strTimerName.MakeLower ();
 
     // check for duplicate labels
 
-    CTimerMapIterator timerIt = GetTimerMap ().find ((LPCTSTR) strTimerName);
-    if (timerIt != GetTimerMap ().end ())
+    CTimer * timer_check;
+    if (GetTimerMap ().Lookup (strTimerName, timer_check))
       {
-      CTimer * timer_check = timerIt->second;
       if (iMask & XML_OVERWRITE)
         delete timer_check;
       else
         ThrowErrorException ("Duplicate timer label \"%s\" ", 
                              strTimerName);
-      }
+      } // end of duplciate
 
     // remember if this was from an include
     t->bIncluded = (iFlags & LOAD_INCLUDE) != 0;
@@ -1815,11 +1814,13 @@ CString strTimerName,
   // version: 4.81
   if (t->strLabel.IsEmpty () && !(iMask & XML_PASTE_DUPLICATE))
     {
-    for (CTimerMapIterator timerIt = GetTimerMap ().begin ();
-         timerIt != GetTimerMap ().end ();
-         timerIt++)
+    CTimer * pExistingTimer;
+    CString strExistingTimerName;
+
+    for (POSITION pos = GetTimerMap ().GetStartPosition(); pos; )
       {
-      if (*timerIt->second == *t)
+      GetTimerMap ().GetNextAssoc (pos, strExistingTimerName, pExistingTimer);
+      if (*pExistingTimer == *t)
         {
         delete t;  // get rid of duplicate timer
         return false;    // and don't add it
@@ -1831,7 +1832,7 @@ CString strTimerName,
   // now add to our internal timer map
 
   t->nUpdateNumber    = App.GetUniqueNumber ();   // for concurrency checks
-  GetTimerMap () [(LPCTSTR) strTimerName] = t;
+  GetTimerMap ().SetAt (strTimerName, t);
 
   ResetOneTimer (t);    // make sure it is reset
 
