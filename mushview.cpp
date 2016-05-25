@@ -1482,6 +1482,12 @@ ASSERT_VALID(pDoc);
   CSize sizeTotal;
 
   sizeTotal.cx = sizeTotal.cy = 100;
+
+  m_ScrollbarSizeTotal = sizeTotal;
+  m_ScrollbarSizePage  = sizeTotal;
+  m_ScrollbarSizeLine  = sizeTotal;
+
+  // odd?
   SetScrollSizes(sizeTotal, sizeTotal, sizeTotal);
 
   sizewindow ();
@@ -1718,11 +1724,11 @@ int lastline;
 
   lastline = pDoc->GetLastLine ();
 
-CSize sizeTotal (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_FontHeight),
-      sizePage  (GetOutputWindowWidth () - pDoc->m_iPixelOffset, GetOutputWindowHeight ()),
-      sizeLine  (pDoc->m_FontWidth, pDoc->m_FontHeight);
+  m_ScrollbarSizeTotal = CSize (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_FontHeight);
+  m_ScrollbarSizePage  = CSize (GetOutputWindowWidth () - pDoc->m_iPixelOffset, GetOutputWindowHeight ());
+  m_ScrollbarSizeLine  = CSize (pDoc->m_FontWidth, pDoc->m_FontHeight);
 
-  SetScrollSizes (sizeTotal, sizePage, sizeLine);
+  SetScrollSizes (m_ScrollbarSizeTotal, m_ScrollbarSizePage, m_ScrollbarSizeLine);
 
   pDoc->SendWindowSizes (pDoc->m_nWrapColumn);
 
@@ -1743,11 +1749,12 @@ int lastline;
 
   lastline = pDoc->GetLastLine ();
 
-CSize sizeTotal (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_FontHeight),
-      sizePage  (GetOutputWindowWidth () - pDoc->m_iPixelOffset, GetOutputWindowHeight ()),
-      sizeLine  (pDoc->m_FontWidth, pDoc->m_FontHeight);
+ m_ScrollbarSizeTotal = CSize (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_FontHeight),
+ m_ScrollbarSizePage  = CSize (GetOutputWindowWidth () - pDoc->m_iPixelOffset, GetOutputWindowHeight ()),
+ m_ScrollbarSizeLine  = CSize (pDoc->m_FontWidth, pDoc->m_FontHeight);
 
-  SetScrollSizes (sizeTotal, sizePage, sizeLine);
+  if (pDoc->m_bScrollBarWanted)
+    SetScrollSizes (m_ScrollbarSizeTotal, m_ScrollbarSizePage, m_ScrollbarSizeLine);
 
 // pretend they pressed "End" to force the view to update.
 
@@ -3276,11 +3283,12 @@ int lastline;
 
   lastline = pDoc->GetLastLine ();
 
-CSize sizeTotal (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_FontHeight),
-      sizePage  (GetOutputWindowWidth () - pDoc->m_iPixelOffset, GetOutputWindowHeight ()),
-      sizeLine  (pDoc->m_FontWidth, pDoc->m_FontHeight);
+  m_ScrollbarSizeTotal = CSize (pDoc->m_nWrapColumn * pDoc->m_FontWidth, lastline * pDoc->m_FontHeight);
+  m_ScrollbarSizePage  = CSize (GetOutputWindowWidth () - pDoc->m_iPixelOffset, GetOutputWindowHeight ());
+  m_ScrollbarSizeLine  = CSize (pDoc->m_FontWidth, pDoc->m_FontHeight);
 
-  SetScrollSizes (sizeTotal, sizePage, sizeLine);
+  if (pDoc->m_bScrollBarWanted)
+    SetScrollSizes (m_ScrollbarSizeTotal, m_ScrollbarSizePage, m_ScrollbarSizeLine);
 
   // very bizarre bug - fixed in 4.39
   // we seem to get size messages if we are maximized and in the background
@@ -3345,7 +3353,7 @@ ASSERT_VALID(pDoc);
 
 int iNewPauseStatus = eNotPaused;
 
-  m_bAtBufferEnd = GetScrollPos (SB_VERT) >= GetScrollLimit(SB_VERT);
+  m_bAtBufferEnd = m_ScrollbarPosition.cy >= (m_ScrollbarSizeTotal.cy - m_ScrollbarSizePage.cy);
 
 // calculate pause status
 
@@ -4647,7 +4655,9 @@ int iDeltaY = m_scroll_position.y - pt.y;
         // update scroll bar
         GetScrollInfo (SB_VERT, &ScrollInfo, SIF_POS);
         ScrollInfo.nPos = m_scroll_position.y;
-        SetScrollInfo (SB_VERT, &ScrollInfo, pDoc->m_bScrollBarWanted);
+        if (pDoc->m_bScrollBarWanted)
+          SetScrollInfo (SB_VERT, &ScrollInfo, pDoc->m_bScrollBarWanted);
+        m_ScrollbarPosition = ScrollInfo.nPos;
         ScrollWindow (0, iSmoothDelta);
         UpdateWindow ();
         }
@@ -4680,16 +4690,18 @@ int iDeltaY = m_scroll_position.y - pt.y;
   m_scroll_position = pt;
 
   // update scroll bar
-  GetScrollInfo (SB_VERT, &ScrollInfo, SIF_POS);
+  GetScrollInfo (SB_VERT, &ScrollInfo, SIF_POS | SIF_ALL);
   ScrollInfo.nPos = pt.y;
   SetScrollInfo (SB_VERT, &ScrollInfo, pDoc->m_bScrollBarWanted);
+  m_ScrollbarPosition = ScrollInfo.nPos;
+
 
 //  GetScrollInfo (SB_HORZ, &ScrollInfo, SIF_POS);
 //  ScrollInfo.nPos = pt.x;
 //  SetScrollInfo (SB_HORZ, &ScrollInfo, pDoc->m_bScrollBarWanted);
   
   if (pDoc->m_bAutoFreeze)
-    m_freeze = GetScrollPos (SB_VERT) < GetScrollLimit(SB_VERT);
+    m_freeze = pt.y < (m_ScrollbarSizeTotal.cy - m_ScrollbarSizePage.cy);
 
   } // end of CMUSHView::ScrollToPosition
 
@@ -4708,6 +4720,7 @@ SCROLLINFO ScrollInfo;
   ScrollInfo.nMax = sizeTotal.cy - 1;
   ScrollInfo.nPage = sizePage.cy;
   SetScrollInfo (SB_VERT, &ScrollInfo, pDoc->m_bScrollBarWanted);
+  m_ScrollbarPosition = ScrollInfo.nPos;
 
   /*
   GetScrollInfo (SB_HORZ, &ScrollInfo, SIF_ALL);
