@@ -1,7 +1,5 @@
-#pragma warning( disable : 4244)  // conversion from 'int ' to 'short ', possible loss of data
-
 /*
-** $Id: lpcap.c,v 1.5 2014/12/12 16:58:47 roberto Exp $
+** $Id: lpcap.c,v 1.6 2015/06/15 16:09:57 roberto Exp $
 ** Copyright 2007, Lua.org & PUC-Rio  (see 'lpeg.html' for license)
 */
 
@@ -133,7 +131,7 @@ static Capture *findback (CapState *cs, Capture *cap) {
       continue; /* opening an enclosing capture: skip and get previous */
     if (captype(cap) == Cgroup) {
       getfromktable(cs, cap->idx);  /* get group name */
-      if (lua_equal(L, -2, -1)) {  /* right group? */
+      if (lp_equal(L, -2, -1)) {  /* right group? */
         lua_pop(L, 2);  /* remove reference name and group name */
         return cap;
       }
