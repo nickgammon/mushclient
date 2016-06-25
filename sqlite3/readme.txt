@@ -1,6 +1,6 @@
 Sqlite3 built as follows:
 
-1. Download recent version from https://www.sqlite.org/2015/sqlite-amalgamation-3081101.zip
+1. Download recent version from https://www.sqlite.org/2016/sqlite-amalgamation-3130000.zip
 
 2. Unzip the file
 
@@ -14,7 +14,7 @@ sqlite3ext.h
 3. Edit: sqlite3.c and add the following lines to the start of it:
 
 // These first few lines added by NJG
-// version 3.8.8.3
+// version 3.13.0
 
 # pragma warning (disable : 4018)  // signed/unsigned mismatch
 # pragma warning (disable : 4022)  // pointer mismatch for actual parameter x
