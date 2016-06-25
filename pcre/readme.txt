@@ -1,3 +1,14 @@
+LICENSE
+-------
+
+See the file LICENSE for the PCRE license details.
+
+Note that the PCRE source is unchanged except as noted below.
+
+
+BUILDING A NEW VERSION
+----------------------
+
 PCRE built as follows:
 
 1. Download: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.39.zip
