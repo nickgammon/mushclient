@@ -1,3 +1,14 @@
+LICENSE
+-------
+
+See the file LICENSE for the libpng license details.
+
+Note that the libpng source is unchanged except as noted below.
+
+
+BUILDING A NEW VERSION
+----------------------
+
 PNG built as follows:
 
 1. Download recent version from download.sourceforge.net
