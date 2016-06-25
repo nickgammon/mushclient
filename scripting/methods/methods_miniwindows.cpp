@@ -586,6 +586,7 @@ static bool bInWindowAddHotspot = false;
       } // end of looping through views
     } // end of added hotspot OK
 
+
   bInWindowAddHotspot = false;
 
   return status;

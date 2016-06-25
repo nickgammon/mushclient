@@ -2074,8 +2074,8 @@ static int colourcube (lua_State *L) {
           for (green = 0; green < 6; green++)
             for (blue = 0; blue < 6; blue++)
                xterm_256_colours [16 + (red * 36) + (green * 6) + blue] =
-                  RGB (red   * colour_increment, 
-                       green * colour_increment, 
+                  RGB (red   * colour_increment,
+                       green * colour_increment,
                        blue  * colour_increment);
 
       break;
@@ -2084,7 +2084,27 @@ static int colourcube (lua_State *L) {
     } // end of switch
 
   return 0;  /* no return */
-}
+} // end of colourcube
+
+static int menufontsize (lua_State *L)
+  {
+  double points = luaL_optnumber (L, 1, 0);
+
+  NONCLIENTMETRICS metrics;
+  metrics.cbSize = sizeof (metrics);
+  SystemParametersInfo (SPI_GETNONCLIENTMETRICS, sizeof(metrics), &metrics, 0);
+
+  int oldSize = - metrics.lfMenuFont.lfHeight;
+  if (points >= 5 && points <= 30)
+    {
+    metrics.lfMenuFont.lfHeight = - points;
+    SystemParametersInfo (SPI_SETNONCLIENTMETRICS, sizeof(metrics), &metrics, 0);
+    }   // end of new size in reasonable range
+
+  lua_pushnumber (L, oldSize);
+
+  return 1;  // return old size
+  } // end of menufontsize
 
 #if 0
 static int registry (lua_State *L)
@@ -2130,6 +2150,7 @@ static const struct luaL_Reg xmllib [] =
   {"infotypes",         infotypes},
   {"inputbox",          inputbox},
   {"listbox",           listbox},
+  {"menufontsize",      menufontsize},
   {"metaphone",         metaphone},
   {"msgbox",            msgbox},       // msgbox - not Unicode
   {"multilistbox",      multilistbox},
