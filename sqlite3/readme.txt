@@ -1,3 +1,24 @@
+LICENSE
+-------
+
+See:
+
+  https://www.sqlite.org/copyright.html
+
+All of the code and documentation in SQLite has been dedicated to the public domain by the authors.
+...
+Anyone is free to copy, modify, publish, use, compile, sell, or distribute the original SQLite code, 
+either in source code form or as a compiled binary, for any purpose, commercial or non-commercial, and by any means. 
+
+
+Note that the SQLite3 source is unchanged except as noted below.
+
+
+BUILDING A NEW VERSION
+----------------------
+
+
+
 Sqlite3 built as follows:
 
 1. Download recent version from https://www.sqlite.org/2016/sqlite-amalgamation-3130000.zip
