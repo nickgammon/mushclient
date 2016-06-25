@@ -546,6 +546,8 @@ long CMUSHclientDoc::WindowAddHotspot(LPCTSTR Name,
   if (it == m_MiniWindows.end ())
     return eNoSuchWindow;
 
+  CMiniWindow * mw = it->second;
+
 static bool bInWindowAddHotspot = false;
 
   // don't recurse into infinite loops
@@ -561,29 +563,39 @@ static bool bInWindowAddHotspot = false;
 
   long status;
 
-  status = it->second->AddHotspot (this, 
-                               HotspotId, 
-                               sPluginID,
-                               Left, Top, Right, Bottom, 
-                               MouseOver, 
-                               CancelMouseOver, 
-                               MouseDown, 
-                               CancelMouseDown, 
-                               MouseUp,
-                               TooltipText,
-                               Cursor,
-                               Flags);
+  status = mw->AddHotspot (this,
+                           HotspotId,
+                           sPluginID,
+                           Left, Top, Right, Bottom,
+                           MouseOver,
+                           CancelMouseOver,
+                           MouseDown,
+                           CancelMouseDown,
+                           MouseUp,
+                           TooltipText,
+                           Cursor,
+                           Flags);
 
   // in mouse was over hotspot when it was created, do a "mouse move" to detect this
   if (status == eOK)
     {
-    for(POSITION pos=GetFirstViewPosition();pos!=NULL;)
-	    {
-	    CView* pView = GetNextView(pos);
-	    
-	    if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
-        ((CMUSHView*)pView)->Mouse_Move_MiniWindow (this, m_lastMousePosition);
-      } // end of looping through views
+
+    // only check the current hotspot, not all of them
+    HotspotMapIterator it = mw->m_Hotspots.find (HotspotId);
+    if (it != mw->m_Hotspots.end ())
+      {
+      CHotspot * pHotspot = it->second;
+      if ( pHotspot->m_rect.PtInRect(mw->m_last_mouseposition) )
+        {
+        for(POSITION pos=GetFirstViewPosition();pos!=NULL;)
+	        {
+	        CView* pView = GetNextView(pos);
+
+	        if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+            ((CMUSHView*)pView)->Mouse_Move_MiniWindow (this, m_lastMousePosition);
+          } // end of looping through views
+        }
+      } // end of hotspot found
     } // end of added hotspot OK
 
 
