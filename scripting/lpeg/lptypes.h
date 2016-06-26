@@ -10,7 +10,7 @@
 
 
 #if !defined(LPEG_DEBUG)
-#define NDEBUG
+#define NDEBUG 1      // "1" added by Nick Gammon to be compatible with Visual Studio
 #endif
 
 #include <assert.h>
