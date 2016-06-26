@@ -15,7 +15,7 @@
 #else
     #include "..\..\lua.h"
     #include "..\..\lauxlib.h"
-#endif"
+#endif
 
 #include "lpcap.h"
 #include "lptypes.h"
