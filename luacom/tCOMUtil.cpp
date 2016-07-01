@@ -370,7 +370,7 @@ ITypeLib* tCOMUtil::LoadTypeLibFromProgID(const char* ProgID,
 
   if(major_version == 0)
   {
-    if(sscanf(ProgID, "%*s.%*s.%d", &major_version) == 1)
+    if(sscanf(ProgID, "%*s.%*s.%hd", &major_version) == 1)
       version_found = true;
   }
 

@@ -46,7 +46,7 @@ void LuaAux::printLuaStack(lua_State *L)
     switch(lua_type(L,i))
     {
     case LUA_TNUMBER:
-      printf("%d: number = %d", i, lua_tonumber(L, i));
+      printf("%d: number = %f", i, lua_tonumber(L, i));
       break;
 
     case LUA_TSTRING:
