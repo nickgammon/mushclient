@@ -1963,7 +1963,8 @@ long CMiniWindow::CreateImage(LPCTSTR ImageId, long Row1, long Row2, long Row3, 
   CBitmap * pImage = new CBitmap;
 
   // bottom row comes first in a bitmap
-  WORD		wBits[8] = { Row8, Row7, Row6, Row5, Row4, Row3, Row2, Row1 };
+  WORD		wBits[8] = { (WORD) Row8, (WORD) Row7, (WORD) Row6, (WORD) Row5, 
+                       (WORD) Row4, (WORD) Row3, (WORD) Row2, (WORD) Row1 };
 
   pImage->CreateBitmap (8, 8, 1, 1, wBits);
 
