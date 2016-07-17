@@ -10,24 +10,25 @@
    purpose="Shows the MUSHclient help file"
    save_state="y"
    date_written="2011-06-13 08:58:30"
-   date_modified="2011-07-14 08:40:00"
+   date_modified="2016-07-17 12:25"
    requires="4.76"
-   version="1.0"
+   version="1.1"
    >
 <description trim="y">
 <![CDATA[
 To get general help:
-  
+
   mchelp  <search string>
   mchelps <search string>   --> get help with snippet (context) shown
-  
+  mchelp  <number>  --> show help on numbered item from previous search
+
   mchelp   --> on its own, shows this help
 
 Search strings can have boolean operators in them, namely the words:
-  
+
   AND NEAR NOT OR
 
-These words must be in all capitals or they are just searched for literally. 
+These words must be in all capitals or they are just searched for literally.
 
 For example:
 
@@ -42,13 +43,13 @@ For example:
 (The syntax NEAR/5 means if one word is within 5 words of another word, the default is 10)
 
 You can use a wildcard suffix, eg.
-  
+
   mchelp trigg*
 
 You can look for phrases by putting them in quotes, eg.
-  
+
   mchelp "hash a string"
-  
+
 You can restrict the lookup to the item name (eg. the function name) like this:
 
   mchelp name:utils.*
@@ -71,7 +72,17 @@ You can restrict the lookup to the item name (eg. the function name) like this:
    sequence="100"
   >
   </alias>
-  
+
+  <alias
+   script="help_number"
+   match="^mchelp (\d+)$"
+   enabled="y"
+   group="help"
+   regexp="y"
+   sequence="90"
+  >
+  </alias>
+
  <alias
    script="help_find_snippet"
    match="^mchelps (.+)$"
@@ -81,7 +92,7 @@ You can restrict the lookup to the item name (eg. the function name) like this:
    sequence="100"
   >
   </alias>
-    
+
   <alias
    script="OnHelp"
    match="^mchelps?$"
@@ -89,7 +100,7 @@ You can restrict the lookup to the item name (eg. the function name) like this:
    regexp="y"
   >
   </alias>
-  
+
 </aliases>
 
 <!--  Script  -->
@@ -128,9 +139,9 @@ local styles
 local function fixsql (s)
   -- replace single quotes with two lots of single quotes
   if s then
-    return "'" .. (string.gsub (s, "'", "''")) .. "'" 
+    return "'" .. (string.gsub (s, "'", "''")) .. "'"
   end -- if string exists
-  
+
   return "NULL"
 end -- fixsql
 
@@ -141,7 +152,7 @@ local entities = {
   ["&amp;"]   = "&";
   ["&quot;"]  = "\"";
   } -- end of entities
-  
+
 -- what to do on getting a tag like <b>
 local tag_handlers = {
   ["<b>"]     = function () SetNoteColourFore (ColourNameToRGB (BOLDCOLOUR))    end;
@@ -152,7 +163,7 @@ local tag_handlers = {
   ["<hr/>"]   = function () NoteHr () end;
 
   } -- end of tag_handlers
-  
+
 -- called by LPEG to output an opening, closing, or empty tag
 local function tag_output (tag)
 
@@ -161,15 +172,15 @@ local function tag_output (tag)
     SetNoteColourFore (table.remove (styles))
   elseif tag:sub (-2, -2) ~= "/" then
     table.insert (styles, GetNoteColourFore () )
-  end -- if  
+  end -- if
 
   local f = tag_handlers [tag:lower ()]
   if f then
     f ()
   end -- if handler found
-  
+
 end -- tag_output
-  
+
 -- called by LPEG to output straight text
 local function text_output (text)
   -- fix up entities like &lt;
@@ -181,18 +192,18 @@ local P, R, S, C, Cc, Ct = lpeg.P, lpeg.R, lpeg.S, lpeg.C, lpeg.Cc, lpeg.Ct
 local TAG     = (P"<" * P"/"^-1 * R("AZ", "az")^1 * P"/"^-1 * P">")/tag_output
 local NOT_TAG = ((1 - lpeg.P"<")^0/text_output)
 local HTML    = (NOT_TAG * TAG * NOT_TAG)^1 + NOT_TAG
-  
+
 -- show a help item with a coloured heading, and coloured text
 
 local function show_item (hdg_colour, hdg, text_colour, text, tagged)
 
   if text and text ~= "" then
-  
+
     if hdg and hdg ~= "" then
       ColourNote (hdg_colour, "", hdg)
       print ""
     end -- if any heading
-        
+
     if tagged then
       local notecolour = GetNoteColourFore ()
       styles = {}  -- nested styles - start off with none
@@ -203,10 +214,10 @@ local function show_item (hdg_colour, hdg, text_colour, text, tagged)
     else
       ColourNote (text_colour, "", text)
     end -- if tagged or not
-    
+
     print ""
   end -- if any text
-  
+
 end -- show_item
 
 -- normal functions
@@ -240,142 +251,150 @@ end -- show_lua_functions_help
 
 local hyperlink_handlers = {
 
-  functions     = { sql = "SELECT * FROM functions WHERE name = %s", 
+  functions     = { sql = "SELECT * FROM functions WHERE name = %s",
                     handler = show_functions_help };
-                    
-  general       = { sql = "SELECT * FROM general_doc WHERE doc_name = %s", 
+
+  general       = { sql = "SELECT * FROM general_doc WHERE doc_name = %s",
                     handler = show_general_help };
-                    
-  lua_functions = { sql = "SELECT * FROM lua_functions WHERE name = %s", 
+
+  lua_functions = { sql = "SELECT * FROM lua_functions WHERE name = %s",
                     handler = show_lua_functions_help };
 
   } -- end of hyperlink_handlers
 
 -- here when hyperlink clicked
-  
+
 function do_hyperlink (s)
   local what, name = string.match (s, "([%a_]+):([%a%d_%. :]+)")
-  
+
   if not what then return end
- 
+
   local help = hyperlink_handlers [what]
-  
-  if not help then 
+
+  if not help then
     ColourNote ("red", "", "Handler not found for " .. what)
     return
   end -- if not found
-  
+
   -- should only find one match here ...
   for row in db:nrows(string.format (help.sql, fixsql (name))) do
      help.handler (row)
   end   -- finding function
-  
+
 end -- do_hyperlink
+
+help_items = {}
 
 function general_help (search_string, want_snippet)
 
   local searchfor = fixsql (search_string)
-  
+
   AnsiNote (RESET)
-  
+
   if not db then
      ColourNote ("red", "", "MUSHclient help database 'help.db' not found.")
      return
   end -- if
- 
+
   local count = 0
   local functions = {}
   local general = {}
   local lua_functions = {}
-  
+  help_items = {}
+  local item_count = 0
+
   function show_snippet (what, name, title, extra, snippet)
+    item_count = item_count + 1
+    help_items [item_count] = what .. ":" .. name
     Tell " "
-    Hyperlink ("!!" .. GetPluginID () .. ":do_hyperlink(" .. what .. ":" .. name .. ")", 
-                title, "Click for help on " .. title, "cyan", "", false)
+    Hyperlink ("!!" .. GetPluginID () .. ":do_hyperlink(" .. what .. ":" .. name .. ")",
+                item_count .. ". " .. title, "Click for help on " .. title, "cyan", "", false)
     if extra ~= "" then
         Tell (" - ", extra)
     end -- if
-    print ""  
-    
+    print ""
+
     -- show snippet
-           
+
     if want_snippet then
       -- get rid of newlines, and multiple spaces
       AnsiNote (RESET .. string.gsub (snippet, "%s+", " "))
       print ""
     end -- if snippet wanted
-    
+
   end -- show_snippet
 
   NoteHr ()
- 
+
   -- GENERAL documentation
-  
+
   -- find matching items using FTS
   for row in db:nrows(string.format (
      [[
-     SELECT name, summary, snippet(general_doc_lookup, '%s', '%s', ' ... ', -1, %i) AS snippet 
-        FROM general_doc_lookup 
-        WHERE general_doc_lookup MATCH %s]], 
+     SELECT name, summary, snippet(general_doc_lookup, '%s', '%s', ' ... ', -1, %i) AS snippet
+        FROM general_doc_lookup
+        WHERE general_doc_lookup MATCH %s]],
       BOLD, UNBOLD, SNIPPETSIZE,
      searchfor)) do
      general [row.name] = { snippet = row.snippet, summary = row.summary }
      count = count + 1
   end   -- finding item
-  
+
   if next (general) then
     ColourNote (HEADINGCOLOUR, "", "Topics")
     for k, v in pairsByKeys (general) do
       show_snippet ("general", k, v.summary, "", v.snippet)
     end -- for
   end -- if
-      
+
  -- FUNCTIONS documentation
-  
+
   -- find matching items using FTS
   for row in db:nrows(string.format (
      [[
-     SELECT name, summary, snippet(functions_lookup, '%s', '%s', ' ... ', -1, %i) AS snippet 
-        FROM functions_lookup 
-        WHERE functions_lookup MATCH %s]], 
+     SELECT name, summary, snippet(functions_lookup, '%s', '%s', ' ... ', -1, %i) AS snippet
+        FROM functions_lookup
+        WHERE functions_lookup MATCH %s]],
       BOLD, UNBOLD, SNIPPETSIZE,
       searchfor)) do
      functions [row.name] = { snippet = row.snippet, summary = row.summary }
      count = count + 1
   end   -- finding item
-  
+
   if next (functions) then
     ColourNote (HEADINGCOLOUR, "", "Functions")
     for k, v in pairsByKeys (functions) do
       show_snippet ("functions", k, k, v.summary, v.snippet)
     end -- for
   end -- if
-    
+
  -- LUA FUNCTIONS documentation
-  
+
   -- find matching items using FTS
   for row in db:nrows(string.format (
      [[
-     SELECT name, summary, snippet(lua_functions_lookup, '%s', '%s', ' ... ', -1, %i) AS snippet 
-        FROM lua_functions_lookup 
-        WHERE lua_functions_lookup MATCH %s]], 
+     SELECT name, summary, snippet(lua_functions_lookup, '%s', '%s', ' ... ', -1, %i) AS snippet
+        FROM lua_functions_lookup
+        WHERE lua_functions_lookup MATCH %s]],
       BOLD, UNBOLD, SNIPPETSIZE,
       searchfor)) do
      lua_functions [row.name] = { snippet = row.snippet, summary = row.summary }
      count = count + 1
   end   -- finding item
-  
+
   if next (lua_functions) then
     ColourNote (HEADINGCOLOUR, "", "Lua")
     for k, v in pairsByKeys (lua_functions) do
       show_snippet ("lua_functions", k, k, v.summary, v.snippet)
     end -- for
-  end -- if  
-  
+  end -- if
+
   if count == 0 then
     print ("Nothing found for:", search_string)
+  elseif item_count == 1 then
+    do_hyperlink (help_items [1])  -- automatically show only match
   end -- if
-  
+
 end -- general_help
 
 -- here when they want to search the help
@@ -392,41 +411,59 @@ local function fix_description (s)
   if not s then
     return ""
   end -- if
-  
-  -- get rid of tags 
+
+  -- get rid of tags
   s = s:gsub ("</?%a+/?>", "")
-  
+
   -- convert entities ...
   s = s:gsub ("&%a-;", entities)
 
   return s
 end -- fix_description
 
+function help_number (name, line, wildcards)
+  local which = tonumber (wildcards [1])
+
+  if #help_items == 0 then
+    print ("No recent search done which gave any results")
+    return
+  end -- if
+
+  if which < 1 or which > #help_items then
+    print (string.format ("Requested help item %i not recently displayed - valid range is 1 to %i",
+            which, #help_items))
+    return
+  end -- if
+
+  do_hyperlink (help_items [which])
+
+end -- help_number
+
 function OnPluginInstall ()
-  -- open database on disk 
-  
+  -- open database on disk
+
   if not db then
     db = assert (sqlite3.open(GetInfo (66) .. "help.db"))
   end -- if
-  
+
   local commands = false
-  
+
   -- see if commands table exists
-  for row in db:nrows("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'commands'") do 
+  for row in db:nrows("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'commands'") do
     commands = true
   end
-  
+
   if not commands then
     ColourNote ("red", "", "MUSHclient help database 'help.db' not found.")
     db:close ()
     db = nil
     return
   end -- if
-  
+
   local fts4 = false
-  
+
   -- see if fts4 tables exist
-  for row in db:nrows("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'commands_lookup'") do 
+  for row in db:nrows("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'commands_lookup'") do
     fts4 = true
   end
 
@@ -434,7 +471,7 @@ function OnPluginInstall ()
   if not fts4 then
     local start = utils.timer ()
     ColourNote ("cyan", "", "Creating help database full-text lookup tables ...")
-    
+
     -- START
     assert (db:execute [[
       BEGIN TRANSACTION;
@@ -445,75 +482,75 @@ function OnPluginInstall ()
       DROP TABLE IF EXISTS errors_lookup;
       DROP TABLE IF EXISTS lua_functions_lookup;
     ]])
-    
+
     -- COMMANDS
     assert (db:execute "CREATE VIRTUAL TABLE commands_lookup USING FTS4(name, summary, description)")
 
     -- fix up HTML stuff
-    for row in db:nrows("SELECT command_name, short_description, description FROM commands") do 
+    for row in db:nrows("SELECT command_name, short_description, description FROM commands") do
       assert (db:execute (string.format ([[
-      INSERT INTO commands_lookup (name, summary, description) 
-             VALUES (%s, %s, %s)]], 
-             fixsql (row.command_name), 
+      INSERT INTO commands_lookup (name, summary, description)
+             VALUES (%s, %s, %s)]],
+             fixsql (row.command_name),
              fixsql (row.short_description),
              fixsql (fix_description (row.description)))))
     end -- for
-        
+
     -- DIALOGS
     assert (db:execute "CREATE VIRTUAL TABLE dialogs_lookup USING FTS4(name, summary, description)")
 
     -- fix up HTML stuff
-    for row in db:nrows("SELECT dialog_name, title, description FROM dialogs") do 
+    for row in db:nrows("SELECT dialog_name, title, description FROM dialogs") do
       assert (db:execute (string.format ([[
-      INSERT INTO dialogs_lookup (name, summary, description) 
-             VALUES (%s, %s, %s)]], 
-             fixsql (row.dialog_name), 
+      INSERT INTO dialogs_lookup (name, summary, description)
+             VALUES (%s, %s, %s)]],
+             fixsql (row.dialog_name),
              fixsql (row.title),
              fixsql (fix_description (row.description)))))
     end -- for
-        
+
     -- WORLD FUNCTIONS
     assert (db:execute "CREATE VIRTUAL TABLE functions_lookup USING FTS4(name, summary, description, lua_example, lua_notes)")
-    assert (db:execute [[INSERT INTO functions_lookup (name, summary, description, lua_example, lua_notes) 
+    assert (db:execute [[INSERT INTO functions_lookup (name, summary, description, lua_example, lua_notes)
                          SELECT name, summary, description, lua_example, lua_notes FROM functions]])
-        
+
     -- GENERAL TOPICS
     assert (db:execute "CREATE VIRTUAL TABLE general_doc_lookup USING FTS4(name, summary, description)")
 
     -- fix up HTML stuff
-    for row in db:nrows("SELECT doc_name, title, description FROM general_doc") do 
+    for row in db:nrows("SELECT doc_name, title, description FROM general_doc") do
       assert (db:execute (string.format ([[
-      INSERT INTO general_doc_lookup (name, summary, description) 
-             VALUES (%s, %s, %s)]], 
-             fixsql (row.doc_name), 
+      INSERT INTO general_doc_lookup (name, summary, description)
+             VALUES (%s, %s, %s)]],
+             fixsql (row.doc_name),
              fixsql (row.title),
              fixsql (fix_description (row.description)))))
     end -- for
-        
+
     -- ERRORS
     assert (db:execute "CREATE VIRTUAL TABLE errors_lookup USING FTS4(name, error_code, description)")
-    assert (db:execute [[INSERT INTO errors_lookup (name, error_code, description) 
+    assert (db:execute [[INSERT INTO errors_lookup (name, error_code, description)
                          SELECT error_name, error_code, meaning FROM errors ]])
-        
+
     -- LUA FUNCTIONS
     assert (db:execute "CREATE VIRTUAL TABLE lua_functions_lookup USING FTS4(name, summary, description)")
-    
+
     -- fix up HTML stuff
-    for row in db:nrows("SELECT name, summary, description FROM lua_functions") do 
+    for row in db:nrows("SELECT name, summary, description FROM lua_functions") do
       assert (db:execute (string.format ([[
-      INSERT INTO lua_functions_lookup (name, summary, description) 
-             VALUES (%s, %s, %s)]], 
-             fixsql (row.name), 
+      INSERT INTO lua_functions_lookup (name, summary, description)
+             VALUES (%s, %s, %s)]],
+             fixsql (row.name),
              fixsql (row.summary),
              fixsql (fix_description (row.description)))))
     end -- for
-    
+
     -- DONE
     assert (db:execute "COMMIT;")
     ColourNote ("cyan", "", string.format ("Done. Took %0.3f seconds.", utils.timer () - start))
-    
-  end -- if 
-    
+
+  end -- if
+
 end -- OnPluginInstall
 
 function OnHelp ()
