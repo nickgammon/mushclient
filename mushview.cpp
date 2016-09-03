@@ -362,9 +362,12 @@ CLine * pLine = pDoc->m_LineList.GetAt (pDoc->GetLinePosition (line));
 
 // select appropriate font
 
-    if (pDoc->m_font [pStyle->iFlags & 7])
-      dc.SelectObject(pDoc->m_font [pStyle->iFlags & 7]);   
-
+    int styleIndex = pStyle->iFlags & 7;
+    // strikeout fonts are 8 to 15
+    if (pStyle->iFlags & STRIKEOUT)
+        styleIndex += 8;
+    if (pDoc->m_font [styleIndex])
+      dc.SelectObject(pDoc->m_font [styleIndex]);   
 
     if (pDoc->m_bUTF_8)
       {
@@ -456,8 +459,13 @@ POSITION foundpos;
     // don't overshoot
     thislen = MIN (cols_to_go, thislen);
 
-    if (pDoc->m_font [pStyle->iFlags & 7])
-      pDC->SelectObject(pDoc->m_font [pStyle->iFlags & 7]);
+    int styleIndex = pStyle->iFlags & 7;
+    // strikeout fonts are 8 to 15
+    if (pStyle->iFlags & STRIKEOUT)
+        styleIndex += 8;
+
+    if (pDoc->m_font [styleIndex])
+      pDC->SelectObject(pDoc->m_font [styleIndex]);
 
     pDoc->GetStyleRGB (pStyle, colour1, colour2);
 

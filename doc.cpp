@@ -3265,7 +3265,7 @@ void CMUSHclientDoc::ChangeFont (const int nHeight,
 
 int i;
 
-  for (i = 0; i < 8; i++)  
+  for (i = 0; i < NUMITEMS (m_font); i++)  
     {
     delete m_font [i];         // get rid of old font
     m_font [i] = NULL;
@@ -3275,13 +3275,13 @@ int i;
 
   dc.CreateCompatibleDC (NULL);
 
-  for (i = 0; i < 8; i++)  
+  for (i = 0; i < NUMITEMS (m_font); i++)  
     {
      m_font [i] = new CFont;    // create new font
 
      if (!m_font [i])
       {
-      for (int j = 0; j < 8; j++)  
+      for (int j = 0; j < NUMITEMS (m_font); j++)  
         {
         delete m_font [j];         // get rid of old font
         m_font [j] = NULL;
@@ -3301,7 +3301,7 @@ int i;
             bShowBold ? ((i & HILITE) ? FW_BOLD : FW_NORMAL) : nWeight, // int nWeight, 
             bShowItalic ? (i & BLINK) != 0 : 0, // BYTE bItalic, 
             bShowUnderline ? (i & UNDERLINE) != 0 : 0, // BYTE bUnderline, 
-            0, // BYTE cStrikeOut, 
+            i >= 8,     // BYTE cStrikeOut, 
             iFontCharset, // BYTE nCharSet, 
             0, // BYTE nOutPrecision, 
             0, // BYTE nClipPrecision, 
@@ -3309,7 +3309,7 @@ int i;
             MUSHCLIENT_FONT_FAMILY, // BYTE nPitchAndFamily,    // was  FF_DONTCARE
             lpszFacename);// LPCTSTR lpszFacename );
 
-    }   // end of allocating 8 fonts
+    }   // end of allocating 16 fonts
 
    // Get the metrics of the font - use the bold one - it will probably be wider
 

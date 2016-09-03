@@ -260,11 +260,12 @@ typedef CTypedPtrList <CPtrList, CAction*> CActionList;
 #define BLINK      0x0004   // italic??
 #define INVERSE    0x0008   // need to invert it
 #define CHANGED    0x0010   // colour has been changed by a trigger
+#define STRIKEOUT  0x0020   // strike-though? (strikeout)
 #define COLOURTYPE 0x0300   // type of colour in iForeColour/iBackColour, see above
 #define ACTIONTYPE 0x0C00   // action type, see above
 #define STYLE_BITS 0x0FFF   // everything except START_TAG
 #define START_TAG  0x1000   // strAction is tag name - start of tag (eg. <b> )
-#define TEXT_STYLE 0x000F   // bold, underline, italic, inverse flags
+#define TEXT_STYLE 0x002F   // bold, underline, italic, inverse, strike-through flags
 
 // eg. <send "command1|command2|command3" hint="click to see menu|Item 1|Item 2|Item 2">this is a menu link</SEND>
 

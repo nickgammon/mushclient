@@ -1167,7 +1167,7 @@ public:
   CString m_logfile_name;
   CTime m_LastFlushTime;
 
-  CFont * m_font [8];     // 8 fonts - normal, bold, italic, bold-normal etc.
+  CFont * m_font [16];     // 16 fonts - normal, bold, italic, bold-normal etc.
   int m_FontHeight,
       m_FontWidth; 
 

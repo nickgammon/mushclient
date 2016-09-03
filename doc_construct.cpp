@@ -189,7 +189,7 @@ int i;
 	ASSERT(CWnd::FromHandlePermanent(m_pTimerWnd->m_hWnd) == m_pTimerWnd);
 
 
-  for (i = 0; i < 8; i++)  
+  for (i = 0; i < NUMITEMS (m_font); i++)  
     m_font [i] = NULL;
   m_input_font = NULL;
   m_FontHeight = 0;
@@ -493,7 +493,7 @@ int i;
     m_pTimerWnd = NULL;
     }
 
-  for (i = 0; i < 8; i++)  
+  for (i = 0; i < NUMITEMS (m_font); i++)  
     delete m_font [i];
   delete m_input_font;
 
