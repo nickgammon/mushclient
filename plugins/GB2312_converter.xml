@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="GB2312_converter"
+   author="Nick Gammon"
+   id="6d7178f2f10a1d4c4d0d22e4"
+   language="Lua"
+   purpose="Converts Chinese GB2312 text from MUD to UTF-8"
+   date_written="2016-09-22 14:56:50"
+   requires="4.90"
+   version="1.0"
+   >
+</plugin>
+
+<!--  Script  -->
+<script>
+<![CDATA[
+
+-- load the conversion codes
+dofile (GetPluginInfo (GetPluginID (), 20) .. "GB2312_table.lua")
+
+-- Convert two consecutive bytes to be a 16-bit number (high order byte first)
+local function convertUnicode (s)
+  return string.byte (string.sub (s, 1, 1)) * 256 + string.byte ((string.sub (s, 2, 2)))
+end -- convertUnicode
+
+-- Convert two bytes from GB2312 into UTF-8 - if not found return a question mark
+local function convertGB2312 (s)
+ return utils.utf8encode (conversion_table [convertUnicode (s)] or string.byte ("?"))
+end -- convertGB2312
+
+-- Process an incoming packet, converting sequences of the form xy where x and y are
+-- both in the range 0xA1 to 0xFE from GB2312 into UTF-8
+function OnPluginPacketReceived (sText)
+  return string.gsub (sText, "[\161-\254][\161-\254]", convertGB2312)  -- 0xA1 to 0xFE
+end -- function
+
+]]>
+</script>
+</muclient>
