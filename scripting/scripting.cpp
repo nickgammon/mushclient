@@ -83,8 +83,10 @@ if (m_ScriptEngine)
    }  // end of try
  catch (CException * e)
    {
-    e->ReportError ();
+    char sMessage [1000];
+    e->GetErrorMessage (sMessage, sizeof sMessage);
     e->Delete ();
+    ColourNote ("red", "", sMessage);
     DisableScripting ();
     return true;  
    }
