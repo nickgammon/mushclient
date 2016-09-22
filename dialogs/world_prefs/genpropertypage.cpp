@@ -1788,6 +1788,8 @@ CString strContents;
   if (!GetClipboardContents (strContents, m_doc->m_bUTF_8, false))
     return; // can't do it
 
+  GetSelectedItem (); // in case we re-load list
+
   CMemFile f ((unsigned char *) (const char *) strContents, strContents.GetLength ());
   CArchive ar (&f, CArchive::load);
   UINT iCount = 0;
