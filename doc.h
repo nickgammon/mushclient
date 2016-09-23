@@ -21,8 +21,8 @@
 
 // New versions - things to change
 
-#define THISVERSION 503                       // Step 1.
-const CString MUSHCLIENT_VERSION = "5.03";    // Step 2.
+#define THISVERSION 504                       // Step 1.
+const CString MUSHCLIENT_VERSION = "5.04";    // Step 2.
 // Step 3. Don't forget VERSION resource in Resources tab
 // Step 4. Remember: README.TXT 
 
