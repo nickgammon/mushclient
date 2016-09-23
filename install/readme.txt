@@ -1,7 +1,7 @@
 MUSHclient version 5.03
 =======================
 
-Sunday, 26 June 2016
+Friday, 23 September 2016
 
 
 Author: Nick Gammon
