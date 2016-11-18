@@ -336,6 +336,8 @@ long length;
                   iCurrentBackGround = iCode & 0xFF;
                   SetNoteColourBack (xterm_256_colours [iCurrentBackGround]);
                   }
+                nextANSI_TEXT_256_COLOUR = false;  // cancel now that we have noticed it
+                nextANSI_BACK_256_COLOUR = false;
                 }
               // here if we have had ESC [ 38 or ESC [ 48
               //  we expect a 5 to follow, otherwise cancel
