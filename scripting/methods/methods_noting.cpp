@@ -34,6 +34,7 @@ void CMUSHclientDoc::Note(LPCTSTR Message)
     strMsg += ENDLINE;      // add a new line if necessary
 
   Tell (strMsg);
+  SetNewLineColour(0);
 }   // end of CMUSHclientDoc::Note
 
 // world.tell - makes a comment in the output buffer (without newline)
@@ -534,7 +535,7 @@ int iCode = 0;
 
   // put style back
   m_iNoteStyle = iOldNoteStyle;
-
+  SetNewLineColour(0);
 } // end of CMUSHclientDoc::AnsiNote
 
 void CMUSHclientDoc::ColourNote(LPCTSTR TextColour, 
@@ -547,7 +548,7 @@ void CMUSHclientDoc::ColourNote(LPCTSTR TextColour,
     strMsg += ENDLINE;      // add a new line if necessary
 
   ColourTell (TextColour, BackgroundColour, strMsg);
-
+  SetNewLineColour(0);
 }  // end of CMUSHclientDoc::ColourNote
 
 void CMUSHclientDoc::ColourTell(LPCTSTR TextColour, LPCTSTR BackgroundColour, LPCTSTR Text) 
