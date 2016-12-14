@@ -1747,6 +1747,10 @@ Unicode range              UTF-8 bytes
 void CMUSHclientDoc::SetNewLineColour (const int flags)
   {
 
+  // just in case we call this before the output window exists
+  if (m_pCurrentLine == NULL)
+    return;
+
   // find current style
   CStyle * pStyle = m_pCurrentLine->styleList.GetTail ();
 
