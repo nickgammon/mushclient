@@ -13,9 +13,12 @@
 // adds text to a line, adds to current style run if possible
 void CPaneLine::AddStyle (const CPaneStyle style)
     {
-    // don't need to if no text in style  (maybe)
-    if (style.m_sText.empty ())
-      return;
+    // This comment used to say that we didn't need to preserve textless colors, 
+    // but it impacts the accurate preservation of data because servers may send
+    // color changes just before newlines which _should_ bleed over, but then don't. 
+    // - Fiendish
+    //if (style.m_sText.empty ())
+    //  return;
 
     // if first style for line, must be a new style
     if (m_vStyles.empty ())
