@@ -12,9 +12,9 @@ artifacts:
 - path: WinRel\MUSHclient.exe
   name: release_exe
 before_deploy:
-- auth_token:
+  auth_token:
     secure: CI/4PuncY6pW1t7bRuDrFLEZQOuMFx9W4TSePW1ywvJvzVuEOu3JLNv97jECNvFz
-  ps: >-
+- ps: >-
     git config --global credential.helper store
     Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
     git tag -f latest_commit HEAD
