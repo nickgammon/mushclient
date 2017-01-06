@@ -30,7 +30,7 @@ Localize_template.lua
 #
 find_non_standard_encoding.lua
 
-#
+# 
 #  Compiler work files, editor backups, DLLs used for testing, etc.
 #
 *.ncb
