@@ -19,7 +19,7 @@ WinDebug
 mushclient_prefs.sqlite
 MUSHclient.ini
 
-#
+# 
 #  These two files are generated during the install, to generate localization files
 #
 all_files_list.txt
