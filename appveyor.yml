@@ -15,11 +15,10 @@ before_deploy:
 - provider: GitHub
   auth_token:
     secure: CI/4PuncY6pW1t7bRuDrFLEZQOuMFx9W4TSePW1ywvJvzVuEOu3JLNv97jECNvFz
-- ps: >-
-    git config --global credential.helper store
-    Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
-    git tag -f latest_commit HEAD
-    git push -f origin latest_commit
+- git config --global credential.helper store
+- ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
+- git tag -f latest_commit HEAD
+- git push -f origin latest_commit
 deploy:
 - provider: GitHub
   tag: latest_commit
