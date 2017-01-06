@@ -1,0 +1,32 @@
+version: automatic_{branch}_build_{build}
+branches:
+  only:
+  - master
+skip_tags: true
+configuration: Release
+build:
+  project: MUSHclient_2015.sln
+  parallel: true
+  verbosity: normal
+artifacts:
+- path: WinRel\MUSHclient.exe
+  name: release_exe
+before_deploy:
+- auth_token:
+    secure: CI/4PuncY6pW1t7bRuDrFLEZQOuMFx9W4TSePW1ywvJvzVuEOu3JLNv97jECNvFz
+  ps: >-
+    git config --global credential.helper store
+    Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
+    git tag -f latest_commit HEAD
+    git push -f origin latest_commit
+deploy:
+- provider: GitHub
+  tag: latest_commit
+  auth_token:
+    secure: CI/4PuncY6pW1t7bRuDrFLEZQOuMFx9W4TSePW1ywvJvzVuEOu3JLNv97jECNvFz
+  artifact: release_exe
+  prerelease: true
+  force_update: true
+  on:
+    branch: master
+
