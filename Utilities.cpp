@@ -86,7 +86,7 @@ char * pOut;
       *pOut++ = '\\';
       *pOut++ = 'x';
       char buf [20];
-      itoa ((unsigned char) *p, buf, 16);
+      _itoa ((unsigned char) *p, buf, 16);
       if (buf [1] == 0)   // add leading zero
         *pOut++ = '0';
       *pOut++ = buf [0];

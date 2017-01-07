@@ -1,3 +1,8 @@
+#define open _open      // POSIX compliance
+#define read _read      //    "
+#define write _write    //    "
+#define close _close    //    "
+
 /* gzlib.c -- zlib functions common to reading and writing gzip files
  * Copyright (C) 2004, 2010, 2011, 2012, 2013 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h

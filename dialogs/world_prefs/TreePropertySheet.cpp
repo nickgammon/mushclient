@@ -846,7 +846,7 @@ void		CTreePropertySheet::AddPaneSpace(int nWidth, int nTopPane,int nBottomPane)
 		::GetClassName(	pWndChild->GetSafeHwnd(),
 						szClass,256);
 
-		if(stricmp(szClass,"Button")==0) {
+		if(_stricmp(szClass,"Button")==0) {
 			CRect		rcButton;
 
 			pWndChild->GetClientRect(&rcButton);

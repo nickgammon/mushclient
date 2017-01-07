@@ -294,6 +294,9 @@ bool CScriptEngine::CreateScriptEngine (void)
 
   */
 
+// avoid warning with more modern compiler
+#define _CRT_NON_CONFORMING_SWPRINTFS 1
+
 //  CString strFixedLanguage = m_strLanguage;
 //
 //  strFixedLanguage.MakeLower ();

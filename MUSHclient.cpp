@@ -468,7 +468,9 @@ BOOL CMUSHclientApp::InitInstance()
 
 	// Standard initialization
 
+#if _MSC_VER == 1200
 	Enable3dControls();
+#endif
 
   //Make sure this is here so you can use XP Styles
   InitCommonControls();
