@@ -221,6 +221,7 @@ static const CLSID clsid =
 { 0x11dfc5e6, 0xad6f, 0x11d0, { 0x8e, 0xae, 0x0, 0xa0, 0x24, 0x7b, 0x3b, 0xfd } };
 
 
+CString MUSHCLIENT_VERSION;
 
 /////////////////////////////////////////////////////////////////////////////
 // CMUSHclientApp initialization
@@ -231,6 +232,12 @@ BOOL CMUSHclientApp::InitInstance()
   m_whenClientStarted = CTime::GetCurrentTime();
 
   char fullfilename [MAX_PATH];
+
+  MUSHCLIENT_VERSION = MUSHCLIENT_BASE_VERSION;
+
+#if _MSC_VER == 1900     // 1200 for Visual Studio 6, 1900 for MSVC 2015
+  MUSHCLIENT_VERSION += "-pre";
+#endif
 
   if (GetModuleFileName (NULL, fullfilename, sizeof (fullfilename)))
     m_strMUSHclientFileName = ExtractDirectory (CString (fullfilename));
