@@ -21,6 +21,7 @@
 #pragma warning (disable : 4706)  // assignment within conditional expression
 #pragma warning (disable : 4710)  // function 'x' not inlined
 #pragma warning (disable : 4786)  // identifier was truncated to 'number' characters in the debug information
+#pragma warning (disable : 4996)  // MBCS support in MFC is deprecated and may be removed in a future version of MFC
 
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers

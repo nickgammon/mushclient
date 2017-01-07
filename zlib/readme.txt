@@ -50,11 +50,3 @@ add:
 #pragma warning( disable : 4131)  // uses old-style declarator
 #pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
 #pragma warning( disable : 4702)  // unreachable code
-
-
-5. Edit gzlib.c and at the start add the lines:
-
-#define open _open      // POSIX compliance
-#define read _read      //    "
-#define write _write    //    "
-#define close _close    //    "
