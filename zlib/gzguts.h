@@ -35,12 +35,10 @@
 #  include <io.h>
 #endif
 
-#ifdef WINAPI_FAMILY
 #  define open _open
 #  define read _read
 #  define write _write
 #  define close _close
-#endif
 
 #ifdef NO_DEFLATE       /* for compatibility with old definition */
 #  define NO_GZCOMPRESS

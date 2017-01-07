@@ -50,5 +50,13 @@ add:
 #pragma warning( disable : 4131)  // uses old-style declarator
 #pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
 #pragma warning( disable : 4702)  // unreachable code
-#define WINAPI_FAMILY 1
 
+
+5. Edit gzguts.h and remove the #ifdef / #endif from these lines:
+
+#ifdef WINAPI_FAMILY
+#  define open _open
+#  define read _read
+#  define write _write
+#  define close _close
+#endif

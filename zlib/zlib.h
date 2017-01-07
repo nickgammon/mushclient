@@ -3,7 +3,6 @@
 #pragma warning( disable : 4131)  // uses old-style declarator
 #pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
 #pragma warning( disable : 4702)  // unreachable code
-#define WINAPI_FAMILY 1
 
 /* zlib.h -- interface of the 'zlib' general purpose compression library
   version 1.2.8, April 28th, 2013
