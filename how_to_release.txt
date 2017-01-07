@@ -119,9 +119,12 @@ UPDATE RELEASE NOTES
 
 1. Change record for relnotes for this release to have today's date as release date
     
-    
-    
-    
- 
 
-   
+POST RELEASE NOTES TO GITHUB
+
+1. On Github, go to the "tags" link and click on "Add release notes". Copy and paste the release notes into the appropriate box.
+
+    https://github.com/nickgammon/mushclient/tags
+
+    Note, for each note item the explanatory lines should be indented four spaces (tab twice) so that the bulleted points are numbered correctly. Put "```" symbols around any code examples.
+
