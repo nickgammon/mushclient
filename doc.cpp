@@ -776,7 +776,7 @@ void CMUSHclientDoc::SetUpOutputWindow (void)
   Note (Translate ("Written by Nick Gammon."));
   Note ("");
   // show compilation date
-  Note (TFormat ("Compiled: %s.", __DATE__)); 
+  Note (TFormat ("Compiled: %s at %s.", __DATE__, __TIME__)); 
   // show included library versions
   Note (TFormat ("Using: %s, PCRE %s, PNG %s, SQLite3 %s, Zlib %s", 
         LUA_RELEASE, 
