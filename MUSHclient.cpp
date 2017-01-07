@@ -235,7 +235,7 @@ BOOL CMUSHclientApp::InitInstance()
 
   MUSHCLIENT_VERSION = VERSION_STRING;
 
-#if _MSC_VER == 1900     // 1200 for Visual Studio 6, 1900 for MSVC 2015
+#ifdef PRE_RELEASE
   MUSHCLIENT_VERSION += "-pre";
 #endif
 
