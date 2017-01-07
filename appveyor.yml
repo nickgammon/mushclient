@@ -12,8 +12,8 @@ artifacts:
 - path: WinRel\MUSHclient.exe
   name: release_exe
 environment:
-  auth_token: 
-    secure: CI/4PuncY6pW1t7bRuDrFLEZQOuMFx9W4TSePW1ywvJvzVuEOu3JLNv97jECNvFz
+  auth_token:
+    secure: SKQr480MzNJLzmyrFxDeMta2nHica+9ed2n1Djpa53ioURK0NLo/iStu9DhUrQIK
 before_deploy:
 - git config --global credential.helper store
 - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:auth_token):x-oauth-basic@github.com`n"
@@ -23,10 +23,9 @@ deploy:
 - provider: GitHub
   tag: latest_commit
   auth_token:
-    secure: CI/4PuncY6pW1t7bRuDrFLEZQOuMFx9W4TSePW1ywvJvzVuEOu3JLNv97jECNvFz
+    secure: SKQr480MzNJLzmyrFxDeMta2nHica+9ed2n1Djpa53ioURK0NLo/iStu9DhUrQIK
   artifact: release_exe
   prerelease: true
   force_update: true
   on:
     branch: master
-
