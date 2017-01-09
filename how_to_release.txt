@@ -12,7 +12,7 @@ PREPARATION
 1. Test changes
 2. Document new functions, and changes, in database
 3. Update readme.txt file with today's date as release date
-4. Make sure version number changed in doc.h and resource file
+4. Make sure version number changed in version.h file (3 places)
 
 
 HELP GENERATION
