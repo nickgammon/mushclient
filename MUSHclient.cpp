@@ -233,9 +233,9 @@ BOOL CMUSHclientApp::InitInstance()
 
   char fullfilename [MAX_PATH];
 
-  MUSHCLIENT_VERSION = MUSHCLIENT_BASE_VERSION;
+  MUSHCLIENT_VERSION = VERSION_STRING;
 
-#if _MSC_VER == 1900     // 1200 for Visual Studio 6, 1900 for MSVC 2015
+#ifdef PRE_RELEASE
   MUSHCLIENT_VERSION += "-pre";
 #endif
 
@@ -843,7 +843,7 @@ BOOL CMUSHclientApp::InitInstance()
 
     version = db_get_int ("control", "Version", 0);	
 
-    if (version < THISVERSION)  // THISVERSION is defined at start of this module
+    if (version < THISVERSION)  // THISVERSION is defined in version.h
       {
 
       CWelcome1Dlg dlg;         // Welcome to this version dialog

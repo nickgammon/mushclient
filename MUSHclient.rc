@@ -1,6 +1,7 @@
 //Microsoft Developer Studio generated resource script.
 //
 #include "resource.h"
+#include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -75,8 +76,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 5,0,5,0
- PRODUCTVERSION 5,0,5,0
+ FILEVERSION VERSION_16WORDS
+ PRODUCTVERSION VERSION_16WORDS
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -94,14 +95,14 @@ BEGIN
             VALUE "Comments", "MUSHclient - a client program for playing MUD games\0"
             VALUE "CompanyName", "Nick Gammon\0"
             VALUE "FileDescription", "MUSHclient\0"
-            VALUE "FileVersion", "5.05\0"
+            VALUE "FileVersion", VERSION_STRING
             VALUE "InternalName", "MUSHCLIENT\0"
             VALUE "LegalCopyright", "Copyright © 2016 Nick Gammon\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "MUSHCLIENT.EXE\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "MUSHclient\0"
-            VALUE "ProductVersion", "5.05\0"
+            VALUE "ProductVersion", VERSION_STRING
             VALUE "SpecialBuild", "\0"
         END
     END
