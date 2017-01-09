@@ -14,20 +14,10 @@
 #include "paneline.h"
 #include "miniwindow.h"
 #include "plugins.h"
+#include "version.h"
 
 #define COMPRESS_BUFFER_LENGTH 1024   // size of decompression buffer
-
-// ============================================================================
-
-// New versions - things to change
-
-#define THISVERSION 505                           // Step 1.
-const CString MUSHCLIENT_BASE_VERSION = "5.05";   // Step 2.
-
-extern CString MUSHCLIENT_VERSION;    // will have "-pre" appended by automatic builds
-
-// Step 3. Don't forget VERSION resource in Resources tab
-// Step 4. Remember: README.TXT 
+extern CString MUSHCLIENT_VERSION;
 
 // ============================================================================
 

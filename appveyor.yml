@@ -4,6 +4,10 @@ branches:
   - master
 skip_tags: true
 configuration: Release
+environment:
+  auth_token:
+    secure: SKQr480MzNJLzmyrFxDeMta2nHica+9ed2n1Djpa53ioURK0NLo/iStu9DhUrQIK
+  PRE_RELEASE: PRE_RELEASE
 build:
   project: MUSHclient_2015.sln
   parallel: true
@@ -11,9 +15,6 @@ build:
 artifacts:
 - path: WinRel\MUSHclient.exe
   name: release_exe
-environment:
-  auth_token:
-    secure: SKQr480MzNJLzmyrFxDeMta2nHica+9ed2n1Djpa53ioURK0NLo/iStu9DhUrQIK
 before_deploy:
 - git config --global credential.helper store
 - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:auth_token):x-oauth-basic@github.com`n"
