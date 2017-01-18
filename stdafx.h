@@ -23,7 +23,7 @@
 #pragma warning (disable : 4786)  // identifier was truncated to 'number' characters in the debug information
 #pragma warning (disable : 4996)  // MBCS support in MFC is deprecated and may be removed in a future version of MFC
 
-
+#define _AFX_NO_MFC_CONTROLS_IN_DIALOGS
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #define HAVE_CONFIG_H   // for PCRE
       
