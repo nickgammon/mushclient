@@ -1,5 +1,5 @@
 ; -------- MUSHclient install script
-; For use with NSIS installer (see www.nullsort.com)
+; For use with NSIS installer (see https://sourceforge.net/projects/nsis/)
 
 ;
 ;  get a local copy of the .exe and compress it
