@@ -3579,6 +3579,7 @@ CMenu* GrabAMenu (void)
 CString CMiniWindow::Menu(long Left, long Top, LPCTSTR Items, CMUSHView* pView)
   {
 CString strResult;
+int align = TPM_LEFTALIGN | TPM_TOPALIGN;  // these are actually both zero
 
   // can't menu if not visible
   if (!m_bShow || m_bTemporarilyHide)
@@ -3606,6 +3607,53 @@ CString strResult;
     p++;
     }
 
+  // alignment
+
+  if (*p == '~' && strlen (p) > 3)
+    {
+    p++;  // skip the '~'
+    // horizontal alignment
+    switch (*p++)
+      {
+      case 'c':
+      case 'C':
+         align |= TPM_CENTERALIGN;
+         break;
+      case 'l':
+      case 'L':
+         align |= TPM_LEFTALIGN;
+         break;
+      case 'r':
+      case 'R':
+         align |= TPM_RIGHTALIGN;
+         break;
+      default:
+         // ignore
+         break;
+      } // end of switch
+
+    // vertical alignment
+    switch (*p++)
+      {
+      case 'c':
+      case 'C':
+         align |= TPM_VCENTERALIGN;
+         break;
+      case 'b':
+      case 'B':
+         align |= TPM_BOTTOMALIGN;
+         break;
+      case 't':
+      case 'T':
+         align |= TPM_TOPALIGN;
+         break;
+      default:
+         // ignore
+         break;
+      } // end of switch
+
+    } // end of alignment code
+
   vector<string> v;
 
   StringToVector (p, v, "|");
@@ -3615,51 +3663,6 @@ CString strResult;
   // must have at least one item
   if (iCount < 1)
     return strResult;
-
-#if 0 // AARRRRRRRRGGGGGGGGGGGHHHHHHHHHHHHHHH!!!!!!!!!!!!!!!!!!!
-
-  // if we are doing this in response to a mouse-down, we have to cancel the
-  // mouse-down event now, or things get confused
-
-  if (!pView->m_sPreviousMiniWindow.empty ())
-    {
-    CMUSHclientDoc* pDoc = pView->GetDocument();
-
-    MiniWindowMapIterator it = pDoc->m_MiniWindows.find (pView->m_sPreviousMiniWindow);
-  
-    if (it != pDoc->m_MiniWindows.end ())
-      {
-
-      CMiniWindow * old_mw = it->second;
-
-      // cancel previous move-down hotspot
-      if (!old_mw->m_sMouseDownHotspot.empty ())   // HotspotId was used
-        {
-        // lookup that HotspotId
-        HotspotMapIterator it = old_mw->m_Hotspots.find (old_mw->m_sMouseDownHotspot);
-
-        // call CancelMouseDown for that hotspot, if it exists
-        if (it != old_mw->m_Hotspots.end ())
-          {
-          m_last_mouseup = m_last_mousemove;
-          pView->Send_Mouse_Event_To_Plugin (old_mw->m_sCallbackPlugin,
-                                      it->second->m_sCancelMouseDown, 
-                                      old_mw->m_sMouseDownHotspot);
-          }
-        old_mw->m_sMouseDownHotspot.erase ();  // no mouse-down right now
-        }   // we had previous hotspot
-
-      } // previous window still exists
-
-    pView->m_sPreviousMiniWindow.erase ();  // no longer have a previous window
-	  ReleaseCapture();   // Release the mouse capture established at
-    	    					    // the beginning of the mouse click.
-
-    } // released mouse in different window
-
-#endif    // AARRRRRRRRGGGGGGGGGGGHHHHHHHHHHHHHHH!!!!!!!!!!!!!!!!!!!
-
-
 
 CPoint menupoint (Left, Top);
 
@@ -3734,7 +3737,7 @@ CPoint menupoint (Left, Top);
   // without this line the auto-enable always set "no items" to active
   Frame.m_bAutoMenuEnable  = FALSE;
 
-	int iResult = vPopup.front ()->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, 
+	int iResult = vPopup.front ()->TrackPopupMenu(align | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, 
                           menupoint.x, 
                           menupoint.y,
 			                    pWndPopupOwner);
