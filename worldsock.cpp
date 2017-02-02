@@ -29,10 +29,8 @@ CWorldSocket::CWorldSocket(CMUSHclientDoc* pDoc)
 
 void CWorldSocket::OnReceive(int nErrorCode)
 {
-
-  // CSocket::OnReceive(nErrorCode);
-
 	m_pDoc->ProcessPendingRead();
+  CAsyncSocket::OnReceive(nErrorCode);
 }
 
 void CWorldSocket::OnSend(int nErrorCode)
