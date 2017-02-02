@@ -727,16 +727,16 @@ void CMUSHclientDoc::Handle_TELOPT_TERMINAL_TYPE ()
   // see: RFC 930 and RFC 1060
   // also see: http://tintin.sourceforge.net/mtts/
 
-  unsigned char p1 [] = { IAC, SB, TELOPT_TERMINAL_TYPE, TTYPE_IS }; 
-  unsigned char p2 [] = { IAC, SE }; 
+  unsigned char p1 [4] = { IAC, SB, TELOPT_TERMINAL_TYPE, TTYPE_IS };
+  unsigned char p2 [2] = { IAC, SE };
   unsigned char sResponse [40];
   int iLength = 0;
 
   // build up response, eg. IAC, SB, TELOPT_TERMINAL_TYPE, 0, "MUSHCLIENT", IAC, SE 
 
   // preamble
-  memcpy (sResponse, p1, sizeof p1);
-  iLength += sizeof p1;
+  memcpy (sResponse, p1, 4);
+  iLength += 4;
 
   // ensure max of 20 so we don't overflow the field
   CString strTemp;
@@ -792,12 +792,12 @@ void CMUSHclientDoc::Handle_TELOPT_TERMINAL_TYPE ()
 
     } // end of switch
 
-  memcpy (&sResponse [iLength], strTemp, strTemp.GetLength ());
+  memcpy (&sResponse [iLength], (LPCTSTR) strTemp, strTemp.GetLength ());
   iLength += strTemp.GetLength ();
 
   // postamble
-  memcpy (&sResponse [iLength], p2, sizeof p2);
-  iLength += sizeof p2;
+  memcpy (&sResponse [iLength], p2, 2);
+  iLength += 2;
 
   SendPacket (sResponse, iLength);
 
