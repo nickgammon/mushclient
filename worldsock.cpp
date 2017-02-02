@@ -47,7 +47,7 @@ int count;
   if (m_outstanding_data.GetLength () <= 0)
     return;
 
-  count = Send (m_outstanding_data, m_outstanding_data.GetLength ());
+  count = Send ((LPCTSTR) m_outstanding_data, m_outstanding_data.GetLength ());
 
   if (count != SOCKET_ERROR)
     m_pDoc->m_nBytesOut += count; // count bytes out
