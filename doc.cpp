@@ -1347,7 +1347,7 @@ CString str = strText;
 
 void CMUSHclientDoc::ReceiveMsg()
 {
-char buff [1000];   // must be less than COMPRESS_BUFFER_LENGTH or it won't fit
+char buff [9000];   // must be less than COMPRESS_BUFFER_LENGTH or it won't fit
 int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
 
   Frame.CheckTimerFallback ();   // see if time is up for timers to fire

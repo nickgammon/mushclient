@@ -16,7 +16,7 @@
 #include "plugins.h"
 #include "version.h"
 
-#define COMPRESS_BUFFER_LENGTH 1024   // size of decompression buffer
+#define COMPRESS_BUFFER_LENGTH 10000   // size of decompression buffer
 extern CString MUSHCLIENT_VERSION;
 
 // ============================================================================
