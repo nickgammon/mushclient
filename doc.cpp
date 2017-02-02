@@ -1162,11 +1162,6 @@ CString str;
 	return TRUE;
 }
 
-void CMUSHclientDoc::ProcessPendingRead() 
-{
-	ReceiveMsg();
-}
-
 // SendMsg sends a message (command) to the MUD.
 // If there is already a queue (for speedwalking etc.) it is placed 
 // at the end of the queue. The message is marked to indicate whether
@@ -1350,15 +1345,18 @@ CString str = strText;
 
 }
 
-void CMUSHclientDoc::ReceiveMsg()
+void CMUSHclientDoc::ReceiveMsg(char * buff, int count)
 {
-char buff [1000];   // must be less than COMPRESS_BUFFER_LENGTH or it won't fit
-int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
 
   Frame.CheckTimerFallback ();   // see if time is up for timers to fire
 
   if (count == SOCKET_ERROR)
     {
+
+    DWORD errcode = GetLastError();
+    if (errcode == WSAEWOULDBLOCK || errcode == 0)
+      return;  // it's ok, nothing to do
+
     // don't delete the socket if we are already closing it
     if (m_iConnectPhase == eConnectDisconnecting)
        return;

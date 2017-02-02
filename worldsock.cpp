@@ -29,7 +29,22 @@ CWorldSocket::CWorldSocket(CMUSHclientDoc* pDoc)
 
 void CWorldSocket::OnReceive(int nErrorCode)
 {
-	m_pDoc->ProcessPendingRead();
+
+char buff [1000];   // must be less than COMPRESS_BUFFER_LENGTH or it won't fit
+
+  while (true)
+    {
+    int count = m_pDoc->m_pSocket->Receive (buff, sizeof (buff) - 1);
+	  m_pDoc->ReceiveMsg(buff, count);
+
+    if (count == 0)  // connection closed or nothing left
+      break;
+
+    if (count == SOCKET_ERROR)
+      break;         // some error or other
+
+    } // end of while
+
   CAsyncSocket::OnReceive(nErrorCode);
 }
 

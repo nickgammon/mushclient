@@ -1399,7 +1399,6 @@ public:
 // Operations
 public:
 	BOOL ConnectSocket(void);
-	void ProcessPendingRead();
 	void DoSendMsg(const CString& strText, 
                  const bool bEchoIt,
                  const bool bLogIt);
@@ -1407,7 +1406,7 @@ public:
                const bool bEchoIt,
                const bool bQueueIt,
                const bool bLogIt);
-	void ReceiveMsg();
+	void ReceiveMsg(char * buff, int count);
 	void DisplayMsg(LPCTSTR lpszText, int size, const int flags);
   void AddToLine (LPCTSTR lpszText, const int flags);
   void StartNewLine_KeepPreviousStyle (const int flags);
