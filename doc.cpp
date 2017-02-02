@@ -1345,18 +1345,15 @@ CString str = strText;
 
 }
 
-void CMUSHclientDoc::ReceiveMsg(char * buff, int count)
+void CMUSHclientDoc::ReceiveMsg()
 {
+char buff [1000];   // must be less than COMPRESS_BUFFER_LENGTH or it won't fit
+int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
 
   Frame.CheckTimerFallback ();   // see if time is up for timers to fire
 
   if (count == SOCKET_ERROR)
     {
-
-    DWORD errcode = GetLastError();
-    if (errcode == WSAEWOULDBLOCK || errcode == 0)
-      return;  // it's ok, nothing to do
-
     // don't delete the socket if we are already closing it
     if (m_iConnectPhase == eConnectDisconnecting)
        return;

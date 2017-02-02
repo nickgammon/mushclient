@@ -1406,7 +1406,7 @@ public:
                const bool bEchoIt,
                const bool bQueueIt,
                const bool bLogIt);
-	void ReceiveMsg(char * buff, int count);
+	void ReceiveMsg();
 	void DisplayMsg(LPCTSTR lpszText, int size, const int flags);
   void AddToLine (LPCTSTR lpszText, const int flags);
   void StartNewLine_KeepPreviousStyle (const int flags);
