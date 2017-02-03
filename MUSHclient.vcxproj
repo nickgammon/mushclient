@@ -137,6 +137,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <CompileAsManaged>false</CompileAsManaged>
       <AdditionalOptions>/GA</AdditionalOptions>
     </ClCompile>
