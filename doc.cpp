@@ -5744,7 +5744,7 @@ void  CMUSHclientDoc::SendPacket (const char * lpBuf, const int nBufLen)
   if (m_bDebugIncomingPackets)
     Debug_Packets ("Sent ", lpBuf, nBufLen, m_iOutputPacketCount);
 
-  m_pSocket->m_outstanding_data += CString (lpBuf, nBufLen);
+  m_pSocket->m_outstanding_data.append (lpBuf, nBufLen);
 
   m_pSocket->OnSend (0);   // in case FD_WRITE message got lost, try to send again
   

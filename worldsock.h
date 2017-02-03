@@ -26,7 +26,7 @@ public:
 // Operations
 public:
 	CMUSHclientDoc* m_pDoc;
-  CString m_outstanding_data;
+  string m_outstanding_data;
 
 // Implementation
 
