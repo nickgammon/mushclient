@@ -356,6 +356,7 @@ tInternalFunctionsTable InternalFunctionsTable [] = {
 { "SetTitle" ,                   "( Title )" } ,
 { "SetToolBarPosition" ,         "( Which , Float , Side , Top , Left )" } ,
 { "SetTriggerOption" ,           "( TriggerName , OptionName , Value )" } ,
+{ "SetUnseenLines" ,             "( Counter )" } ,
 { "SetVariable" ,                "( VariableName , Contents )" } ,
 { "SetWorldWindowStatus" ,       "( Parameter )" } ,
 { "ShiftTabCompleteItem" ,       "( Item )" } ,

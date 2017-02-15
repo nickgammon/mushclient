@@ -40,6 +40,7 @@
 //    SetScroll
 //    SetTitle
 //    SetToolBarPosition
+//    SetUnseenLines
 //    SetWorldWindowStatus
 //    TextRectangle
 //    Transparency
@@ -836,11 +837,16 @@ void CMUSHclientDoc::SetTitle(LPCTSTR Title)
 	    }	  // end of being a CMUSHView
     }   // end of loop through views
 
-}
+}   // end of CMUSHclientDoc::SetTitle
 
 
 void CMUSHclientDoc::SetMainTitle(LPCTSTR Title) 
 {
 	m_strMainWindowTitle = Title;
   Frame.FixUpTitleBar ();
-}
+} // end of CMUSHclientDoc::SetMainTitle
+
+void CMUSHclientDoc::SetUnseenLines(long Counter)
+{
+	m_new_lines = Counter;
+} // end of CMUSHclientDoc::SetUnseenLines

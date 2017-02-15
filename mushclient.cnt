@@ -498,6 +498,7 @@
 3 SetTitle=FNC_SetTitle 
 3 SetToolBarPosition=FNC_SetToolBarPosition
 3 SetTriggerOption=FNC_SetTriggerOption 
+3 SetUnseenLines=FNC_SetUnseenLines
 3 SetVariable=FNC_SetVariable 
 3 SetWorldWindowStatus=FNC_SetWorldWindowStatus
 3 ShowInfoBar=FNC_ShowInfoBar 

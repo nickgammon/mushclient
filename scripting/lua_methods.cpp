@@ -5500,6 +5500,15 @@ static int L_SetTriggerOption (lua_State *L)
   return 1;  // number of result fields
   } // end of L_SetTriggerOption
 
+//----------------------------------------
+//  world.SetUnseenLines
+//----------------------------------------
+static int L_SetUnseenLines (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  pDoc->SetUnseenLines (my_checknumber (L, 1));
+  return 0;  // number of result fields
+  } // end of SetUnseenLines
 
 //----------------------------------------
 //  world.SetVariable
@@ -7034,6 +7043,7 @@ static const struct luaL_Reg worldlib [] =
   {"SetTitle", L_SetTitle},
   {"SetToolBarPosition", L_SetToolBarPosition},
   {"SetTriggerOption", L_SetTriggerOption},
+  {"SetUnseenLines", L_SetUnseenLines},
   {"SetVariable", L_SetVariable}, 
   {"SetWorldWindowStatus", L_SetWorldWindowStatus},
   {"ShiftTabCompleteItem", L_ShiftTabCompleteItem},
