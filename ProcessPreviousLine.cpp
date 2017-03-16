@@ -779,7 +779,16 @@ assemble the full text of the original line.
          }     // end of each style
 
 
-        }  // end of coming across a note line
+        }  // end of coming across a note or command line
+      else
+        {  // must be an output line
+        // consider that this line is no longer a "recent line"
+        // if a trigger stopped all trigger evaluation.
+        // Suggested by Fiendish - version 5.06
+        if (m_iStopTriggerEvaluation == eStopEvaluatingTriggersInAllPlugins)
+          if (!m_sRecentLines.empty ())  // if sane to do so
+            m_sRecentLines.pop_back ();
+        }
 
       delete pLine; // delete contents of tail iten -- version 3.85
       m_LineList.RemoveTail ();   // get rid of the line
