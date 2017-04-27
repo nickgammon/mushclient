@@ -47,7 +47,7 @@ void CEditMultiLine::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_TEXT, m_strText);
 	//}}AFX_DATA_MAP
 
- if(!pDX->m_bSaveAndValidate)
+ if(!pDX->m_bSaveAndValidate && App.m_bFixedFontForEditing)
    FixFont (m_font, m_ctlText, App.m_strFixedPitchFont, App.m_iFixedPitchFontSize, FW_NORMAL, DEFAULT_CHARSET);
 
 }
