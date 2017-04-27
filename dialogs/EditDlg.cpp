@@ -52,7 +52,8 @@ void CEditDlg::DoDataExchange(CDataExchange* pDX)
    }
  else
    {
-   FixFont (m_font, m_ctlText, App.m_strFixedPitchFont, App.m_iFixedPitchFontSize, FW_NORMAL, DEFAULT_CHARSET);
+	if(App.m_bFixedFontForEditing)
+		FixFont (m_font, m_ctlText, App.m_strFixedPitchFont, App.m_iFixedPitchFontSize, FW_NORMAL, DEFAULT_CHARSET);
    }
 
 }
