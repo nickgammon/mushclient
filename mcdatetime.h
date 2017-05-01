@@ -201,8 +201,8 @@ public:
 	// DateTimeSpan math
 	CmcDateTimeSpan operator+(const CmcDateTimeSpan& dateSpan) const;
 	CmcDateTimeSpan operator-(const CmcDateTimeSpan& dateSpan) const;
-	const CmcDateTimeSpan& operator+=(const CmcDateTimeSpan dateSpan);
-	const CmcDateTimeSpan& operator-=(const CmcDateTimeSpan dateSpan);
+	const CmcDateTimeSpan& operator+=(const CmcDateTimeSpan& dateSpan);
+	const CmcDateTimeSpan& operator-=(const CmcDateTimeSpan& dateSpan);
 	CmcDateTimeSpan operator-() const;
 
 	operator double() const;
