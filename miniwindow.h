@@ -74,7 +74,7 @@ class CMiniWindow
   {
   private:
 
-    CDC dc;                   // our offscreen device context
+    CDC * pdc;                // our offscreen device context
   	CBitmap *   m_oldBitmap;  // bitmap originally found in CMyMemDC
     CBitmap *   m_Bitmap;     // where it all happens
     FontMap     m_Fonts;      // all the fonts they want
@@ -134,7 +134,7 @@ class CMiniWindow
 
   void  Show (bool bShow);
   
-  CDC*  GetDC (void) { return &dc; }
+  CDC*  GetDC (void) { return pdc; }
 
   long FixRight (const long Right);
   long FixBottom (const long Bottom);
