@@ -26,7 +26,7 @@
 #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #define HAVE_CONFIG_H   // for PCRE
-      
+
 #pragma warning( push, 3)
 #include <afx.h>
 
@@ -53,7 +53,7 @@
 //#define PANE  // use pane windows
 //#define USE_EXTRA_PANE     // 3rd pane for messages and stuff
 
-#ifdef USE_EXTRA_PANE 
+#ifdef USE_EXTRA_PANE
   #define EXTRA_PANE 0
   #define OUTPUT_PANE 1
   #define COMMAND_PANE 2
@@ -83,10 +83,10 @@
 #include <vector>
 #include <deque>
 #include <stack>
-#include <map>      
-#include <set>      
-#include <list>      
-#include <algorithm>  
+#include <map>
+#include <set>
+#include <list>
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <iterator>
@@ -117,9 +117,9 @@ bool IsStringNumber (const string & s, const bool bSigned = false);
 #include "regexp.h"
 #include "mcdatetime.h" // MUSHclient date/time class
 
-#include "sqlite3\sqlite3.h"  // SQLite3 database 
+#include "sqlite3\sqlite3.h"  // SQLite3 database
 
-#define PREFERENCES_DATABASE_FILE "mushclient_prefs.sqlite" 
+#define PREFERENCES_DATABASE_FILE "mushclient_prefs.sqlite"
 
 // less_than function for arrays
 // first checks if the array key is an number, and if so returns
@@ -142,7 +142,7 @@ struct array_less : binary_function <string, string, bool>
 
     if (!bS1number && !bS2number)
       return s1 < s2;
-    
+
     // a number is less than a string (eg. "1" < "a" )
 
     if (bS1number)
@@ -192,9 +192,9 @@ enum { BLACK = 0, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE };
 
 #define SAMECOLOUR 65535
 
-#define NO_COLOUR 0xFFFFFFFF   // for COLORREF 
+#define NO_COLOUR 0xFFFFFFFF   // for COLORREF
 
-#define NOSOUNDLIT "(No sound)"  
+#define NOSOUNDLIT "(No sound)"
 
 // helper define for appending an "s" to plural amounts, eg. trigger(s)
 #define PLURAL(arg) (arg), (arg) == 1 ? "" : "s"
@@ -234,7 +234,7 @@ BOOL CheckLabel (const CString & strLabel, const bool bScript = false);
 
 // tray stuff
 
-#define WM_USER_TRAY_ICON_ID 1       
+#define WM_USER_TRAY_ICON_ID 1
 #define WM_USER_TRAY_ICON_MESSAGE (WM_APP + 1)
 
 #define MAX_CUSTOM 16    // maximum custom colours at present (up to 256)
@@ -304,9 +304,9 @@ typedef bool (*GetNextLine) (const CObject * pObject,
                              CString & strLine);
 
 // prototype for "initiate search" callback for find routine
-  
+
 typedef void (*InitiateSearch) (const CObject * pObject,
-                                CFindInfo & FindInfo); 
+                                CFindInfo & FindInfo);
 
 // find routine - returns TRUE if wanted text found
 
@@ -318,10 +318,10 @@ bool FindRoutine (const CObject * pObject,       // passed back to callback rout
 
 // find-and-replace for strings
 
-CString Replace (const CString strSource, 
+CString Replace (const CString strSource,
                  const CString strTarget,
                  const CString strReplacement,
-                 const bool bAll = true);    
+                 const bool bAll = true);
 
 int InitZlib (z_stream & m_zCompress);
 
@@ -354,7 +354,7 @@ CString ConvertToRegularExpression (const CString & strMatchString,
 
 typedef CFont * ptrCFont;     // for changing fonts in edit windows
 
-void FixFont (ptrCFont & pFont, 
+void FixFont (ptrCFont & pFont,
               CEdit & editctrl,
               const CString strName,
               const int iSize,
@@ -417,31 +417,31 @@ bool GetSelection (CEdit * pEdit, CString & strSelection);
 CString QuoteForumCodes(const CString & strText) ;
 
 // different ways of saving things
-void Save_XML_number  (CArchive& ar, 
-                       const char * sName, 
-                       const long iNumber, 
+void Save_XML_number  (CArchive& ar,
+                       const char * sName,
+                       const long iNumber,
                        const bool sameline = false);
-void Save_XML_boolean (CArchive& ar, 
-                       const char * sName, 
-                       const long iNumber, 
+void Save_XML_boolean (CArchive& ar,
+                       const char * sName,
+                       const long iNumber,
                        const bool sameline = false);
-void Save_XML_string  (CArchive& ar, 
-                       const char * sName, 
-                       const CString & str, 
+void Save_XML_string  (CArchive& ar,
+                       const char * sName,
+                       const CString & str,
                        const bool sameline = false);
-void Save_XML_multi   (CArchive& ar, 
-                       const char * sName, 
+void Save_XML_multi   (CArchive& ar,
+                       const char * sName,
                        const CString & str);
-void Save_XML_date    (CArchive& ar, 
-                       const char * sName, 
-                       const CTime & date, 
+void Save_XML_date    (CArchive& ar,
+                       const char * sName,
+                       const CTime & date,
                        const bool sameline = false);
-void Save_XML_colour  (CArchive& ar, 
-                       const char * sName, 
-                       const COLORREF & colour, 
+void Save_XML_colour  (CArchive& ar,
+                       const char * sName,
+                       const COLORREF & colour,
                        const bool sameline = false);
-void Save_XML_double    (CArchive& ar, 
-                       const char * sName, 
+void Save_XML_double    (CArchive& ar,
+                       const char * sName,
                        const double & fNumber,
                        const bool sameline = false);
 
@@ -504,7 +504,7 @@ do {                      \
      delete mylist.GetNext (pos);                   \
   mylist.RemoveAll ();                              \
   } while (false)
-    
+
 // macro for deleting everything in a list
 #define DELETE_LIST(listname)  \
   do {                         \
@@ -525,47 +525,49 @@ void DeleteStyle (CStyle * pStyle, const char * filename, const long linenumber)
 
 // ANSI Colour Codes
 
-#define ANSI_RESET             0 
+#define ANSI_RESET             0
 #define ANSI_BOLD              1
-#define ANSI_BLINK             3 
-#define ANSI_UNDERLINE         4 
+#define ANSI_BLINK             3
+#define ANSI_UNDERLINE         4
 #define ANSI_SLOW_BLINK        5
-#define ANSI_FAST_BLINK        6 
-#define ANSI_INVERSE           7 
+#define ANSI_FAST_BLINK        6
+#define ANSI_INVERSE           7
+#define ANSI_STRIKEOUT         9
 
-#define ANSI_CANCEL_BOLD      22 
-#define ANSI_CANCEL_BLINK     23 
-#define ANSI_CANCEL_UNDERLINE 24 
+#define ANSI_CANCEL_BOLD      22
+#define ANSI_CANCEL_BLINK     23
+#define ANSI_CANCEL_UNDERLINE 24
 #define ANSI_CANCEL_SLOW_BLINK  25
-#define ANSI_CANCEL_INVERSE   27 
+#define ANSI_CANCEL_INVERSE   27
+#define ANSI_CANCEL_STRIKEOUT 29
 
-#define ANSI_TEXT_BLACK       30 
-#define ANSI_TEXT_RED         31 
-#define ANSI_TEXT_GREEN       32 
-#define ANSI_TEXT_YELLOW      33 
-#define ANSI_TEXT_BLUE        34 
-#define ANSI_TEXT_MAGENTA     35 
-#define ANSI_TEXT_CYAN        36 
-#define ANSI_TEXT_WHITE       37 
+#define ANSI_TEXT_BLACK       30
+#define ANSI_TEXT_RED         31
+#define ANSI_TEXT_GREEN       32
+#define ANSI_TEXT_YELLOW      33
+#define ANSI_TEXT_BLUE        34
+#define ANSI_TEXT_MAGENTA     35
+#define ANSI_TEXT_CYAN        36
+#define ANSI_TEXT_WHITE       37
 #define ANSI_TEXT_256_COLOUR  38
-         
+
 #define ANSI_SET_FOREGROUND_DEFAULT 39
-                     
-#define ANSI_BACK_BLACK       40 
-#define ANSI_BACK_RED         41 
-#define ANSI_BACK_GREEN       42 
-#define ANSI_BACK_YELLOW      43 
-#define ANSI_BACK_BLUE        44 
-#define ANSI_BACK_MAGENTA     45 
-#define ANSI_BACK_CYAN        46 
-#define ANSI_BACK_WHITE       47 
+
+#define ANSI_BACK_BLACK       40
+#define ANSI_BACK_RED         41
+#define ANSI_BACK_GREEN       42
+#define ANSI_BACK_YELLOW      43
+#define ANSI_BACK_BLUE        44
+#define ANSI_BACK_MAGENTA     45
+#define ANSI_BACK_CYAN        46
+#define ANSI_BACK_WHITE       47
 #define ANSI_BACK_256_COLOUR  48
 
 #define ANSI_SET_BACKGROUND_DEFAULT 49
 
 // for mapping command IDs to names (for accelerators)
 
-typedef struct 
+typedef struct
   {
   int						iCommandID;			 // eg. ID_EDIT_SELECT_ALL
   const char *	sCommandName;    // eg. "SelectAll"
@@ -573,7 +575,7 @@ typedef struct
 
 // for mapping virtuals to names (for accelerators)
 
-typedef struct 
+typedef struct
   {
   int						iVirtualKey;     // eg. VK_ESCAPE
   const char *	sKeyName;		     // eg. "Esc"
@@ -586,36 +588,36 @@ int StringToCommandID (const CString str);
 
 enum
   {
-  eKeypad_0            , 
-  eKeypad_1            , 
-  eKeypad_2            , 
-  eKeypad_3            , 
-  eKeypad_4            , 
-  eKeypad_5            , 
-  eKeypad_6            , 
-  eKeypad_7            , 
-  eKeypad_8            , 
-  eKeypad_9            , 
-  eKeypad_Dot          , 
-  eKeypad_Slash        , 
-  eKeypad_Star         , 
-  eKeypad_Dash         , 
-  eKeypad_Plus         , 
-  eCtrl_Keypad_0       , 
-  eCtrl_Keypad_1       , 
-  eCtrl_Keypad_2       , 
-  eCtrl_Keypad_3       , 
-  eCtrl_Keypad_4       , 
-  eCtrl_Keypad_5       , 
-  eCtrl_Keypad_6       , 
-  eCtrl_Keypad_7       , 
-  eCtrl_Keypad_8       , 
-  eCtrl_Keypad_9       , 
-  eCtrl_Keypad_Dot     , 
-  eCtrl_Keypad_Slash   , 
-  eCtrl_Keypad_Star    , 
-  eCtrl_Keypad_Dash    , 
-  eCtrl_Keypad_Plus    , 
+  eKeypad_0            ,
+  eKeypad_1            ,
+  eKeypad_2            ,
+  eKeypad_3            ,
+  eKeypad_4            ,
+  eKeypad_5            ,
+  eKeypad_6            ,
+  eKeypad_7            ,
+  eKeypad_8            ,
+  eKeypad_9            ,
+  eKeypad_Dot          ,
+  eKeypad_Slash        ,
+  eKeypad_Star         ,
+  eKeypad_Dash         ,
+  eKeypad_Plus         ,
+  eCtrl_Keypad_0       ,
+  eCtrl_Keypad_1       ,
+  eCtrl_Keypad_2       ,
+  eCtrl_Keypad_3       ,
+  eCtrl_Keypad_4       ,
+  eCtrl_Keypad_5       ,
+  eCtrl_Keypad_6       ,
+  eCtrl_Keypad_7       ,
+  eCtrl_Keypad_8       ,
+  eCtrl_Keypad_9       ,
+  eCtrl_Keypad_Dot     ,
+  eCtrl_Keypad_Slash   ,
+  eCtrl_Keypad_Star    ,
+  eCtrl_Keypad_Dash    ,
+  eCtrl_Keypad_Plus    ,
 
   eKeypad_Max_Items   // this must be last   !!!
   };
@@ -644,41 +646,41 @@ enum
 #define SPELLCHECKFUNCTION "spellcheck"
 
 // there is a clash in the MS compiler for min so I do my own here
-template <typename T> 
+template <typename T>
 inline T minimum (const T a, const T b)
   {
   return (a < b) ? a : b;
   } // end of minimum
 
 // there is a clash in the MS compiler for max so I do my own here
-template <typename T> 
+template <typename T>
 inline T maximum (const T a, const T b)
   {
   return (a > b) ? a : b;
   } // end of maximum
 
 inline string trim_right (const string & s, const string & t = SPACES)
-  { 
-  string d (s); 
+  {
+  string d (s);
   string::size_type i (d.find_last_not_of (t));
   if (i == string::npos)
     return "";
   else if ((i + 1) >= s.size ())
     return s;
   else
-   return d.erase (i + 1) ; 
+   return d.erase (i + 1) ;
   }  // end of trim_right
 
-inline string trim_left (const string & s, const string & t = SPACES) 
-  { 
-  string d (s); 
-  return d.erase (0, s.find_first_not_of (t)) ; 
+inline string trim_left (const string & s, const string & t = SPACES)
+  {
+  string d (s);
+  return d.erase (0, s.find_first_not_of (t)) ;
   }  // end of trim_left
 
 inline string trim (const string & s, const string & t = SPACES)
-  { 
-  string d (s); 
-  return trim_left (trim_right (d, t), t) ; 
+  {
+  string d (s);
+  return trim_left (trim_right (d, t), t) ;
   }  // end of trim
 
 // string find-and-replace
@@ -696,16 +698,16 @@ inline string FindAndReplace
   return str;
   };   // end of FindAndReplace
 
-string GetWord (string & s, 
+string GetWord (string & s,
                 const string delim = " ",
                 const bool trim_spaces = true);
 
-void StringToVector (const string s, 
+void StringToVector (const string s,
                      vector<string> & v,
-                     const string delim = " ", 
+                     const string delim = " ",
                      const bool trim_spaces = true);
 
-string VectorToString (const vector<string> & v, 
+string VectorToString (const vector<string> & v,
                        const string delim = " ");
 
 void StringToKeyCode (const CString strKey,
@@ -739,7 +741,7 @@ bool SendToFront (const char * name);
 // 1 = invert, 2 = lighter, 3 = darker, 4 = less colour, 5 = more colour
 
 enum
-  { 
+  {
   ADJUST_COLOUR_NO_OP = 0,
   ADJUST_COLOUR_INVERT,   // 1
   ADJUST_COLOUR_LIGHTER,  // 2
@@ -824,9 +826,9 @@ const char * TFormat (const char * sFormat, ...);
 #define TranslateHeading(string) TranslateGeneric (string, "headings")
 
 // check a brush is valid, der
-long ValidateBrushStyle (const long BrushStyle, 
-                          const long PenColour, 
-                          const long BrushColour, 
+long ValidateBrushStyle (const long BrushStyle,
+                          const long PenColour,
+                          const long BrushColour,
                           CBrush & br);
 
 // strings marked with this macro are to be translated in the localization file
@@ -868,7 +870,7 @@ convenient for user programs that want to test its value. */
 bool IsPluginID (const char * sID);
 bool IsSubName (const char * sName);
 
-typedef struct 
+typedef struct
   {
   const char *  sFunction;			// name of function (eg. "WindowShow")
   const char *	sArgs;          // arguments (eg. "(Window, Showflag)")
@@ -877,7 +879,7 @@ typedef struct
 // flag not in my version of the API
 #ifndef BIF_NEWDIALOGSTYLE
   #define BIF_NEWDIALOGSTYLE 0x00000040
-#endif 
+#endif
 
 #ifdef LUA_52
   extern "C"
