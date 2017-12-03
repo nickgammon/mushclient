@@ -12,10 +12,9 @@ build:
   project: MUSHclient_2015.sln
   parallel: true
   verbosity: normal
-artifacts:
-- path: WinRel\MUSHclient.exe
-  name: release_exe
 before_deploy:
+- '"C:\Program Files (x86)\Windows Kits\8.1\bin\x64\mt.exe" -manifest MUSHclient.exe.manifest -updateresource:WinRel\MUSHclient.exe;#1'
+- ps: Push-AppveyorArtifact WinRel\MUSHclient.exe -FileName MUSHclient.exe
 - git config --global credential.helper store
 - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:auth_token):x-oauth-basic@github.com`n"
 - git tag -f latest_commit HEAD
@@ -25,7 +24,7 @@ deploy:
   tag: latest_commit
   auth_token:
     secure: SKQr480MzNJLzmyrFxDeMta2nHica+9ed2n1Djpa53ioURK0NLo/iStu9DhUrQIK
-  artifact: release_exe
+  artifact: MUSHclient.exe
   prerelease: true
   force_update: true
   on:
