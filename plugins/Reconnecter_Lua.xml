@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE muclient [
+  <!ENTITY interval "10" >
+  <!ENTITY quit_command "QUIT" >
+  <!ENTITY connect_command "CONNECT" >
+  <!ENTITY noconnect_command "NOCONNECT" >
+]>
+
+<!--
+1. Change the entity above "interval" to be the number of seconds
+between retries.
+
+2. Change the entity above "quit_command" to be the command you
+type to quit (eg. quit, QUIT, @quit or whatever)
+
+3. Change the entity above "connect_command" to be the command you
+type to enable connection checking.
+
+4. Change the entity above "noconnect_command" to be the command you
+type to disable connection checking.
+   
+-->
+
+<muclient>
+<plugin
+   name="Reconnecter_Lua"
+   author="Nick Gammon"
+   id="42c2c0b90c00344c55eabdfe"
+   language="Lua"
+   purpose="Reconnects when disconnected"
+   date_written="2017-12-24"
+   requires="4.00"
+   version="1.0"
+   >
+<description trim="y">
+<![CDATA[
+This plugin will automatically reconnect you when you are disconnected, 
+at a user-configurable interval (say, every 5 seconds)
+]]>
+
+Reconnecter:help - this help screen
+
+&connect_command;  - enable recconnection (eg. after using &noconnect_command;)
+
+&noconnect_command; - disable reconnection (eg. if you are leaving the PC)
+
+</description>
+
+</plugin>
+
+
+<!--  Timers  -->
+
+<timers>
+  <timer 
+      name="ConnectCheckTimer" 
+      script="OnConnectCheckTimer" 
+      second="&interval;" 
+      active_closed="y" 
+      enabled="y">
+
+  </timer>
+</timers>
+
+<!--  Aliases  -->
+
+<aliases>
+  <alias
+   script="OnQuit"
+   match="&quit_command;"
+   enabled="y"
+  >
+  </alias>
+
+  <alias
+   script="OnConnect"
+   match="&connect_command;"
+   enabled="y"
+  >
+  </alias>
+  <alias
+   script="OnNoConnect"
+   match="&noconnect_command;"
+   enabled="y"
+  >
+  </alias>
+</aliases>
+
+<!--  Script  -->
+
+
+<script>
+<![CDATA[
+
+retry = 0
+did_quit = false
+
+function OnConnectCheckTimer (sName)
+--
+--  If currently connecting, leave it to do that ...
+--
+
+if world.GetInfo (107) then 
+  return 
+end -- if
+
+--
+--  If currently connected, we don't need to check any more
+--
+if IsConnected () then
+  ColourNote ("yellow", "", "World is connected, disabling disconnection check")
+  EnableTimer (sName, false)
+  return
+end -- if
+
+--
+--  If deliberate quit, we don't need to check any more
+--
+if did_quit then
+   ColourNote ("yellow", "", "Deliberate quit, disabling disconnection check")
+  EnableTimer (sName, false)
+  return
+end -- if
+
+--
+--  OK, we need to connect now ...
+--
+
+retry = retry + 1
+
+ColourNote ("yellow", "", "Connecting to world, attempt # " .. retry)
+Connect ()
+
+end -- function OnConnectCheckTimer
+
+function OnPluginDisconnect ()
+--
+--  If deliberate quit, we don't need to enable the connection check
+--
+if did_quit then
+  return
+end -- if did a deliberate quit
+
+--
+--  We have been disconnected, we need to try connecting again
+--
+  ColourNote ("yellow", "", "Connection checker enabled")
+  EnableTimer ("ConnectCheckTimer", true)
+end -- function OnPluginDisconnect
+
+function OnPluginConnect ()
+--
+--  Now we are connected, no need to keep trying to connect
+--
+  retry = 0
+  EnableTimer ("ConnectCheckTimer", false)
+--
+--  No deliberate quit yet
+--
+  did_quit = false
+end -- function OnPluginConnect
+
+function OnPluginInstall ()
+  DoAfterNote (1, "Connection checker installed.")
+end -- function OnPluginInstall
+
+]]>
+
+function OnQuit (sName, sLine, wildcards)
+  did_quit = true
+  Send ("&quit_command;")  -- send to world so it does it
+  ColourNote ("yellow", "", "Deliberate quit (&quit_command;), reconnect disabled")
+end -- function OnQuit
+
+function OnConnect (sName, sLine, wildcards)
+  ColourNote ("yellow", "", "Connection checker enabled")
+  EnableTimer ("ConnectCheckTimer", true)
+  did_quit = false
+end -- function OnConnect
+
+function OnNoConnect (sName, sLine, wildcards)
+  ColourNote ("yellow", "", "Connection checker disabled")
+  EnableTimer ("ConnectCheckTimer", false)
+  did_quit = true
+end -- function OnNoConnect
+
+</script>
+
+
+<!--  Plugin help  -->
+
+<aliases>
+  <alias
+   script="OnHelp"
+   match="Reconnecter:help"
+   enabled="y"
+  >
+  </alias>
+</aliases>
+
+<script>
+<![CDATA[
+function OnHelp (sName, sLine, wildcards)
+  Note (GetPluginInfo (GetPluginID (), 3))
+end -- function OnHelp
+]]>
+</script> 
+
+</muclient>
