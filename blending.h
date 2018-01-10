@@ -40,7 +40,7 @@
 #define Blend_Reflect(A,B)	((uint8)((B == 255) ? B:((A * A / (255 - B) > 255) ? 255:(A * A / (255 - B)))))
 #define Blend_Glow(A,B)	(Blend_Reflect(B,A))
 #define Blend_Phoenix(A,B)	((uint8)(min(A,B) - max(A,B) + 255))
-#define Blend_Opacity(A,B,F,O)	((uint8)(O * F(A,B) + (1 - O) * B))
+#define Blend_Opacity(A,B,F,O)	((uint8)(O * F(A,B) + (1 - O) * B + 0.5))
 
 #define Simple_Opacity(B,X,O)  ((uint8)(O * X + (1 - O) * B + 0.5))
 
