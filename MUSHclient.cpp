@@ -1855,8 +1855,8 @@ CTextDocument * pTextDoc = FindNotepad (strTitle);
     return false;
     } // end of having an existing notepad document
 
-  BOOL bOK = CreateTextWindow (strText,     // contents
-                      strTitle,     // title
+  BOOL bOK = CreateTextWindow ((LPCTSTR) strText,     // contents
+                      (LPCTSTR) strTitle,     // title
                       NULL,   // document
                       0,      // document number
                       App.m_strDefaultInputFont,

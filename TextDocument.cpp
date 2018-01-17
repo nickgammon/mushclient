@@ -436,7 +436,7 @@ CMUSHclientDoc * pDoc = FindWorld ();
     }
 
   CreateTextWindow ("",     // contents
-                    strTitle,     // title
+                    (LPCTSTR) strTitle,     // title
                     pDoc,   // document
                     m_iUniqueDocumentNumber,      // document number
                     m_strFontName,

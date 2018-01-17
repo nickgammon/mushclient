@@ -5126,7 +5126,7 @@ CString strMessage;
               dlg.m_strRecallLinePreamble);
 
   if (!strMessage.IsEmpty ())
-    CreateTextWindow (strMessage, 
+    CreateTextWindow ((LPCTSTR) strMessage,
                       TFormat ("Recall: %s",
                          (LPCTSTR) m_RecallFindInfo.m_strFindStringList.GetHead ()),
                       this,
@@ -6403,8 +6403,11 @@ void CMUSHclientDoc::SendTo (
         break;
 
     case eSendToNotepad:
-        CreateTextWindow (strSendText + ENDLINE,     // contents
-                          strDescription,     // title
+      {
+        CString strContents = strSendText;
+        strContents += ENDLINE;
+        CreateTextWindow ((LPCTSTR) strContents,     // contents
+                          (LPCTSTR) strDescription,  // title
                           this,   // document
                           m_iUniqueDocumentNumber,      // document number
                           m_input_font_name,
@@ -6423,6 +6426,7 @@ void CMUSHclientDoc::SendTo (
                           false,
                           eNotepadTrigger
                           );
+      }
         break;
 
     case eAppendToNotepad:
@@ -7435,7 +7439,9 @@ UINT dFormat = 0;
 
   CloseClipboard();
 
-  CreateTextWindow (strMessage + ENDLINE,     // contents
+  CString strContents = strMessage;
+  strContents += ENDLINE;
+  CreateTextWindow ((LPCTSTR) strContents,     // contents
                     "Clipboard contents",     // title
                     this,   // document
                     m_iUniqueDocumentNumber,      // document number

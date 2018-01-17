@@ -2321,7 +2321,7 @@ CString strCurrent;
     strCurrent = strCurrent.Mid (nStartChar, nEndChar - nStartChar);
 
   // edit current input window
-  CreateTextWindow (strCurrent,     // selection
+  CreateTextWindow ((LPCTSTR) strCurrent,     // selection
                     TFormat ("Notepad: %s", (LPCTSTR) pDoc->m_mush_name),     // title
                     pDoc,   // document
                     pDoc->m_iUniqueDocumentNumber,      // document number
