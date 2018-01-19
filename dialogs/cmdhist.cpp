@@ -243,7 +243,7 @@ CString str;
 
   // edit current input window
   CreateTextWindow ((LPCTSTR) str,     // command
-                    TFormat ("Notepad: %s", (LPCTSTR) m_pDoc->m_mush_name),     // title
+                    (CString)TFormat ("Notepad: %s", (LPCTSTR) m_pDoc->m_mush_name),     // title
                     m_pDoc,   // document
                     m_pDoc->m_iUniqueDocumentNumber,      // document number
                     m_pDoc->m_input_font_name,
