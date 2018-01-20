@@ -2602,7 +2602,7 @@ return (first[0] << 8) + first[1];
 // i18n (Internationalization) stuff
 
 // translate message (eg. "File cannot be opened") into locale-specific language     
-const char * TranslateGeneric (const char * sText, const char * sSection)
+CString TranslateGeneric (const char * sText, const char * sSection)
   {
   static bool bInTranslateGeneric = false;  // stop stack overflow if we are re-called
 
@@ -2656,7 +2656,7 @@ const char * TranslateGeneric (const char * sText, const char * sSection)
 /* valid flags in a format specification */
 #define FORMATFLAGS	"-+ #0"
 
-const char * TFormat (const char * sFormat, ...)
+CString TFormat (const char * sFormat, ...)
   {
 
   static bool bInTFormat = false;   // stop stack overflow if we are re-called

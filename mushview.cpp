@@ -5442,7 +5442,7 @@ CString strSelection;
 
   // edit current input window
   CreateTextWindow ((LPCTSTR) strSelection,     // contents
-                    TFormat ("Notepad: %s", (LPCTSTR) pDoc->m_mush_name),     // title
+                    (LPCTSTR) TFormat ("Notepad: %s", (LPCTSTR) pDoc->m_mush_name),     // title
                     pDoc,   // document
                     pDoc->m_iUniqueDocumentNumber,      // document number
                     pDoc->m_input_font_name,
@@ -5495,7 +5495,7 @@ CString strMessage;
                                 pDoc->m_strRecallLinePreamble);  // default preamble    
 
   CreateTextWindow ((LPCTSTR) strMessage,
-                    TFormat ("Recall: %s",
+                    (LPCTSTR) TFormat ("Recall: %s",
                        (LPCTSTR) strSelection),
                     pDoc,
                     pDoc->m_iUniqueDocumentNumber,

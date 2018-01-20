@@ -814,10 +814,10 @@ extern "C" const unsigned char _pcre_utf8_table4[];
 int UMessageBox (const char * sText, UINT nType = MB_OK, const char * = "MUSHclient");
 // translate lpszText and then call UMessageBox
 int TMessageBox (const char * sText, UINT nType = MB_OK);
-// translate text - result is statically allocated - do not attempt to modify or store it
-const char * TranslateGeneric (const char * sText, const char * sSection);
-// translate formatted text - result is statically allocated - do not attempt to modify or store it
-const char * TFormat (const char * sFormat, ...);
+// translate text
+CString TranslateGeneric (const char * sText, const char * sSection);
+// translate formatted text
+CString TFormat (const char * sFormat, ...);
 // translate a static string
 #define Translate(string) TranslateGeneric (string, "messages")
 // translate a date/time string

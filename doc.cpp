@@ -5127,7 +5127,7 @@ CString strMessage;
 
   if (!strMessage.IsEmpty ())
     CreateTextWindow ((LPCTSTR) strMessage,
-                      TFormat ("Recall: %s",
+                      (LPCTSTR) TFormat ("Recall: %s",
                          (LPCTSTR) m_RecallFindInfo.m_strFindStringList.GetHead ()),
                       this,
                       m_iUniqueDocumentNumber,
@@ -5795,7 +5795,7 @@ CTextDocument * pTextDoc = NULL;
     } // end of having an existing notepad document
   else
     CreateTextWindow ("",     // contents
-                      TFormat ("Notepad: %s", (LPCTSTR) m_mush_name),     // title
+                      (LPCTSTR) TFormat ("Notepad: %s", (LPCTSTR) m_mush_name),     // title
                       this,   // document
                       m_iUniqueDocumentNumber,      // document number
                       m_input_font_name,
