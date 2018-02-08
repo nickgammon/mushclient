@@ -8,6 +8,7 @@ Author: Nick Gammon
 Date:   15th July 2009
 Modified: 16th November 2010 to add preprocessing
 Modified: 29th November 2010 by Fiendish to improve dragging offscreen
+Modified: 8th February 2018 by Nick to remember the flags setting (eg. absolute position)
 
 This module is intended to make it easier to add drag handlers for miniwindows.
 
@@ -305,7 +306,7 @@ function movewindow.install (win, default_position, default_flags, nocheck, frie
      window_left  = tonumber (GetVariable ("mw_" .. win .. "_windowx")) or (start_position and start_position.x) or 0,
      window_top   = tonumber (GetVariable ("mw_" .. win .. "_windowy")) or (start_position and start_position.y) or 0,     
      window_mode  = default_position,
-     window_flags = default_flags,
+     window_flags = tonumber (GetVariable ("mw_" .. win .. "_windowflags")) or default_flags,
      window_friends = friends or {},
      window_friend_deltas = {},
      margin = 20,  -- how close we can put to the edge of the window
@@ -404,5 +405,6 @@ function movewindow.save_state (win)
 
   SetVariable ("mw_" .. win .. "_windowx",      mwi.window_left)
   SetVariable ("mw_" .. win .. "_windowy",      mwi.window_top)
+  SetVariable ("mw_" .. win .. "_windowflags",  mwi.window_flags)
 
 end -- movewindow.save_state
