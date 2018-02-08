@@ -11,10 +11,12 @@ Exposed functions:
 
   init (context)        -- call once (from OnPluginInstall), supply:
   
-        context.win     -- window ID for this tabbed window
-        context.font    -- table of font info (name, size, unicode)
-        context.colours -- table of assorted colours (see below for examples)
-        context.window  -- table (width and height) of the desired window size
+        context.win         -- window ID for this tabbed window
+        context.tabfont     -- table of font info for non-active tabs  (name, size, unicode, bold, italic)
+        context.activefont  -- table of font info for the selected tab (name, size, unicode, bold, italic)
+        context.titlefont   -- table of font info for the title bar    (name, size, unicode, bold, italic)
+        context.colours     -- table of assorted colours (see below for examples)
+        context.window      -- table (width and height) of the desired window size
         context.tab_filler  -- gap between tabs
         context.can_move    -- can window be dragged around?
         context.active_tab  -- the currently active tab
@@ -23,11 +25,16 @@ Exposed functions:
   draw_window (context, which_tab)  -- draws the window with which_tab as the active tab
   hide_window (context)     -- hides this window 
   save_state  (context)     -- for saving the window position (call from OnPluginSaveState)
+
+Exposed variables:
+
+  VERSION             -- version of this module
         
 --]]
 
-
 module (..., package.seeall)
+
+VERSION = 1.1  -- -- for querying by plugins
 
 require "movewindow"  -- load the movewindow.lua module
   
@@ -36,24 +43,47 @@ local default_context = {
     -- window ID
     win = "tabbed_window_" .. GetUniqueID (),
 
-    -- font for text
-    font = {
+    -- font for inactive tab text
+    tabfont = {
         id = "fn",
         name = "Lucida Console",
         size = 10,  -- points
         unicode = false, -- Unicode?
-      }, -- end of font info
-      
+        bold    = false, -- make bold?
+        italic  = false, -- make italic?
+      }, -- end of tabfont
+
+    -- font for active tab text
+    activefont = {
+        id = "fa",
+        name = "Lucida Console",
+        size = 10,  -- points
+        unicode = false, -- Unicode?
+        bold    = false, -- make bold?
+        italic  = false, -- make italic?
+      }, -- end of activefont
+
+    -- font for title text
+    titlefont = {
+        id = "ft",
+        name = "Lucida Console",
+        size = 12,  -- points
+        unicode = false, -- Unicode?
+        bold    = true,  -- make bold?
+        italic  = false, -- make italic?
+      }, -- end of titlefont
+                  
     colours = {
-      background    = ColourNameToRGB ("lightskyblue"),
-      frame         = ColourNameToRGB ("mediumorchid"),
-      title_bar     = ColourNameToRGB ("palegoldenrod"),
-      title         = ColourNameToRGB ("mediumblue"),
-      tab           = ColourNameToRGB ("green"),
-      tab_text      = ColourNameToRGB ("white"),
-      upper_line    = ColourNameToRGB ("lightgray"),
-      lower_line    = ColourNameToRGB ("lightgray"),
-      vertical_line = ColourNameToRGB ("lightgray"),
+      background      = ColourNameToRGB ("lightskyblue"),   -- entire window background
+      frame           = ColourNameToRGB ("mediumorchid"),   -- frame around window
+      title_bar       = ColourNameToRGB ("palegoldenrod"),  -- behind the title
+      title           = ColourNameToRGB ("mediumblue"),     -- title text
+      tab             = ColourNameToRGB ("green"),          -- tab background
+      tab_text        = ColourNameToRGB ("white"),          -- inactive tab text
+      active_tab_text = ColourNameToRGB ("lightgreen"),     -- active tab text
+      upper_line      = ColourNameToRGB ("lightgray"),      -- line above tab text
+      lower_line      = ColourNameToRGB ("lightgray"),      -- line below tab text
+      vertical_line   = ColourNameToRGB ("lightgray"),      -- line between tabs
       }, -- end of colours
         
     -- miniwindow size
@@ -80,7 +110,9 @@ local default_context = {
     
 } -- end of default_context
 
-
+-- -------------------------------------------------------------------------------
+-- init - initialize this module ready for use (do once)
+-- -------------------------------------------------------------------------------
 function init (context)
 
   -- make copy of colours, sizes etc.
@@ -102,14 +134,20 @@ function init (context)
       context [k] = context [k] or v
     end -- if table or not
   end -- for
+
+  if next (context.tabs) == nil then  
+    ColourNote ("orange", "", "Warning: no tabs define for tabbed window")
+  end -- if
   
   -- install the window movement handler, get back the window position
-  context.windowinfo = movewindow.install (context.win, miniwin.pos_top_left)  -- default to top left
+  context.windowinfo = movewindow.install (context.win, miniwin.pos_top_left, 0)  -- default to top left
   
   -- save a bit of typing
   local windowinfo = context.windowinfo  
   local win        = context.win
-  local font       = context.font
+  local tabfont    = context.tabfont
+  local activefont = context.activefont
+  local titlefont  = context.titlefont
   local window     = context.window
   local colours    = context.colours
   
@@ -123,10 +161,14 @@ function init (context)
                  windowinfo.window_flags,
                  colours.background) 
 
-  WindowFont (win, font.id, font.name, font.size, false, false, false, false, 0, 0)  -- normal  
-  font.height = WindowFontInfo (win, font.id, 1)  -- height
+  WindowFont (win, tabfont.id, tabfont.name, tabfont.size, tabfont.bold, tabfont.italic, false, false, 0, 0)  
+  tabfont.height = WindowFontInfo (win, tabfont.id, 1)        -- height
+  WindowFont (win, activefont.id, activefont.name, activefont.size, activefont.bold, activefont.italic, false, false, 0, 0)  
+  activefont.height = WindowFontInfo (win, activefont.id, 1)  -- height
+  WindowFont (win, titlefont.id, titlefont.name, titlefont.size, titlefont.bold, titlefont.italic, false, false, 0, 0)  
+  titlefont.height = WindowFontInfo (win, titlefont.id, 1)    -- height
  
-  context.client_bottom = context.window.height - context.font.height - 8
+  context.client_bottom = context.window.height - context.tabfont.height - 8
   
 end -- init
 
@@ -145,7 +187,9 @@ function draw_window (context, whichTab)
   -- save a bit of typing
   local windowinfo    = context.windowinfo  
   local win           = context.win
-  local font          = context.font
+  local tabfont       = context.tabfont
+  local activefont    = context.activefont
+  local titlefont     = context.titlefont
   local window        = context.window
   local colours       = context.colours
   local tabs          = context.tabs
@@ -157,11 +201,11 @@ function draw_window (context, whichTab)
   WindowDeleteAllHotspots (win)
 
     -- draw drag bar rectangle
-  WindowRectOp (win, miniwin.rect_fill, 1, 1, 0, font.height + 2, colours.title_bar)
+  WindowRectOp (win, miniwin.rect_fill, 1, 1, 0, titlefont.height + 2, colours.title_bar)
 
   -- add the drag handler so they can move the window around
   if context.can_move then
-    movewindow.add_drag_handler (win, 0, 0, 0, font.height)
+    movewindow.add_drag_handler (win, 0, 0, 0, titlefont.height)
   end -- if can move the window
 
   local thisTab = tabs [whichTab]
@@ -172,10 +216,10 @@ function draw_window (context, whichTab)
   end -- no such tab
   
   -- find title width so we can center it
-  local title_width = WindowTextWidth (win, font.id, thisTab.name, font.unicode)
+  local title_width = WindowTextWidth (win, titlefont.id, thisTab.name, titlefont.unicode)
   
   -- draw title
-  WindowText(win, font.id, thisTab.name, (window.width - title_width )/ 2 + 1, 1, 0, 0, colours.title, font.unicode)
+  WindowText(win, titlefont.id, thisTab.name, (window.width - title_width )/ 2 + 1, 1, 0, 0, colours.title, titlefont.unicode)
 
   -- frame window
   WindowRectOp (win, miniwin.rect_frame, 0, 0, 0, 0, colours.frame)
@@ -201,13 +245,23 @@ function draw_window (context, whichTab)
     end -- mouse_down_function_name
   
   for k, v in ipairs (tabs) do
-    local tab_width =  WindowTextWidth (win, font.id, v.name, font.unicode)
-    
+    local tab_width
+
+    if k == whichTab then
+       tab_width =  WindowTextWidth (win, activefont.id, v.name, activefont.unicode)
+    else
+       tab_width =  WindowTextWidth (win, tabfont.id, v.name, tabfont.unicode)
+    end -- if
+        
     -- tab background
     WindowRectOp (win, miniwin.rect_fill, left, client_bottom, left + tab_width + tab_filler, window.height - 1, colours.tab)
 
     -- tab text
-    WindowText(win, font.id, v.name, left + tab_filler / 2, client_bottom + 4, 0, 0, colours.tab_text, font.unicode)
+    if k == whichTab then
+      WindowText(win, activefont.id, v.name, left + tab_filler / 2, client_bottom + 4, 0, 0, colours.active_tab_text, activefont.unicode)
+    else
+      WindowText(win, tabfont.id, v.name, left + tab_filler / 2, client_bottom + 4, 0, 0, colours.tab_text, tabfont.unicode)
+    end -- if
     
     -- draw upper line if not active tab
     if k ~= whichTab then
@@ -243,7 +297,7 @@ function draw_window (context, whichTab)
   -- call handler to draw rest of window
   local handler = thisTab.handler
   if handler then
-    handler (win, 1, font.height + 2, window.width - 1, client_bottom, context)
+    handler (win, 1, titlefont.height + 2, window.width - 1, client_bottom, context)
   else
     ColourNote ("orange", "", "No tab handler for " .. thisTab.name)
   end -- if
