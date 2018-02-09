@@ -795,8 +795,7 @@ void CMUSHclientDoc::Save_Plugins_XML (CArchive& ar)
 
       // strip absolute path if possible
       if (!strPluginsPath.IsEmpty ())
-        if (strSource.Left (strPluginsPath.GetLength ()) ==
-            strPluginsPath)
+        if ((strSource.Left (strPluginsPath.GetLength ()).CompareNoCase (strPluginsPath)) == 0)
            strSource = strSource.Mid (strPluginsPath.GetLength ());
 
       ar.WriteString   ("<include ");
