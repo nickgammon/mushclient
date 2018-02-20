@@ -25,5 +25,5 @@ CString strContents;
 
 void CMUSHclientDoc::SetClipboard(LPCTSTR Text) 
 {
-putontoclipboard (Text);
+putontoclipboard (Text, m_bUTF_8);
 }  // end of CMUSHclientDoc::SetClipboard
