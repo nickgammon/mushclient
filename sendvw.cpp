@@ -2442,6 +2442,49 @@ ASSERT_VALID(pDoc);
 
 void CSendView::OnRepeatLastWord() 
 {
+CMUSHclientDoc* pDoc = GetDocument();
+ASSERT_VALID(pDoc);
+
+// if wanted, delete the last word in the command window
+if (pDoc->m_bCtrlBackspaceDeletesLastWord)
+  {
+  int nStartChar;
+  int nEndChar;
+
+  GetEditCtrl().GetSel(nStartChar, nEndChar);
+
+  // if something selected, just delete it
+
+  if (nStartChar != nEndChar)
+    {
+    GetEditCtrl().ReplaceSel ("", TRUE);
+    return;
+    }
+
+  // get current text
+
+  CString strCurrent;
+  GetEditCtrl().GetWindowText (strCurrent);
+
+  // don't bother if nothing typed
+
+  if (strCurrent.IsEmpty ())
+    return;
+
+  CString strLast = strCurrent.Mid (nStartChar);  // after the selection
+  CString strFirst = strCurrent.Left (nStartChar);  // up to the selection
+  strFirst.TrimRight ();  // skip trailing spaces
+  int iPos = strFirst.ReverseFind (' ');
+  strFirst = strFirst.Left (iPos + 1);  // up to and including the space
+  strFirst += strLast;  // put last bit back
+  GetEditCtrl().SetSel (0, -1);   // select all
+  GetEditCtrl().ReplaceSel (strFirst, TRUE);
+
+  return;
+  }
+
+// otherwise, recall the last word from the previously-sent line
+
 // can't, if no previous command
 if (m_msgList.IsEmpty ())
   return;

@@ -433,6 +433,10 @@ int i;
 
   m_timeFadeCancelled = CTime ((time_t) 0);
   m_timeLastWindowDraw = CTime ((time_t) 0);
+  m_iFadeOutputBufferAfterSeconds = 0;
+  m_FadeOutputOpacityPercent = 20;
+  m_FadeOutputSeconds = 8;
+  m_bCtrlBackspaceDeletesLastWord = false;
 
   // set up some default triggers for MUSHes
 

@@ -930,6 +930,7 @@ public:
   unsigned short m_iFadeOutputBufferAfterSeconds; // fade output buffer after these many seconds (0 = disable)
   unsigned short m_FadeOutputOpacityPercent;      // what opacity to fade to (0 to 100 percent)
   unsigned short m_FadeOutputSeconds;             // how many seconds to fade over
+  unsigned short m_bCtrlBackspaceDeletesLastWord; // Ctrl+Backspace deletes last word in command window
 
   // end of stuff saved to disk **************************************************************
 
