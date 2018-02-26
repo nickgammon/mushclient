@@ -7542,22 +7542,31 @@ void CMUSHclientDoc::DoFixMenus(CCmdUI* pCmdUI)
 } // end of CMUSHclientDoc::DoFixMenus
 
 // for mapping one colour to another at drawing time
-const COLORREF CMUSHclientDoc::TranslateColour (const COLORREF & source) const
+const COLORREF CMUSHclientDoc::TranslateColour (const COLORREF & source, const double opacity) const
   {
   // quick escape
   if (m_ColourTranslationMap.empty ())
-    return source;
+    {
+    if (opacity == 1.0)
+      return source;
+    return RGB (opacity * GetRValue (source), opacity * GetGValue (source), opacity * GetBValue (source));
+    }
 
   // search for it
   map<COLORREF, COLORREF>::const_iterator it = m_ColourTranslationMap.find (source);
 
   // not found, use original colour
   if (it == m_ColourTranslationMap.end ())
-    return source;
+    {
+    if (opacity == 1.0)
+      return source;
+    return RGB (opacity * GetRValue (source), opacity * GetGValue (source), opacity * GetBValue (source));
+    }
 
   // return replacement colour
-  return it->second;
-
+  if (opacity == 1.0)
+    return it->second;
+  return RGB (opacity * GetRValue (it->second), opacity * GetGValue (it->second), opacity * GetBValue (it->second));
   }   // end of CMUSHclientDoc::TranslateColour
 
 

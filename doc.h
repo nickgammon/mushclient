@@ -925,6 +925,12 @@ public:
   unsigned short m_bLogScriptErrors;          // write scripting error messages to log file?
   unsigned short m_bOmitSavedDateFromSaveFiles; // if set, do not write the date saved to save files
 
+  // version 5.06
+
+  unsigned short m_iFadeOutputBufferAfterSeconds; // fade output buffer after these many seconds (0 = disable)
+  unsigned short m_FadeOutputOpacityPercent;      // what opacity to fade to (0 to 100 percent)
+  unsigned short m_FadeOutputSeconds;             // how many seconds to fade over
+
   // end of stuff saved to disk **************************************************************
 
   // stuff from pre version 11, read from disk but not saved
@@ -1382,6 +1388,8 @@ public:
   CString m_strWindowTitle;     // for SetTitle
   CString m_strMainWindowTitle; // for SetMainTitle
 
+  CTime m_timeFadeCancelled;    // when we last scrolled up and cancelled faded text
+  CTime m_timeLastWindowDraw;   // when we last redrew the output window
 
   // see enum above: eKeepEvaluatingTriggers, eStopEvaluatingTriggers, 
   //                 eStopEvaluatingTriggersInAllPlugins 
@@ -1824,7 +1832,7 @@ public:
 
 #endif // PANE
 
-  const COLORREF TranslateColour (const COLORREF & source) const;
+  const COLORREF TranslateColour (const COLORREF & source, const double opacity) const;
 
   void OnConnect(int nErrorCode);
   void HostNameResolved (WPARAM wParam, LPARAM lParam);

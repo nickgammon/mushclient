@@ -431,6 +431,9 @@ int i;
   m_bTreeviewAliases = true;       
   m_bTreeviewTimers = true;        
 
+  m_timeFadeCancelled = CTime ((time_t) 0);
+  m_timeLastWindowDraw = CTime ((time_t) 0);
+
   // set up some default triggers for MUSHes
 
   /*

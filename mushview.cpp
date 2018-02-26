@@ -35,14 +35,14 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
   #define TYPE_OF_RGN_FILL FillRgn
   // #define TYPE_OF_RGN_FILL FrameRgn
 
-  void ShowInvalidatedRect (CMUSHView * pView, RECT & r, 
+  void ShowInvalidatedRect (CMUSHView * pView, RECT & r,
                             COLORREF colour = RGB (0, 255, 255))  // cyan?
     {
     CClientDC dc(pView);
     CBrush br;
-    br.CreateSolidBrush (colour);    
-    dc.TYPE_OF_RECT_FILL (&r, &br); 
-    Sleep (500);    // pause so we can see it  
+    br.CreateSolidBrush (colour);
+    dc.TYPE_OF_RECT_FILL (&r, &br);
+    Sleep (500);    // pause so we can see it
     }  // end of ShowInvalidatedRect
 
   void ShowInvalidatedRgn (CMUSHView * pView, CRgn & r)
@@ -50,17 +50,17 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
     CClientDC dc(pView);
     CBrush br;
     br.CreateSolidBrush (RGB (0, 255, 255));    // cyan?
-    dc.TYPE_OF_RGN_FILL (&r, &br); 
-    Sleep (500);    // pause so we can see it  
+    dc.TYPE_OF_RGN_FILL (&r, &br);
+    Sleep (500);    // pause so we can see it
     }  // end of ShowInvalidatedRgn
 
 #endif  // REDRAW_DEBUG
- 
+
 
 #define TTI_NONE     0 // no icon
 #define TTI_INFO     1 // information icon
 #define TTI_WARNING  2 // warning icon
-#define TTI_ERROR    3 // error icon 
+#define TTI_ERROR    3 // error icon
 
 /*
   JMC - "redefinition of macro" warnings fixed
@@ -217,7 +217,7 @@ BEGIN_MESSAGE_MAP(CMUSHView, CView)
   ON_COMMAND_EX(ID_MACRO_F6, OnMacroCommand)
   ON_COMMAND_EX(ID_MACRO_CTRL_F6, OnMacroCommand)
 
-  // numeric keypad  
+  // numeric keypad
   ON_COMMAND_EX(ID_KEYPAD_0, OnKeypadCommand)
   ON_COMMAND_EX(ID_KEYPAD_1, OnKeypadCommand)
   ON_COMMAND_EX(ID_KEYPAD_2, OnKeypadCommand)
@@ -253,13 +253,13 @@ BEGIN_MESSAGE_MAP(CMUSHView, CView)
   ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
 
   // MXP pop-up menu
-  ON_COMMAND_RANGE(MXP_FIRST_MENU, 
-                    MXP_FIRST_MENU + MXP_MENU_COUNT - 1, 
+  ON_COMMAND_RANGE(MXP_FIRST_MENU,
+                    MXP_FIRST_MENU + MXP_MENU_COUNT - 1,
                     OnMXPMenu)
 
   // Accelerator commands
-  ON_COMMAND_RANGE(ACCELERATOR_FIRST_COMMAND, 
-                   ACCELERATOR_FIRST_COMMAND + ACCELERATOR_COUNT - 1, 
+  ON_COMMAND_RANGE(ACCELERATOR_FIRST_COMMAND,
+                   ACCELERATOR_FIRST_COMMAND + ACCELERATOR_COUNT - 1,
                    OnAcceleratorCommand)
 
   // middle mouse button
@@ -275,7 +275,7 @@ BEGIN_MESSAGE_MAP(CMUSHView, CView)
 CMUSHView::CMUSHView()
 {
 
-  m_selstart_line = 0;  
+  m_selstart_line = 0;
   m_selstart_col = 0;
   m_selend_line = 0;
   m_selend_col = 0;
@@ -311,7 +311,7 @@ static inline short get_foreground (int style)
     int iColour = (style >> 4) & 0x0FF;  // we have up to 256 custom colours
     if (iColour >= MAX_CUSTOM)
       iColour = 0;
-    return iColour;   
+    return iColour;
     }
   else
     return (style >> 4) & 0x07;
@@ -331,9 +331,9 @@ static inline short get_background (int style)
 
 #endif
 
-long CMUSHView::calculate_width (const int & line, 
-                       const int len, 
-                       CMUSHclientDoc* pDoc, 
+long CMUSHView::calculate_width (const int & line,
+                       const int len,
+                       CMUSHclientDoc* pDoc,
                        CClientDC & dc)
   {
 int thiscol = 0;
@@ -367,7 +367,7 @@ CLine * pLine = pDoc->m_LineList.GetAt (pDoc->GetLinePosition (line));
     if (pStyle->iFlags & STRIKEOUT)
         styleIndex += 8;
     if (pDoc->m_font [styleIndex])
-      dc.SelectObject(pDoc->m_font [styleIndex]);   
+      dc.SelectObject(pDoc->m_font [styleIndex]);
 
     if (pDoc->m_bUTF_8)
       {
@@ -382,7 +382,7 @@ CLine * pLine = pDoc->m_LineList.GetAt (pDoc->GetLinePosition (line));
           iUnicodeCharacters,      // number of characters in string
           &textsize      // pointer to structure for string size
         );
- 
+
       }
     else
       {
@@ -413,15 +413,16 @@ CLine * pLine = pDoc->m_LineList.GetAt (pDoc->GetLinePosition (line));
    text.
 
   */
-void CMUSHView::display_text (CDC* pDC, 
-                             const CMUSHclientDoc* pDoc, 
+void CMUSHView::display_text (CDC* pDC,
+                             const CMUSHclientDoc* pDoc,
                              const long line,
-                             const CLine * pLine, 
-                             const int col, 
-                             const int len, 
+                             const CLine * pLine,
+                             const int col,
+                             const int len,
                              const BOOL selected,
                              long & pixel,
-                             const bool bBackground)
+                             const bool bBackground,
+                             const double opacity)
   {
 RECT r;
 
@@ -442,7 +443,6 @@ CSize textsize;
 CStyle * pStyle;
 int iCol = 0;
 POSITION foundpos;
-
 
   if (!pDoc->FindStyle (pLine, col, iCol, pStyle, foundpos))
     return;
@@ -471,12 +471,12 @@ POSITION foundpos;
 
     if (selected)
       {
-      pDC->SetTextColor (pDoc->TranslateColour (colour2));  
+      pDC->SetTextColor (pDoc->TranslateColour (colour2, opacity));
       clrBackground = colour1;
       }
     else
       {
-      pDC->SetTextColor (pDoc->TranslateColour (colour1));  
+      pDC->SetTextColor (pDoc->TranslateColour (colour1, opacity));
       clrBackground = colour2;
       }
 
@@ -498,7 +498,7 @@ int iUnicodeCharacters = 0;
           iUnicodeCharacters,      // number of characters in string
           &textsize      // pointer to structure for string size
         );
- 
+
       }
     else
       {
@@ -512,15 +512,15 @@ int iUnicodeCharacters = 0;
       }
 
 
-    SetRect (&r, 
+    SetRect (&r,
              pDoc->m_iPixelOffset + pixel,
              - pDoc->m_iPixelOffset + line * pDoc->m_FontHeight,
              pDoc->m_iPixelOffset + pixel + textsize.cx,
              - pDoc->m_iPixelOffset + (line + 1) * pDoc->m_FontHeight);
-            
+
     // allow for scroll position
     OffsetRect (&r, -m_scroll_position.x, -m_scroll_position.y);
-  
+
     // allow for text rectangle
     OffsetRect (&r, pDoc->m_TextRectangle.left, pDoc->m_TextRectangle.top);
 
@@ -533,27 +533,27 @@ int iUnicodeCharacters = 0;
         b = pDoc->m_normalcolour [BLACK];
 
       if (clrBackground != b)
-        pDC->FillSolidRect (&r, pDoc->TranslateColour (clrBackground));
+        pDC->FillSolidRect (&r, pDoc->TranslateColour (clrBackground, opacity));
       }
     else
       {
       if (pDoc->m_bUTF_8)     // Unicode output
         ExtTextOutW(          // W = wide
-                    pDC->m_hDC,          
-                    r.left,   
-                    r.top, 
+                    pDC->m_hDC,
+                    r.left,
+                    r.top,
                     0,      // transparent
-                    &r, 
-                    sUnicodeText, 
-                    iUnicodeCharacters,     
+                    &r,
+                    sUnicodeText,
+                    iUnicodeCharacters,
                     NULL);
       else                   // Ascii output
         pDC->ExtTextOut (
-                     r.left,  
-                     r.top,    
+                     r.left,
+                     r.top,
                      0,   // transparent
-                     &r,  
-                     &pLine->text [thiscol], 
+                     &r,
+                     &pLine->text [thiscol],
                      thislen,
                      NULL);
 
@@ -566,12 +566,12 @@ int iUnicodeCharacters = 0;
       break;  // no more styles
 
     pStyle = pLine->styleList.GetNext (foundpos);  // and get next one
-    thislen = pStyle->iLength;                      
+    thislen = pStyle->iLength;
 
     } // end of this group of the same colour
 
 
-  }  // end of CMUSHView::display_text 
+  }  // end of CMUSHView::display_text
 
 
 // see: http://www.codeguru.com/Cpp/misc/misc/flickerfreedrawing/article.php/c389
@@ -642,14 +642,14 @@ public:
   operator CMyMemDC*() {return this;}
 };
 
-/* modes: 
+/* modes:
 
-  0 = stretch to output view size 
+  0 = stretch to output view size
   1 = stretch with aspect ratio
 
-  2 = stretch to owner size 
+  2 = stretch to owner size
   3 = stretch with aspect ratio
-  
+
   -- going clockwise here:
 
   -- top
@@ -665,8 +665,8 @@ public:
   9 = center left-right at bottom
 
   -- lh side
-  10 = on left, at bottom  
-  11 = on left, center top-bottom 
+  10 = on left, at bottom
+  11 = on left, center top-bottom
 
   -- middle
   12 = center all
@@ -889,8 +889,12 @@ ASSERT_VALID(pDoc);
   if (!pDoc->m_FontHeight)
     return;
 
+//  TRACE ("CMUSHView::OnDraw\n");
+
   // sigh. How many times did we do this?
   pDoc->m_iOutputWindowRedrawCount++;
+  // for tracking fading stuff
+  pDoc->m_timeLastWindowDraw = CTime::GetCurrentTime ();
 
   pDC->SelectClipRgn (NULL);
 
@@ -901,9 +905,9 @@ CRect rect;
   if (pDoc->m_iBackgroundColour != NO_COLOUR)
     backbr.CreateSolidBrush (pDoc->m_iBackgroundColour);
   else if (pDoc->m_bCustom16isDefaultColour)
-    backbr.CreateSolidBrush (pDoc->TranslateColour (pDoc->m_customback [15]));
+    backbr.CreateSolidBrush (pDoc->TranslateColour (pDoc->m_customback [15], 1.0));
   else
-    backbr.CreateSolidBrush (pDoc->TranslateColour (pDoc->m_normalcolour [BLACK]));
+    backbr.CreateSolidBrush (pDoc->TranslateColour (pDoc->m_normalcolour [BLACK], 1.0));
   
 RECT r;
 
@@ -1065,6 +1069,17 @@ double previousLineTime = 0;
 previousLineHPtime.QuadPart = 0;
 previousLineHPtime.QuadPart = 0;
 
+// if paused, reset the time fade cancelled to right now
+if (m_freeze)
+  pDoc->m_timeFadeCancelled = CTime::GetCurrentTime ();
+
+time_t timeNow = time (NULL);
+time_t fadeCancelled = pDoc->m_timeFadeCancelled.GetTime ();
+unsigned short fadeAfterSeconds = pDoc->m_iFadeOutputBufferAfterSeconds;
+double fadeLimit = (double) pDoc->m_FadeOutputOpacityPercent / 100.0;
+double fadeSteps = pDoc->m_FadeOutputSeconds;
+
+double opacity;  // for fading lines
 
   for (line = startline; line < endline && pos; line++)
     {
@@ -1072,6 +1087,33 @@ previousLineHPtime.QuadPart = 0;
 // retrieve actual pointer to this line
 
     CLine * pLine = pDoc->m_LineList.GetNext (pos);
+
+    // work out line opacity
+
+    // if not set, or line frozen, show in full intensity
+    if (fadeAfterSeconds <= 0 || m_freeze )
+      opacity = 1.0;
+    else
+      {
+      time_t whenLineArrived = pLine->m_theTime.GetTime ();
+      time_t timeSinceArrived = timeNow - whenLineArrived;
+
+      // if we cancelled the fade a while back, pretend the line came when it was cancelled
+      if (timeNow < (fadeCancelled + fadeAfterSeconds + fadeSteps) &&
+          whenLineArrived <= fadeCancelled  // if did not exist when fade was cancelled
+          )
+         timeSinceArrived = timeNow - fadeCancelled;
+
+      if (timeSinceArrived > fadeAfterSeconds)
+        {
+        if ((timeSinceArrived  - fadeAfterSeconds) >= fadeSteps)
+          opacity = fadeLimit;
+        else
+          opacity = 1.0 - (((1 - fadeLimit) / fadeSteps) * (timeSinceArrived - fadeAfterSeconds));
+        }
+      else
+        opacity = 1.0;
+      }
 
     // on user input or note, assume default background bleed if nothing there
     if (pLine->flags & NOTE_OR_COMMAND)
@@ -1203,15 +1245,15 @@ previousLineHPtime.QuadPart = 0;
 
         // now draw preamble (background/text)
         if (bBackground)
-          pDC->FillSolidRect (&r, pDoc->TranslateColour (cPreambleBack));
+          pDC->FillSolidRect (&r, pDoc->TranslateColour (cPreambleBack, opacity));
         else
           {
           pDC->SetBkMode (TRANSPARENT);   // trouble brewing if this isn't here!
-          pDC->SetTextColor (pDoc->TranslateColour (cPreambleText));  
-          pDC->ExtTextOut (r.left,  
-                           r.top,    
-                           0,   
-                           &r,  
+          pDC->SetTextColor (pDoc->TranslateColour (cPreambleText, opacity));  
+          pDC->ExtTextOut (r.left,
+                           r.top,
+                           0,
+                           &r,
                            strPreamble, 
                            strPreamble.GetLength (),
                            NULL);
@@ -1230,12 +1272,12 @@ previousLineHPtime.QuadPart = 0;
 
   // selection starting and ending on the same line is a special case
 
-          display_text (pDC, pDoc, line, pLine, 0, startcol, 
-                        FALSE, pixel, bBackground);
-          display_text (pDC, pDoc, line, pLine, startcol, endcol - startcol, 
-                        TRUE, pixel, bBackground);
-          display_text (pDC, pDoc, line, pLine, endcol, pLine->len - endcol, 
-                        FALSE, pixel, bBackground);
+          display_text (pDC, pDoc, line, pLine, 0, startcol,
+                        FALSE, pixel, bBackground, opacity);
+          display_text (pDC, pDoc, line, pLine, startcol, endcol - startcol,
+                        TRUE, pixel, bBackground, opacity);
+          display_text (pDC, pDoc, line, pLine, endcol, pLine->len - endcol,
+                        FALSE, pixel, bBackground, opacity);
 
         }
       else if (line == m_selstart_line)
@@ -1243,10 +1285,10 @@ previousLineHPtime.QuadPart = 0;
 
   // selection starts on this line
 
-          display_text (pDC, pDoc, line, pLine, 0, startcol, 
-                        FALSE, pixel, bBackground);
-          display_text (pDC, pDoc, line, pLine, startcol, pLine->len - startcol, 
-                        TRUE, pixel, bBackground);
+          display_text (pDC, pDoc, line, pLine, 0, startcol,
+                        FALSE, pixel, bBackground, opacity);
+          display_text (pDC, pDoc, line, pLine, startcol, pLine->len - startcol,
+                        TRUE, pixel, bBackground, opacity);
 
           }
       else if (line == m_selend_line)
@@ -1254,23 +1296,23 @@ previousLineHPtime.QuadPart = 0;
 
   // selection ends on this line
 
-          display_text (pDC, pDoc, line, pLine, 0, endcol, 
-                        TRUE, pixel, bBackground);
-          display_text (pDC, pDoc, line, pLine, endcol, pLine->len - endcol, 
-                        FALSE, pixel, bBackground);
+          display_text (pDC, pDoc, line, pLine, 0, endcol,
+                        TRUE, pixel, bBackground, opacity);
+          display_text (pDC, pDoc, line, pLine, endcol, pLine->len - endcol,
+                        FALSE, pixel, bBackground, opacity);
 
           }
       else
         {
 
-        display_text (pDC, pDoc, line, pLine, 0, pLine->len, 
-                      line >= m_selstart_line && line <= m_selend_line, pixel, bBackground);
+        display_text (pDC, pDoc, line, pLine, 0, pLine->len,
+                      line >= m_selstart_line && line <= m_selend_line, pixel, bBackground, opacity);
 
         }  // end of selection not starting and ending on the same line
 
 // bleed to edge if wanted
-      
-      if (bBackground && 
+
+      if (bBackground &&
           App.m_bBleedBackground)
         {
 
@@ -1287,7 +1329,7 @@ previousLineHPtime.QuadPart = 0;
 
         // -------- bleed to left --------
 
-        // empty lines take background from previous line        
+        // empty lines take background from previous line
         if (pLine->len > 0)
           {
           CStyle * pStyle = pLine->styleList.GetHead ();
@@ -1329,20 +1371,20 @@ previousLineHPtime.QuadPart = 0;
             }
           }   // not custom
 
-        SetRect (&r, 
+        SetRect (&r,
                  0,
                  - pDoc->m_iPixelOffset + line * pDoc->m_FontHeight,
                  pDoc->m_iPixelOffset,
                  - pDoc->m_iPixelOffset + (line + 1) * pDoc->m_FontHeight);
-            
+
         OffsetRect (&r, -m_scroll_position.x, -m_scroll_position.y);
 
         if (clrBackground != b)
-          pDC->FillSolidRect (&r, pDoc->TranslateColour (clrBackground));
+          pDC->FillSolidRect (&r, pDoc->TranslateColour (clrBackground, opacity));
 
         // -------- bleed to right --------
 
-        // empty lines take background from previous line        
+        // empty lines take background from previous line
         if (pLine->len > 0)
           {
           CStyle * pStyle = pLine->styleList.GetTail ();
@@ -1355,7 +1397,7 @@ previousLineHPtime.QuadPart = 0;
         if ((style & COLOURTYPE) == COLOUR_CUSTOM)
           {
           ASSERT (iForeColour >= 0 && iForeColour < MAX_CUSTOM);
-          clrBackground = pDoc->m_customback [iForeColour]; 
+          clrBackground = pDoc->m_customback [iForeColour];
           }
         else
         if ((style & COLOURTYPE) == COLOUR_RGB)
@@ -1386,16 +1428,16 @@ previousLineHPtime.QuadPart = 0;
         GetClientRect (&cr);
 
 
-        SetRect (&r, 
+        SetRect (&r,
                  pDoc->m_iPixelOffset + pixel,
                  - pDoc->m_iPixelOffset + line * pDoc->m_FontHeight,
                  cr.right,
                  - pDoc->m_iPixelOffset + (line + 1) * pDoc->m_FontHeight);
-            
+
         OffsetRect (&r, -m_scroll_position.x, -m_scroll_position.y);
 
         if (clrBackground != b)
-          pDC->FillSolidRect (&r, pDoc->TranslateColour (clrBackground));
+          pDC->FillSolidRect (&r, pDoc->TranslateColour (clrBackground, opacity));
         }   // end of bleed wanted
 
       // special drawing for horizontal rule
@@ -1410,20 +1452,20 @@ previousLineHPtime.QuadPart = 0;
 
         GetClientRect (&cr);
 
-        SetRect (&r, 
+        SetRect (&r,
                  pDoc->m_iPixelOffset + 10 + pixel,
                  - pDoc->m_iPixelOffset + line * pDoc->m_FontHeight + iHalfFontHeight,
                  cr.right - 10 - pDoc->m_iPixelOffset,
                  - pDoc->m_iPixelOffset + line * pDoc->m_FontHeight + iHalfFontHeight + 1);
-            
+
         OffsetRect (&r, -m_scroll_position.x, -m_scroll_position.y);
         OffsetRect (&r, pDoc->m_TextRectangle.left, pDoc->m_TextRectangle.top);
 
-        pDC->FillSolidRect (&r, pDoc->TranslateColour (RGB (132, 132, 132)));
+        pDC->FillSolidRect (&r, pDoc->TranslateColour (RGB (132, 132, 132), opacity));
         OffsetRect (&r, 0, 1);
-        pDC->FillSolidRect (&r, pDoc->TranslateColour (RGB (198, 198, 198)));
+        pDC->FillSolidRect (&r, pDoc->TranslateColour (RGB (198, 198, 198), opacity));
 
-        } // end of doing horizontal rule 
+        } // end of doing horizontal rule
 
       }   // end of doing background and then text
 
@@ -1439,19 +1481,19 @@ previousLineHPtime.QuadPart = 0;
     m_last_line = pDoc->m_total_lines;
     FixupTitle ();
     }
-  
+
 
   pDC->SelectClipRgn (NULL);
 
-  // foreground image 
+  // foreground image
 
   if ((HBITMAP) pDoc->m_ForegroundBitmap)
-    DrawImage (pDC, pDoc->m_ForegroundBitmap, pDoc->m_iForegroundMode); 
+    DrawImage (pDC, pDoc->m_ForegroundBitmap, pDoc->m_iForegroundMode);
 
   Calculate_MiniWindow_Rectangles (pDoc, false);
 
   // mini windows  - on top
-  for (mwit = pDoc->m_MiniWindowsOrder.begin (); 
+  for (mwit = pDoc->m_MiniWindowsOrder.begin ();
        mwit != pDoc->m_MiniWindowsOrder.end ();
        mwit++)
          {
@@ -1467,10 +1509,10 @@ previousLineHPtime.QuadPart = 0;
            continue;
 
          // blit onto screen
-         Blit_Bitmap (pDC, mw->GetDC (), 
-                      mw->GetWidth (), mw->GetHeight (), 
-                      mw->GetPosition (), 
-                      mw->m_rect, 
+         Blit_Bitmap (pDC, mw->GetDC (),
+                      mw->GetWidth (), mw->GetHeight (),
+                      mw->GetPosition (),
+                      mw->m_rect,
                       mw->GetPosition () != 13,  // absolute? - we precalculated so yes (except tile)
                       (iFlags & MINIWINDOW_TRANSPARENT) != 0,        // transparent?
                       mw->GetBackgroundColour ());
@@ -1513,7 +1555,7 @@ ASSERT_VALID(pDoc);
    // TTI_NONE     = 0 - no icon
    // TTI_INFO     = 1 - information icon
    // TTI_WARNING  = 2 - warning icon
-   // TTI_ERROR    = 3 - error icon 
+   // TTI_ERROR    = 3 - error icon
 
 //   m_ToolTip.SendMessage (TTM_SETTITLE, TTI_INFO, (LPARAM) Translate ("Line information") );
 
@@ -1569,7 +1611,7 @@ CMUSHclientDoc* CMUSHView::GetDocument() // non-debug version is inline
 /////////////////////////////////////////////////////////////////////////////
 // CMUSHView message handlers
 
-void CMUSHView::OnTestEnd() 
+void CMUSHView::OnTestEnd()
 {
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
@@ -1592,24 +1634,23 @@ ScrollToPosition (pt, App.m_bSmoothScrolling);
 
 
   Invalidate ();
-  
+
   m_last_line_drawn = lastline;
 
 #if REDRAW_DEBUG
   ShowInvalidatedRgn (this, oldrgn);
 #endif
 
-  m_selstart_line = 0;  
+  m_selstart_line = 0;
   m_selstart_col = 0;
   m_selend_line = 0;
   m_selend_col = 0;
   m_bAtBufferEnd = true;  // note we are at end
 
   SelectionChanged ();
-
   }
 
-void CMUSHView::OnTestPagedown() 
+void CMUSHView::OnTestPagedown()
 {
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
@@ -1631,7 +1672,7 @@ ScrollToPosition (pt, false);
 
 }
 
-void CMUSHView::OnTestPageup() 
+void CMUSHView::OnTestPageup()
 {
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
@@ -1647,7 +1688,7 @@ ScrollToPosition (pt, false);
 
 }
 
-void CMUSHView::OnTestStart() 
+void CMUSHView::OnTestStart()
 {
 POINT pt = {0, 0};
 
@@ -1663,7 +1704,7 @@ ScrollToPosition (pt, false);
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 // Size the window to hold our "screen"
-// 
+//
 
 void CMUSHView::sizewindow (void)
   {
@@ -1683,7 +1724,7 @@ ASSERT_VALID(pDoc);
 
   top = 0;
   left = 0;
-  
+
 // calculate width
 
   m_DefaultWidth  =  (pDoc->m_nWrapColumn * pDoc->m_FontWidth) +   // Client width of screen is 640 pixels
@@ -1716,8 +1757,8 @@ ASSERT_VALID(pDoc);
 
   // don't resize if maximised
   if (wp.showCmd != SW_MAXIMIZE)
-    GetOwner()->GetOwner()->MoveWindow (left, 
-                      top, 
+    GetOwner()->GetOwner()->MoveWindow (left,
+                      top,
                       m_DefaultWidth,
                       m_DefaultHeight);
 
@@ -1767,7 +1808,7 @@ int lastline;
 // pretend they pressed "End" to force the view to update.
 
   if (!m_freeze)
-    OnTestEnd ();   
+    OnTestEnd ();
 
 // if we are still on first screen (no scroll bars) invalidate whole view
 
@@ -1859,7 +1900,7 @@ long pixel;
 
   CLine * pLine = pDoc->m_LineList.GetAt (pDoc->GetLinePosition (line));
 
-//  point.x -= pLine->m_iPreambleOffset; 
+//  point.x -= pLine->m_iPreambleOffset;
 
 // calculate which column we must be at
 
@@ -1876,7 +1917,7 @@ long pixel;
           if (c >= 128)
             col += _pcre_utf8_table4 [c & 0x3f];   // number of additional bytes
           }
-        
+
 
         }
 
@@ -1909,7 +1950,7 @@ long pixel;
 
   return bOutside;
 
-  } // end of CMUSHView::calculate_line_and_column 
+  } // end of CMUSHView::calculate_line_and_column
 
 void CMUSHView::extend_selection (const int line, const int col)
   {
@@ -1940,7 +1981,7 @@ ASSERT_VALID(pDoc);
     else
       OnEditCopy ();
 
-  } // end of CMUSHView::extend_selection  
+  } // end of CMUSHView::extend_selection
 
 int CompareMenu (const void * elem1, const void * elem2)
   {
@@ -1952,7 +1993,7 @@ int CompareMenu (const void * elem1, const void * elem2)
 
   StringToList (string1, ":", strList);
   string1 = strList.GetHead ();
-  
+
   StringToList (string2, ":", strList);
   string2 = strList.GetHead ();
 
@@ -1980,7 +2021,7 @@ ASSERT_VALID(pDoc);
   int line, start_col, end_col, col;
 
   // find which line and column the mouse position is at
-            
+
   calculate_line_and_column (wordPoint, dc, line, col, false);
 
   POSITION pos = pDoc->GetLinePosition (line);
@@ -1990,20 +2031,20 @@ ASSERT_VALID(pDoc);
   // find word under mouse for GetInfo (86)
 
   CLine * pLine = pDoc->m_LineList.GetAt (pos);
-  while (start_col >= 0 && 
+  while (start_col >= 0 &&
         !isspace ((unsigned char) pLine->text [start_col]) &&
         strchr (App.m_strWordDelimitersDblClick, pLine->text [start_col]) == NULL)
     start_col--;
   start_col++;   // now onto the start of that word
 
   // a word will end on a space, or whatever
-  while (end_col < pLine->len && 
+  while (end_col < pLine->len &&
         !isspace ((unsigned char) pLine->text [end_col]) &&
         strchr (App.m_strWordDelimitersDblClick, pLine->text [end_col]) == NULL)
     end_col++;
 
   if (end_col > start_col)
-      pDoc->m_strWordUnderMenu = CString (&pLine->text [start_col], 
+      pDoc->m_strWordUnderMenu = CString (&pLine->text [start_col],
                                           end_col - start_col);
   else
       pDoc->m_strWordUnderMenu.Empty ();
@@ -2024,8 +2065,8 @@ CPoint menupoint = point;
   CAlias * pAlias;
   CString strAliasName;
 
-  for (pos = pDoc->m_AliasMap.GetStartPosition(); 
-       pos && i < MXP_MENU_COUNT; 
+  for (pos = pDoc->m_AliasMap.GetStartPosition();
+       pos && i < MXP_MENU_COUNT;
        )
      {
      pDoc->m_AliasMap.GetNextAssoc (pos, strAliasName, pAlias);
@@ -2040,14 +2081,14 @@ CPoint menupoint = point;
     } // end of all aliases
 
   // do plugins
-  for (PluginListIterator pit = pDoc->m_PluginList.begin (); 
-       pit != pDoc->m_PluginList.end () && i < MXP_MENU_COUNT; 
+  for (PluginListIterator pit = pDoc->m_PluginList.begin ();
+       pit != pDoc->m_PluginList.end () && i < MXP_MENU_COUNT;
        ++pit)
     {
     pDoc->m_CurrentPlugin = *pit;
-        
+
     if (pDoc->m_CurrentPlugin->m_bEnabled)
-      for (POSITION pos = pDoc->GetAliasMap ().GetStartPosition (); 
+      for (POSITION pos = pDoc->GetAliasMap ().GetStartPosition ();
             pos && i < MXP_MENU_COUNT; )
         {
         pDoc->GetAliasMap ().GetNextAssoc (pos, strAliasName, pAlias);
@@ -2075,7 +2116,7 @@ CPoint menupoint = point;
   else
     {
         // sort the array - otherwise we'll be all over the map :)
-    qsort (strMXP_menu_item, 
+    qsort (strMXP_menu_item,
            i,
            sizeof (CString),
            CompareMenu);
@@ -2090,7 +2131,7 @@ CPoint menupoint = point;
       strMenu = strList.GetHead ();
 
       // add menu item
-      pPopup->AppendMenu (MF_STRING | MF_ENABLED, MXP_FIRST_MENU + j, strMenu);     
+      pPopup->AppendMenu (MF_STRING | MF_ENABLED, MXP_FIRST_MENU + j, strMenu);
 
       // alias map lookup must be lower case
       strMXP_menu_item [j].MakeLower ();
@@ -2108,8 +2149,8 @@ CPoint menupoint = point;
   Frame.m_bAutoMenuEnable  = FALSE;
 
   iAction = ACTION_ALIAS;
-  pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, 
-                        point.x, 
+  pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,
+                        point.x,
                         point.y,
                         pWndPopupOwner);
 
@@ -2120,7 +2161,7 @@ CPoint menupoint = point;
   } // end of CMUSHView::AliasMenu
 
 
-void CMUSHView::OnLButtonDown(UINT nFlags, CPoint point) 
+void CMUSHView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
@@ -2166,7 +2207,7 @@ int line,
 //  see if they clicked on a hyperlink
 
   // find which line and column the mouse position is at
-            
+
   calculate_line_and_column (point, dc, line, col, false);
 
   // find line
@@ -2179,8 +2220,8 @@ int line,
   int iCol;
 
   // don't do it *past* end of last word
-  long pixel = calculate_width (line, pLine->len, pDoc, dc) + 
-                pDoc->m_iPixelOffset + 
+  long pixel = calculate_width (line, pLine->len, pDoc, dc) +
+                pDoc->m_iPixelOffset +
                 pDoc->m_TextRectangle.left +
                 pLine->m_iPreambleOffset;
 
@@ -2188,7 +2229,7 @@ int line,
      pDoc->FindStyle (pLine, col, iCol, pStyle, foundpos))
     {
     iStyle = pStyle->iFlags;
-      
+
     if (pStyle->pAction &&
         !pStyle->pAction->m_strAction.IsEmpty () &&
         pStyle->pAction->m_strAction.Find ("&text;") == -1)
@@ -2211,16 +2252,16 @@ int line,
         if (pDoc->m_bUnpauseOnSend && m_freeze)
           {
           m_freeze = false;
-          addedstuff ();   
+          addedstuff ();
           }
 
-        if ((iStyle & ACTIONTYPE) == ACTION_SEND && 
+        if ((iStyle & ACTIONTYPE) == ACTION_SEND &&
             (pLine->flags & COMMENT) == COMMENT)
           {
           // action_send on a note line will be executed, not sent
           //  (for the world.Hyperlink function)
           // However an action in the form !!pluginID:script(arg)
-          // eg. !!753ba7e011f3c8943a885f18:mysub(1234)   
+          // eg. !!753ba7e011f3c8943a885f18:mysub(1234)
           // will be passed the nominted sub in the nominated plugin
 
           // rather elaborate test ...
@@ -2235,7 +2276,7 @@ int line,
               strAction.Left (2) == "!!" &&
               strAction.Right (1) == ")" &&
               strAction.Find ("(") != -1 &&
-              strAction.Mid (PLUGIN_UNIQUE_ID_LENGTH + 2, 1) == ":" && 
+              strAction.Mid (PLUGIN_UNIQUE_ID_LENGTH + 2, 1) == ":" &&
               IsPluginID (strAction.Mid (2, PLUGIN_UNIQUE_ID_LENGTH)) &&
               IsSubName (strAction.Mid (PLUGIN_UNIQUE_ID_LENGTH + 3)))
             { // correct syntax for plugin call
@@ -2263,19 +2304,19 @@ int line,
                 switch (iResult)
                   {
                   case eNoSuchPlugin:
-                    pDoc->ColourNote ("white", "red", 
+                    pDoc->ColourNote ("white", "red",
                           TFormat ("Plugin \"%s\" is not installed",
                                   (LPCTSTR) strName));
                     break;
                   case eNoSuchRoutine:
-                    pDoc->ColourNote ("white", "red", 
+                    pDoc->ColourNote ("white", "red",
                           TFormat ("Script routine \"%s\" is not in plugin %s",
                                   (LPCTSTR) strScriptName,
                                   (LPCTSTR) strName));
                     break;
 
                   case eErrorCallingPluginRoutine:
-                    pDoc->ColourNote ("white", "red", 
+                    pDoc->ColourNote ("white", "red",
                           TFormat ("An error occurred calling plugin %s",
                                   (LPCTSTR) strName));
                     break;
@@ -2300,13 +2341,13 @@ int line,
           if ( (iStyle & ACTIONTYPE) == ACTION_PROMPT)
             {
             if (m_bottomview->CheckTyping (pDoc, strAction))
-              return;             
+              return;
             m_bottomview->SetCommand (strAction);
             }
           else
             {
             // send it
-            pDoc->SendMsg (strAction, 
+            pDoc->SendMsg (strAction,
                            pDoc->m_bEchoHyperlinkInOutputWindow,
                            false,           // don't queue
                            pDoc->LoggingInput ());
@@ -2329,13 +2370,13 @@ int line,
         if (strAction.Left (7).CompareNoCase ("http://") != 0 &&
             strAction.Left (8).CompareNoCase ("https://") != 0 &&
             strAction.Left (7).CompareNoCase ("mailto:") != 0)
-          ::UMessageBox(TFormat ("Hyperlink action \"%s\" - permission denied.", 
-                          (const char *) strAction), 
+          ::UMessageBox(TFormat ("Hyperlink action \"%s\" - permission denied.",
+                          (const char *) strAction),
                           MB_ICONEXCLAMATION);
         else
           if ((long) ShellExecute (Frame, _T("open"), strAction, NULL, NULL, SW_SHOWNORMAL) <= 32)
-            ::UMessageBox(TFormat ("Unable to open the hyperlink \"%s\"", 
-                            (const char *) strAction), 
+            ::UMessageBox(TFormat ("Unable to open the hyperlink \"%s\"",
+                            (const char *) strAction),
                             MB_ICONEXCLAMATION);
         return;
         }  // end of ACTION_HYPERLINK
@@ -2353,7 +2394,7 @@ int line,
 
   get_selection (oldrgn);
 
-// if clicked *inside* old selection, leave selected  
+// if clicked *inside* old selection, leave selected
   if (oldrgn.PtInRegion (point))
     {
     oldrgn.DeleteObject ();
@@ -2384,11 +2425,11 @@ int line,
   SetCapture();       // Capture the mouse until button up.
 
   return;
-  
+
   // CView::OnLButtonDown(nFlags, point);
 }
-               
-void CMUSHView::OnRButtonDown(UINT nFlags, CPoint point) 
+
+void CMUSHView::OnRButtonDown(UINT nFlags, CPoint point)
 {
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
@@ -2405,11 +2446,11 @@ ASSERT_VALID(pDoc);
   // if click in mini-window, don't continue
   if (Mouse_Down_MiniWindow (pDoc, mwpoint, MW_MOUSE_RH))  // RH mouse, single click
     return;
-  
+
   CView::OnRButtonDown(nFlags, point);
 }
 
-void CMUSHView::OnMButtonDown(UINT nFlags, CPoint point) 
+void CMUSHView::OnMButtonDown(UINT nFlags, CPoint point)
 {
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
@@ -2426,11 +2467,11 @@ ASSERT_VALID(pDoc);
   // if click in mini-window, don't continue
   if (Mouse_Down_MiniWindow (pDoc, mwpoint, MW_MOUSE_MIDDLE))  // middle mouse, single click
     return;
-  
+
   CView::OnMButtonDown(nFlags, point);
 }
 
-void CMUSHView::OnLButtonUp(UINT nFlags, CPoint point) 
+void CMUSHView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
@@ -2469,7 +2510,7 @@ int line,
   get_selection (oldrgn);
 
 // find which line and column the mouse position is at
-              
+
   calculate_line_and_column (point, dc, line, col);
 
 // extend (or shrink) the current selection
@@ -4710,6 +4751,8 @@ int iDeltaY = m_scroll_position.y - pt.y;
   
   if (pDoc->m_bAutoFreeze)
     m_freeze = pt.y < (m_ScrollbarSizeTotal.cy - m_ScrollbarSizePage.cy);
+
+  pDoc->Repaint ();
 
   } // end of CMUSHView::ScrollToPosition
 

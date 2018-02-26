@@ -97,7 +97,8 @@ void display_text (CDC* pDC,
                    const int len, 
                    const BOOL selected,
                    long & pixel,
-                   const bool bBackground);
+                   const bool bBackground,
+                   const double opacity);
 
 
 void Blit_Bitmap (CDC* pDestDC, CDC* pSrcDC, 

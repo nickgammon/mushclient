@@ -361,6 +361,12 @@ void CMUSHclientDoc::CheckTickTimers ()
 
   SendToAllPluginCallbacks (ON_PLUGIN_TICK);
 
+  // for output window fading
+  if (m_iFadeOutputBufferAfterSeconds > 0 &&
+    CTime::GetCurrentTime ().GetTime () - m_timeLastWindowDraw.GetTime () > 0)
+    Redraw ();
+
+
   } // end of CMUSHclientDoc::CheckTickTimers
 
 

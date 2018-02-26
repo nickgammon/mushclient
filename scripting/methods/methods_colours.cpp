@@ -184,7 +184,7 @@ m_ColourTranslationMap [Original] = Replacement;
 
 long CMUSHclientDoc::GetMapColour(long Which) 
 {
-	return TranslateColour (Which);
+	return TranslateColour (Which, 1.0);
 }   // end of CMUSHclientDoc::GetMapColour
 
 VARIANT CMUSHclientDoc::MapColourList() 

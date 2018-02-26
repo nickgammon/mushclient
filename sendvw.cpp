@@ -543,11 +543,17 @@ void CSendView::OnKeysPrevcommand()
 
 void CSendView::OnTestEnd() 
 {
+	CMUSHclientDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+  pDoc->m_timeFadeCancelled = CTime::GetCurrentTime ();
   m_topview->doEnd ();
 }
 
 void CSendView::OnTestPagedown() 
 {
+	CMUSHclientDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+  pDoc->m_timeFadeCancelled = CTime::GetCurrentTime ();
   m_topview->doPagedown ();
 }
 
