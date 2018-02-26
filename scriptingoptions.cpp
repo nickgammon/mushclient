@@ -113,7 +113,7 @@ tConfigurationNumericOption OptionsTable [] = {
 {"enable_triggers",                     true,  O(m_enable_triggers)},                   
 {"enable_trigger_sounds",               true,  O(m_enable_trigger_sounds)},             
 {"escape_deletes_input",                false, O(m_bEscapeDeletesInput)},               
-{"fade_output_buffer_after_seconds",    0,     O(m_iFadeOutputBufferAfterSeconds), 5, 3600, OPT_UPDATE_VIEWS },  // seconds to wait before fading
+{"fade_output_buffer_after_seconds",    0,     O(m_iFadeOutputBufferAfterSeconds), 0, 3600, OPT_UPDATE_VIEWS },  // seconds to wait before fading
 {"fade_output_opacity_percent",         20,    O(m_FadeOutputOpacityPercent), 0, 100, OPT_UPDATE_VIEWS },        // percent to fade to
 {"fade_output_seconds",                 8,     O(m_FadeOutputSeconds), 1, 60, OPT_UPDATE_VIEWS },                // how many seconds to take to fade
 {"flash_taskbar_icon",                  false, O(m_bFlashIcon)},                        
