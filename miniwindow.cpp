@@ -15,7 +15,7 @@
 #include "png\png.h"
 
 // constructor
-CMiniWindow::CMiniWindow ()  :       
+CMiniWindow::CMiniWindow ()  :
           m_oldBitmap (NULL),
           m_Bitmap (NULL),
           m_iWidth (0), m_iHeight (0),
@@ -42,14 +42,14 @@ CMiniWindow::~CMiniWindow ()  // destructor
   // get rid of old one if any
   if (m_Bitmap)
     {
-		pdc->SelectObject(m_oldBitmap);    // swap old one back
+    pdc->SelectObject(m_oldBitmap);    // swap old one back
     m_Bitmap->DeleteObject ();        // delete the one we made
     delete m_Bitmap;
     }
 
 
   // delete our fonts
-  for (FontMapIterator fit = m_Fonts.begin (); 
+  for (FontMapIterator fit = m_Fonts.begin ();
        fit != m_Fonts.end ();
        fit++)
          delete fit->second;
@@ -57,7 +57,7 @@ CMiniWindow::~CMiniWindow ()  // destructor
   m_Fonts.clear ();
 
   // delete our images
-  for (ImageMapIterator it = m_Images.begin (); 
+  for (ImageMapIterator it = m_Images.begin ();
        it != m_Images.end ();
        it++)
          delete it->second;
@@ -65,7 +65,7 @@ CMiniWindow::~CMiniWindow ()  // destructor
   m_Images.clear ();
 
   // delete our hotspots
-  for (HotspotMapIterator hit = m_Hotspots.begin (); 
+  for (HotspotMapIterator hit = m_Hotspots.begin ();
        hit != m_Hotspots.end ();
        hit++)
          delete hit->second;
@@ -81,7 +81,7 @@ CMiniWindow::~CMiniWindow ()  // destructor
 long CMiniWindow::FixRight (const long Right)
   {
 
-  if (Right <= 0) 
+  if (Right <= 0)
     return m_iWidth + Right;
 
   return Right;
@@ -95,14 +95,14 @@ static int BytesPerLine (int nWidth, int nBitsPerPixel)
 // helper function to make normal/geometric pens
 // legacy behaviour is to do what we always did
 // however if an endcap or join mask bit is on we juse the ExtCreatePen function
-static void MakeAPen (CPen & pen, long PenColour, long PenStyle, long PenWidth) 
+static void MakeAPen (CPen & pen, long PenColour, long PenStyle, long PenWidth)
   {
 
   // legacy behaviour
   if ((PenStyle & PS_ENDCAP_MASK) == 0 &&
       (PenStyle & PS_JOIN_MASK) == 0)
     {
-    pen.CreatePen (PenStyle, PenWidth, PenColour); 
+    pen.CreatePen (PenStyle, PenWidth, PenColour);
     }
   else
     {
@@ -119,7 +119,7 @@ static void MakeAPen (CPen & pen, long PenColour, long PenStyle, long PenWidth)
 long CMiniWindow::FixBottom (const long Bottom)
   {
 
-  if (Bottom <= 0) 
+  if (Bottom <= 0)
     return m_iHeight + Bottom;
 
   return Bottom;
@@ -127,14 +127,14 @@ long CMiniWindow::FixBottom (const long Bottom)
   }  // end  CMiniWindow::FixBottom
 
 
-/* positions: 
+/* positions:
 
-  0 = stretch to output view size 
+  0 = stretch to output view size
   1 = stretch with aspect ratio
 
-  2 = stretch to owner size 
+  2 = stretch to owner size
   3 = stretch with aspect ratio
-  
+
   -- going clockwise here:
 
   -- top
@@ -150,8 +150,8 @@ long CMiniWindow::FixBottom (const long Bottom)
   9 = center left-right at bottom
 
   -- lh side
-  10 = on left, at bottom  
-  11 = on left, center top-bottom 
+  10 = on left, at bottom
+  11 = on left, center top-bottom
 
   -- middle
   12 = center all
@@ -164,10 +164,10 @@ long CMiniWindow::FixBottom (const long Bottom)
 
 // create (or re-create) a mini-window
 void CMiniWindow::Create (long Left, long Top, long Width, long Height,
-                          short Position, long Flags, 
+                          short Position, long Flags,
                           COLORREF BackgroundColour)
   {
- 
+
   m_Location.x           = Left            ;
   m_Location.y           = Top             ;
   m_iWidth               = Width           ;
@@ -179,7 +179,7 @@ void CMiniWindow::Create (long Left, long Top, long Width, long Height,
   // get rid of old one if any
   if (m_Bitmap)
     {
-		pdc->SelectObject(m_oldBitmap);    // swap old one back
+    pdc->SelectObject(m_oldBitmap);    // swap old one back
     m_Bitmap->DeleteObject ();
     delete m_Bitmap;
     }
@@ -193,9 +193,9 @@ void CMiniWindow::Create (long Left, long Top, long Width, long Height,
   m_Bitmap = new CBitmap;
 
   //  CreateBitmap with zero-dimensions creates a monochrome bitmap, so force to be at least 1x1
-  m_Bitmap->CreateBitmap (MAX (m_iWidth, 1), MAX (m_iHeight, 1), 1, GetDeviceCaps((*pdc), BITSPIXEL), NULL); 
-	m_oldBitmap = pdc->SelectObject (m_Bitmap);
-	pdc->SetWindowOrg(0, 0);
+  m_Bitmap->CreateBitmap (MAX (m_iWidth, 1), MAX (m_iHeight, 1), 1, GetDeviceCaps((*pdc), BITSPIXEL), NULL);
+  m_oldBitmap = pdc->SelectObject (m_Bitmap);
+  pdc->SetWindowOrg(0, 0);
 
   pdc->FillSolidRect (0, 0, m_iWidth, m_iHeight, m_iBackgroundColour);
 
@@ -226,10 +226,10 @@ void  CMiniWindow::Show (bool bShow)
 
   Colour1 = style of edge:
 
-  EDGE_RAISED:      // 5     
-  EDGE_ETCHED:      // 6     
-  EDGE_BUMP:        // 9     
-  EDGE_SUNKEN:      // 10    
+  EDGE_RAISED:      // 5
+  EDGE_ETCHED:      // 6
+  EDGE_BUMP:        // 9
+  EDGE_SUNKEN:      // 10
 
   Colour2 = where to draw it:
 
@@ -251,11 +251,11 @@ void  CMiniWindow::Show (bool bShow)
 
   Additional Colour2 flags:
 
-  BF_MIDDLE       0x0800   Fill in the middle 
-  BF_SOFT         0x1000   For softer buttons 
-  BF_ADJUST       0x2000   Calculate the space left over 
-  BF_FLAT         0x4000   For flat rather than 3D borders 
-  BF_MONO         0x8000   For monochrome borders 
+  BF_MIDDLE       0x0800   Fill in the middle
+  BF_SOFT         0x1000   For softer buttons
+  BF_ADJUST       0x2000   Calculate the space left over
+  BF_FLAT         0x4000   For flat rather than 3D borders
+  BF_MONO         0x8000   For monochrome borders
 
 
   6 = Flood Fill Border (fills to border specified by Colour1)
@@ -273,29 +273,29 @@ long  CMiniWindow::RectOp (short Action, long Left, long Top, long Right, long B
     case 1:       // frame
       {
       CBrush br1;
-      br1.CreateSolidBrush (Colour1);    
+      br1.CreateSolidBrush (Colour1);
       pdc->FrameRect (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)), &br1);
-      break; 
+      break;
       }
 
     case 2:       // fill
       {
       CBrush br1;
-      br1.CreateSolidBrush (Colour1);    
+      br1.CreateSolidBrush (Colour1);
       pdc->FillRect (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)), &br1);
-      break; 
+      break;
       }
 
     case 3:       // invert
       {
       pdc->InvertRect (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)));
-      break; 
+      break;
       }
 
     case 4:       // 3D rect
       {
       pdc->Draw3dRect (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)), Colour1, Colour2);
-      break; 
+      break;
       }
 
     case 5:       // DrawEdge
@@ -317,9 +317,9 @@ long  CMiniWindow::RectOp (short Action, long Left, long Top, long Right, long B
         return eBadParameter;
 
       pdc->DrawEdge (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)), Colour1, Colour2);
-      break; 
+      break;
       }
-      
+
     case 6:       // Flood fill border
       {
       // create brush for fill colour
@@ -328,7 +328,7 @@ long  CMiniWindow::RectOp (short Action, long Left, long Top, long Right, long B
       CBrush* oldBrush = pdc->SelectObject(&br);
       pdc->FloodFill (Left, Top, Colour1);
       pdc->SelectObject (oldBrush);
-      break; 
+      break;
       }
 
     case 7:       // Flood fill surface
@@ -339,7 +339,7 @@ long  CMiniWindow::RectOp (short Action, long Left, long Top, long Right, long B
       CBrush* oldBrush = pdc->SelectObject(&br);
       pdc->ExtFloodFill (Left, Top, Colour1, FLOODFILLSURFACE);
       pdc->SelectObject (oldBrush);
-      break; 
+      break;
       }
 
     default: return eUnknownOption;
@@ -348,46 +348,46 @@ long  CMiniWindow::RectOp (short Action, long Left, long Top, long Right, long B
 
   return eOK;
 
-  } // end of CMiniWindow::RectOp 
-         
+  } // end of CMiniWindow::RectOp
+
 static long ValidatePenStyle (const long PenStyle, const long PenWidth)
   {
 
-  switch (PenStyle & PS_STYLE_MASK)   
+  switch (PenStyle & PS_STYLE_MASK)
     {
       // must be one of these flags
-      case PS_SOLID:           // 0  
-      case PS_NULL:            // 5   
+      case PS_SOLID:           // 0
+      case PS_NULL:            // 5
       case PS_INSIDEFRAME:     // 6
         break;
-        
-      case PS_DASH:            // 1       /* -------  */     
-      case PS_DOT:             // 2       /* .......  */     
-      case PS_DASHDOT:         // 3       /* _._._._  */     
-      case PS_DASHDOTDOT:      // 4       /* _.._.._  */  
-         if (PenWidth > 1) 
+
+      case PS_DASH:            // 1       /* -------  */
+      case PS_DOT:             // 2       /* .......  */
+      case PS_DASHDOT:         // 3       /* _._._._  */
+      case PS_DASHDOTDOT:      // 4       /* _.._.._  */
+         if (PenWidth > 1)
            return ePenStyleNotValid;
          break;
 
     default: return ePenStyleNotValid;
     }
 
-  switch (PenStyle & PS_ENDCAP_MASK)   
+  switch (PenStyle & PS_ENDCAP_MASK)
     {
       // must be one of these flags
-      case PS_ENDCAP_ROUND:   // 0x000  
-      case PS_ENDCAP_SQUARE:  // 0x100   
+      case PS_ENDCAP_ROUND:   // 0x000
+      case PS_ENDCAP_SQUARE:  // 0x100
       case PS_ENDCAP_FLAT:    // 0x200
         break;
 
     default: return ePenStyleNotValid;
     }
 
-  switch (PenStyle & PS_JOIN_MASK)   
+  switch (PenStyle & PS_JOIN_MASK)
     {
       // must be one of these flags
-      case PS_JOIN_ROUND:     // 0x0000  
-      case PS_JOIN_BEVEL:     // 0x1000   
+      case PS_JOIN_ROUND:     // 0x0000
+      case PS_JOIN_BEVEL:     // 0x1000
       case PS_JOIN_MITER:     // 0x2000
         break;
 
@@ -398,55 +398,55 @@ static long ValidatePenStyle (const long PenStyle, const long PenWidth)
   }
 
 
-long ValidateBrushStyle (const long BrushStyle, 
-                          const long PenColour, 
-                          const long BrushColour, 
+long ValidateBrushStyle (const long BrushStyle,
+                          const long PenColour,
+                          const long BrushColour,
                           CBrush & br)
   {
 
 
   LOGBRUSH lb;
-  lb.lbColor = PenColour; 
+  lb.lbColor = PenColour;
 
-  switch (BrushStyle)   
+  switch (BrushStyle)
     {
       // must be one of these flags
-      case BS_SOLID:           // 0 
+      case BS_SOLID:           // 0
          lb.lbStyle = BS_SOLID;
-         lb.lbColor = BrushColour; 
+         lb.lbColor = BrushColour;
          break;
-        
-      case BS_NULL:            // 1                          
+
+      case BS_NULL:            // 1
          lb.lbStyle = BS_NULL;
          break;
 
       // hatched styles:
-      case 2:              
+      case 2:
          lb.lbStyle = BS_HATCHED;
          lb.lbHatch = HS_HORIZONTAL;
          break;
 
-      case 3:              
+      case 3:
          lb.lbStyle = BS_HATCHED;
          lb.lbHatch = HS_VERTICAL;
          break;
 
-      case 4:             
+      case 4:
          lb.lbStyle = BS_HATCHED;
          lb.lbHatch = HS_FDIAGONAL;
          break;
 
-      case 5:              
+      case 5:
          lb.lbStyle = BS_HATCHED;
          lb.lbHatch = HS_BDIAGONAL;
          break;
 
-      case 6:              
+      case 6:
          lb.lbStyle = BS_HATCHED;
          lb.lbHatch = HS_CROSS;
          break;
 
-      case 7:              
+      case 7:
          lb.lbStyle = BS_HATCHED;
          lb.lbHatch = HS_DIAGCROSS;
          break;
@@ -456,7 +456,7 @@ long ValidateBrushStyle (const long BrushStyle,
       case 8:       // fine hatch
         {
         CBitmap bitmap;
-        WORD		wBits[] = { 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55 };
+        WORD    wBits[] = { 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55 };
 
         bitmap.CreateBitmap (8, 8, 1, 1, wBits);
         br.CreatePatternBrush (&bitmap);
@@ -466,7 +466,7 @@ long ValidateBrushStyle (const long BrushStyle,
       case 9:      // medium hatch
         {
         CBitmap bitmap;
-        WORD		wBits[] = { 0x33, 0x33, 0xCC, 0xCC, 0x33, 0x33, 0xCC, 0xCC, };     
+        WORD    wBits[] = { 0x33, 0x33, 0xCC, 0xCC, 0x33, 0x33, 0xCC, 0xCC, };
 
         bitmap.CreateBitmap (8, 8, 1, 1, wBits);
         br.CreatePatternBrush (&bitmap);
@@ -476,7 +476,7 @@ long ValidateBrushStyle (const long BrushStyle,
       case 10:       // coarse hatch
         {
         CBitmap bitmap;
-        WORD		wBits[] = { 0x0F, 0x0F, 0x0F, 0x0F, 0xF0, 0xF0, 0xF0, 0xF0 };
+        WORD    wBits[] = { 0x0F, 0x0F, 0x0F, 0x0F, 0xF0, 0xF0, 0xF0, 0xF0 };
 
         bitmap.CreateBitmap (8, 8, 1, 1, wBits);
         br.CreatePatternBrush (&bitmap);
@@ -486,7 +486,7 @@ long ValidateBrushStyle (const long BrushStyle,
       case 11:       // waves - horizontal
         {
         CBitmap bitmap;
-        WORD		wBits[] = { 0xCC, 0x33, 0x00, 0x00, 0xCC, 0x33, 0x00, 0x00  };
+        WORD    wBits[] = { 0xCC, 0x33, 0x00, 0x00, 0xCC, 0x33, 0x00, 0x00  };
 
         bitmap.CreateBitmap (8, 8, 1, 1, wBits);
         br.CreatePatternBrush (&bitmap);
@@ -496,7 +496,7 @@ long ValidateBrushStyle (const long BrushStyle,
       case 12:       // waves - vertical
         {
         CBitmap bitmap;
-        WORD		wBits[] = { 0x11, 0x11, 0x22, 0x22, 0x11, 0x11, 0x22, 0x22  };
+        WORD    wBits[] = { 0x11, 0x11, 0x22, 0x22, 0x11, 0x11, 0x22, 0x22  };
 
         bitmap.CreateBitmap (8, 8, 1, 1, wBits);
         br.CreatePatternBrush (&bitmap);
@@ -524,9 +524,9 @@ long ValidateBrushStyle (const long BrushStyle,
   */
 
 // various circle/ellipse/pie operations
-long CMiniWindow::CircleOp (short Action, 
-                            long Left, long Top, long Right, long Bottom, 
-                            long PenColour, long PenStyle, long PenWidth, 
+long CMiniWindow::CircleOp (short Action,
+                            long Left, long Top, long Right, long Bottom,
+                            long PenColour, long PenStyle, long PenWidth,
                             long BrushColour, long BrushStyle,
                             long Extra1, long Extra2, long Extra3, long Extra4)
   {
@@ -541,10 +541,10 @@ long CMiniWindow::CircleOp (short Action,
   if (ValidateBrushStyle (BrushStyle, PenColour, BrushColour, br))
     return eBrushStyleNotValid;
 
-  // create requested pen 
+  // create requested pen
   CPen pen;
   MakeAPen (pen, PenColour, PenStyle, PenWidth);
- 
+
   // select into DC
   CPen* oldPen = pdc->SelectObject(&pen);
   CBrush* oldBrush = pdc->SelectObject(&br);
@@ -566,45 +566,45 @@ long CMiniWindow::CircleOp (short Action,
     pdc->SetBkMode (TRANSPARENT);
 
   switch (Action)
-                                  
+
     {
     case 1:       // ellipse
       {
       pdc->Ellipse (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)));
       iResult = eOK;
-      break; 
+      break;
       }
 
     case 2:       // rectangle
       {
       pdc->Rectangle (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)));
       iResult = eOK;
-      break; 
+      break;
       }
 
     case 3:       // round rectangle
       {
       pdc->RoundRect (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)), CPoint (Extra1, Extra2));
       iResult = eOK;
-      break; 
+      break;
       }
 
     case 4:       // chord
       {
-      pdc->Chord (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)), 
-                CPoint (Extra1, Extra2), 
+      pdc->Chord (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)),
+                CPoint (Extra1, Extra2),
                 CPoint (Extra3, Extra4));
       iResult = eOK;
-      break; 
+      break;
       }
 
     case 5:       // pie
       {
-      pdc->Pie (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)), 
-                CPoint (Extra1, Extra2), 
+      pdc->Pie (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)),
+                CPoint (Extra1, Extra2),
                 CPoint (Extra3, Extra4));
       iResult = eOK;
-      break; 
+      break;
       }
 
     } // end of switch
@@ -616,13 +616,13 @@ long CMiniWindow::CircleOp (short Action,
   return iResult;
 
   } // end of CMiniWindow::CircleOp
-                    
+
 
 // add a font to our map of fonts by name (eg. "inventory")
 long CMiniWindow::Font (LPCTSTR FontId,        // eg. "inventory"
                         LPCTSTR FontName,      // eg. "Courier New"
-                       double Size, 
-                       BOOL Bold, BOOL Italic, BOOL Underline, BOOL Strikeout, 
+                       double Size,
+                       BOOL Bold, BOOL Italic, BOOL Underline, BOOL Strikeout,
                        short Charset, short PitchAndFamily)
   {
 
@@ -642,19 +642,19 @@ long CMiniWindow::Font (LPCTSTR FontId,        // eg. "inventory"
 
   int lfHeight = -MulDiv(Size ? Size : 10.0, pdc->GetDeviceCaps(LOGPIXELSY), 72);
 
-  if (pFont->CreateFont (lfHeight, 
-				                  0, // int nWidth, 
-				                  0, // int nEscapement, 
-				                  0, // int nOrientation, 
-                          Bold ? FW_BOLD : FW_NORMAL, // int nWeight, 
-                          Italic, // BYTE bItalic, 
-                          Underline, // BYTE bUnderline, 
-                          Strikeout, // BYTE cStrikeOut, 
+  if (pFont->CreateFont (lfHeight,
+                          0, // int nWidth,
+                          0, // int nEscapement,
+                          0, // int nOrientation,
+                          Bold ? FW_BOLD : FW_NORMAL, // int nWeight,
+                          Italic, // BYTE bItalic,
+                          Underline, // BYTE bUnderline,
+                          Strikeout, // BYTE cStrikeOut,
                           Charset,
-                          0, // BYTE nOutPrecision, 
-                          0, // BYTE nClipPrecision, 
-                          0, // BYTE nQuality, 
-                          PitchAndFamily, 
+                          0, // BYTE nOutPrecision,
+                          0, // BYTE nClipPrecision,
+                          0, // BYTE nQuality,
+                          PitchAndFamily,
                           FontName) == 0)
     {
     delete pFont;
@@ -665,35 +665,35 @@ long CMiniWindow::Font (LPCTSTR FontId,        // eg. "inventory"
   m_Fonts [FontId] = pFont;
   return eOK;
 
-  }   // end of CMiniWindow::Font 
+  }   // end of CMiniWindow::Font
 
 
 static void SetUpVariantLong (VARIANT & tVariant, const long iContents)
   {
   VariantClear (&tVariant);
   tVariant.vt = VT_I4;
-  tVariant.lVal = iContents; 
+  tVariant.lVal = iContents;
   }   // end of SetUpVariantLong
 
 static void SetUpVariantString (VARIANT & tVariant, const CString & strContents)
   {
   VariantClear (&tVariant);
   tVariant.vt = VT_BSTR;
-  tVariant.bstrVal = strContents.AllocSysString (); 
+  tVariant.bstrVal = strContents.AllocSysString ();
   }   // end of SetUpVariantString
 
 static void SetUpVariantBool (VARIANT & tVariant, const BOOL iContents)
   {
   VariantClear (&tVariant);
   tVariant.vt = VT_BOOL;
-  tVariant.boolVal = iContents; 
+  tVariant.boolVal = iContents;
   }   // end of SetUpVariantBool
 
 static void SetUpVariantDate (VARIANT & tVariant, const COleDateTime iContents)
   {
   VariantClear (&tVariant);
   tVariant.vt = VT_DATE;
-  tVariant.date = iContents; 
+  tVariant.date = iContents;
   }   // end of SetUpVariantDate
 
 // return info about the select font
@@ -705,7 +705,7 @@ void CMiniWindow::FontInfo (LPCTSTR FontId, long InfoType, VARIANT & vaResult)
     return;   // no such font
 
   CFont* oldFont = pdc->SelectObject(it->second);    // select in the requested font
-  
+
   TEXTMETRIC tm;
   pdc->GetTextMetrics(&tm);
 
@@ -715,27 +715,27 @@ void CMiniWindow::FontInfo (LPCTSTR FontId, long InfoType, VARIANT & vaResult)
   switch (InfoType)
     {
 
-    case  1:  SetUpVariantLong (vaResult, tm.tmHeight);           break;               
-    case  2:  SetUpVariantLong (vaResult, tm.tmAscent);           break;               
-    case  3:  SetUpVariantLong (vaResult, tm.tmDescent);          break;              
-    case  4:  SetUpVariantLong (vaResult, tm.tmInternalLeading);  break;      
-    case  5:  SetUpVariantLong (vaResult, tm.tmExternalLeading);  break;      
-    case  6:  SetUpVariantLong (vaResult, tm.tmAveCharWidth);     break;         
-    case  7:  SetUpVariantLong (vaResult, tm.tmMaxCharWidth);     break;         
-    case  8:  SetUpVariantLong (vaResult, tm.tmWeight);           break;               
-    case  9:  SetUpVariantLong (vaResult, tm.tmOverhang);         break;             
-    case 10:  SetUpVariantLong (vaResult, tm.tmDigitizedAspectX); break;    
-    case 11:  SetUpVariantLong (vaResult, tm.tmDigitizedAspectY); break;    
-    case 12:  SetUpVariantLong (vaResult, tm.tmFirstChar);        break;           
-    case 13:  SetUpVariantLong (vaResult, tm.tmLastChar);         break;            
-    case 14:  SetUpVariantLong (vaResult, tm.tmDefaultChar);      break;         
-    case 15:  SetUpVariantLong (vaResult, tm.tmBreakChar);        break;           
-    case 16:  SetUpVariantLong (vaResult, tm.tmItalic);           break;              
-    case 17:  SetUpVariantLong (vaResult, tm.tmUnderlined);       break;          
-    case 18:  SetUpVariantLong (vaResult, tm.tmStruckOut);        break;           
-    case 19:  SetUpVariantLong (vaResult, tm.tmPitchAndFamily);   break;      
-    case 20:  SetUpVariantLong (vaResult, tm.tmCharSet);          break;             
-    case 21:  SetUpVariantString (vaResult, rString);             break;             
+    case  1:  SetUpVariantLong (vaResult, tm.tmHeight);           break;
+    case  2:  SetUpVariantLong (vaResult, tm.tmAscent);           break;
+    case  3:  SetUpVariantLong (vaResult, tm.tmDescent);          break;
+    case  4:  SetUpVariantLong (vaResult, tm.tmInternalLeading);  break;
+    case  5:  SetUpVariantLong (vaResult, tm.tmExternalLeading);  break;
+    case  6:  SetUpVariantLong (vaResult, tm.tmAveCharWidth);     break;
+    case  7:  SetUpVariantLong (vaResult, tm.tmMaxCharWidth);     break;
+    case  8:  SetUpVariantLong (vaResult, tm.tmWeight);           break;
+    case  9:  SetUpVariantLong (vaResult, tm.tmOverhang);         break;
+    case 10:  SetUpVariantLong (vaResult, tm.tmDigitizedAspectX); break;
+    case 11:  SetUpVariantLong (vaResult, tm.tmDigitizedAspectY); break;
+    case 12:  SetUpVariantLong (vaResult, tm.tmFirstChar);        break;
+    case 13:  SetUpVariantLong (vaResult, tm.tmLastChar);         break;
+    case 14:  SetUpVariantLong (vaResult, tm.tmDefaultChar);      break;
+    case 15:  SetUpVariantLong (vaResult, tm.tmBreakChar);        break;
+    case 16:  SetUpVariantLong (vaResult, tm.tmItalic);           break;
+    case 17:  SetUpVariantLong (vaResult, tm.tmUnderlined);       break;
+    case 18:  SetUpVariantLong (vaResult, tm.tmStruckOut);        break;
+    case 19:  SetUpVariantLong (vaResult, tm.tmPitchAndFamily);   break;
+    case 20:  SetUpVariantLong (vaResult, tm.tmCharSet);          break;
+    case 21:  SetUpVariantString (vaResult, rString);             break;
 
     default:
       vaResult.vt = VT_NULL;
@@ -752,13 +752,13 @@ void CMiniWindow::FontList (VARIANT & vaResult)
   COleSafeArray sa;   // for array list
 
   long iCount = 0;
-  
+
   // put the arrays into the array
   if (!m_Fonts.empty ())    // cannot create empty dimension
     {
     sa.CreateOneDim (VT_VARIANT, m_Fonts.size ());
 
-    for (FontMapIterator it = m_Fonts.begin (); 
+    for (FontMapIterator it = m_Fonts.begin ();
          it != m_Fonts.end ();
          it++)
            {
@@ -770,7 +770,7 @@ void CMiniWindow::FontList (VARIANT & vaResult)
 
     } // end of having at least one
 
-	vaResult = sa.Detach ();
+  vaResult = sa.Detach ();
 
 
   } // end of  CMiniWindow::FontList
@@ -780,7 +780,7 @@ void CMiniWindow::FontList (VARIANT & vaResult)
 //helper function to calculate length of UTF8 string
 static long CalculateUTF8length (LPCTSTR Text, size_t length)
   {
- 
+
   int erroroffset;
   int iBad = _pcre_valid_utf ((unsigned char  *) Text, length, &erroroffset);
   if (iBad > 0)
@@ -792,10 +792,10 @@ static long CalculateUTF8length (LPCTSTR Text, size_t length)
 
   // this algorithm assumes the UTF-8 is OK, based on the earlier check
 
-  for (register const unsigned char *p = (const unsigned char *) Text ; 
-       length-- > 0; 
+  for (register const unsigned char *p = (const unsigned char *) Text ;
+       length-- > 0;
        i++)
-    {          
+    {
     register int ab;    // additional bytes
     register int c = *p++;  // this byte
 
@@ -846,13 +846,13 @@ long CMiniWindow::Text (LPCTSTR FontId,  // which previously-created font
 
   CSize textsize;
 
-  pdc->SetTextColor (Colour);  
+  pdc->SetTextColor (Colour);
   pdc->SetBkMode (TRANSPARENT);
 
   if (Unicode)
     {
     vector<WCHAR> v (utf8_length);    // get correct size vector
-    int iUnicodeCharacters = MultiByteToWideChar (CP_UTF8, 0, 
+    int iUnicodeCharacters = MultiByteToWideChar (CP_UTF8, 0,
                               Text, length,            // input
                               &v [0], utf8_length);    // output
 
@@ -870,7 +870,7 @@ long CMiniWindow::Text (LPCTSTR FontId,  // which previously-created font
     }
   else
     {
-    pdc->ExtTextOut (Left, Top, ETO_CLIPPED, CRect (Left, Top, FixRight (Right), FixBottom (Bottom)), 
+    pdc->ExtTextOut (Left, Top, ETO_CLIPPED, CRect (Left, Top, FixRight (Right), FixBottom (Bottom)),
                   Text, length, NULL);
     textsize = pdc->GetTextExtent (Text, length);
 
@@ -880,7 +880,7 @@ long CMiniWindow::Text (LPCTSTR FontId,  // which previously-created font
   pdc->SelectObject(oldFont);
 
   return min (textsize.cx, FixRight (Right) - Left);  // if clipped, length is width of rectangle
-  } // end of CMiniWindow::Text 
+  } // end of CMiniWindow::Text
 
 
 // measure text, ordinary or UTF8
@@ -917,7 +917,7 @@ long CMiniWindow::TextWidth (LPCTSTR FontId,  // which previously-created font
   if (Unicode)
     {
     vector<WCHAR> v (utf8_length);    // get correct size vector
-    int iUnicodeCharacters = MultiByteToWideChar (CP_UTF8, 0,     
+    int iUnicodeCharacters = MultiByteToWideChar (CP_UTF8, 0,
                               Text, length,           // input
                               &v [0], utf8_length);   // output
 
@@ -942,7 +942,7 @@ long CMiniWindow::TextWidth (LPCTSTR FontId,  // which previously-created font
 
 
 // draws a straight line
-long CMiniWindow::Line (long x1, long y1, long x2, long y2, 
+long CMiniWindow::Line (long x1, long y1, long x2, long y2,
                         long PenColour, long PenStyle, long PenWidth)
   {
 
@@ -958,7 +958,7 @@ long CMiniWindow::Line (long x1, long y1, long x2, long y2,
   CPen* oldPen = pdc->SelectObject(&pen);
 
   pdc->MoveTo (x1, y1);
-  pdc->LineTo (x2, y2);    // note NOT: FixRight (x2), FixBottom (y2) (as at version 4.38) 
+  pdc->LineTo (x2, y2);    // note NOT: FixRight (x2), FixBottom (y2) (as at version 4.38)
 
   // put things back
   pdc->SelectObject (oldPen);
@@ -969,9 +969,9 @@ long CMiniWindow::Line (long x1, long y1, long x2, long y2,
 
 
 // draws an arc
-long CMiniWindow::Arc (long Left, long Top, long Right, long Bottom, 
-                        long x1, long y1, 
-                        long x2, long y2, 
+long CMiniWindow::Arc (long Left, long Top, long Right, long Bottom,
+                        long x1, long y1,
+                        long x2, long y2,
                         long PenColour, long PenStyle, long PenWidth)
   {
 
@@ -986,7 +986,7 @@ long CMiniWindow::Arc (long Left, long Top, long Right, long Bottom,
 
   CPen* oldPen = pdc->SelectObject(&pen);
 
-  pdc->Arc(Left, Top, FixRight (Right), FixBottom (Bottom), 
+  pdc->Arc(Left, Top, FixRight (Right), FixBottom (Bottom),
           x1, y1, // from
           FixRight (x2), FixBottom (y2)); // to
 
@@ -1004,7 +1004,7 @@ void CMiniWindow::Info (long InfoType, VARIANT & vaResult)
 
   switch (InfoType)
     {
-    case  1:  SetUpVariantLong    (vaResult, m_Location.x);        break; // left 
+    case  1:  SetUpVariantLong    (vaResult, m_Location.x);        break; // left
     case  2:  SetUpVariantLong    (vaResult, m_Location.y);        break; // top
     case  3:  SetUpVariantLong    (vaResult, m_iWidth);            break; // width
     case  4:  SetUpVariantLong    (vaResult, m_iHeight);           break; // height
@@ -1085,12 +1085,12 @@ long CMiniWindow::LoadImage (LPCTSTR ImageId, LPCTSTR FileName)
                   LR_LOADFROMFILE|LR_CREATEDIBSECTION
                   );
 
-   if (hBmp) 
+   if (hBmp)
      {
       CBitmap * pImage = new CBitmap;
       pImage->Attach (hBmp);
       m_Images [ImageId] = pImage;
-    	return eOK;
+      return eOK;
      }  // end of having a bitmap loaded
 
 
@@ -1104,8 +1104,8 @@ long CMiniWindow::LoadImage (LPCTSTR ImageId, LPCTSTR FileName)
 
 
 // loads an image from memory, ready for drawing into window
-long CMiniWindow::LoadImageMemory(LPCTSTR ImageId, 
-                                 unsigned char * Buffer, 
+long CMiniWindow::LoadImageMemory(LPCTSTR ImageId,
+                                 unsigned char * Buffer,
                                  const size_t Length,
                                  const bool bAlpha)
   {
@@ -1118,10 +1118,10 @@ long CMiniWindow::LoadImageMemory(LPCTSTR ImageId,
     }
 
   HBITMAP hbmp;
-  
+
   long result =  LoadPngMemory (Buffer, Length, hbmp, bAlpha);
 
-  if (result != eOK) 
+  if (result != eOK)
     return result;
 
   // make bitmap to add to images list
@@ -1152,10 +1152,10 @@ long CMiniWindow::LoadPngImage (LPCTSTR ImageId, LPCTSTR FileName)
   {
 
   HBITMAP hbmp;
-  
+
   long result =  LoadPng (FileName, hbmp);
 
-  if (result != eOK) 
+  if (result != eOK)
     return result;
 
   // make bitmap to add to images list
@@ -1185,7 +1185,7 @@ long CMiniWindow::Write (LPCTSTR FileName)
     return eBadParameter;
 
   // must be .bmp or .png file
-  if (strFileName.Right (4).CompareNoCase (".bmp") != 0 && 
+  if (strFileName.Right (4).CompareNoCase (".bmp") != 0 &&
       strFileName.Right (4).CompareNoCase (".png") != 0)
     return eBadParameter;
 
@@ -1198,7 +1198,7 @@ long CMiniWindow::Write (LPCTSTR FileName)
   ZeroMemory (&bmi, sizeof bmi);
 
   bmi.bmiHeader.biSize = sizeof bmi;
-  bmi.bmiHeader.biWidth =          m_iWidth;       
+  bmi.bmiHeader.biWidth =          m_iWidth;
   bmi.bmiHeader.biHeight =         m_iHeight;
   bmi.bmiHeader.biPlanes =         1;
   bmi.bmiHeader.biBitCount =       24;
@@ -1212,7 +1212,7 @@ long CMiniWindow::Write (LPCTSTR FileName)
   HBITMAP hOldAbmp = (HBITMAP) SelectObject(gDC.m_hDC, hbmG);
 
   // copy image from miniwindow to bitmap
-  gDC.BitBlt (0, 0, m_iWidth, m_iHeight, &(*pdc), 0, 0, SRCCOPY);  
+  gDC.BitBlt (0, 0, m_iWidth, m_iHeight, &(*pdc), 0, 0, SRCCOPY);
 
   long iReturn = eOK;
 
@@ -1223,28 +1223,28 @@ long CMiniWindow::Write (LPCTSTR FileName)
     {     // write BMP file
 
     // create requested file
-	  CFile file;
-	  if( !file.Open (FileName, CFile::modeWrite | CFile::modeCreate))
-		  return eCouldNotOpenFile;
+    CFile file;
+    if( !file.Open (FileName, CFile::modeWrite | CFile::modeCreate))
+      return eCouldNotOpenFile;
 
-    BITMAPFILEHEADER	hdr;
+    BITMAPFILEHEADER  hdr;
     ZeroMemory (&hdr, sizeof hdr);
 
-	  // Fill in the fields of the file header 
-	  hdr.bfType		= ((WORD) ('M' << 8) | 'B');	// is always "BM"
-	  hdr.bfOffBits	= sizeof hdr  + sizeof bmi.bmiHeader;
-	  hdr.bfSize		=  hdr.bfOffBits + bmi.bmiHeader.biSizeImage;
- 
-    try
-      { 
-	    // Write the file header 
-	    file.Write( &hdr, sizeof hdr);
-  
-	    // Write the bitmap info header 
-	    file.Write( &bmi.bmiHeader, sizeof bmi.bmiHeader);
+    // Fill in the fields of the file header
+    hdr.bfType    = ((WORD) ('M' << 8) | 'B');  // is always "BM"
+    hdr.bfOffBits = sizeof hdr  + sizeof bmi.bmiHeader;
+    hdr.bfSize    =  hdr.bfOffBits + bmi.bmiHeader.biSizeImage;
 
-	    // Write the bits 
-	    file.Write( pA,  bmi.bmiHeader.biSizeImage);
+    try
+      {
+      // Write the file header
+      file.Write( &hdr, sizeof hdr);
+
+      // Write the bitmap info header
+      file.Write( &bmi.bmiHeader, sizeof bmi.bmiHeader);
+
+      // Write the bits
+      file.Write( pA,  bmi.bmiHeader.biSizeImage);
       }
     catch (CFileException * e)
       {
@@ -1288,7 +1288,7 @@ long CMiniWindow::WritePng (LPCTSTR FileName, const BITMAPINFO * bmi, unsigned c
     fclose (fp);
     return eLogFileBadWrite;
     }
-  
+
 
 #pragma warning (push)
 #pragma warning (disable : 4611)  // interaction between '_setjmp' and C++ object destruction is non-portable
@@ -1308,14 +1308,14 @@ long CMiniWindow::WritePng (LPCTSTR FileName, const BITMAPINFO * bmi, unsigned c
   png_init_io (png_ptr, fp);
 
   // tell PNG the file format
-  png_set_IHDR  (png_ptr, 
-                 info_ptr, 
-                 bmi->bmiHeader.biWidth, 
+  png_set_IHDR  (png_ptr,
+                 info_ptr,
+                 bmi->bmiHeader.biWidth,
                  bmi->bmiHeader.biHeight,
                  8,        // bits per pixel
-                 PNG_COLOR_TYPE_RGB, 
+                 PNG_COLOR_TYPE_RGB,
                  PNG_INTERLACE_NONE,
-                 PNG_COMPRESSION_TYPE_DEFAULT, 
+                 PNG_COMPRESSION_TYPE_DEFAULT,
                  PNG_FILTER_TYPE_DEFAULT);
 
   // set up pointer to each row of data
@@ -1340,7 +1340,7 @@ long CMiniWindow::WritePng (LPCTSTR FileName, const BITMAPINFO * bmi, unsigned c
 
   // wrap up
   png_write_end (png_ptr, info_ptr);
-  
+
   // done with data
   png_destroy_write_struct (&png_ptr, &info_ptr);
 
@@ -1355,7 +1355,7 @@ long CMiniWindow::WritePng (LPCTSTR FileName, const BITMAPINFO * bmi, unsigned c
 
   for monitors with 256 colours or less, consider:
 
-HDRAWDIB hdd = DrawDibOpen(); 
+HDRAWDIB hdd = DrawDibOpen();
 DrawDibDraw(hdd, hPaintDC,0,0,BITMAP_WIDTH,BITMAP_HEIGHT,&m_BitmapInfo,m_pBits,0,0,BITMAP_WIDTH,BITMAP_HEIGHT,DDF_HALFTONE);
 DrawDibClose(hdd);
 
@@ -1363,8 +1363,8 @@ DrawDibClose(hdd);
 
 
 // draw a previously-loaded image into the window
-long CMiniWindow::DrawImage(LPCTSTR ImageId, 
-               long Left, long Top, long Right, long Bottom, 
+long CMiniWindow::DrawImage(LPCTSTR ImageId,
+               long Left, long Top, long Right, long Bottom,
                short Mode,
                long SrcLeft, long SrcTop, long SrcRight, long SrcBottom)
   {
@@ -1389,10 +1389,10 @@ long CMiniWindow::DrawImage(LPCTSTR ImageId,
   CBitmap *pOldbmp = bmDC.SelectObject(bitmap);
 
   // adjust so that -1 means 1 from right
-  if (SrcRight <= 0) 
+  if (SrcRight <= 0)
     SrcRight = bi.bmWidth + SrcRight;
 
-  if (SrcBottom <= 0) 
+  if (SrcBottom <= 0)
     SrcBottom =  bi.bmHeight + SrcBottom;
 
   // calculate size of desired rectangle
@@ -1402,45 +1402,45 @@ long CMiniWindow::DrawImage(LPCTSTR ImageId,
   if (iWidth > 0 && iHeight > 0)   // sanity check
     switch (Mode)
       {
-      case 1: pdc->BitBlt (Left, Top, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);  
+      case 1: pdc->BitBlt (Left, Top, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);
               break;      // straight copy
 
-      case 2: pdc->StretchBlt (Left, Top, FixRight (Right) - Left, FixBottom (Bottom) - Top, &bmDC, 
+      case 2: pdc->StretchBlt (Left, Top, FixRight (Right) - Left, FixBottom (Bottom) - Top, &bmDC,
                              SrcLeft, SrcTop, SrcRight - SrcLeft, SrcBottom - SrcTop, SRCCOPY);
               break;      // stretch
 
       case 3:        // transparency, och!
         {
         COLORREF crOldBack = pdc->SetBkColor (RGB (255, 255, 255));    // white
-	      COLORREF crOldText = pdc->SetTextColor (RGB (0, 0, 0));        // black
-	      CDC dcTrans;   // transparency mask
+        COLORREF crOldText = pdc->SetTextColor (RGB (0, 0, 0));        // black
+        CDC dcTrans;   // transparency mask
 
 
-	      // Create a memory (*pdc) for the mask
-	      dcTrans.CreateCompatibleDC(&(*pdc));
+        // Create a memory (*pdc) for the mask
+        dcTrans.CreateCompatibleDC(&(*pdc));
 
-	      // Create the mask bitmap for the subset of the main image
-	      CBitmap bitmapTrans;
-	      bitmapTrans.CreateBitmap(iWidth, iHeight, 1, 1, NULL);
+        // Create the mask bitmap for the subset of the main image
+        CBitmap bitmapTrans;
+        bitmapTrans.CreateBitmap(iWidth, iHeight, 1, 1, NULL);
 
-	      // Select the mask bitmap into the appropriate (*pdc)
-	      CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
+        // Select the mask bitmap into the appropriate (*pdc)
+        CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
 
         // Our transparent pixel will be at 0,0 (top left corner) of original image (not subimage)
         COLORREF crOldBackground = bmDC.SetBkColor (::GetPixel (bmDC, 0, 0));
 
-	      // Build mask based on transparent colour at location 0, 0
-	      dcTrans.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);
+        // Build mask based on transparent colour at location 0, 0
+        dcTrans.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);
 
-	      // Do the work 
-	      pdc->BitBlt (Left, Top, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCINVERT);
-	      pdc->BitBlt (Left, Top, iWidth, iHeight, &dcTrans, 0, 0, SRCAND);
-	      pdc->BitBlt (Left, Top, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCINVERT);
+        // Do the work
+        pdc->BitBlt (Left, Top, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCINVERT);
+        pdc->BitBlt (Left, Top, iWidth, iHeight, &dcTrans, 0, 0, SRCAND);
+        pdc->BitBlt (Left, Top, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCINVERT);
 
-	      // Restore settings
-	      dcTrans.SelectObject(pOldBitmapTrans);
-	      pdc->SetBkColor(crOldBack);
-	      pdc->SetTextColor(crOldText);
+        // Restore settings
+        dcTrans.SelectObject(pOldBitmapTrans);
+        pdc->SetBkColor(crOldBack);
+        pdc->SetTextColor(crOldText);
         bmDC.SetBkColor(crOldBackground);
         }
         break;
@@ -1460,13 +1460,13 @@ void CMiniWindow::ImageList(VARIANT & vaResult)
   COleSafeArray sa;   // for array list
 
   long iCount = 0;
-  
+
   // put the arrays into the array
   if (!m_Images.empty ())    // cannot create empty dimension
     {
     sa.CreateOneDim (VT_VARIANT, m_Images.size ());
 
-    for (ImageMapIterator it = m_Images.begin (); 
+    for (ImageMapIterator it = m_Images.begin ();
          it != m_Images.end ();
          it++)
            {
@@ -1478,7 +1478,7 @@ void CMiniWindow::ImageList(VARIANT & vaResult)
 
     } // end of having at least one
 
-	vaResult = sa.Detach ();
+  vaResult = sa.Detach ();
 
   }   // end of CMiniWindow::ImageList
 
@@ -1562,7 +1562,7 @@ long CMiniWindow::Bezier(LPCTSTR Points, long PenColour, long PenStyle, long Pen
   MakeAPen (pen, PenColour, PenStyle, PenWidth);
   CPen* oldPen = pdc->SelectObject(&pen);
 
-  pdc->PolyBezier(&points [0], iCount); 
+  pdc->PolyBezier(&points [0], iCount);
 
   // put things back
   pdc->SelectObject (oldPen);
@@ -1574,9 +1574,9 @@ long CMiniWindow::Bezier(LPCTSTR Points, long PenColour, long PenStyle, long Pen
 
 
 // draw a polygon (straight lines)
-long CMiniWindow::Polygon(LPCTSTR Points, 
-                         long PenColour, short PenStyle, long PenWidth, 
-                         long BrushColour, long BrushStyle, 
+long CMiniWindow::Polygon(LPCTSTR Points,
+                         long PenColour, short PenStyle, long PenWidth,
+                         long BrushColour, long BrushStyle,
                          BOOL Close,
                          BOOL Winding)
   {
@@ -1622,7 +1622,7 @@ long CMiniWindow::Polygon(LPCTSTR Points,
     iCurrent++;  // onto next point
     }
 
-  // create requested pen 
+  // create requested pen
   CPen pen;
   MakeAPen (pen, PenColour, PenStyle, PenWidth);
 
@@ -1649,9 +1649,9 @@ long CMiniWindow::Polygon(LPCTSTR Points,
     pdc->SetBkMode (TRANSPARENT);
 
   if (Close)
-    pdc->Polygon(&points [0], iCount); 
+    pdc->Polygon(&points [0], iCount);
   else
-    pdc->Polyline(&points [0], iCount); 
+    pdc->Polyline(&points [0], iCount);
 
   // put things back
   pdc->SelectObject (oldPen);
@@ -1660,11 +1660,11 @@ long CMiniWindow::Polygon(LPCTSTR Points,
   return eOK;
 
   }   // end of CMiniWindow::Polygon
-                           
+
 // reposition window
-long CMiniWindow::Position(long Left, long Top, 
-                           short Position, 
-                           long Flags) 
+long CMiniWindow::Position(long Left, long Top,
+                           short Position,
+                           long Flags)
   {
   m_Location.x           = Left     ;
   m_Location.y           = Top      ;
@@ -1680,19 +1680,19 @@ long CMiniWindow::Position(long Left, long Top,
 
   Cursor values:
 
-  0:  arrow                                
-  1:  hand                                 
-  2:  I-beam                               
-  3:  + symbol                           
-  4:  wait (hour-glass)                    
-  5:  up arrow                             
-  6:  arrow nw-se                          
-  7:  arrow ne-sw                          
-  8:  arrow e-w                            
-  9:  arrow n-s                            
- 10:  arrow - all ways                     
- 11:  (X) no, no, I won't do that, but ... 
- 12:  help  (? symbol)                     
+  0:  arrow
+  1:  hand
+  2:  I-beam
+  3:  + symbol
+  4:  wait (hour-glass)
+  5:  up arrow
+  6:  arrow nw-se
+  7:  arrow ne-sw
+  8:  arrow e-w
+  9:  arrow n-s
+ 10:  arrow - all ways
+ 11:  (X) no, no, I won't do that, but ...
+ 12:  help  (? symbol)
 
 
   Flags:
@@ -1703,16 +1703,16 @@ long CMiniWindow::Position(long Left, long Top,
 
 // add a hotspot for handling mouse-over, mouse up/down events
 long CMiniWindow::AddHotspot(CMUSHclientDoc * pDoc,
-                             LPCTSTR HotspotId, 
+                             LPCTSTR HotspotId,
                              string sPluginID,
-                             long Left, long Top, long Right, long Bottom, 
-                             LPCTSTR MouseOver, 
-                             LPCTSTR CancelMouseOver, 
-                             LPCTSTR MouseDown, 
-                             LPCTSTR CancelMouseDown, 
-                             LPCTSTR MouseUp, 
+                             long Left, long Top, long Right, long Bottom,
+                             LPCTSTR MouseOver,
+                             LPCTSTR CancelMouseOver,
+                             LPCTSTR MouseDown,
+                             LPCTSTR CancelMouseDown,
+                             LPCTSTR MouseUp,
                              LPCTSTR TooltipText,
-                             long Cursor, 
+                             long Cursor,
                              long Flags)
   {
 
@@ -1770,7 +1770,7 @@ long CMiniWindow::AddHotspot(CMUSHclientDoc * pDoc,
     pHotspot->m_dispid_CancelMouseDown  = pDoc->GetProcedureDispid (CancelMouseDown, "cancel mouse down", "", strErrorMessage);
     pHotspot->m_dispid_MouseUp          = pDoc->GetProcedureDispid (MouseUp, "mouse up", "", strErrorMessage);
     }
-    
+
   m_Hotspots [HotspotId] = pHotspot;
 
   return eOK;
@@ -1807,13 +1807,13 @@ void CMiniWindow::HotspotList(VARIANT & vaResult)
   COleSafeArray sa;   // for array list
 
   long iCount = 0;
-  
+
   // put the arrays into the array
   if (!m_Hotspots.empty ())    // cannot create empty dimension
     {
     sa.CreateOneDim (VT_VARIANT, m_Hotspots.size ());
 
-    for (HotspotMapIterator it = m_Hotspots.begin (); 
+    for (HotspotMapIterator it = m_Hotspots.begin ();
          it != m_Hotspots.end ();
          it++)
            {
@@ -1825,7 +1825,7 @@ void CMiniWindow::HotspotList(VARIANT & vaResult)
 
     } // end of having at least one
 
-	vaResult = sa.Detach ();
+  vaResult = sa.Detach ();
 
   }    // end of CMiniWindow::HotspotList
 
@@ -1833,7 +1833,7 @@ void CMiniWindow::HotspotList(VARIANT & vaResult)
 long CMiniWindow::DeleteAllHotspots()
   {
   // delete our hotspots
-  for (HotspotMapIterator hit = m_Hotspots.begin (); 
+  for (HotspotMapIterator hit = m_Hotspots.begin ();
        hit != m_Hotspots.end ();
        hit++)
          delete hit->second;
@@ -1859,20 +1859,20 @@ void CMiniWindow::HotspotInfo(LPCTSTR HotspotId, long InfoType, VARIANT & vaResu
   switch (InfoType)
     {
 
-    case  1:  SetUpVariantLong   (vaResult, pHotspot->m_rect.left);                 break; // left 
+    case  1:  SetUpVariantLong   (vaResult, pHotspot->m_rect.left);                 break; // left
     case  2:  SetUpVariantLong   (vaResult, pHotspot->m_rect.top);                  break; // top
     case  3:  SetUpVariantLong   (vaResult, pHotspot->m_rect.right);                break; // right
     case  4:  SetUpVariantLong   (vaResult, pHotspot->m_rect.bottom);               break; // bottom
-    case  5:  SetUpVariantString (vaResult, pHotspot->m_sMouseOver.c_str ());       break;             
-    case  6:  SetUpVariantString (vaResult, pHotspot->m_sCancelMouseOver.c_str ()); break;             
-    case  7:  SetUpVariantString (vaResult, pHotspot->m_sMouseDown.c_str ());       break;             
-    case  8:  SetUpVariantString (vaResult, pHotspot->m_sCancelMouseDown.c_str ()); break;             
-    case  9:  SetUpVariantString (vaResult, pHotspot->m_sMouseUp.c_str ());         break;             
-    case 10:  SetUpVariantString (vaResult, pHotspot->m_sTooltipText.c_str ());     break;             
+    case  5:  SetUpVariantString (vaResult, pHotspot->m_sMouseOver.c_str ());       break;
+    case  6:  SetUpVariantString (vaResult, pHotspot->m_sCancelMouseOver.c_str ()); break;
+    case  7:  SetUpVariantString (vaResult, pHotspot->m_sMouseDown.c_str ());       break;
+    case  8:  SetUpVariantString (vaResult, pHotspot->m_sCancelMouseDown.c_str ()); break;
+    case  9:  SetUpVariantString (vaResult, pHotspot->m_sMouseUp.c_str ());         break;
+    case 10:  SetUpVariantString (vaResult, pHotspot->m_sTooltipText.c_str ());     break;
     case 11:  SetUpVariantLong   (vaResult, pHotspot->m_Cursor);                    break; // cursor code
     case 12:  SetUpVariantLong   (vaResult, pHotspot->m_Flags);                     break; // flags
-    case 13:  SetUpVariantString (vaResult, pHotspot->m_sMoveCallback.c_str ());    break; // drag-and-drop move callback            
-    case 14:  SetUpVariantString (vaResult, pHotspot->m_sReleaseCallback.c_str ()); break; // drag-and-drop release callback            
+    case 13:  SetUpVariantString (vaResult, pHotspot->m_sMoveCallback.c_str ());    break; // drag-and-drop move callback
+    case 14:  SetUpVariantString (vaResult, pHotspot->m_sReleaseCallback.c_str ()); break; // drag-and-drop release callback
     case 15:  SetUpVariantLong   (vaResult, pHotspot->m_DragFlags);                 break; // drag-and-drop flags
 
     default:
@@ -1884,10 +1884,10 @@ void CMiniWindow::HotspotInfo(LPCTSTR HotspotId, long InfoType, VARIANT & vaResu
   }    // end of CMiniWindow::HotspotInfo
 
 
-long CMiniWindow::ImageOp(short Action, 
-                          long Left, long Top, long Right, long Bottom, 
-                          long PenColour, long PenStyle, long PenWidth, 
-                          long BrushColour, LPCTSTR ImageId, 
+long CMiniWindow::ImageOp(short Action,
+                          long Left, long Top, long Right, long Bottom,
+                          long PenColour, long PenStyle, long PenWidth,
+                          long BrushColour, LPCTSTR ImageId,
                           long EllipseWidth, long EllipseHeight)
   {
 
@@ -1913,36 +1913,36 @@ long CMiniWindow::ImageOp(short Action,
 
   br.CreatePatternBrush (bitmap);
 
-  // create requested pen 
+  // create requested pen
   CPen pen;
   MakeAPen (pen, PenColour, PenStyle, PenWidth);
-  
+
   // select into DC
   CPen* oldPen = pdc->SelectObject(&pen);
   CBrush* oldBrush = pdc->SelectObject(&br);
 
   switch (Action)
-                                  
+
     {
     case 1:       // ellipse
       {
       pdc->Ellipse (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)));
       iResult = eOK;
-      break; 
+      break;
       }
 
     case 2:       // rectangle
       {
       pdc->Rectangle (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)));
       iResult = eOK;
-      break; 
+      break;
       }
 
     case 3:       // round rectangle
-      {                                                                                                                                         
+      {
       pdc->RoundRect (CRect (Left, Top, FixRight (Right), FixBottom (Bottom)), CPoint (EllipseWidth, EllipseHeight));
       iResult = eOK;
-      break; 
+      break;
       }
 
 
@@ -1971,7 +1971,7 @@ long CMiniWindow::CreateImage(LPCTSTR ImageId, long Row1, long Row2, long Row3, 
   CBitmap * pImage = new CBitmap;
 
   // bottom row comes first in a bitmap
-  WORD		wBits[8] = { (WORD) Row8, (WORD) Row7, (WORD) Row6, (WORD) Row5, 
+  WORD    wBits[8] = { (WORD) Row8, (WORD) Row7, (WORD) Row6, (WORD) Row5,
                        (WORD) Row4, (WORD) Row3, (WORD) Row2, (WORD) Row1 };
 
   pImage->CreateBitmap (8, 8, 1, 1, wBits);
@@ -1982,7 +1982,7 @@ long CMiniWindow::CreateImage(LPCTSTR ImageId, long Row1, long Row2, long Row3, 
   }  // end of CMiniWindow::CreateImage
 
 // see: http://www.nathanm.com/photoshop-blending-math/
-// and: http://www.pegtop.net/delphi/articles/blendmodes/                   
+// and: http://www.pegtop.net/delphi/articles/blendmodes/
 
 #define Blend_It(Op) \
    do \
@@ -2043,9 +2043,9 @@ long CMiniWindow::CreateImage(LPCTSTR ImageId, long Row1, long Row2, long Row3, 
 
 // see also: CMUSHclientDoc::BlendPixel
 
-long CMiniWindow::BlendImage(LPCTSTR ImageId, 
-                  long Left, long Top, long Right, long Bottom, 
-                  short Mode, double Opacity, 
+long CMiniWindow::BlendImage(LPCTSTR ImageId,
+                  long Left, long Top, long Right, long Bottom,
+                  short Mode, double Opacity,
                   long SrcLeft, long SrcTop, long SrcRight, long SrcBottom)
   {
 
@@ -2087,10 +2087,10 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
     SrcBottom = bi.bmHeight;
 
   // adjust so that -1 means 1 from right
-  if (SrcRight <= 0) 
+  if (SrcRight <= 0)
     SrcRight = bi.bmWidth + SrcRight;
 
-  if (SrcBottom <= 0) 
+  if (SrcBottom <= 0)
     SrcBottom =  bi.bmHeight + SrcBottom;
 
   // width and height are the smaller of the two rectangles
@@ -2104,7 +2104,7 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
   ZeroMemory (&bmi, sizeof bmi);
 
   bmi.bmiHeader.biSize = sizeof bmi;
-  bmi.bmiHeader.biWidth =          iWidth;       
+  bmi.bmiHeader.biWidth =          iWidth;
   bmi.bmiHeader.biHeight =         iHeight;
   bmi.bmiHeader.biPlanes =         1;
   bmi.bmiHeader.biBitCount =       24;
@@ -2126,7 +2126,7 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
   bmDC.CreateCompatibleDC(&(*pdc));
   CBitmap *pOldbmp = bmDC.SelectObject(bitmap);
 
-  A_DC.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);  
+  A_DC.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);
   bmDC.SelectObject(pOldbmp);
 
 
@@ -2143,7 +2143,7 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
   HBITMAP hOldBbmp = (HBITMAP) SelectObject(B_DC.m_hDC, hbmB);
 
   // copy base image from miniwindow to bitmap
-  B_DC.BitBlt (0, 0, iWidth, iHeight, &(*pdc), Left, Top, SRCCOPY);  
+  B_DC.BitBlt (0, 0, iWidth, iHeight, &(*pdc), Left, Top, SRCCOPY);
 
 
   // manipulate image here   A = blend, B = base
@@ -2151,7 +2151,7 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
 
   long count = bmi.bmiHeader.biSizeImage;
   long perline = BytesPerLine (iWidth, 24);
- 
+
   long i, row;
 
   // precompute cos table
@@ -2183,15 +2183,15 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
        for (row = 0; row < iHeight; row++)
         {
         long base = row * perline;
-        unsigned char rA, gA, bA, rB, gB, bB; 
-        for (i = 0; i < perline - 2; ) 
+        unsigned char rA, gA, bA, rB, gB, bB;
+        for (i = 0; i < perline - 2; )
           {
           double rnd = genrand ();
-          bA = pA [base + i];     
-          gA = pA [base + i + 1]; 
-          rA = pA [base + i + 2]; 
+          bA = pA [base + i];
+          gA = pA [base + i + 1];
+          rA = pA [base + i + 2];
 
-          bB = pB [base + i];  
+          bB = pB [base + i];
           gB = pB [base + i + 1];
           rB = pB [base + i + 2];
 
@@ -2215,7 +2215,7 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
     case  8: Blend_It (Blend_LinearBurn); break;
     case  9: Blend_It (Blend_InverseColorBurn);  break;
     case 10: Blend_It (Blend_Subtract);   break;
-    
+
     // lightening modes
     case 11: Blend_It (Blend_Lighten);    break;
     case 12: Blend_It (Blend_Screen);     break;
@@ -2223,7 +2223,7 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
     case 14: Blend_It (Blend_LinearDodge);break;
     case 15: Blend_It (Blend_InverseColorDodge);  break;
     case 16: Blend_It (Blend_Add);        break;
-      
+
     // soft/hard light etc.
     case 17: Blend_It (Blend_Overlay);    break;
     case 18: Blend_It (Blend_SoftLight);  break;
@@ -2242,7 +2242,7 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
     case 27: Blend_It (Blend_Glow);       break;
     case 28: Blend_It (Blend_Freeze);     break;
     case 29: Blend_It (Blend_Heat);       break;
-        
+
     case 30: Blend_It (Blend_Negation);   break;
     case 31: Blend_It (Blend_Phoenix);    break;
     case 32: Blend_It (Blend_Stamp);      break;
@@ -2253,29 +2253,29 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
     case 35: Blend_It (Blend_Or);       break;
 
     // the follow modes take one colour from the blend and retain 2 from the base
-    case 36: Colour_Op (rA, gB, bB); break;  // red  
+    case 36: Colour_Op (rA, gB, bB); break;  // red
     case 37: Colour_Op (rB, gA, bB); break;  // green
-    case 38: Colour_Op (rB, gB, bA); break;  // blue 
+    case 38: Colour_Op (rB, gB, bA); break;  // blue
 
     // the follow modes take two colours from the blend and retain 1 from the base
-    case 39: Colour_Op (rA, gA, bB); break;  // yellow 
-    case 40: Colour_Op (rB, gA, bA); break;  // cyan    
-    case 41: Colour_Op (rA, gB, bA); break;  // magenta    
+    case 39: Colour_Op (rA, gA, bB); break;  // yellow
+    case 40: Colour_Op (rB, gA, bA); break;  // cyan
+    case 41: Colour_Op (rA, gB, bA); break;  // magenta
 
     // limit green
-    case 42: Colour_Op (rA, (gA > rA) ? rA : gA, bA); break;  // green limited by red    
-    case 43: Colour_Op (rA, (gA > bA) ? bA : gA, bA); break;  // green limited by blue    
-    case 44: Colour_Op (rA, (gA > ((rA + bA) / 2)) ? ((rA + bA) / 2) : gA, bA); break;  // green limited by average of red and blue    
+    case 42: Colour_Op (rA, (gA > rA) ? rA : gA, bA); break;  // green limited by red
+    case 43: Colour_Op (rA, (gA > bA) ? bA : gA, bA); break;  // green limited by blue
+    case 44: Colour_Op (rA, (gA > ((rA + bA) / 2)) ? ((rA + bA) / 2) : gA, bA); break;  // green limited by average of red and blue
 
     // limit blue
-    case 45: Colour_Op (rA, gA, (bA > rA) ? rA : bA); break;  // blue limited by red    
-    case 46: Colour_Op (rA, gA, (bA > gA) ? gA : bA); break;  // blue limited by green    
-    case 47: Colour_Op (rA, gA, (bA > ((rA + gA) / 2)) ? ((rA + gA) / 2) : bA); break; // blue limited by average of red and green    
+    case 45: Colour_Op (rA, gA, (bA > rA) ? rA : bA); break;  // blue limited by red
+    case 46: Colour_Op (rA, gA, (bA > gA) ? gA : bA); break;  // blue limited by green
+    case 47: Colour_Op (rA, gA, (bA > ((rA + gA) / 2)) ? ((rA + gA) / 2) : bA); break; // blue limited by average of red and green
 
     // limit red
-    case 48: Colour_Op ((rA > gA) ? gA : rA, gA, bA); break;  // red limited by green    
-    case 49: Colour_Op ((rA > bA) ? bA : rA, gA, bA); break;  // red limited by blue    
-    case 50: Colour_Op ((rA > ((gA + bA) / 2)) ? ((gA + bA) / 2) : rA, gA, bA); break;  // red limited by average of green and blue    
+    case 48: Colour_Op ((rA > gA) ? gA : rA, gA, bA); break;  // red limited by green
+    case 49: Colour_Op ((rA > bA) ? bA : rA, gA, bA); break;  // red limited by blue
+    case 50: Colour_Op ((rA > ((gA + bA) / 2)) ? ((gA + bA) / 2) : rA, gA, bA); break;  // red limited by average of green and blue
 
     // select single colour
     case 51: Colour_Op (rA, 0, 0); break;  // red only       (looks red)
@@ -2288,23 +2288,23 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
     case 56: Colour_Op (rA, gA, 0); break;  // discard blue   (looks yellow)
 
     // one colour to all channels  (ie. it looks grey)
-    case 57: Colour_Op (rA, rA, rA); break;  // all red   
-    case 58: Colour_Op (gA, gA, gA); break;  // all green   
-    case 59: Colour_Op (bA, bA, bA); break;  // all blue   
+    case 57: Colour_Op (rA, rA, rA); break;  // all red
+    case 58: Colour_Op (gA, gA, gA); break;  // all green
+    case 59: Colour_Op (bA, bA, bA); break;  // all blue
 
     case 60:           // Hue mode
       {
        for (row = 0; row < iHeight; row++)
         {
         long base = row * perline;
-        unsigned char rA, gA, bA, rB, gB, bB; 
-        for (i = 0; i < perline - 2; ) 
+        unsigned char rA, gA, bA, rB, gB, bB;
+        for (i = 0; i < perline - 2; )
           {
           CColor cA, cB;    // A = blend, B = base
-          bA = pA [base + i];     
-          gA = pA [base + i + 1]; 
-          rA = pA [base + i + 2]; 
-          bB = pB [base + i];  
+          bA = pA [base + i];
+          gA = pA [base + i + 1];
+          rA = pA [base + i + 2];
+          bB = pB [base + i];
           gB = pB [base + i + 1];
           rB = pB [base + i + 2];
 
@@ -2312,11 +2312,11 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
           cB.SetRGB (rB, gB, bB);
 
           cB.SetHue (cA.GetHue ());  // hue of blend image, others from base image
-          pB [base + i] = Simple_Opacity (bB, cB.GetBlue (), Opacity); 
+          pB [base + i] = Simple_Opacity (bB, cB.GetBlue (), Opacity);
           i++;
-          pB [base + i] = Simple_Opacity (gB, cB.GetGreen (), Opacity); 
+          pB [base + i] = Simple_Opacity (gB, cB.GetGreen (), Opacity);
           i++;
-          pB [base + i] = Simple_Opacity (rB, cB.GetRed (), Opacity); 
+          pB [base + i] = Simple_Opacity (rB, cB.GetRed (), Opacity);
           i++;
           }
          }  // end for each row
@@ -2328,14 +2328,14 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
        for (row = 0; row < iHeight; row++)
         {
         long base = row * perline;
-        unsigned char rA, gA, bA, rB, gB, bB; 
-        for (i = 0; i < perline - 2; ) 
+        unsigned char rA, gA, bA, rB, gB, bB;
+        for (i = 0; i < perline - 2; )
           {
           CColor cA, cB;    // A = blend, B = base
-          bA = pA [base + i];     
-          gA = pA [base + i + 1]; 
-          rA = pA [base + i + 2]; 
-          bB = pB [base + i];  
+          bA = pA [base + i];
+          gA = pA [base + i + 1];
+          rA = pA [base + i + 2];
+          bB = pB [base + i];
           gB = pB [base + i + 1];
           rB = pB [base + i + 2];
 
@@ -2343,11 +2343,11 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
           cB.SetRGB (rB, gB, bB);
 
           cB.SetSaturation (cA.GetSaturation ());  // saturation of blend image, others from base image
-          pB [base + i] = Simple_Opacity (bB, cB.GetBlue (), Opacity); 
+          pB [base + i] = Simple_Opacity (bB, cB.GetBlue (), Opacity);
           i++;
-          pB [base + i] = Simple_Opacity (gB, cB.GetGreen (), Opacity); 
+          pB [base + i] = Simple_Opacity (gB, cB.GetGreen (), Opacity);
           i++;
-          pB [base + i] = Simple_Opacity (rB, cB.GetRed (), Opacity); 
+          pB [base + i] = Simple_Opacity (rB, cB.GetRed (), Opacity);
           i++;
           }
          }  // end for each row
@@ -2359,27 +2359,27 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
        for (row = 0; row < iHeight; row++)
         {
         long base = row * perline;
-        unsigned char rA, gA, bA, rB, gB, bB; 
-        for (i = 0; i < perline - 2; ) 
+        unsigned char rA, gA, bA, rB, gB, bB;
+        for (i = 0; i < perline - 2; )
           {
           CColor cA, cB;    // A = blend, B = base
-          bA = pA [base + i];     
-          gA = pA [base + i + 1]; 
-          rA = pA [base + i + 2]; 
-          bB = pB [base + i];  
+          bA = pA [base + i];
+          gA = pA [base + i + 1];
+          rA = pA [base + i + 2];
+          bB = pB [base + i];
           gB = pB [base + i + 1];
           rB = pB [base + i + 2];
 
           cA.SetRGB (rA, gA, bA);
           cB.SetRGB (rB, gB, bB);
 
-          cB.SetHue (cA.GetHue ());  // hue of blend image, 
+          cB.SetHue (cA.GetHue ());  // hue of blend image,
           cB.SetSaturation (cA.GetSaturation ());  // saturation of blend image, luminance from base image
-          pB [base + i] = Simple_Opacity (bB, cB.GetBlue (), Opacity); 
+          pB [base + i] = Simple_Opacity (bB, cB.GetBlue (), Opacity);
           i++;
-          pB [base + i] = Simple_Opacity (gB, cB.GetGreen (), Opacity); 
+          pB [base + i] = Simple_Opacity (gB, cB.GetGreen (), Opacity);
           i++;
-          pB [base + i] = Simple_Opacity (rB, cB.GetRed (), Opacity); 
+          pB [base + i] = Simple_Opacity (rB, cB.GetRed (), Opacity);
           i++;
           }
          }  // end for each row
@@ -2405,14 +2405,14 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
        for (row = 0; row < iHeight; row++)
         {
         long base = row * perline;
-        unsigned char rA, gA, bA, rB, gB, bB; 
-        for (i = 0; i < perline - 2; ) 
+        unsigned char rA, gA, bA, rB, gB, bB;
+        for (i = 0; i < perline - 2; )
           {
           CColor cA, cB;    // A = blend, B = base
-          bA = pA [base + i];     
-          gA = pA [base + i + 1]; 
-          rA = pA [base + i + 2]; 
-          bB = pB [base + i];  
+          bA = pA [base + i];
+          gA = pA [base + i + 1];
+          rA = pA [base + i + 2];
+          bB = pB [base + i];
           gB = pB [base + i + 1];
           rB = pB [base + i + 2];
 
@@ -2430,11 +2430,11 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
 
           cB.SetLuminance (cA.GetLuminance ());  // luminance from blend image, others from base image
 
-          pB [base + i] = Simple_Opacity (bB, cB.GetBlue (), Opacity); 
+          pB [base + i] = Simple_Opacity (bB, cB.GetBlue (), Opacity);
           i++;
-          pB [base + i] = Simple_Opacity (gB, cB.GetGreen (), Opacity); 
+          pB [base + i] = Simple_Opacity (gB, cB.GetGreen (), Opacity);
           i++;
-          pB [base + i] = Simple_Opacity (rB, cB.GetRed (), Opacity); 
+          pB [base + i] = Simple_Opacity (rB, cB.GetRed (), Opacity);
           i++;
 
           }
@@ -2447,24 +2447,24 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
        for (row = 0; row < iHeight; row++)
         {
         long base = row * perline;
-        unsigned char rA, gA, bA, rB, gB, bB; 
-        for (i = 0; i < perline - 2; ) 
+        unsigned char rA, gA, bA, rB, gB, bB;
+        for (i = 0; i < perline - 2; )
           {
           CColor cA, cB;    // A = blend, B = base
-          bA = pA [base + i];     
-          gA = pA [base + i + 1]; 
-          rA = pA [base + i + 2]; 
-          bB = pB [base + i];  
+          bA = pA [base + i];
+          gA = pA [base + i + 1];
+          rA = pA [base + i + 2];
+          bB = pB [base + i];
           gB = pB [base + i + 1];
           rB = pB [base + i + 2];
 
           cA.SetRGB (rA, gA, bA);
 
-          pB [base + i] = Simple_Opacity (bB, cA.GetLuminance () * 255, Opacity); 
+          pB [base + i] = Simple_Opacity (bB, cA.GetLuminance () * 255, Opacity);
           i++;
-          pB [base + i] = Simple_Opacity (gB, cA.GetSaturation () * 255, Opacity); 
+          pB [base + i] = Simple_Opacity (gB, cA.GetSaturation () * 255, Opacity);
           i++;
-          pB [base + i] = Simple_Opacity (rB, (cA.GetHue () / 360.0) * 255, Opacity); 
+          pB [base + i] = Simple_Opacity (rB, (cA.GetHue () / 360.0) * 255, Opacity);
           i++;
 
           }
@@ -2476,7 +2476,7 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
     case 65: // testing  conversion to/from RGB to HSL and back again is consistent.
       {
       int r, g, b;
-      CColor cA;  
+      CColor cA;
 
       for (r = 0; r < 256; r ++)
         for (g = 0; g < 256; g ++)
@@ -2488,7 +2488,7 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
             ASSERT (g == cA.GetGreen ());
             ASSERT (b == cA.GetBlue ());
 
-            } 
+            }
 
 
       }
@@ -2501,7 +2501,7 @@ long CMiniWindow::BlendImage(LPCTSTR ImageId,
 
   // copy result back
 
-  pdc->BitBlt (Left, Top, iWidth, iHeight, &B_DC, 0, 0, SRCCOPY);  
+  pdc->BitBlt (Left, Top, iWidth, iHeight, &B_DC, 0, 0, SRCCOPY);
 
 
   SelectObject(A_DC.m_hDC, hOldAbmp);
@@ -2540,7 +2540,7 @@ long CMiniWindow::ImageFromWindow(LPCTSTR ImageId, CMiniWindow * pSrcWindow)
   CBitmap *pOldbmp = bmDC.SelectObject(pImage);
 
   // copy into our bitmap
-  bmDC.BitBlt (0, 0, pSrcWindow->m_iWidth, pSrcWindow->m_iHeight, pSrcWindow->pdc, 0, 0, SRCCOPY);  
+  bmDC.BitBlt (0, 0, pSrcWindow->m_iWidth, pSrcWindow->m_iHeight, pSrcWindow->pdc, 0, 0, SRCCOPY);
 
   // done
   bmDC.SelectObject(pOldbmp);
@@ -2552,7 +2552,7 @@ long CMiniWindow::ImageFromWindow(LPCTSTR ImageId, CMiniWindow * pSrcWindow)
   } // end of CMiniWindow::ImageFromWindow
 
 
-static void MakeTexture (const COLORREF Multiplier, 
+static void MakeTexture (const COLORREF Multiplier,
                          unsigned char * pBuffer,
                          const long iWidth,
                          const long iHeight)
@@ -2585,8 +2585,8 @@ static void MakeTexture (const COLORREF Multiplier,
   }  // end of MakeTexture
 
 
-long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom, 
-                      long StartColour, long EndColour, 
+long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
+                      long StartColour, long EndColour,
                       short Mode)
   {
   // calculate size of desired rectangle
@@ -2610,7 +2610,7 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
     ZeroMemory (&bmi, sizeof bmi);
 
     bmi.bmiHeader.biSize = sizeof bmi;
-    bmi.bmiHeader.biWidth =          iWidth;       
+    bmi.bmiHeader.biWidth =          iWidth;
     bmi.bmiHeader.biHeight =         iHeight;
     bmi.bmiHeader.biPlanes =         1;
     bmi.bmiHeader.biBitCount =       24;
@@ -2627,7 +2627,7 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
 
     // copy result back
 
-    pdc->BitBlt (Left, Top, iWidth, iHeight, &gDC, 0, 0, SRCCOPY);  
+    pdc->BitBlt (Left, Top, iWidth, iHeight, &gDC, 0, 0, SRCCOPY);
 
 
     SelectObject(gDC.m_hDC, hOldAbmp);
@@ -2638,7 +2638,7 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
 
     }  // end of texture fill
 
-            
+
   // for Windows 2000 onwards, use faster GDI fill mode as suggested by Twisol
   // See: http://msdn.microsoft.com/en-us/library/aa925212.aspx
 
@@ -2661,7 +2661,7 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
 
     // second vertex
     vert [1] .x      = FixRight (Right);
-    vert [1] .y      = FixBottom (Bottom); 
+    vert [1] .y      = FixBottom (Bottom);
     vert [1] .Red    = GetRValue (EndColour) << 8;
     vert [1] .Green  = GetGValue (EndColour) << 8;
     vert [1] .Blue   = GetBValue (EndColour) << 8;
@@ -2680,7 +2680,7 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
 
     // do the fill
     GradientFill (pdc->m_hDC, vert, 2, &gRect, 1, dwMode);
-       
+
     return eOK;
 
     }   // end of Windows 2000 or higher
@@ -2694,8 +2694,8 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
          gval = GetGValue (StartColour),
          bval = GetBValue (StartColour);
 
-  double rinc = rdiff / (double) (iWidth - 1), 
-         ginc = gdiff / (double) (iWidth - 1), 
+  double rinc = rdiff / (double) (iWidth - 1),
+         ginc = gdiff / (double) (iWidth - 1),
          binc = bdiff / (double) (iWidth - 1);
 
   COLORREF oldColour = pdc->GetBkColor ();
@@ -2713,7 +2713,7 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
         pdc->FillSolidRect( x, Top, 1, iHeight, RGB (rval, gval, bval) );
         rval += rinc;
         gval += ginc;
-        bval += binc;                      
+        bval += binc;
        }
       }
 
@@ -2728,10 +2728,10 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
         pdc->FillSolidRect( Left, y, iWidth, 1, RGB (rval, gval, bval) );
         rval += rinc;
         gval += ginc;
-        bval += binc;                      
+        bval += binc;
        }
       }
-      
+
       break;  // end of vertical
 
 
@@ -2745,8 +2745,8 @@ long CMiniWindow::Gradient(long Left, long Top, long Right, long Bottom,
 
   } // end of CMiniWindow::Gradient
 
-static void GeneralFilter (unsigned char * inbuf, long iWidth, long iHeight, 
-                            const long iPerLine, 
+static void GeneralFilter (unsigned char * inbuf, long iWidth, long iHeight,
+                            const long iPerLine,
                             const double Options,
                             const double * iMatrix,
                             const double iDivisor)
@@ -2768,8 +2768,8 @@ static void GeneralFilter (unsigned char * inbuf, long iWidth, long iHeight,
      {
 
      pi = inbuf + iPerLine * row;
-   
-    
+
+
      for (rgb = 0; rgb < 3; rgb++)
        {
 
@@ -2782,7 +2782,7 @@ static void GeneralFilter (unsigned char * inbuf, long iWidth, long iHeight,
          // we add 3 to get to the next pixel in that colour (R, G or B)
 
          // insert right-most byte into window
-       
+
          window [0] = window [1];
          window [1] = window [2];
          window [2] = window [3];
@@ -2824,12 +2824,12 @@ static void GeneralFilter (unsigned char * inbuf, long iWidth, long iHeight,
        pi = inbuf + col + (from * iPerLine);
 
        // insert right-most byte into window
-     
+
        window [0] = window [1];
        window [1] = window [2];
        window [2] = window [3];
        window [3] = window [4];
-       window [4] = *pi; 
+       window [4] = *pi;
 
        total = 0;
 
@@ -2872,7 +2872,7 @@ static void MonoNoise (unsigned char * inbuf, long iWidth, long iHeight, long iP
   for (row = 0; row < iHeight; row++)
     {
     unsigned char * pi = inbuf + (row * iPerLine);
-    for (i = 0; i < iWidth; i ++) 
+    for (i = 0; i < iWidth; i ++)
       {
       j = (128 - genrand () * 256) * threshold;
 
@@ -2929,7 +2929,7 @@ static void Contrast (unsigned char * inbuf, long iWidth, long iHeight, long iPe
   long count = iPerLine * iHeight;
   long i;
   double c;
-  
+
   for (i = 0; i < 256; i++)
     {
     c = i - 128;    // center on zero
@@ -2967,11 +2967,11 @@ static void Gamma (unsigned char * inbuf, long iWidth, long iHeight, long iPerLi
   // now convert image using lookup table
   for (i = 0; i < count; i++)
     *pi++ = lookup [*pi];
-    
+
   } // end of Gamma
 
 
-static void ColourBrightness (unsigned char * inbuf, long iWidth, long iHeight, 
+static void ColourBrightness (unsigned char * inbuf, long iWidth, long iHeight,
                               long iPerLine, double Options, long iColour)
   {
 
@@ -2980,7 +2980,7 @@ static void ColourBrightness (unsigned char * inbuf, long iWidth, long iHeight,
   for (row = 0; row < iHeight; row++)
     {
     unsigned char * pi = inbuf + (row * iPerLine) + iColour;
-    for (i = 0; i < iWidth; i ++) 
+    for (i = 0; i < iWidth; i ++)
       {
       c = *pi;
       c += Options;
@@ -2992,7 +2992,7 @@ static void ColourBrightness (unsigned char * inbuf, long iWidth, long iHeight,
   } // end of ColourBrightness
 
 
-static void ColourBrightnessMultiply (unsigned char * inbuf, long iWidth, long iHeight, 
+static void ColourBrightnessMultiply (unsigned char * inbuf, long iWidth, long iHeight,
                               long iPerLine, double Options, long iColour)
   {
 
@@ -3001,7 +3001,7 @@ static void ColourBrightnessMultiply (unsigned char * inbuf, long iWidth, long i
   for (row = 0; row < iHeight; row++)
     {
     unsigned char * pi = inbuf + (row * iPerLine) + iColour;
-    for (i = 0; i < iWidth; i ++) 
+    for (i = 0; i < iWidth; i ++)
       {
       c = *pi;
       c *= Options;
@@ -3013,7 +3013,7 @@ static void ColourBrightnessMultiply (unsigned char * inbuf, long iWidth, long i
   } // end of ColourBrightnessMultiply
 
 
-static void ColourContrast (unsigned char * inbuf, long iWidth, long iHeight, 
+static void ColourContrast (unsigned char * inbuf, long iWidth, long iHeight,
                             long iPerLine, double Options, long iColour)
   {
 
@@ -3021,7 +3021,7 @@ static void ColourContrast (unsigned char * inbuf, long iWidth, long iHeight,
 
   long i, row;
   double c;
-  
+
   for (i = 0; i < 256; i++)
     {
     c = i - 128;    // center on zero
@@ -3034,7 +3034,7 @@ static void ColourContrast (unsigned char * inbuf, long iWidth, long iHeight,
   for (row = 0; row < iHeight; row++)
     {
     unsigned char * pi = inbuf + (row * iPerLine) + iColour;
-    for (i = 0; i < iWidth; i ++) 
+    for (i = 0; i < iWidth; i ++)
       {
       *pi = lookup [*pi];
       pi += 3;
@@ -3043,7 +3043,7 @@ static void ColourContrast (unsigned char * inbuf, long iWidth, long iHeight,
 
     } // end of ColourContrast
 
-static void ColourGamma (unsigned char * inbuf, long iWidth, long iHeight, 
+static void ColourGamma (unsigned char * inbuf, long iWidth, long iHeight,
                          long iPerLine, double Options, long iColour)
   {
 
@@ -3067,13 +3067,13 @@ static void ColourGamma (unsigned char * inbuf, long iWidth, long iHeight,
   for (row = 0; row < iHeight; row++)
     {
     unsigned char * pi = inbuf + (row * iPerLine) + iColour;
-    for (i = 0; i < iWidth; i ++) 
+    for (i = 0; i < iWidth; i ++)
       {
       *pi = lookup [*pi];
       pi += 3;
       }
      }  // end for each row
-    
+
   } // end of ColourGamma
 
 
@@ -3089,7 +3089,7 @@ static void MakeGreyscale (unsigned char * inbuf, long iWidth, long iHeight, lon
   for (row = 0; row < iHeight; row++)
     {
     unsigned char * pi = inbuf + (row * iPerLine);
-    for (i = 0; i < iWidth; i ++) 
+    for (i = 0; i < iWidth; i ++)
       {
 
       if (bLinear)
@@ -3161,7 +3161,7 @@ static void Average (unsigned char * pBuffer,
 
 
 // see also:  CMUSHclientDoc::FilterPixel
-long CMiniWindow::Filter(long Left, long Top, long Right, long Bottom, 
+long CMiniWindow::Filter(long Left, long Top, long Right, long Bottom,
                   short Operation, double Options)
   {
 
@@ -3191,7 +3191,7 @@ long CMiniWindow::Filter(long Left, long Top, long Right, long Bottom,
   ZeroMemory (&bmi, sizeof bmi);
 
   bmi.bmiHeader.biSize = sizeof bmi;
-  bmi.bmiHeader.biWidth =          iWidth;       
+  bmi.bmiHeader.biWidth =          iWidth;
   bmi.bmiHeader.biHeight =         iHeight;
   bmi.bmiHeader.biPlanes =         1;
   bmi.bmiHeader.biBitCount =       24;
@@ -3205,7 +3205,7 @@ long CMiniWindow::Filter(long Left, long Top, long Right, long Bottom,
   HBITMAP hOldAbmp = (HBITMAP) SelectObject(gDC.m_hDC, hbmG);
 
   // copy base image from miniwindow to bitmap
-  gDC.BitBlt (0, 0, iWidth, iHeight, &(*pdc), Left, Top, SRCCOPY);  
+  gDC.BitBlt (0, 0, iWidth, iHeight, &(*pdc), Left, Top, SRCCOPY);
 
   // manipulate image here
 
@@ -3216,25 +3216,25 @@ long CMiniWindow::Filter(long Left, long Top, long Right, long Bottom,
      case 3: // blur
        {
        double iMatrix [5] = { 1, 1, 1, 1, 1 };
-       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 5); 
+       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 5);
        }
        break;
      case 4:  // sharpen
        {
        double iMatrix [5] = { -1, -1, 7, -1, -1 };
-       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 3); 
+       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 3);
        }
        break;
      case 5:  // edge detect
        {
        double iMatrix [5] = { 0, 2.5, -6, 2.5, 0 };
-       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 1); 
+       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 1);
        }
        break;
      case 6:  // emboss
        {
        double iMatrix [5] = { 1, 2, 1, -1, -2 };
-       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 1); 
+       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 1);
        }
        break;
      case  7: Brightness        (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options); break;      // additive brightness
@@ -3258,13 +3258,13 @@ long CMiniWindow::Filter(long Left, long Top, long Right, long Bottom,
      case 25: // lesser blur
        {
        double iMatrix [5] = { 0, 1, 1, 1, 0 };
-       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 3); 
+       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 3);
        }
        break;
      case 26: // minor blur
        {
        double iMatrix [5] = { 0, 0.5, 1, 0.5, 0 };
-       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 2); 
+       GeneralFilter     (pA, iWidth, iHeight, BytesPerLine (iWidth, 24), Options, iMatrix, 2);
        }
        break;
      case 27: Average             (pA, iWidth, iHeight); break;
@@ -3277,7 +3277,7 @@ long CMiniWindow::Filter(long Left, long Top, long Right, long Bottom,
 
   // copy result back
 
-  pdc->BitBlt (Left, Top, iWidth, iHeight, &gDC, 0, 0, SRCCOPY);  
+  pdc->BitBlt (Left, Top, iWidth, iHeight, &gDC, 0, 0, SRCCOPY);
 
 
   SelectObject(gDC.m_hDC, hOldAbmp);
@@ -3286,7 +3286,7 @@ long CMiniWindow::Filter(long Left, long Top, long Right, long Bottom,
 
   return eOK;
 
-  } // end of CMiniWindow::Filter 
+  } // end of CMiniWindow::Filter
 
 
 
@@ -3309,9 +3309,9 @@ long CMiniWindow::GetPixel(long x, long y)
   } // end of CMiniWindow::GetPixel
 
 
-long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId, 
-                                  long Left, long Top, long Right, long Bottom, 
-                                  short Mode, double Opacity, 
+long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
+                                  long Left, long Top, long Right, long Bottom,
+                                  short Mode, double Opacity,
                                   long SrcLeft, long SrcTop, long SrcRight, long SrcBottom)
   {
 
@@ -3346,7 +3346,7 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
 
   BITMAP  bi;
   bitmap->GetBitmap(&bi);
-                                                  
+
   // calculate size of desired rectangle
   long iWidth = FixRight (Right) - Left;
   long iHeight = FixBottom (Bottom) - Top;
@@ -3362,10 +3362,10 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
     SrcBottom = bi.bmHeight;
 
   // adjust so that -1 means 1 from right
-  if (SrcRight <= 0) 
+  if (SrcRight <= 0)
     SrcRight = bi.bmWidth + SrcRight;
 
-  if (SrcBottom <= 0) 
+  if (SrcBottom <= 0)
     SrcBottom =  bi.bmHeight + SrcBottom;
 
   // width and height are the smaller of the two rectangles
@@ -3396,7 +3396,7 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
   ZeroMemory (&bmi, sizeof bmi);
 
   bmi.bmiHeader.biSize = sizeof bmi;
-  bmi.bmiHeader.biWidth =          iWidth;       
+  bmi.bmiHeader.biWidth =          iWidth;
   bmi.bmiHeader.biHeight =         iHeight;
   bmi.bmiHeader.biPlanes =         1;
   bmi.bmiHeader.biBitCount =       24;
@@ -3414,7 +3414,7 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
 
   //copy part from image to upper layer
   CBitmap *pOldbmp = bmDC.SelectObject(bitmap);
-  A_DC.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);  
+  A_DC.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);
   bmDC.SelectObject(pOldbmp);
 
 
@@ -3431,10 +3431,10 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
   HBITMAP hOldBbmp = (HBITMAP) SelectObject(B_DC.m_hDC, hbmB);
 
   // copy base image from miniwindow to bitmap
-  B_DC.BitBlt (0, 0, iWidth, iHeight, &(*pdc), Left, Top, SRCCOPY);  
+  B_DC.BitBlt (0, 0, iWidth, iHeight, &(*pdc), Left, Top, SRCCOPY);
 
 
-  // mask image 
+  // mask image
 
   CDC M_DC;
   M_DC.CreateCompatibleDC(&(*pdc));
@@ -3448,7 +3448,7 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
 
   // copy mask image from image to bitmap
   pOldbmp = bmDC.SelectObject(mask_bitmap);
-  M_DC.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);  
+  M_DC.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);
   bmDC.SelectObject(pOldbmp);
 
   long count = bmi.bmiHeader.biSizeImage;
@@ -3463,9 +3463,9 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
   switch (Mode)
     {
     case 0:     // normal
-      if (Opacity < 1.0) 
+      if (Opacity < 1.0)
         {
-        for (i = 0; i < count; i++) 
+        for (i = 0; i < count; i++)
           {
           pB [i] = Simple_Opacity (pB [i], Blend_Mask (pA [i], pB [i], pM [i]), Opacity);
           }
@@ -3485,16 +3485,16 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
      for (row = 0; row < iHeight; row++)
       {
       long base = row * perline;
-      unsigned char rA, gA, bA, rB, gB, bB; 
-      if (Opacity < 1.0) 
-        for (i = 0; i < perline - 2; ) 
+      unsigned char rA, gA, bA, rB, gB, bB;
+      if (Opacity < 1.0)
+        for (i = 0; i < perline - 2; )
           {
-          bA = pA [base + i];     
-          gA = pA [base + i + 1]; 
-          rA = pA [base + i + 2]; 
-          bB = pB [base + i];     
-          gB = pB [base + i + 1]; 
-          rB = pB [base + i + 2]; 
+          bA = pA [base + i];
+          gA = pA [base + i + 1];
+          rA = pA [base + i + 2];
+          bB = pB [base + i];
+          gB = pB [base + i + 1];
+          rB = pB [base + i + 2];
 
           // if this pixel is the opaque one, take the base pixel instead
           if (RGB (rA, gA, bA) == opaque)
@@ -3502,26 +3502,26 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
             rA = rB;
             gA = gB;
             bA = bB;
-            } 
+            }
 
           pB [base + i] = Simple_Opacity (bB, Blend_Mask (bA, bB, pM [base + i]), Opacity);
           i++;
 
           pB [base + i] = Simple_Opacity (gB, Blend_Mask (gA, gB, pM [base + i]), Opacity);
           i++;
-          
+
           pB [base + i] = Simple_Opacity (rB, Blend_Mask (rA, rB, pM [base + i]), Opacity);
           i++;
           }
       else
         for (i = 0; i < perline - 2;)
           {
-          bA = pA [base + i];     
-          gA = pA [base + i + 1]; 
-          rA = pA [base + i + 2]; 
-          bB = pB [base + i];     
-          gB = pB [base + i + 1]; 
-          rB = pB [base + i + 2]; 
+          bA = pA [base + i];
+          gA = pA [base + i + 1];
+          rA = pA [base + i + 2];
+          bB = pB [base + i];
+          gB = pB [base + i + 1];
+          rB = pB [base + i + 2];
 
           // if this pixel is the opaque one, take the base pixel instead
           if (RGB (rA, gA, bA) == opaque)
@@ -3536,7 +3536,7 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
 
           pB [base + i] = Blend_Mask (gA, gB, pM [base + i]);
           i++;
-          
+
           pB [base + i] = Blend_Mask (rA, rB, pM [base + i]);
           i++;
           }   // end Opacity == 1
@@ -3553,7 +3553,7 @@ long CMiniWindow::MergeImageAlpha(LPCTSTR ImageId, LPCTSTR MaskId,
 
   // copy result back
 
-  pdc->BitBlt (Left, Top, iWidth, iHeight, &B_DC, 0, 0, SRCCOPY);  
+  pdc->BitBlt (Left, Top, iWidth, iHeight, &B_DC, 0, 0, SRCCOPY);
 
 
   SelectObject(A_DC.m_hDC, hOldAbmp);
@@ -3573,9 +3573,9 @@ static CString strMXP_menu_item [MXP_MENU_COUNT];
 CMenu* GrabAMenu (void)
   {
   CMenu menu;
-	VERIFY(menu.LoadMenu(IDR_MXP_MENU));
+  VERIFY(menu.LoadMenu(IDR_MXP_MENU));
 
-	CMenu* pPopup = menu.GetSubMenu(0);
+  CMenu* pPopup = menu.GetSubMenu(0);
   if (pPopup == NULL)
     return NULL;
   menu.Detach ();    // CMenu is temporary on stack
@@ -3677,14 +3677,14 @@ CPoint menupoint (Left, Top);
 
   list<CMenu*> vPopup;    // nested menus
 
-	CMenu* pPopup = GrabAMenu ();   // top level
+  CMenu* pPopup = GrabAMenu ();   // top level
   if (pPopup == NULL)
     return strResult;     // doesn't exist, strange
   vPopup.push_back (pPopup);
 
-	CWnd* pWndPopupOwner = (CWnd *) pView;
-	while (pWndPopupOwner->GetStyle() & WS_CHILD)
-		pWndPopupOwner = pWndPopupOwner->GetParent();
+  CWnd* pWndPopupOwner = (CWnd *) pView;
+  while (pWndPopupOwner->GetStyle() & WS_CHILD)
+    pWndPopupOwner = pWndPopupOwner->GetParent();
 
   ClientToScreen(pView->m_hWnd, &menupoint);
 
@@ -3698,7 +3698,7 @@ CPoint menupoint (Left, Top);
       vPopup.back ()->AppendMenu (MF_SEPARATOR, 0, "");
     else if (strItem.Left (1) == ">")    // nested menu
       {
-    	CMenu* pNestedMenu = GrabAMenu ();   // nested menu
+      CMenu* pNestedMenu = GrabAMenu ();   // nested menu
       if (pNestedMenu)
         {
         vPopup.back ()->AppendMenu (MF_POPUP | MF_ENABLED, (UINT ) pNestedMenu->m_hMenu, strItem.Mid (1));
@@ -3710,8 +3710,8 @@ CPoint menupoint (Left, Top);
       if (vPopup.size () > 1)
         vPopup.pop_back ();  // drop last item
       }
-    else 
-      {            
+    else
+      {
       // flags - will always be a string
       UINT iFlags = MF_STRING;
 
@@ -3745,10 +3745,10 @@ CPoint menupoint (Left, Top);
   // without this line the auto-enable always set "no items" to active
   Frame.m_bAutoMenuEnable  = FALSE;
 
-	int iResult = vPopup.front ()->TrackPopupMenu(align | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, 
-                          menupoint.x, 
+  int iResult = vPopup.front ()->TrackPopupMenu(align | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD,
+                          menupoint.x,
                           menupoint.y,
-			                    pWndPopupOwner);
+                          pWndPopupOwner);
 
   // put things back how they were
   Frame.m_bAutoMenuEnable  = TRUE;
@@ -3809,7 +3809,7 @@ long CMiniWindow::DragHandler(CMUSHclientDoc * pDoc, LPCTSTR HotspotId, string s
 
 
 // changes hotspot tooltip text
-long CMiniWindow::HotspotTooltip(LPCTSTR HotspotId, 
+long CMiniWindow::HotspotTooltip(LPCTSTR HotspotId,
                              LPCTSTR TooltipText)
   {
 
@@ -3825,9 +3825,9 @@ long CMiniWindow::HotspotTooltip(LPCTSTR HotspotId,
   return eOK;
   }    // end of CMiniWindow::HotspotTooltip
 
-long CMiniWindow::DrawImageAlpha(LPCTSTR ImageId, 
-                    long Left, long Top, long Right, long Bottom, 
-                    double Opacity, 
+long CMiniWindow::DrawImageAlpha(LPCTSTR ImageId,
+                    long Left, long Top, long Right, long Bottom,
+                    double Opacity,
                     long SrcLeft, long SrcTop)
   {
 
@@ -3881,7 +3881,7 @@ long CMiniWindow::DrawImageAlpha(LPCTSTR ImageId,
   ZeroMemory (&bmi, sizeof bmi);
 
   bmi.bmiHeader.biSize = sizeof bmi;
-  bmi.bmiHeader.biWidth =          iWidth;       
+  bmi.bmiHeader.biWidth =          iWidth;
   bmi.bmiHeader.biHeight =         iHeight;
   bmi.bmiHeader.biPlanes =         1;
   bmi.bmiHeader.biBitCount =       32;
@@ -3899,7 +3899,7 @@ long CMiniWindow::DrawImageAlpha(LPCTSTR ImageId,
 
   //copy part from image to upper layer
   CBitmap *pOldbmp = bmDC.SelectObject(bitmap);
-  A_DC.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);  
+  A_DC.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);
   bmDC.SelectObject(pOldbmp);
 
 
@@ -3916,7 +3916,7 @@ long CMiniWindow::DrawImageAlpha(LPCTSTR ImageId,
   HBITMAP hOldBbmp = (HBITMAP) SelectObject(B_DC.m_hDC, hbmB);
 
   // copy base image from miniwindow to bitmap
-  B_DC.BitBlt (0, 0, iWidth, iHeight, &(*pdc), Left, Top, SRCCOPY);  
+  B_DC.BitBlt (0, 0, iWidth, iHeight, &(*pdc), Left, Top, SRCCOPY);
 
 
   long count = bmi.bmiHeader.biSizeImage;
@@ -3927,9 +3927,9 @@ long CMiniWindow::DrawImageAlpha(LPCTSTR ImageId,
 
 #define Blend_Mask(A,B,M) ((uint8) ((A * M + B * (255 - M)) / 255) )
 
-  if (Opacity < 1.0) 
+  if (Opacity < 1.0)
     {
-    for (i = 0; i < count; i += 4) 
+    for (i = 0; i < count; i += 4)
       {
       pB [i]     = Simple_Opacity (pB [i], Blend_Mask (pA [i], pB [i], pA [i + 3]), Opacity);
       pB [i + 1] = Simple_Opacity (pB [i + 1], Blend_Mask (pA [i + 1], pB [i + 1], pA [i + 3]), Opacity);
@@ -3949,7 +3949,7 @@ long CMiniWindow::DrawImageAlpha(LPCTSTR ImageId,
 
   // copy result back
 
-  pdc->BitBlt (Left, Top, iWidth, iHeight, &B_DC, 0, 0, SRCCOPY);  
+  pdc->BitBlt (Left, Top, iWidth, iHeight, &B_DC, 0, 0, SRCCOPY);
 
 
   SelectObject(A_DC.m_hDC, hOldAbmp);
@@ -3963,8 +3963,8 @@ long CMiniWindow::DrawImageAlpha(LPCTSTR ImageId,
 
   } // end of  CMiniWindow::DrawImageAlpha
 
-long CMiniWindow::GetImageAlpha(LPCTSTR ImageId, 
-                    long Left, long Top, long Right, long Bottom, 
+long CMiniWindow::GetImageAlpha(LPCTSTR ImageId,
+                    long Left, long Top, long Right, long Bottom,
                     long SrcLeft, long SrcTop)
   {
 
@@ -4015,7 +4015,7 @@ long CMiniWindow::GetImageAlpha(LPCTSTR ImageId,
   ZeroMemory (&bmi, sizeof bmi);
 
   bmi.bmiHeader.biSize = sizeof bmi;
-  bmi.bmiHeader.biWidth =          iWidth;       
+  bmi.bmiHeader.biWidth =          iWidth;
   bmi.bmiHeader.biHeight =         iHeight;
   bmi.bmiHeader.biPlanes =         1;
   bmi.bmiHeader.biBitCount =       32;
@@ -4033,7 +4033,7 @@ long CMiniWindow::GetImageAlpha(LPCTSTR ImageId,
 
   //copy part from image to upper layer
   CBitmap *pOldbmp = bmDC.SelectObject(bitmap);
-  A_DC.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);  
+  A_DC.BitBlt (0, 0, iWidth, iHeight, &bmDC, SrcLeft, SrcTop, SRCCOPY);
   bmDC.SelectObject(pOldbmp);
 
 
@@ -4066,7 +4066,7 @@ long CMiniWindow::GetImageAlpha(LPCTSTR ImageId,
 
   // copy result back
 
-  pdc->BitBlt (Left, Top, iWidth, iHeight, &B_DC, 0, 0, SRCCOPY);  
+  pdc->BitBlt (Left, Top, iWidth, iHeight, &B_DC, 0, 0, SRCCOPY);
 
 
   SelectObject(A_DC.m_hDC, hOldAbmp);
@@ -4146,15 +4146,15 @@ long CMiniWindow::Resize(long Width, long Height, long BackgroundColour)
   m_Bitmap = new CBitmap;
 
   //  CreateBitmap with zero-dimensions creates a monochrome bitmap, so force to be at least 1x1
-  m_Bitmap->CreateBitmap (MAX (Width, 1), MAX (Height, 1), 1, GetDeviceCaps((*pdc), BITSPIXEL), NULL); 
+  m_Bitmap->CreateBitmap (MAX (Width, 1), MAX (Height, 1), 1, GetDeviceCaps((*pdc), BITSPIXEL), NULL);
   pdc->SelectObject(m_Bitmap);
-	pdc->SetWindowOrg(0, 0);
+  pdc->SetWindowOrg(0, 0);
 
   // fill with requested fill colour
   pdc->FillSolidRect (0, 0, Width, Height, BackgroundColour);
 
   // copy old contents back
-  pdc->BitBlt (0, 0, m_iWidth, m_iHeight, &bmDC, 0, 0, SRCCOPY);  
+  pdc->BitBlt (0, 0, m_iWidth, m_iHeight, &bmDC, 0, 0, SRCCOPY);
   bmDC.SelectObject(pOldbmp);
 
   // done with previous bitmap from this miniwindow
@@ -4174,7 +4174,7 @@ long CMiniWindow::Resize(long Width, long Height, long BackgroundColour)
 
 // move a hotspot (maybe the window was resized)
 
-long CMiniWindow::MoveHotspot(LPCTSTR HotspotId, 
+long CMiniWindow::MoveHotspot(LPCTSTR HotspotId,
                              long Left, long Top, long Right, long Bottom)
   {
 
@@ -4225,69 +4225,69 @@ long CMiniWindow::TransformImage(LPCTSTR ImageId, float Left, float Top, short M
     return eBadParameter;
     }
 
-  // x' = x * Mxx + y * Mxy + Left 
-  // y' = x * Myx + y * Myy + Top 
+  // x' = x * Mxx + y * Mxy + Left
+  // y' = x * Myx + y * Myy + Top
 
-	XFORM xform;
-	xform.eM11 = Mxx;       // cosine
-	xform.eM21 = Mxy;       // sine
-	xform.eM12 = Myx;       // - sine
-	xform.eM22 = Myy;       // cosine
-	xform.eDx = Left;
-	xform.eDy = Top;
+  XFORM xform;
+  xform.eM11 = Mxx;       // cosine
+  xform.eM21 = Mxy;       // sine
+  xform.eM12 = Myx;       // - sine
+  xform.eM22 = Myy;       // cosine
+  xform.eDx = Left;
+  xform.eDy = Top;
 
-	if (SetWorldTransform (pdc->m_hDC, &xform) == 0)
+  if (SetWorldTransform (pdc->m_hDC, &xform) == 0)
     {
     bmDC.SelectObject(pOldbmp);
     return eBadParameter;
     }
 
   // gives smoother rotations, especially with transparency
-  pdc->SetStretchBltMode (HALFTONE);  
+  pdc->SetStretchBltMode (HALFTONE);
   SetBrushOrgEx(pdc->m_hDC, 0, 0, NULL);  // as recommended after  SetStretchBltMode
 
   switch (Mode)
     {
-    case 1: pdc->BitBlt (0, 0, iWidth, iHeight, &bmDC, 0, 0, SRCCOPY);  
+    case 1: pdc->BitBlt (0, 0, iWidth, iHeight, &bmDC, 0, 0, SRCCOPY);
             break;      // straight copy
 
     case 3:        // transparency, nom nom nom!
       {
       COLORREF crOldBack = pdc->SetBkColor (RGB (255, 255, 255));    // white
-	    COLORREF crOldText = pdc->SetTextColor (RGB (0, 0, 0));        // black
-	    CDC dcTrans;   // transparency mask
+      COLORREF crOldText = pdc->SetTextColor (RGB (0, 0, 0));        // black
+      CDC dcTrans;   // transparency mask
 
 
-	    // Create a memory (*pdc) for the mask
-	    dcTrans.CreateCompatibleDC(&(*pdc));
+      // Create a memory (*pdc) for the mask
+      dcTrans.CreateCompatibleDC(&(*pdc));
 
-	    // Create the mask bitmap 
-	    CBitmap bitmapTrans;
-	    bitmapTrans.CreateBitmap(m_iWidth, m_iHeight, 1, 1, NULL);
+      // Create the mask bitmap
+      CBitmap bitmapTrans;
+      bitmapTrans.CreateBitmap(m_iWidth, m_iHeight, 1, 1, NULL);
 
-	    // Select the mask bitmap into the appropriate (*pdc)
-	    CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
+      // Select the mask bitmap into the appropriate (*pdc)
+      CBitmap* pOldBitmapTrans = dcTrans.SelectObject(&bitmapTrans);
 
-      // Our transparent pixel will be at 0,0 (top left corner) of original image 
+      // Our transparent pixel will be at 0,0 (top left corner) of original image
       COLORREF crOldBackground = bmDC.SetBkColor (::GetPixel (bmDC, 0, 0));
 
-	    // Build mask based on transparent colour at location 0, 0
-	    dcTrans.BitBlt (0, 0, iWidth, iHeight, &bmDC, 0, 0, SRCCOPY);
+      // Build mask based on transparent colour at location 0, 0
+      dcTrans.BitBlt (0, 0, iWidth, iHeight, &bmDC, 0, 0, SRCCOPY);
 
-	    // Do the work 
-	    pdc->BitBlt (0, 0, iWidth, iHeight, &bmDC,    0, 0, SRCINVERT);
-	    pdc->BitBlt (0, 0, iWidth, iHeight, &dcTrans, 0, 0, SRCAND);
-	    pdc->BitBlt (0, 0, iWidth, iHeight, &bmDC,    0, 0, SRCINVERT);
+      // Do the work
+      pdc->BitBlt (0, 0, iWidth, iHeight, &bmDC,    0, 0, SRCINVERT);
+      pdc->BitBlt (0, 0, iWidth, iHeight, &dcTrans, 0, 0, SRCAND);
+      pdc->BitBlt (0, 0, iWidth, iHeight, &bmDC,    0, 0, SRCINVERT);
 
-	    // Restore settings
-	    dcTrans.SelectObject(pOldBitmapTrans);
-	    pdc->SetBkColor(crOldBack);
-	    pdc->SetTextColor(crOldText);
+      // Restore settings
+      dcTrans.SelectObject(pOldBitmapTrans);
+      pdc->SetBkColor(crOldBack);
+      pdc->SetTextColor(crOldText);
       bmDC.SetBkColor(crOldBackground);
       }
       break;
 
-    default: 
+    default:
       bmDC.SelectObject(pOldbmp);
       ModifyWorldTransform(pdc->m_hDC, &xform, MWT_IDENTITY);
       SetGraphicsMode (pdc->m_hDC, GM_COMPATIBLE);
