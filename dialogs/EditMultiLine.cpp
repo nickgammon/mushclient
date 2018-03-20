@@ -50,6 +50,8 @@ void CEditMultiLine::DoDataExchange(CDataExchange* pDX)
  if(!pDX->m_bSaveAndValidate && App.m_bFixedFontForEditing)
    FixFont (m_font, m_ctlText, App.m_strFixedPitchFont, App.m_iFixedPitchFontSize, FW_NORMAL, DEFAULT_CHARSET);
 
+ if(!pDX->m_bSaveAndValidate)
+   m_ctlText.SetTabStops(10);
 }
 
 
@@ -76,12 +78,12 @@ END_MESSAGE_MAP()
                            iTopOfRow, iWidth, iHeight)
 
 
-void CEditMultiLine::OnSize(UINT nType, int cx, int cy) 
+void CEditMultiLine::OnSize(UINT nType, int cx, int cy)
   {
 	CDialog::OnSize(nType, cx, cy);
-	
-  if (m_ctlText.m_hWnd && 
-      m_ctlCancel.m_hWnd && 
+
+  if (m_ctlText.m_hWnd &&
+      m_ctlCancel.m_hWnd &&
       m_ctlFunctionListButton.m_hWnd &&
       m_ctlCompleteFunctionButton.m_hWnd &&
       m_ctlGoToLineButton.m_hWnd &&
@@ -140,21 +142,21 @@ void CEditMultiLine::OnSize(UINT nType, int cx, int cy)
 
   }
 
-BOOL CEditMultiLine::OnInitDialog() 
+BOOL CEditMultiLine::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	
+
   CWindowPlacement wp;
   wp.Restore ("Edit MultiLine Dialog", this, false);
 
   if (!m_strTitle.IsEmpty ())
-    SetWindowText (m_strTitle);	
-	
+    SetWindowText (m_strTitle);
+
   PostMessage (WM_COMMAND, CLEAR_SELECTION);
 
   if (!m_bScript)
     {
-    m_ctlFunctionListButton.ShowWindow (SW_HIDE); 
+    m_ctlFunctionListButton.ShowWindow (SW_HIDE);
     m_ctlCompleteFunctionButton.ShowWindow (SW_HIDE);
     m_ctlGoToLineButton.ShowWindow (SW_HIDE);
     }
@@ -170,7 +172,7 @@ void CEditMultiLine::OnRemoveSelection()
 
   }
 
-void CEditMultiLine::OnFunctionList() 
+void CEditMultiLine::OnFunctionList()
 {
 int nStartChar,
     nEndChar;
@@ -184,21 +186,21 @@ CString strSelection;
   ShowFunctionslist (strSelection, nStartChar, nEndChar, m_bLua);
 }
 
-void CEditMultiLine::OnCompleteWord() 
+void CEditMultiLine::OnCompleteWord()
 {
   FunctionMenu (m_ctlText, m_bScript && m_bLua);
 }
 
-void CEditMultiLine::OnDestroy() 
+void CEditMultiLine::OnDestroy()
 {
 	CDialog::OnDestroy();
-	
+
   CWindowPlacement wp;
   wp.Save ("Edit MultiLine Dialog", this);
-	
+
 }
 
-void CEditMultiLine::OnGotoLine() 
+void CEditMultiLine::OnGotoLine()
 {
 CGoToLineDlg dlg;
 
@@ -218,8 +220,34 @@ CGoToLineDlg dlg;
 
   // go to the start of that line
   m_ctlText.SetSel(iIndex, iIndex);
-	
+
   // ensure text box has the focus if you click on the button
   m_ctlText.SetFocus ();
 
 }
+
+BOOL CEditMultiLine::PreTranslateMessage(MSG* pMsg)
+  {
+
+  if ( pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_TAB &&
+       App.m_bTabInsertsTab)
+    {
+    int nStartChar,
+        nEndChar;
+
+    // find the selection range
+    m_ctlText.GetSel(nStartChar, nEndChar);
+
+    // select zero chars
+    m_ctlText.SetSel(nStartChar, nStartChar);
+
+    // then replace that selection with a TAB
+    m_ctlText.ReplaceSel("\t", TRUE);
+
+    // no need to do a msg translation, so quit.
+    // that way no further processing gets done
+    return TRUE;
+    }
+
+   return CDialog::PreTranslateMessage(pMsg);
+  }   // end of CEditMultiLine::PreTranslateMessage

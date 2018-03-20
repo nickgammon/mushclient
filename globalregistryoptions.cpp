@@ -61,6 +61,7 @@ static tGlobalConfigurationNumericOption GlobalOptionsTable [] = {
 { GLB_OPT (m_nPrinterTopMargin              ), "PrinterTopMargin",              15 },
 { GLB_OPT (m_nTimerInterval                 ), "TimerInterval",                 0 },
 { GLB_OPT (m_iFixedPitchFontSize            ), "FixedPitchFontSize",            9 },
+{ GLB_OPT (m_bTabInsertsTab                 ), "TabInsertsTabInMultiLineDialogs", 0 },
 
 {NULL}   // end of table marker            
 

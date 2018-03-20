@@ -166,6 +166,7 @@ public:
   unsigned int m_nTimerInterval;
   unsigned int m_bEnablePackageLibrary;
   unsigned int m_iFixedPitchFontSize;
+  unsigned int m_bTabInsertsTab;
 
 
   COLORREF m_cNotepadBackColour;

@@ -40,6 +40,7 @@ public:
 	//{{AFX_VIRTUAL(CEditMultiLine)
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	//}}AFX_VIRTUAL
 
 // Implementation
