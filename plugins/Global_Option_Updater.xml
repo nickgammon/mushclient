@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="Global_Option_Updater"
+   author="Nick Gammon"
+   id="1204316574ebc1d41d7011b3"
+   language="Lua"
+   purpose="Shows / changes global options"
+   date_written="2010-09-17 08:28:51"
+   requires="4.50"
+   version="1.0"
+   >
+<description trim="y">
+<![CDATA[
+Usage:
+
+list_global_options       --> list all valid option names
+show_global_option x      --> displays value of option
+change_global_option x y  --> changes value of option x to y
+
+
+eg.
+
+show_global_option FixedPitchFont
+
+change_global_option FixedPitchFont Dina
+
+After changing an option you should exit the client and re-open it, otherwise
+if you use the GUI interface (global preferences) it may put the option back again.
+
+]]>
+</description>
+
+</plugin>
+
+
+<!--  Aliases  -->
+
+<aliases>
+  <alias
+   match="change_global_option * *"
+   enabled="y"
+   send_to="12"
+   sequence="100"
+  >
+  <send>
+  
+-- open preferences database
+local db = assert (sqlite3.open (GetInfo (82)))
+local value = nil
+
+-- see if this key already exists (if not, probably spelling error)
+for a in db:nrows "SELECT * FROM prefs WHERE name = '%1'" do
+  value = a.value
+end  -- for
+
+-- if found, modify it
+if value then
+
+  if db:execute ("UPDATE prefs SET value = '%2' WHERE name = '%1'") ~= sqlite3.OK then
+    ColourNote ("red", "", "Unable to modify preferences: " .. db:errmsg ())
+  else
+    if value ~= "%2" then
+      ColourNote ("cyan", "", "Item '%1' changed from '" .. value .. "' to '%2'")
+    else
+      ColourNote ("cyan", "", "No change required, value of '%1' is already '%2'")
+    end -- if
+  end -- if updated OK
+
+else
+  ColourNote ("red", "", "Item '%1' is not in preferences database")
+end -- does not exist
+
+db:close()
+
+</send>
+  </alias>
+  
+  <alias
+   match="show_global_option *"
+   enabled="y"
+   send_to="12"
+   sequence="100"
+  >
+  <send>
+  
+-- open preferences database
+local db = assert (sqlite3.open (GetInfo (82)))
+local value = nil
+
+-- find the item
+for a in db:nrows "SELECT * FROM prefs WHERE name = '%1'" do
+  value = a.value
+end  -- for
+
+-- if found, display it
+if value then
+  ColourNote ("cyan", "", "Item '%1' has value '" .. value .. "'")
+else
+  ColourNote ("red", "", "Item '%1' is not in preferences database")
+end -- does not exist
+
+db:close()
+
+</send>
+  </alias>
+
+ <alias
+   match="list_global_options"
+   enabled="y"
+   send_to="12"
+   sequence="100"
+  >
+  <send>
+  
+  -- open preferences database
+local db = assert (sqlite3.open (GetInfo (82)))
+
+ColourNote ("cyan", "", "Global Options")
+ColourNote ("cyan", "", string.rep ("-", 40))
+
+-- show all
+for a in db:nrows "SELECT * FROM prefs ORDER BY name" do
+ ColourNote ("cyan", "", a.name)
+end  -- for
+
+ColourNote ("cyan", "", string.rep ("-", 40))
+
+db:close()
+
+</send>
+  </alias>
+    
+</aliases>
+
+<script>
+
+-- show help
+ColourNote ("cyan", "", GetPluginInfo (GetPluginID (), 3))
+
+</script>
+
+</muclient>
