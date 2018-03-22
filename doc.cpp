@@ -4662,7 +4662,7 @@ pCmdUI->Enable (!m_strAutoSayString.IsEmpty ());
 pCmdUI->SetCheck (m_bEnableAutoSay);
 }
 
-const char * CMUSHclientDoc::GetSocketError (int nError)
+CString CMUSHclientDoc::GetSocketError (int nError)
   {
 
   switch (nError)

@@ -1837,7 +1837,7 @@ public:
 
   void OnConnect(int nErrorCode);
   void HostNameResolved (WPARAM wParam, LPARAM lParam);
-  const char * GetSocketError (int nError);
+  CString GetSocketError (int nError);
   bool LookupHostName (LPCTSTR sName);
   void InitiateConnection (void);
   void ConnectionEstablished (void);
