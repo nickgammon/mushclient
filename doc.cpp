@@ -1627,7 +1627,31 @@ Unicode range              UTF-8 bytes
         (m_pCurrentLine->len >= m_pCurrentLine->iMemoryAllocated))  // emergency bail-out
       {
 
-// do auto line wrapping here
+      // do auto line wrapping here
+
+      // first see if we can split at a multibyte character if no space was found
+
+      if (m_pCurrentLine->last_space < 0 &&   // no space found
+          (m_pCurrentLine->len - m_pCurrentLine->last_space) >= m_nWrapColumn &&
+          m_pCurrentLine->len >= 10 &&
+          !m_bUTF_8)    // not for UTF-8
+        {
+        int multibyte_start = -1;
+        for (int i = 0; i < m_pCurrentLine->len - 1; i++)
+          {
+          unsigned char c1 = m_pCurrentLine->text [i];
+          unsigned char c2 = m_pCurrentLine->text [i + 1];
+          if (c1 >= 0x81 && c1 <= 0xFE &&  // first Big5 character
+              ((c2 >= 0x40 && c2 <= 0x7E) || (c2 >= 0xA1 && c2 <= 0xFE))) // second Big5 character
+            multibyte_start = i++;  // remember position, jump the second byte
+          else if (c1 >= 0xA1 && c1 <= 0xF7 && c2 >= 0xA1 && c2 <= 0xFE)  // GB2132
+            multibyte_start = i++;  // remember position, jump the second byte
+          else if (c1 <= 0x7F)
+            multibyte_start = i;    // we can split after any ordinary character
+          }
+
+        m_pCurrentLine->last_space = multibyte_start;
+        } // end of checking for a Big5 or GB2132 break point
 
       if (!m_wrap || 
         m_pCurrentLine->last_space < 0 ||
