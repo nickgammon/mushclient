@@ -54,22 +54,22 @@ char * pOut;
   for (p = strMatchString; *p; p++)
     if ((unsigned char) *p < ' ')
       iSize += 3;   // non-printable 01 to 1F become \xhh
-    else if (isalnum ((unsigned char) *p) || 
-             *p == ' ' || 
+    else if (isalnum ((unsigned char) *p) ||
+             *p == ' ' ||
              (unsigned char) *p >= 0x80)
       continue; // A-Z, 0-9, space, hi-order bits set do not increase the size
     else if (*p == '*')
       iSize += 4;  // * becomes .*?  (non-greedy wildcard)
-    else 
+    else
       iSize++;     // others are escaped, eg. ( becomes \(
 
   // work out new buffer size
-  pOut = strRegexp.GetBuffer (strMatchString.GetLength () + 
+  pOut = strRegexp.GetBuffer (strMatchString.GetLength () +
                               iSize +   // escaped sequences
                               2 +       // ^ at start, and $ at end
                               10);       // 1 for null, plus 9 just in case
 
-    
+
   // now copy across non-regexp, turning it into a regexp
   if (bWholeLine)
     *pOut++ = '^';    // start of buffer marker
@@ -93,7 +93,7 @@ char * pOut;
       if (buf [1])        // 2 digits
         *pOut++ = buf [1];
       }
-    else if (isalnum ((unsigned char) *p) || 
+    else if (isalnum ((unsigned char) *p) ||
              *p == ' ' ||
              (unsigned char) *p >= 0x80)
       *pOut++ = *p;   // copy alphanumeric, spaces, across
@@ -105,7 +105,7 @@ char * pOut;
       *pOut++ = '?';
       *pOut++ = ')';
       }
-    else 
+    else
       {     // non-alphanumeric are escaped out
       *pOut++ = '\\';
       *pOut++ = *p;
@@ -127,7 +127,7 @@ char * pOut;
 // Helper routine for setting the font in certain description windows to a
 // fixed-pitch courier, to make editing easier.
 
-void FixFont (ptrCFont & pFont, 
+void FixFont (ptrCFont & pFont,
               CEdit & editctrl,
               const CString strName,
               const int iSize,
@@ -141,27 +141,27 @@ void FixFont (ptrCFont & pFont,
 
    if (pFont)
     {
-    
+
     CDC dc;
 
     dc.CreateCompatibleDC (NULL);
 
-     int lfHeight = -MulDiv(iSize, 
+     int lfHeight = -MulDiv(iSize,
                     dc.GetDeviceCaps(LOGPIXELSY), 72);
 
-     pFont->CreateFont(lfHeight, // int nHeight, 
-            0, // int nWidth, 
-            0, // int nEscapement, 
-            0, // int nOrientation, 
-            iWeight, // int nWeight, 
-            0, // BYTE bItalic, 
-            0, // BYTE bUnderline, 
-            0, // BYTE cStrikeOut, 
-            iCharset, // BYTE nCharSet, 
-            0, // BYTE nOutPrecision, 
-            0, // BYTE nClipPrecision, 
-            0, // BYTE nQuality, 
-            MUSHCLIENT_FONT_FAMILY, // BYTE nPitchAndFamily,  
+     pFont->CreateFont(lfHeight, // int nHeight,
+            0, // int nWidth,
+            0, // int nEscapement,
+            0, // int nOrientation,
+            iWeight, // int nWeight,
+            0, // BYTE bItalic,
+            0, // BYTE bUnderline,
+            0, // BYTE cStrikeOut,
+            iCharset, // BYTE nCharSet,
+            0, // BYTE nOutPrecision,
+            0, // BYTE nClipPrecision,
+            0, // BYTE nQuality,
+            MUSHCLIENT_FONT_FAMILY, // BYTE nPitchAndFamily,
             strName);// LPCTSTR lpszFacename );
 
       // Get the metrics of the font.
@@ -283,21 +283,21 @@ bool CreateTextWindow (const char * sText,
 
   pNewDoc->m_strTitle              = sTitle;
   pNewDoc->m_pRelatedWorld         = pDoc;
-  pNewDoc->m_iUniqueDocumentNumber = iUniqueDocumentNumber;   
-  pNewDoc->m_strFontName           = strFontName;             
-  pNewDoc->m_iFontSize             = iFontSize;               
-  pNewDoc->m_iFontWeight           = iFontWeight;             
-  pNewDoc->m_textColour            = textColour;              
-  pNewDoc->m_backColour            = backColour;              
-  pNewDoc->m_strSearchString       = strSearchString; 
+  pNewDoc->m_iUniqueDocumentNumber = iUniqueDocumentNumber;
+  pNewDoc->m_strFontName           = strFontName;
+  pNewDoc->m_iFontSize             = iFontSize;
+  pNewDoc->m_iFontWeight           = iFontWeight;
+  pNewDoc->m_textColour            = textColour;
+  pNewDoc->m_backColour            = backColour;
+  pNewDoc->m_strSearchString       = strSearchString;
   pNewDoc->m_strRecallLinePreamble = strRecallLinePreamble;
   pNewDoc->m_bMatchCase            = bMatchCase;
-  pNewDoc->m_bRegexp               = bRegexp;                 
-  pNewDoc->m_bCommands             = bCommands;               
-  pNewDoc->m_bOutput               = bOutput;                 
-  pNewDoc->m_bNotes                = bNotes;                  
-  pNewDoc->m_iLines                = iLines;                  
-  pNewDoc->m_iNotepadType          = iNotepadType;                  
+  pNewDoc->m_bRegexp               = bRegexp;
+  pNewDoc->m_bCommands             = bCommands;
+  pNewDoc->m_bOutput               = bOutput;
+  pNewDoc->m_bNotes                = bNotes;
+  pNewDoc->m_iLines                = iLines;
+  pNewDoc->m_iNotepadType          = iNotepadType;
 
   if (iNotepadType == eNotepadWorldLoadError)
     {
@@ -334,7 +334,7 @@ bool CreateTextWindow (const char * sText,
     return true;      // OK
 
   pNewDoc->SetModifiedFlag (TRUE);    // modified
-  return pView->SetText (sText); // send the text to it 
+  return pView->SetText (sText); // send the text to it
 
   }
 
@@ -366,7 +366,7 @@ CString FixHTMLString (const CString strToFix)
 
   return strNewString;
 
-  } // end of FixHTMLString 
+  } // end of FixHTMLString
 
 // same as above, except quotes are left alone, and tabs are fixed up
 CString FixHTMLMultilineString (const CString strToFix)
@@ -396,7 +396,7 @@ CString FixHTMLMultilineString (const CString strToFix)
 
   return strNewString;
 
-  } // end of FixHTMLMultilineString 
+  } // end of FixHTMLMultilineString
 
 CString ConvertSetTypeToString (const int set_type)
   {
@@ -404,12 +404,12 @@ CString ConvertSetTypeToString (const int set_type)
 
   switch (set_type)
     {
-    case WORLD:   strType = "world";    break; 
-    case TRIGGER: strType = "trigger";  break; 
-    case ALIAS:   strType = "alias";    break; 
-    case COLOUR:  strType = "colour";   break; 
-    case MACRO:   strType = "macro";    break; 
-    case STRING:  strType = "string";   break; 
+    case WORLD:   strType = "world";    break;
+    case TRIGGER: strType = "trigger";  break;
+    case ALIAS:   strType = "alias";    break;
+    case COLOUR:  strType = "colour";   break;
+    case MACRO:   strType = "macro";    break;
+    case STRING:  strType = "string";   break;
     case TIMER:   strType = "timer";    break;
 
     default: strType = CFormat ("<Unknown type: %i>", set_type);
@@ -426,12 +426,12 @@ unsigned long MakeActionHash (const CString & strAction,
   SHS_INFO shsInfo;
   // produce the hash for quick lookups of actions
   CString strHash = strAction;
-  
+
   strHash += strHint;
   strHash += strVariable;
 
   shsInit   (&shsInfo);
-  shsUpdate (&shsInfo, (unsigned char *) (const char *) strHash, 
+  shsUpdate (&shsInfo, (unsigned char *) (const char *) strHash,
               strHash.GetLength ());
   shsFinal  (&shsInfo);
   return shsInfo.digest [0];
@@ -448,7 +448,7 @@ unsigned long MakeActionHash (const CString & strAction,
 
 bool GetClipboardColour (COLORREF & colour)
   {
-CString strColour; 
+CString strColour;
 int i;
 bool bReverse;
 CColours * colour_item;
@@ -458,7 +458,7 @@ CColours * colour_item;
   colour = RGB (0, 0, 0);
   if (!GetClipboardContents (strColour, false, false))  // not Unicode, no warning
     return false;
-    
+
   strColour.TrimLeft ();
   strColour.TrimRight ();
   strColour.MakeLower ();
@@ -470,9 +470,9 @@ CColours * colour_item;
     colour = colour_item->iColour;
     return true;
     }
-  
+
   strColour.MakeUpper ();
-  
+
   if (strColour.Left (2) == "&H" ||     // VB
       strColour.Left (2) == "0X" )      // JScript
     {
@@ -522,7 +522,7 @@ CColours * colour_item;
                   GetBValue (colour),
                   GetGValue (colour),
                   GetRValue (colour)
-                  );    
+                  );
 
   return true;
 
@@ -582,21 +582,21 @@ CString decodeBase64(const char *coded)
 
   // result will be 3/4 size of original
   char * d = strResult.GetBuffer (((i / 4) * 3) + 1);
-  
+
   if (i % 4 != 0)
     ThrowErrorException("Not a valid base64 string - incorrect length (not mod 4).");
 
-  // go thru converting each 4 base64 bytes into 3 8bit bytes   
+  // go thru converting each 4 base64 bytes into 3 8bit bytes
     for (; *p; p +=4 )
       {
       d [j++] = (char)(getBase64Value(p[0])<<2
                 | getBase64Value(p[1])>>4);
       d [j++] = (char)(getBase64Value(p[1])<<4
                 | getBase64Value(p[2])>>2);
-      d [j++] = (char)(getBase64Value(p[2])<<6 
+      d [j++] = (char)(getBase64Value(p[2])<<6
                 | getBase64Value(p[3]));
       }
-    
+
 
   d[j] = 0;
 
@@ -636,12 +636,12 @@ CString encodeBase64(const char * plaintext, const bool bMultiLine)
 
   CString strResult;
 
-  // result will be 4/3 size of original  
+  // result will be 4/3 size of original
   char * result = strResult.GetBuffer (
         ((len / 3) * 4) +  // goes up in size by 4/3
         4 +   // padding for final couple of bytes, plus null at end
         (((len / WRAP_POINT) + 1) * 2)  // (allow 2 bytes for cr/lfs)
-        );  
+        );
 
   // go thru converting each 3 bytes into 4 base64 bytes
   for (i=0; i < (len - 2); i+=3)
@@ -657,7 +657,7 @@ CString encodeBase64(const char * plaintext, const bool bMultiLine)
   // Add linefeeds every WRAP_POINT characters
 
     if(bMultiLine && ((i % WRAP_POINT) == (WRAP_POINT - 3)))
-      {                 
+      {
       result[j++]='\r';
       result[j++]='\n';
       }
@@ -674,7 +674,7 @@ CString encodeBase64(const char * plaintext, const bool bMultiLine)
       result[j++] = '=';
       result[j++] = '=';
       break;
-    case 2: // need two more characters 
+    case 2: // need two more characters
       bytes= (pt[i]<<16) + (pt[i+1]<<8);
       result[j++] = base64code[(bytes>>18) & 0x3F];
       result[j++] = base64code[(bytes>>12) & 0x3F];
@@ -684,7 +684,7 @@ CString encodeBase64(const char * plaintext, const bool bMultiLine)
 
   }
   result[j]='\0';
-    
+
 
   strResult.ReleaseBuffer (-1);
   return (strResult);
@@ -737,13 +737,13 @@ CString GetGUID (void)
   }   // end of GetGUID
 
 
-CString GetUniqueID (void) 
+CString GetUniqueID (void)
 {
 CString strResult = ::Replace (GetGUID (), "-", "");
 
   SHS_INFO shsInfo;
   shsInit   (&shsInfo);
-  shsUpdate (&shsInfo, (unsigned char *) (const char *) strResult, 
+  shsUpdate (&shsInfo, (unsigned char *) (const char *) strResult,
              strResult.GetLength ());
   shsFinal  (&shsInfo);
 
@@ -761,9 +761,9 @@ CString GetSendToString (const unsigned short iWhere)
   strWhere = "unknown";
   switch (iWhere)
    {
-    case eSendToWorld:        strWhere = "world";            break; 
-    case eSendToCommand:      strWhere = "command";          break; 
-    case eSendToOutput:       strWhere = "output";           break; 
+    case eSendToWorld:        strWhere = "world";            break;
+    case eSendToCommand:      strWhere = "command";          break;
+    case eSendToOutput:       strWhere = "output";           break;
     case eSendToStatus:       strWhere = "status";           break;
     case eSendToNotepad:      strWhere = "notepad";          break;
     case eAppendToNotepad:    strWhere = "notepad_append";   break;
@@ -807,18 +807,18 @@ CString FixUpGerman (const CString strMessage)
 CString GetConnectionStatus (const int iStatus)
   {
   CString strResult = Translate ("<unknown>");
-  
+
   switch (iStatus)
     {
-    case eConnectNotConnected:          strResult = Translate ("Closed"); break; 
-    case eConnectMudNameLookup:         strResult = Translate ("Look up world name"); break; 
-    case eConnectProxyNameLookup:       strResult = Translate ("Look up proxy name"); break; 
-    case eConnectConnectingToMud:       strResult = Translate ("Connecting to world"); break; 
-    case eConnectConnectingToProxy:     strResult = Translate ("Connecting to proxy"); break; 
-    case eConnectAwaitingProxyResponse1:strResult = Translate ("Awaiting proxy response (1)"); break; 
-    case eConnectAwaitingProxyResponse2:strResult = Translate ("Awaiting proxy response (2)"); break; 
-    case eConnectAwaitingProxyResponse3:strResult = Translate ("Awaiting proxy response (3)"); break; 
-    case eConnectConnectedToMud:        strResult = Translate ("Open"); break; 
+    case eConnectNotConnected:          strResult = Translate ("Closed"); break;
+    case eConnectMudNameLookup:         strResult = Translate ("Look up world name"); break;
+    case eConnectProxyNameLookup:       strResult = Translate ("Look up proxy name"); break;
+    case eConnectConnectingToMud:       strResult = Translate ("Connecting to world"); break;
+    case eConnectConnectingToProxy:     strResult = Translate ("Connecting to proxy"); break;
+    case eConnectAwaitingProxyResponse1:strResult = Translate ("Awaiting proxy response (1)"); break;
+    case eConnectAwaitingProxyResponse2:strResult = Translate ("Awaiting proxy response (2)"); break;
+    case eConnectAwaitingProxyResponse3:strResult = Translate ("Awaiting proxy response (3)"); break;
+    case eConnectConnectedToMud:        strResult = Translate ("Open"); break;
     case eConnectDisconnecting:         strResult = Translate ("Disconnecting"); break;
     } // end of switch
 
@@ -835,23 +835,23 @@ void GetHostNameAndAddresses (CString & strHostName, CString & strAddresses)
    // Get host adresses
    struct hostent * pHost;
    int i;
-   
+
    pHost = gethostbyname(szHostName);
    strHostName = szHostName;
-   
+
    for( i = 0; pHost != NULL && pHost->h_addr_list [i] != NULL; i++ )
      {
      /*
      CString str;
      int j;
-     
+
      for( j = 0; j < pHost->h_length; j++ )
        {
        CString addr;
-       
+
        if( j > 0 )
          str += ".";
-       
+
        addr.Format("%u", (unsigned int)((unsigned
          char*)pHost->h_addr_list[i])[j]);
        str += addr;
@@ -862,7 +862,7 @@ void GetHostNameAndAddresses (CString & strHostName, CString & strAddresses)
        strAddresses += ", ";
      strAddresses += inet_ntoa ( *((in_addr *)pHost->h_addr_list[i]));
 
-     
+
      }
    }
   } // end of GetHostNameAndAddresses
@@ -928,7 +928,7 @@ void MakeRandomNumber (CMUSHclientDoc * pDoc, SHS_INFO & shsInfo)
 
   // hash our rather bizarre string
   shsInit   (&shsInfo);
-  shsUpdate (&shsInfo, (unsigned char *) (const char *) strHash, 
+  shsUpdate (&shsInfo, (unsigned char *) (const char *) strHash,
               strHash.GetLength ());
   shsFinal  (&shsInfo);
 
@@ -942,7 +942,7 @@ CString KeyCodeToString (const BYTE fVirt, const WORD key)
 
   CString strKeyCode,
           strKey;
-  
+
    if (fVirt & FSHIFT)
      strKey += "Shift+";
    if (fVirt & FCONTROL)
@@ -985,7 +985,7 @@ void StringToKeyCode (const CString strKey,
     CString strPart = strList.GetNext (pos);
     strPart.TrimLeft ();
     strPart.TrimRight ();
-    
+
     // look for special cases: Alt, Ctrl, Shift
     if (strPart.CompareNoCase ("Alt") == 0)
       {
@@ -1022,7 +1022,7 @@ void StringToKeyCode (const CString strKey,
 
       if (VirtualKeys [j].iVirtualKey == 0)
         ThrowErrorException ("Keystoke %s unknown", (LPCTSTR) strPart);
-        
+
       } // must be key itself
     } // end of working through part of key
 
@@ -1077,7 +1077,7 @@ void ShutDownSocket (CAsyncSocket & s)
       int iError = s.GetLastError ();
       TRACE1 ("Error on IOCtl: %08X\n", iError);
       } // end of failure
- 
+
     // shutdown sends - this will send a FIN to the other end
     if (!s.ShutDown (CAsyncSocket::sends))
       {
@@ -1085,7 +1085,7 @@ void ShutDownSocket (CAsyncSocket & s)
       TRACE1 ("Error on ShutDown: %08X\n", iError);
       } // end of failure
 
-    // pull out outstanding data 
+    // pull out outstanding data
     // (we should get a zero returned when the other end closes)
 
     char buff [100];
@@ -1102,7 +1102,7 @@ void ShutDownSocket (CAsyncSocket & s)
 
     // now close it
     s.Close ();
-    Frame.SetStatusNormal (); 
+    Frame.SetStatusNormal ();
 
     } // end of socket being valid
 
@@ -1113,7 +1113,7 @@ void ShutDownSocket (CAsyncSocket & s)
   }  // end of ShutDownSocket
 
 
-// returns a lower case version of the string 
+// returns a lower case version of the string
 string tolower (const string & s)
   {
 string d (s);
@@ -1123,12 +1123,12 @@ string d (s);
   }  // end of tolower
 
 // split a line into the first word, and rest-of-the-line
-string GetWord (string & s, 
+string GetWord (string & s,
                 const string delim,
                 const bool trim_spaces)
   {
-    
-  // find delimiter  
+
+  // find delimiter
   string::size_type i (s.find (delim));
 
   // split into before and after delimiter
@@ -1150,8 +1150,8 @@ string GetWord (string & s,
 
   // return first word in line
   return w;
-  
-  } // end of GetWord 
+
+  } // end of GetWord
 
 // To be symmetric, we assume an empty string (after trimming spaces)
 // will give an empty vector.
@@ -1162,9 +1162,9 @@ string GetWord (string & s,
 //      "a,b"   => 2 items
 //      "a,b,"  => 3 items (last one empty)
 
-void StringToVector (const string s, 
+void StringToVector (const string s,
                      vector<string> & v,
-                     const string delim, 
+                     const string delim,
                      const bool trim_spaces)
   {
 
@@ -1183,14 +1183,14 @@ void StringToVector (const string s,
 
   // add final element
   v.push_back (s1);
-  } // end of StringToVector 
+  } // end of StringToVector
 
-// Takes a vector of strings and converts it to a string 
-// like "apples,peaches,pears" 
+// Takes a vector of strings and converts it to a string
+// like "apples,peaches,pears"
 // Should be symmetric with StringToVector (excepting any spaces that might have
 //  been trimmed).
 
-string VectorToString (const vector<string> & v, 
+string VectorToString (const vector<string> & v,
                        const string delim)
   {
   // vector empty gives empty string
@@ -1201,7 +1201,7 @@ string VectorToString (const vector<string> & v,
   ostringstream os;
 
   // copy all but last one, with delimiter after each one
-  copy (v.begin (), v.end () - 1, 
+  copy (v.begin (), v.end () - 1,
         ostream_iterator<string> (os, delim.c_str ()));
 
   // return string with final element appended
@@ -1237,12 +1237,12 @@ static char GetMatchingDelimiter (const char cDelim)
   {
   switch (cDelim)
     {
-    case '[' : return ']'; 
-    case '(' : return ')'; 
-    case '{' : return '}'; 
-    case ']' : return '['; 
-    case ')' : return '('; 
-    case '}' : return '{'; 
+    case '[' : return ']';
+    case '(' : return ')';
+    case '{' : return '}';
+    case ']' : return '[';
+    case ')' : return '(';
+    case '}' : return '{';
     }   // end of switch
   return 0;   // shouldn't get here :)
   } // end of GetMatchingDelimiter
@@ -1266,7 +1266,7 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
   // find the selection range
   ctlEdit.GetSel(nStartChar, nEndChar);
 
-   
+
   strBuf = GetText (ctlEdit);
   nLength = strBuf.GetLength ();
 
@@ -1284,7 +1284,7 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
     nEndChar--;
   else
     // if no delimiter on right, try going back one
-    if (strchr (DELIMS, strBuf [nEndChar]) == NULL && 
+    if (strchr (DELIMS, strBuf [nEndChar]) == NULL &&
         nEndChar > 0)
       nEndChar--;
 
@@ -1292,13 +1292,13 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
   cStartDelim = strBuf [nEndChar];
 
    int iEscapeCount = 0;
-   p = strBuf; 
+   p = strBuf;
    p += nEndChar;    // p points to start of search
 
 
    // if an odd number of escape characters, cannot use it
-   while ((iFlags & PAREN_BACKSLASH_ESCAPES) && 
-       p > pStartBuf && 
+   while ((iFlags & PAREN_BACKSLASH_ESCAPES) &&
+       p > pStartBuf &&
        *(p - 1) == '\\')
      {
      p--;
@@ -1306,8 +1306,8 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
      }
 
    if (iEscapeCount == 0)
-     while ((iFlags & PAREN_PERCENT_ESCAPES) && 
-         p > pStartBuf && 
+     while ((iFlags & PAREN_PERCENT_ESCAPES) &&
+         p > pStartBuf &&
          *(p - 1) == '%')
        {
        p--;
@@ -1322,7 +1322,7 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
     }
 
   nStartChar = nEndChar;    // selection will start here
-  p = strBuf; 
+  p = strBuf;
   p += nEndChar;    // p points to start of search
   pStart = p;       // where we started
 
@@ -1358,7 +1358,7 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
          if (*(++p) == 0) // skip next character, if end of buffer, stop
            break;
          }    // end of percent escape
-       else if ((c == '\"' && (iFlags & PAREN_DOUBLE_QUOTES)) || 
+       else if ((c == '\"' && (iFlags & PAREN_DOUBLE_QUOTES)) ||
                 (c == '\'' && (iFlags & PAREN_SINGLE_QUOTES)))
          {  // in quotes, skip quoted part
          for (p++; *p && *p != c; p++)
@@ -1384,14 +1384,14 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
            }    // end of skipping quotes
          }  // end of having a quote
        }  // end of searching for delimiter
-    
+
      if (*p == 0)
         {
         ::MessageBeep (MB_ICONEXCLAMATION);
         return;
         }    // no end delimiter found
 
-      
+
      // work out where end character is
      nEndChar += p - pStart;
 
@@ -1407,8 +1407,8 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
        c = *p;
 
        // if an odd number of escape characters, ignore it
-       while ((iFlags & PAREN_BACKSLASH_ESCAPES) && 
-           p > pStartBuf && 
+       while ((iFlags & PAREN_BACKSLASH_ESCAPES) &&
+           p > pStartBuf &&
            *(p - 1) == '\\')
          {
          p--;
@@ -1416,8 +1416,8 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
          }
 
        if (iEscapeCount == 0)
-         while ((iFlags & PAREN_PERCENT_ESCAPES) && 
-             p > pStartBuf && 
+         while ((iFlags & PAREN_PERCENT_ESCAPES) &&
+             p > pStartBuf &&
              *(p - 1) == '%')
            {
            p--;
@@ -1426,7 +1426,7 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
 
        if (iEscapeCount & 1)
          continue;
-       
+
        if (c == cNestArray [iLevel])
          {
          if (iLevel <= 0)
@@ -1436,7 +1436,7 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
            }
          iLevel--;  // dropped back a level
          }
-       else 
+       else
 // ----- Begin Talek suggestion
         if ((iFlags & PAREN_NEST_BRACES) && (strchr (START_DELIMS, c)))
           {
@@ -1451,9 +1451,9 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
          }
         else
 
-// ----- End Talek suggestion         
-         
-         
+// ----- End Talek suggestion
+
+
          if ((iFlags & PAREN_NEST_BRACES) && (strchr (END_DELIMS, c)) ||
                 !(iFlags & PAREN_NEST_BRACES) && (c == cStartDelim))
          {
@@ -1465,7 +1465,7 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
           }    // too many levels
          cNestArray [iLevel] = GetMatchingDelimiter (c);
          }
-       else if ((c == '\"' && (iFlags & PAREN_DOUBLE_QUOTES)) || 
+       else if ((c == '\"' && (iFlags & PAREN_DOUBLE_QUOTES)) ||
                 (c == '\'' && (iFlags & PAREN_SINGLE_QUOTES)))
          {  // in quotes, skip quoted part
          for (p--; p >= pStartBuf; p--)
@@ -1489,13 +1489,13 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
            }    // end of skipping quotes
          }  // end of having a quote
        }  // end of searching for delimiter
-    
+
      if (p < pStartBuf)
         {
         ::MessageBeep (MB_ICONEXCLAMATION);
         return;
         }    // no end delimiter found
-      
+
      // work out where end character is
      nStartChar -= pStart - p;
 
@@ -1511,8 +1511,8 @@ char cNestArray [MAX_NEST];   // so we know when nested group ends
 
   ctlEdit.SetSel(nStartChar, nEndChar);
 
-  //  (aaa[bbb]ccc)[ddd{e']'ee}]  
-  //  (aaaa "bb \" bb" aaaa) 
+  //  (aaa[bbb]ccc)[ddd{e']'ee}]
+  //  (aaaa "bb \" bb" aaaa)
 }  // end of FindMatchingBrace
 
 
@@ -1583,7 +1583,7 @@ void MakeTableItemBool (lua_State *L, const char * name, const bool b)
   other = nothing
 */
 
-long AdjustColour (long Colour, short Method) 
+long AdjustColour (long Colour, short Method)
 {
 COLORREF c =  Colour & 0xFFFFFF;
 CColor clr;
@@ -1643,7 +1643,7 @@ CColor clr;
 
     default:
        return c;    // do nothing
-      
+
     } // end of switch on Method
 
 
@@ -1661,15 +1661,15 @@ void SetDefaultAnsiColours (COLORREF * normalcolour, COLORREF * boldcolour)
   normalcolour [MAGENTA] = RGB (128, 0, 128);
   normalcolour [CYAN]    = RGB (0, 128, 128);
   normalcolour [WHITE]   = RGB (192, 192, 192);
-                       
-  boldcolour  [BLACK]    = RGB (128, 128, 128);            
-  boldcolour  [RED]      = RGB (255, 0, 0);          
-  boldcolour  [GREEN]    = RGB (0, 255, 0);          
-  boldcolour  [YELLOW]   = RGB (255, 255, 0);        
-  boldcolour  [BLUE]     = RGB (0, 0, 255);          
-  boldcolour  [MAGENTA]  = RGB (255, 0, 255);        
-  boldcolour  [CYAN]     = RGB (0, 255, 255);        
-  boldcolour  [WHITE]    = RGB (255, 255, 255);      
+
+  boldcolour  [BLACK]    = RGB (128, 128, 128);
+  boldcolour  [RED]      = RGB (255, 0, 0);
+  boldcolour  [GREEN]    = RGB (0, 255, 0);
+  boldcolour  [YELLOW]   = RGB (255, 255, 0);
+  boldcolour  [BLUE]     = RGB (0, 0, 255);
+  boldcolour  [MAGENTA]  = RGB (255, 0, 255);
+  boldcolour  [CYAN]     = RGB (0, 255, 255);
+  boldcolour  [WHITE]    = RGB (255, 255, 255);
   }   // SetDefaultAnsiColours
 
 void SetDefaultCustomColours (COLORREF * customtext, COLORREF * customback)
@@ -1742,11 +1742,11 @@ bool GetNestedFunction (lua_State * L, const char * sName, const bool bRaiseErro
 
     if (bRaiseError)
       ::UMessageBox (TFormat ("Cannot find the function '%s' - item '%s' is %s",
-                      sName, 
+                      sName,
                       sItem.c_str (),
                       lua_typename(L, lua_type (L,-1))
-                        ), 
-                        MB_ICONEXCLAMATION); 
+                        ),
+                        MB_ICONEXCLAMATION);
     return false;
     }
 
@@ -2057,23 +2057,23 @@ static char *chrptr, *chrptr1;
 
 void metaphone (const char *name, char * metaph, int metalen)
   {
-  
+
   int  ii, jj, silent, hard, Lng, lastChr;
-  
+
   char curLtr, prevLtr, nextLtr, nextLtr2, nextLtr3;
-  
+
   int vowelAfter, vowelBefore, frontvAfter;
-  
+
   char wname[61];
   char *ename=wname;
-  
+
   // initially empty
   metaph[0] = '\0';
 
   // don't allow overflow here
   if (metalen > (sizeof (wname) - 1))
     metalen = sizeof (wname) - 1;
-  
+
   jj = 0;
   for (ii=0; name[ii] != '\0'; ii++) {
     if ( isalpha(name[ii]) ) {
@@ -2082,42 +2082,42 @@ void metaphone (const char *name, char * metaph, int metalen)
       }
     }
   ename[jj] = '\0';
-  
-  if (strlen(ename) == 0) 
+
+  if (strlen(ename) == 0)
     return;
-  
+
   /* if ae, gn, kn, pn, wr then drop the first letter */
   if ( (chrptr=strchr(excpPAIR,ename[0]) ) != NULLCHAR ) {
     chrptr1 = nextLTR + (chrptr-excpPAIR);
-    if ( *chrptr1 == ename[1] )  
+    if ( *chrptr1 == ename[1] )
       strcpy(ename,&ename[1]);
     }
   /* change x to s */
-  if  (ename[0] == 'X') 
+  if  (ename[0] == 'X')
     ename[0] = 'S';
 
   /* get rid of the "h" in "wh" */
-  if ( strncmp(ename,"WH",2) == 0 ) 
+  if ( strncmp(ename,"WH",2) == 0 )
     strcpy(&ename[1], &ename[2]);
-  
+
   Lng = strlen(ename);
   lastChr = Lng -1;   /* index to last character in string makes code easier*/
-  
+
   /* Remove an S from the end of the string */
   if ( ename[lastChr] == 'S' ) {
     ename[lastChr] = '\0';
     Lng = strlen(ename);
     lastChr = Lng -1;
     }
-  
+
   for (ii=0; ( (strlen(metaph) < metalen) && (ii < Lng) ); ii++) {
-    
+
     curLtr = ename[ii];
-    
+
     vowelBefore = FALSE;  prevLtr = ' ';
     if (ii > 0) {
       prevLtr = ename[ii-1];
-      if ( strchr(VOWELS,prevLtr) != NULLCHAR ) 
+      if ( strchr(VOWELS,prevLtr) != NULLCHAR )
         vowelBefore = TRUE;
       }
     /* if first letter is a vowel KEEP it */
@@ -2125,40 +2125,40 @@ void metaphone (const char *name, char * metaph, int metalen)
       strncat(metaph,&curLtr,1);
       continue;
       }
-    
-    vowelAfter = FALSE;   
-    frontvAfter = FALSE;   
+
+    vowelAfter = FALSE;
+    frontvAfter = FALSE;
     nextLtr = ' ';
 
     if ( ii < lastChr ) {
       nextLtr = ename[ii+1];
-      if ( strchr(VOWELS,nextLtr) != NULLCHAR ) 
+      if ( strchr(VOWELS,nextLtr) != NULLCHAR )
         vowelAfter = TRUE;
-      if ( strchr(FRONTV,nextLtr) != NULLCHAR ) 
+      if ( strchr(FRONTV,nextLtr) != NULLCHAR )
         frontvAfter = TRUE;
       }
 
     /* skip double letters except ones in list */
-    if (curLtr == nextLtr && (strchr(ALLOW_DOUBLE,nextLtr) == NULLCHAR) ) 
+    if (curLtr == nextLtr && (strchr(ALLOW_DOUBLE,nextLtr) == NULLCHAR) )
       continue;
-    
+
     nextLtr2 = ' ';
-    if (ii < (lastChr-1) ) 
+    if (ii < (lastChr-1) )
       nextLtr2 = ename[ii+2];
-    
+
     nextLtr3 = ' ';
-    if (ii < (lastChr-2) ) 
+    if (ii < (lastChr-2) )
       nextLtr3 = ename[ii+3];
-    
+
     switch (curLtr) {
-      
+
       case 'B': silent = FALSE;
-        if (ii == lastChr && prevLtr == 'M') 
+        if (ii == lastChr && prevLtr == 'M')
           silent = TRUE;
-        if (! silent) 
+        if (! silent)
           strncat(metaph,&curLtr,1);
         break;
-        
+
         /*silent -sci-,-sce-,-scy-;  sci-, etc OK*/
       case 'C': if (! (ii > 1 && prevLtr == 'S' && frontvAfter) )
                   if ( ii > 0 && nextLtr == 'I' && nextLtr2 == 'A' )
@@ -2177,51 +2177,51 @@ void metaphone (const char *name, char * metaph, int metalen)
                       else
                         strncat(metaph,"K",1);
                       break;
-                            
+
       case 'D': if (nextLtr == 'G' && (strchr(FRONTV,nextLtr2) != NULLCHAR))
                   strncat(metaph,"J",1);
         else
           strncat(metaph,"T",1);
         break;
-        
+
       case 'G': silent=FALSE;
         /* SILENT -gh- except for -gh and no vowel after h */
         if ( (ii < (lastChr-1) && nextLtr == 'H')
           && (strchr(VOWELS,nextLtr2) == NULLCHAR) )
           silent=TRUE;
-        
+
         if ( (ii == (lastChr-3) )
           && nextLtr == 'N' && nextLtr2 == 'E' && nextLtr3 == 'D')
           silent=TRUE;
         else
-          if ( (ii == (lastChr-1)) && nextLtr == 'N') 
+          if ( (ii == (lastChr-1)) && nextLtr == 'N')
             silent=TRUE;
-          
-          if (prevLtr == 'D' && frontvAfter) 
+
+          if (prevLtr == 'D' && frontvAfter)
             silent=TRUE;
-          
+
           if (prevLtr == 'G')
             hard=TRUE;
           else
             hard=FALSE;
-          
+
           if (!silent)
             if (frontvAfter && (! hard) )
               strncat(metaph,"J",1);
             else
               strncat(metaph,"K",1);
             break;
-            
+
       case 'H': silent = FALSE;
-        if ( strchr(VARSON,prevLtr) != NULLCHAR ) 
+        if ( strchr(VARSON,prevLtr) != NULLCHAR )
           silent = TRUE;
-        
-        if ( vowelBefore && !vowelAfter) 
+
+        if ( vowelBefore && !vowelAfter)
           silent = TRUE;
-        
+
         if (!silent) strncat(metaph,&curLtr,1);
         break;
-        
+
       case 'F':
       case 'J':
       case 'L':
@@ -2229,20 +2229,20 @@ void metaphone (const char *name, char * metaph, int metalen)
       case 'N':
       case 'R': strncat(metaph,&curLtr,1);
         break;
-        
-      case 'K': if (prevLtr != 'C') 
+
+      case 'K': if (prevLtr != 'C')
                   strncat(metaph,&curLtr,1);
         break;
-        
+
       case 'P': if (nextLtr == 'H')
                   strncat(metaph,"F",1);
         else
           strncat(metaph,"P",1);
         break;
-        
+
       case 'Q': strncat(metaph,"K",1);
         break;
-        
+
       case 'S': if (ii > 1 && nextLtr == 'I'
                   && ( nextLtr2 == 'O' || nextLtr2 == 'A') )
                   strncat(metaph,"X",1);
@@ -2252,7 +2252,7 @@ void metaphone (const char *name, char * metaph, int metalen)
           else
             strncat(metaph,"S",1);
           break;
-          
+
       case 'T': if (ii > 1 && nextLtr == 'I'
                   && ( nextLtr2 == 'O' || nextLtr2 == 'A') )
                   strncat(metaph,"X",1);
@@ -2266,31 +2266,31 @@ void metaphone (const char *name, char * metaph, int metalen)
               if (! (ii < (lastChr-2) && nextLtr == 'C' && nextLtr2 == 'H'))
                 strncat(metaph,"T",1);
               break;
-              
+
       case 'V': strncat(metaph,"F",1);
         break;
-        
+
       case 'W':
-      case 'Y': if (ii < lastChr && vowelAfter) 
+      case 'Y': if (ii < lastChr && vowelAfter)
                   strncat(metaph,&curLtr,1);
         break;
-        
+
       case 'X': strncat(metaph,"KS",2);
         break;
-        
+
       case 'Z': strncat(metaph,"S",1);
         break;
     }
-    
+
   }
-  
+
   /*  DON'T DO THIS NOW, REMOVING "S" IN BEGINNING HAS the same effect
   with plurals, in addition imbedded S's in the Metaphone are included
   Lng = strlen(metaph);
   lastChr = Lng -1;
   if ( metaph[lastChr] == 'S' && Lng >= 3 ) metaph[lastChr] = '\0';
   */
-  
+
   return;
 }
 
@@ -2298,12 +2298,12 @@ void metaphone (const char *name, char * metaph, int metalen)
 // for forum posts, where I am quoting code, I want to fix up
 // [ ] and \ to have a \ in front of them
 
-CString QuoteForumCodes(const CString & strText) 
+CString QuoteForumCodes(const CString & strText)
 {
 CString strNewText;
 const char * pOld;
 char * pNew;
-int iChanges = 0; 
+int iChanges = 0;
 
   // count how many characters we see that need converting
   for (pOld = strText; *pOld; pOld++)
@@ -2325,23 +2325,23 @@ int iChanges = 0;
     // now copy over whatever it was
     *pNew++ = *pOld;
     }
-  
+
   *pNew++ = 0;    // terminator at end
   strNewText.ReleaseBuffer ();
-  
+
   if (::UMessageBox (TFormat ("Clipboard converted for use with the Forum, %i change%s made",
       PLURAL (iChanges)), MB_ICONINFORMATION | MB_OKCANCEL) != IDOK)
       return strText;
 
   return strNewText;
-  
+
   }  // end of QuoteForumCodes
 
 
 // Levenshtein Distance Algorithm
 // see: http://www.merriampark.com/ldcpp.htm
 
-int EditDistance (const std::string source, const std::string target) 
+int EditDistance (const std::string source, const std::string target)
   {
 
 // keep maximum down in case they feed in a ridiculously long word
@@ -2361,10 +2361,10 @@ const int MAX_LENGTH = 20;
 
   if (m == 0)
       return n;
-  
+
   // Good form to declare a TYPEDEF
 
-  typedef std::vector< std::vector<int> > Tmatrix; 
+  typedef std::vector< std::vector<int> > Tmatrix;
 
   Tmatrix matrix(n+1);
 
@@ -2416,7 +2416,7 @@ const int MAX_LENGTH = 20;
 
       // Step 6A: Cover transposition, in addition to deletion,
       // insertion and substitution. This step is taken from:
-      // Berghel, Hal ; Roach, David : "An Extension of Ukkonen's 
+      // Berghel, Hal ; Roach, David : "An Extension of Ukkonen's
       // Enhanced Dynamic Programming ASM Algorithm"
       // (http://www.acm.org/~hlb/publications/asm/asm.html)
 
@@ -2453,7 +2453,7 @@ static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize) {
 
 // don't translate this, I think :)
 static int panic (lua_State *L) {
-  (void)L;  /* to avoid warnings */  
+  (void)L;  /* to avoid warnings */
   ::AfxMessageBox (CFormat ("PANIC: unprotected error in call to Lua API (%s)",
                    lua_tostring(L, -1)));
   return 0;
@@ -2496,10 +2496,10 @@ const char * Make_Absolute_Path (CString strFileName)
   if (!(
       isalpha ((unsigned char) strFileName [0]) &&
       strFileName [1] == ':'               // eg. c: blah
-      ) &&      
+      ) &&
       strFileName [0] != '\\' &&           // eg. \mydir\blah or \\server\blah
       strFileName [0] != '/'            // eg. /mydir/blah or //server/blah
-     )  
+     )
     {
     // if the filename starts with ./ or .\ then drop it, otherwise
     //   we get junk like:  c:\mushclient\.\logs\filename
@@ -2518,11 +2518,11 @@ static char sPathName [_MAX_PATH];
 
   // ensure not too long
   strFileName = strFileName.Left (sizeof (sPathName) - 1);
-  
+
   // copy to retain
   strcpy (sPathName, (const char *) strFileName);
 
-  return sPathName;  
+  return sPathName;
 
   } // end of Make_Absolute_Path
 
@@ -2531,29 +2531,29 @@ const char * Convert_PCRE_Runtime_Error (const int iError)
   {
   switch (iError)
     {
-    case PCRE_ERROR_NOMATCH        : return Translate ("No match");       
-    case PCRE_ERROR_NULL           : return Translate ("Null");           
-    case PCRE_ERROR_BADOPTION      : return Translate ("Bad option");     
-    case PCRE_ERROR_BADMAGIC       : return Translate ("Bad magic");      
-    case PCRE_ERROR_UNKNOWN_OPCODE : return Translate ("Unknown Opcode"); 
-    case PCRE_ERROR_NOMEMORY       : return Translate ("No Memory");      
-    case PCRE_ERROR_NOSUBSTRING    : return Translate ("No Substring");   
-    case PCRE_ERROR_MATCHLIMIT     : return Translate ("Match Limit");    
-    case PCRE_ERROR_CALLOUT        : return Translate ("Callout");        
-    case PCRE_ERROR_BADUTF8        : return Translate ("Bad UTF8");       
+    case PCRE_ERROR_NOMATCH        : return Translate ("No match");
+    case PCRE_ERROR_NULL           : return Translate ("Null");
+    case PCRE_ERROR_BADOPTION      : return Translate ("Bad option");
+    case PCRE_ERROR_BADMAGIC       : return Translate ("Bad magic");
+    case PCRE_ERROR_UNKNOWN_OPCODE : return Translate ("Unknown Opcode");
+    case PCRE_ERROR_NOMEMORY       : return Translate ("No Memory");
+    case PCRE_ERROR_NOSUBSTRING    : return Translate ("No Substring");
+    case PCRE_ERROR_MATCHLIMIT     : return Translate ("Match Limit");
+    case PCRE_ERROR_CALLOUT        : return Translate ("Callout");
+    case PCRE_ERROR_BADUTF8        : return Translate ("Bad UTF8");
     case PCRE_ERROR_BADUTF8_OFFSET : return Translate ("Bad UTF8 Offset");
-    case PCRE_ERROR_PARTIAL        : return Translate ("Partial");        
-    case PCRE_ERROR_BADPARTIAL     : return Translate ("Bad Partial");    
-    case PCRE_ERROR_INTERNAL       : return Translate ("Internal");       
-    case PCRE_ERROR_BADCOUNT       : return Translate ("Bad Count");      
-    case PCRE_ERROR_DFA_UITEM      : return Translate ("Dfa Uitem");      
-    case PCRE_ERROR_DFA_UCOND      : return Translate ("Dfa Ucond");      
-    case PCRE_ERROR_DFA_UMLIMIT    : return Translate ("Dfa Umlimit");    
-    case PCRE_ERROR_DFA_WSSIZE     : return Translate ("Dfa Wssize");     
-    case PCRE_ERROR_DFA_RECURSE    : return Translate ("Dfa Recurse");    
+    case PCRE_ERROR_PARTIAL        : return Translate ("Partial");
+    case PCRE_ERROR_BADPARTIAL     : return Translate ("Bad Partial");
+    case PCRE_ERROR_INTERNAL       : return Translate ("Internal");
+    case PCRE_ERROR_BADCOUNT       : return Translate ("Bad Count");
+    case PCRE_ERROR_DFA_UITEM      : return Translate ("Dfa Uitem");
+    case PCRE_ERROR_DFA_UCOND      : return Translate ("Dfa Ucond");
+    case PCRE_ERROR_DFA_UMLIMIT    : return Translate ("Dfa Umlimit");
+    case PCRE_ERROR_DFA_WSSIZE     : return Translate ("Dfa Wssize");
+    case PCRE_ERROR_DFA_RECURSE    : return Translate ("Dfa Recurse");
     case PCRE_ERROR_RECURSIONLIMIT : return Translate ("Recursion Limit");
-    case PCRE_ERROR_NULLWSLIMIT    : return Translate ("Null Ws Limit");  
-    case PCRE_ERROR_BADNEWLINE     : return Translate ("Bad Newline");    
+    case PCRE_ERROR_NULLWSLIMIT    : return Translate ("Null Ws Limit");
+    case PCRE_ERROR_BADNEWLINE     : return Translate ("Bad Newline");
     default: return Translate ("Unknown PCRE error");
     }
   } // end of Convert_PCRE_Runtime_Error
@@ -2601,7 +2601,7 @@ return (first[0] << 8) + first[1];
 
 // i18n (Internationalization) stuff
 
-// translate message (eg. "File cannot be opened") into locale-specific language     
+// translate message (eg. "File cannot be opened") into locale-specific language
 CString TranslateGeneric (const char * sText, const char * sSection)
   {
   static bool bInTranslateGeneric = false;  // stop stack overflow if we are re-called
@@ -2616,14 +2616,14 @@ CString TranslateGeneric (const char * sText, const char * sSection)
 
   lua_settop (App.m_Translator_Lua, 0); // pop everything from last time
 
-  lua_getglobal (App.m_Translator_Lua, sSection);  
+  lua_getglobal (App.m_Translator_Lua, sSection);
   if (!lua_istable (App.m_Translator_Lua, -1))
     {
     bInTranslateGeneric = false;
     return sText;  // no messages table - just return source text
     }
 
-  lua_getfield (App.m_Translator_Lua, -1, sText); 
+  lua_getfield (App.m_Translator_Lua, -1, sText);
 
   // if we found it, take result
   if (lua_isstring (App.m_Translator_Lua, -1))
@@ -2638,7 +2638,7 @@ CString TranslateGeneric (const char * sText, const char * sSection)
     return sText;
   }    // end of Translate
 
-// translate message (eg. "File %s cannot be opened") into locale-specific language     
+// translate message (eg. "File %s cannot be opened") into locale-specific language
 
 // This parses the format string, and works out how many arguments to supply to the Lua function
 
@@ -2646,10 +2646,10 @@ CString TranslateGeneric (const char * sText, const char * sSection)
 
 /*
 
-    ["You have loaded %i %s%s"] = 
+    ["You have loaded %i %s%s"] =
     function (a, b, c)
       return "Thou hast loaded " .. a .. " " .. b .. c
-    end -- function 
+    end -- function
 
 */
 
@@ -2672,13 +2672,13 @@ CString TFormat (const char * sFormat, ...)
     lua_settop (App.m_Translator_Lua, 0); // pop everything from last time
     lua_getglobal (App.m_Translator_Lua, "formatted");
     }
-  else 
+  else
     bNotFound = true;
 
 
   if (!bNotFound && lua_istable (App.m_Translator_Lua, -1))
-    lua_getfield (App.m_Translator_Lua, -1, sFormat); 
-  else 
+    lua_getfield (App.m_Translator_Lua, -1, sFormat);
+  else
     bNotFound = true;
 
 
@@ -2691,27 +2691,27 @@ CString TFormat (const char * sFormat, ...)
     va_list sstrings;
     va_start(sstrings, sFormat);
     int iArgCount = 0;
-    
+
     // scan format string looking for % symbols
     const char * sFormatItem = sFormat;
 
-    while (sFormatItem = strchr (sFormatItem, '%')) 
+    while (sFormatItem = strchr (sFormatItem, '%'))
       {
       sFormatItem++;    // skip the %
 
       // skip special flags (
-      while (strchr(FORMATFLAGS, *sFormatItem)) 
+      while (strchr(FORMATFLAGS, *sFormatItem))
         sFormatItem++;  /* skip flags */
-      if (isdigit(unsigned char (*sFormatItem))) 
+      if (isdigit(unsigned char (*sFormatItem)))
         sFormatItem++;  /* skip width */
-      if (isdigit(unsigned char (*sFormatItem))) 
+      if (isdigit(unsigned char (*sFormatItem)))
         sFormatItem++;  /* (2 digits at most) */
-      if (*sFormatItem == '.') 
+      if (*sFormatItem == '.')
         {
         sFormatItem++;
-        if (isdigit(unsigned char (*sFormatItem))) 
+        if (isdigit(unsigned char (*sFormatItem)))
           sFormatItem++;  /* skip precision */
-        if (isdigit(unsigned char (*sFormatItem))) 
+        if (isdigit(unsigned char (*sFormatItem)))
           sFormatItem++;  /* (2 digits at most) */
         }
 
@@ -2751,7 +2751,7 @@ CString TFormat (const char * sFormat, ...)
       switch (cType)
         {
         // single character (pushed as a number - see definition for %c)
-        case 'c':  
+        case 'c':
           cArg = va_arg (sstrings, char);
           lua_pushinteger (App.m_Translator_Lua, cArg);
           break;
@@ -2776,7 +2776,7 @@ CString TFormat (const char * sFormat, ...)
           break;
 
         // unsigned integers
-        case 'o':  case 'u':  case 'x':  case 'X': 
+        case 'o':  case 'u':  case 'x':  case 'X':
           switch (cWidth)
             {
             case 'h':
@@ -2813,7 +2813,7 @@ CString TFormat (const char * sFormat, ...)
         } // end of switch
 
       } // end while loop
-      
+
 
     va_end (sstrings);
 
@@ -2838,7 +2838,7 @@ CString TFormat (const char * sFormat, ...)
       }   // end of executed OK
 
     }   // end of function found
-  else 
+  else
     bNotFound = true;
 
   // failure ? use standard formatting on string
@@ -2862,7 +2862,7 @@ int UMessageBox (const char * sText, UINT nType, const char * sTitle)
 
   int iBad;     // column in error in UTF8 validation
   int iLength;  // length of UTF8 message
-  
+
   // convert message text to Unicode
 
   // use PCRE to validate the string first - if bad, fall back to standard box
@@ -2899,7 +2899,7 @@ int UMessageBox (const char * sText, UINT nType, const char * sTitle)
 
   // adjust size
   vTitle.resize (iLength);
-  
+
   // do the conversion now
   MultiByteToWideChar (CP_UTF8, 0, sTitle, -1, &vTitle [0], iLength);
 
@@ -2962,7 +2962,7 @@ static BOOL CALLBACK EnumWindowsProc (HWND hwnd, LPARAM lParam)
 
  if (GetWindowText (hwnd, buf, sizeof buf) == 0)
    return TRUE;  /* keep going */
- 
+
  /* if title shorter than our string, can't match */
  if (strlen (buf) < strlen (name))
    return TRUE;  /* keep going */
@@ -2972,15 +2972,15 @@ static BOOL CALLBACK EnumWindowsProc (HWND hwnd, LPARAM lParam)
    {
    SetForegroundWindow (hwnd);  /* bring to foreground */
    SendToFrontFound = true;
-   return FALSE;  
+   return FALSE;
    }  /* found match */
- 
+
  return TRUE;
-   
+
  } /* end of EnumWindowsProc */
 
-/* sends the nominated window to the front, based on the 
-   leading characters in its name (first match) 
+/* sends the nominated window to the front, based on the
+   leading characters in its name (first match)
 
 Example:
 
@@ -3022,7 +3022,7 @@ long LoadPng (LPCTSTR FileName, HBITMAP & hbmp)  // load a PNG file into a bitma
       return (eFileNotFound);
 
 unsigned char header [8];
-                  
+
   // read signature
   if (fread(header, 1, sizeof header, fp) != sizeof header)
     {
@@ -3118,7 +3118,7 @@ unsigned char header [8];
   long bpl = BytesPerLine (png_get_image_width (png_ptr, info_ptr), bit_per_pixel);
 
   bmiB.bmiHeader.biSize = sizeof bmiB;
-  bmiB.bmiHeader.biWidth =          png_get_image_width (png_ptr, info_ptr);       
+  bmiB.bmiHeader.biWidth =          png_get_image_width (png_ptr, info_ptr);
   bmiB.bmiHeader.biHeight =         png_get_image_height (png_ptr, info_ptr);
   bmiB.bmiHeader.biPlanes =         1;
   bmiB.bmiHeader.biBitCount =       bit_per_pixel;
@@ -3150,7 +3150,7 @@ unsigned char header [8];
   return eOK;
   }     // end of  LoadPng
 
-typedef struct 
+typedef struct
   {
   unsigned char * BufferPos;
   size_t LengthRemaining;
@@ -3171,11 +3171,11 @@ void ReadDataFromInputStream(png_structp png_ptr, png_bytep outBytes,
    if (byteCountToRead > PngBufferInfo->LengthRemaining)
      {
      png_error(png_ptr, "Insufficient data in buffer");
-     return; 
+     return;
      }
 
    // copy wanted bytes
-   memcpy (outBytes, PngBufferInfo->BufferPos, byteCountToRead); 
+   memcpy (outBytes, PngBufferInfo->BufferPos, byteCountToRead);
    PngBufferInfo->BufferPos += byteCountToRead;
    PngBufferInfo->LengthRemaining -= byteCountToRead;
 
@@ -3237,7 +3237,7 @@ long LoadPngMemory (unsigned char * Buffer, const size_t Length, HBITMAP & hbmp,
 
   // initialize IO
   png_set_read_fn(png_ptr, &PngBufferInfo, ReadDataFromInputStream);
-  
+
 
   int png_transforms = PNG_TRANSFORM_STRIP_16 |    // Strip 16-bit samples to 8 bits
                        PNG_TRANSFORM_PACKING |     // Expand 1, 2 and 4-bit samples to bytes
@@ -3267,11 +3267,11 @@ long LoadPngMemory (unsigned char * Buffer, const size_t Length, HBITMAP & hbmp,
 
   if (png_get_color_type (png_ptr, info_ptr) & PNG_COLOR_MASK_ALPHA)
      bit_per_pixel = 32;
-  
+
   long bpl = BytesPerLine (png_get_image_width (png_ptr, info_ptr), bit_per_pixel);
 
   bmiB.bmiHeader.biSize = sizeof bmiB;
-  bmiB.bmiHeader.biWidth =          png_get_image_width (png_ptr, info_ptr);       
+  bmiB.bmiHeader.biWidth =          png_get_image_width (png_ptr, info_ptr);
   bmiB.bmiHeader.biHeight =         png_get_image_height (png_ptr, info_ptr);
   bmiB.bmiHeader.biPlanes =         1;
   bmiB.bmiHeader.biBitCount =       bit_per_pixel;
@@ -3392,7 +3392,7 @@ void ChangeToFileBrowsingDirectory ()
 void ChangeToStartupDirectory ()
   {
 
-// first, remember the file_browsing directory 
+// first, remember the file_browsing directory
 
   _getdcwd (0, file_browsing_dir, sizeof (file_browsing_dir) - 1);
 
@@ -3401,7 +3401,7 @@ void ChangeToStartupDirectory ()
   file_browsing_dir [sizeof (file_browsing_dir) - 2] = 0;
 
   if (file_browsing_dir [strlen (file_browsing_dir) - 1] != '\\')
-    strcat (file_browsing_dir, "\\");  
+    strcat (file_browsing_dir, "\\");
 
 
   // now change back to startup directory
