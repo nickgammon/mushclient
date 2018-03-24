@@ -1631,30 +1631,35 @@ Unicode range              UTF-8 bytes
 
       // do auto line wrapping here
 
-      // see if we can split at a multibyte character
+      // see if we can split at a multibyte character or a space (whichever comes last)
 
       if (m_pCurrentLine->len >= m_nWrapColumn &&
-          m_pCurrentLine->len >= 10 &&
-          !m_bUTF_8)    // not for UTF-8
+          m_pCurrentLine->len >= 2)
         {
         for (int i = 0; i < m_pCurrentLine->len - 1; i++)
           {
           unsigned char c1 = m_pCurrentLine->text [i];
           unsigned char c2 = m_pCurrentLine->text [i + 1];
-          if (c1 >= 0x81 && c1 <= 0xFE &&  // first Big5 character
-            ((c2 >= 0x40 && c2 <= 0x7E) || (c2 >= 0xA1 && c2 <= 0xFE))) // second Big5 character
+          // don't test for Big5 if output buffer is UTF-8 (the tests would be wrong)
+          if (c1 >= 0x81 && c1 <= 0xFE &&                               // first  Big5 character
+            ((c2 >= 0x40 && c2 <= 0x7E) || (c2 >= 0xA1 && c2 <= 0xFE))  // second Big5 character
+              && !m_bUTF_8) // not for UTF-8
             last_space = i++;  // remember position, skip the second byte
-          else if (c1 >= 0xA1 && c1 <= 0xF7 &&
-                   c2 >= 0xA1 && c2 <= 0xFE)  // GB2132
+          else if (c1 >= 0xA1 && c1 <= 0xF7 && // first  GB2132 character
+                   c2 >= 0xA1 && c2 <= 0xFE && // second GB2132 character
+                   !m_bUTF_8)  // // not for UTF-8
             last_space = i++;  // remember position, skip the second byte
           else if (c1 == ' ' && m_wrap)
             last_space = i;    // or split at a space
           }
 
-        } // end of checking for a Big5 or GB2132 break point
+        // allow for space being the final thing on the line
+        if (m_pCurrentLine->text [m_pCurrentLine->len - 1] == ' ' && m_wrap)
+          last_space = m_pCurrentLine->len - 1;
 
-      if (!m_wrap || 
-          last_space < 0 ||
+        } // end of checking for a space, Big5 or GB2132 break point
+
+      if (last_space < 0 ||   // if no break point found, break anyway at end of line
         (m_pCurrentLine->len - last_space) >= m_nWrapColumn)
           StartNewLine_KeepPreviousStyle (flags);
       else
