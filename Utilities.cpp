@@ -3441,3 +3441,17 @@ const char * p = sName;
 
   return true;
   }  // end of IsSubName
+
+// find the last occurrence of c in the string s, maximum length count
+const char *strnrchr(const char *s, const char c, size_t count)
+{
+  const char * ret = NULL;
+  size_t n = 0;
+  while (*s && n < count++)
+    {
+    if( *s == c )
+        ret = s;  // remember where character is, keep searching
+    s++;
+    }
+  return ret;
+} // end of strnrchr

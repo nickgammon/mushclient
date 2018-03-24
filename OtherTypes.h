@@ -322,7 +322,6 @@ class CLine : public CObject
   bool hard_return;
   unsigned char flags;
   int len;
-  int last_space;
   char * text;          // allocated as necessary and then resized
   CStyleList styleList; // list of styles applying to text, see above
   CTime m_theTime;      // time this line arrived

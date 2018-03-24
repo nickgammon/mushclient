@@ -113,9 +113,15 @@ void CTextAttributesDlg::OnLineInfo()
         YES_OR_NO (m_pLine->flags & BOOKMARK)
         ));
 
+  // work out where the last space is
+  const char * space = strnrchr(m_pLine->text, ' ', m_pLine->len);
+  int last_space = -1;
+  if (space)
+    last_space = space - m_pLine->text;
+
   INFO (TFormat (" Length = %i, last space = %i", 
                   m_pLine->len,
-                  m_pLine->last_space));
+                  last_space));
 
   CString strText = CString (m_pLine->text, m_pLine->len);
 
