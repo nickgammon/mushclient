@@ -4752,8 +4752,6 @@ int iDeltaY = m_scroll_position.y - pt.y;
   if (pDoc->m_bAutoFreeze)
     m_freeze = pt.y < (m_ScrollbarSizeTotal.cy - m_ScrollbarSizePage.cy);
 
-  pDoc->Repaint ();
-
   } // end of CMUSHView::ScrollToPosition
 
 void CMUSHView::SetScrollSizes (SIZE sizeTotal, 
