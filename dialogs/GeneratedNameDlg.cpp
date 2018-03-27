@@ -81,8 +81,7 @@ void CGeneratedNameDlg::OnBrowseName()
 	  {
     ReadNames ("*");
     // update file name
-    m_ctlFileName.SetWindowText (App.db_get_string  
-      ("prefs", "DefaultNameGenerationFile", "names.txt"));
+    m_ctlFileName.SetWindowText (App.m_strDefaultNameGenerationFile);
     }
 	catch (CException* e)
 	  {

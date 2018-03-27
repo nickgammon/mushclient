@@ -2298,9 +2298,7 @@ CGeneratedNameDlg dlg;
 
   dlg.m_strName = strName;
   dlg.m_pDoc = pDoc;
-  dlg.m_strFileName = App.db_get_string  
-    ("prefs", "DefaultNameGenerationFile", "names.txt");
-  
+  dlg.m_strFileName = App.m_strDefaultNameGenerationFile;
   dlg.DoModal ();
 	
 }

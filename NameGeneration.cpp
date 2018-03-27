@@ -30,8 +30,7 @@ void ReadNames (const LPCTSTR sName, const bool bNoDialog)
 
     // if file name not specified, take one from last time
     if (strFileName.IsEmpty () || strFileName == "*")
-      strFileName = App.db_get_string  
-        ("prefs", "DefaultNameGenerationFile", "names.txt");
+      strFileName = App.m_strDefaultNameGenerationFile;
 
     bool bFoundFile = false;
     if (strcmp (sName, "*"))  // don't check if forced reload wanted
@@ -68,6 +67,7 @@ void ReadNames (const LPCTSTR sName, const bool bNoDialog)
       // remember its location to stop annoying me every time
       App.db_write_string  ("prefs", "DefaultNameGenerationFile", 
                                   strFileName);   
+      App.m_strDefaultNameGenerationFile = strFileName;  // save in app memory
 
       } // end of no file name supplied
 

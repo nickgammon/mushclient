@@ -177,6 +177,7 @@ public:
   CString	m_strDefaultColoursFile;
   CString	m_strDefaultInputFont;
   CString	m_strDefaultMacrosFile;
+  CString	m_strDefaultNameGenerationFile;
   CString	m_strDefaultOutputFont;
   CString	m_strDefaultTimersFile;
   CString	m_strDefaultTriggersFile;
