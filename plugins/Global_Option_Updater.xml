@@ -9,8 +9,9 @@
    language="Lua"
    purpose="Shows / changes global options"
    date_written="2010-09-17 08:28:51"
+   date_modified="2018-03-28 11:06"
    requires="4.50"
-   version="1.0"
+   version="2.0"
    >
 <description trim="y">
 <![CDATA[
@@ -42,100 +43,137 @@ if you use the GUI interface (global preferences) it may put the option back aga
   <alias
    match="change_global_option * *"
    enabled="y"
-   send_to="12"
    sequence="100"
+   script="ChangeOption"
   >
-  <send>
-  
--- open preferences database
-local db = assert (sqlite3.open (GetInfo (82)))
-local value = nil
-
--- see if this key already exists (if not, probably spelling error)
-for a in db:nrows "SELECT * FROM prefs WHERE name = '%1'" do
-  value = a.value
-end  -- for
-
--- if found, modify it
-if value then
-
-  if db:execute ("UPDATE prefs SET value = '%2' WHERE name = '%1'") ~= sqlite3.OK then
-    ColourNote ("red", "", "Unable to modify preferences: " .. db:errmsg ())
-  else
-    if value ~= "%2" then
-      ColourNote ("cyan", "", "Item '%1' changed from '" .. value .. "' to '%2'")
-    else
-      ColourNote ("cyan", "", "No change required, value of '%1' is already '%2'")
-    end -- if
-  end -- if updated OK
-
-else
-  ColourNote ("red", "", "Item '%1' is not in preferences database")
-end -- does not exist
-
-db:close()
-
-</send>
   </alias>
-  
+
   <alias
    match="show_global_option *"
    enabled="y"
-   send_to="12"
    sequence="100"
+   script="ShowOption"
   >
-  <send>
-  
--- open preferences database
-local db = assert (sqlite3.open (GetInfo (82)))
-local value = nil
-
--- find the item
-for a in db:nrows "SELECT * FROM prefs WHERE name = '%1'" do
-  value = a.value
-end  -- for
-
--- if found, display it
-if value then
-  ColourNote ("cyan", "", "Item '%1' has value '" .. value .. "'")
-else
-  ColourNote ("red", "", "Item '%1' is not in preferences database")
-end -- does not exist
-
-db:close()
-
-</send>
   </alias>
 
  <alias
    match="list_global_options"
    enabled="y"
-   send_to="12"
    sequence="100"
+   script="ListOptions"
   >
-  <send>
-  
-  -- open preferences database
-local db = assert (sqlite3.open (GetInfo (82)))
-
-ColourNote ("cyan", "", "Global Options")
-ColourNote ("cyan", "", string.rep ("-", 40))
-
--- show all
-for a in db:nrows "SELECT * FROM prefs ORDER BY name" do
- ColourNote ("cyan", "", a.name)
-end  -- for
-
-ColourNote ("cyan", "", string.rep ("-", 40))
-
-db:close()
-
-</send>
   </alias>
-    
+
 </aliases>
 
 <script>
+
+function ListOptions (name, line, wildcards)
+
+  ColourNote ("cyan", "", "Global Options")
+  ColourNote ("cyan", "", string.rep ("-", 40))
+
+  -- show all
+
+  local t = GetGlobalOptionList ()
+  table.sort (t)
+
+  for k, v in ipairs (t) do
+   ColourNote ("cyan", "", v)
+  end  -- for
+
+  ColourNote ("cyan", "", string.rep ("-", 40))
+end -- ListOptions
+
+function ShowOption (name, line, wildcards)
+
+  local whichOption = wildcards [1]
+
+  -- find all possible keys
+  local t = { }
+  for k, v in ipairs (GetGlobalOptionList ()) do
+    t [v] = true
+  end -- for
+
+  if not t [whichOption] then
+    ColourNote ("red", "", "Item '" .. whichOption .. "' is not a global option. Try: list_global_options")
+    ColourNote ("deepskyblue", "", "Option names are case-sensitive.")
+    return
+  end -- if option not found
+
+  -- open preferences database
+  local db = assert (sqlite3.open (GetInfo (82)))
+  local value = nil
+
+  -- find the item
+  for a in db:nrows ("SELECT * FROM prefs WHERE name = '" .. whichOption .. "'") do
+    value = a.value
+  end  -- for
+
+  -- if found, display it
+  if value then
+    ColourTell ("cyan", "", "Item '" .. whichOption .. "' has value '")
+    ColourTell ("orange", "", value)
+    ColourNote ("cyan", "", "'")
+  else
+    ColourNote ("red", "", "Item '" .. whichOption .. "' is not in preferences database")
+  end -- does not exist
+
+  db:close()
+
+end -- ShowOption
+
+function ChangeOption (name, line, wildcards)
+
+  local whichOption = wildcards [1]
+  local newValue = wildcards [2]
+
+  -- find all possible keys
+  local t = { }
+  for k, v in ipairs (GetGlobalOptionList ()) do
+    t [v] = true
+  end -- for
+
+  if not t [whichOption] then
+    ColourNote ("red", "", "Item '" .. whichOption .. "' is not a global option. Try: list_global_options")
+    ColourNote ("deepskyblue", "", "Option names are case-sensitive.")
+    return
+  end -- if
+
+  -- open preferences database
+  local db = assert (sqlite3.open (GetInfo (82)))
+  local value = '(nothing)'
+
+  -- see if this key already exists and if so, what its value is
+  for a in db:nrows ("SELECT * FROM prefs WHERE name = '" .. whichOption .. "'") do
+    value = a.value
+  end  -- for
+
+  -- fix up quotes
+  newValueFixed = string.gsub (newValue, "'", "''")
+
+  if db:execute ("INSERT OR REPLACE INTO prefs " ..
+                 "(name, value) VALUES ('" .. whichOption .. "', '"
+                 .. newValue .. "')") ~= sqlite3.OK then
+    ColourNote ("red", "", "Unable to modify preferences: " .. db:errmsg ())
+  else
+    if value ~= "%2" then
+      ColourNote ("cyan", "", "Item '" .. whichOption .. "' changed from '"
+                  .. value .. "' to '" .. newValue .. "'")
+      ColourNote ("orange", "", [[
+After changing an option you should exit the client and re-open it, otherwise
+if you use the GUI interface (global preferences) it may put the option back again
+to its old value because the options are kept in memory.]])
+
+    else
+      ColourNote ("cyan", "", "No change required, value of '"
+                  .. whichOption .. "' is already '" .. newValue .. "'")
+    end -- if
+  end -- if updated OK
+
+  db:close()
+
+end -- ChangeOption
 
 -- show help
 ColourNote ("cyan", "", GetPluginInfo (GetPluginID (), 3))
