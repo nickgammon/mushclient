@@ -2354,11 +2354,10 @@ int line,
             if (pDoc->m_bHyperlinkAddsToCommandHistory)
               m_bottomview->AddToCommandHistory (strAction);
             }
-
-          // put the focus back in the send window
-
-          OnKeysActivatecommandview ();
           }   // end of not execute wanted
+
+        // put the focus back in the send window
+        OnKeysActivatecommandview ();
         return;
         } // end of ACTION_SEND  or  ACTION_PROMPT
       else
