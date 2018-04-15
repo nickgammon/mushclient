@@ -188,7 +188,7 @@ bool bReplace = false;
 
   t_regexp * regexp = NULL;
 
-  CString strRegexp; 
+  CString strRegexp;
 
   if (Flags & eTriggerRegularExpression)
     strRegexp = MatchText;
@@ -196,7 +196,7 @@ bool bReplace = false;
     strRegexp = ConvertToRegularExpression (MatchText);
 
   // compile regular expression
-  try 
+  try
     {
     regexp = regcomp (strRegexp, (Flags & eIgnoreCase ? PCRE_CASELESS : 0) | (m_bUTF_8 ? PCRE_UTF8 : 0));
     }   // end of try
@@ -752,6 +752,46 @@ bool bChanged;
     if (TriggerOptionsTable [iItem].iFlags & OPT_CANNOT_WRITE)
     	return ePluginCannotSetOption;  // not available for writing at all    
 
+    // ------ preliminary validation before setting the option
+
+    if (strOptionName == "multi_line" ||
+        strOptionName == "ignore_case")
+      {
+      t_regexp * regexp = NULL;
+
+      CString strRegexp;
+
+      if (trigger_item->bRegexp)
+        strRegexp = trigger_item->trigger;
+      else
+        strRegexp = ConvertToRegularExpression (trigger_item->trigger);
+
+      // compile regular expression
+      try
+        {
+        // use new options as appropriate
+        unsigned short bMultiLine = trigger_item->bMultiLine;
+        if (strOptionName == "multi_line")
+          bMultiLine = iValue;
+        unsigned short bIgnoreCase = trigger_item->ignore_case;
+        if (strOptionName == "ignore_case")
+          bIgnoreCase = iValue;
+
+        regexp = regcomp (strRegexp, (bIgnoreCase ? PCRE_CASELESS : 0) |
+                                     (bMultiLine  ? PCRE_MULTILINE : 0) |
+                                     (m_bUTF_8 ? PCRE_UTF8 : 0)
+                                     );
+        }   // end of try
+      catch(CException* e)
+        {
+        e->Delete ();
+        return eBadRegularExpression;
+        } // end of catch
+
+      delete trigger_item->regexp;    // get rid of old one
+      trigger_item->regexp = regexp;
+      }   // end of option multi_line or ignore_case
+
     iResult = SetBaseOptionItem (iItem,
                         TriggerOptionsTable,
                         NUMITEMS (TriggerOptionsTable),
@@ -790,9 +830,7 @@ bool bChanged;
       // ------ preliminary validation before setting the option
 
       // cannot have null match text
-      if (strOptionName == "match" || 
-          strOptionName == "ignore_case" ||
-          strOptionName == "multi_line")
+      if (strOptionName == "match")
         {
         if (strValue.IsEmpty ())
           return eTriggerCannotBeEmpty;
