@@ -74,20 +74,7 @@ class t_regexp
     };
 
   // returns a named wildcard
-  string GetWildcard (const string& sName) const
-    {
-    int iNumber;
-    if (IsStringNumber (sName))
-      iNumber = atoi (sName.c_str ());
-    else
-      {
-      if (m_program == NULL)
-        iNumber = PCRE_ERROR_NOSUBSTRING;
-      else
-        iNumber = njg_get_first_set (m_program, sName.c_str (), &m_vOffsets [0]);
-      }
-    return GetWildcard (iNumber);
-    }
+  string GetWildcard (const string& sName) const;
 
   };
 
