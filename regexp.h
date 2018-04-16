@@ -20,9 +20,6 @@
 
 #include "pcre\pcre.h"
                  
-// for duplicate named wildcards
-int njg_get_first_set(const pcre *code, const char *stringname, const int *ovector);
-
 // compiled regular expression type
 
 class t_regexp 

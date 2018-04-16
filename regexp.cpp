@@ -171,21 +171,21 @@ string t_regexp::GetWildcard (const string& sName) const
 
       if (namecount > 0)
         {
-        unsigned char *name_table;
         int name_entry_size;
         unsigned char *tabptr;
         int ncapt;
         int jchanged;
         pcre_fullinfo(m_program, m_extra, PCRE_INFO_CAPTURECOUNT, &ncapt);
-        pcre_fullinfo(m_program, m_extra, PCRE_INFO_NAMETABLE, &name_table);
+        pcre_fullinfo(m_program, m_extra, PCRE_INFO_NAMETABLE, &tabptr);
         pcre_fullinfo(m_program, m_extra, PCRE_INFO_NAMEENTRYSIZE, &name_entry_size);
         pcre_fullinfo(m_program, m_extra, PCRE_INFO_JCHANGED, &jchanged);
-        tabptr = name_table;
         set<string> found_strings;
         for (int i = 0; i < namecount; i++, tabptr += name_entry_size) 
           {
           int n = (tabptr[0] << 8) | tabptr[1];
           const unsigned char * name = tabptr + 2;
+          if (strcmp (sName.c_str (), (LPCTSTR) name) != 0)  // skip if wrong name
+             continue;
           // if duplicates were possible then ...
           if (jchanged)
             {
