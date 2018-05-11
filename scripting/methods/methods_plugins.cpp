@@ -479,6 +479,9 @@ CPlugin * pPlugin = GetPlugin (PluginID);
   if (strlen (Routine) == 0)
     return eNoSuchRoutine;
 
+  if (!pPlugin->m_ScriptEngine)
+    return eNoSuchRoutine;
+
 DISPID iDispid = pPlugin->m_ScriptEngine->GetDispid (Routine);
 
   if (iDispid == DISPID_UNKNOWN)
