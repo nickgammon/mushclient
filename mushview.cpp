@@ -4748,8 +4748,13 @@ int iDeltaY = m_scroll_position.y - pt.y;
 //  ScrollInfo.nPos = pt.x;
 //  SetScrollInfo (SB_HORZ, &ScrollInfo, pDoc->m_bScrollBarWanted);
   
-  if (pDoc->m_bAutoFreeze)
-    m_freeze = pt.y < (m_ScrollbarSizeTotal.cy - m_ScrollbarSizePage.cy);
+  if (pDoc->m_bAutoFreeze) {
+    if (pDoc->m_bKeepFreezeAtBottom) {
+      m_freeze = m_freeze || (pt.y < (m_ScrollbarSizeTotal.cy - m_ScrollbarSizePage.cy));
+    } else {
+      m_freeze = pt.y < (m_ScrollbarSizeTotal.cy - m_ScrollbarSizePage.cy);
+    }
+  }
 
   } // end of CMUSHView::ScrollToPosition
 

@@ -51,6 +51,7 @@ tConfigurationNumericOption OptionsTable [] = {
 {"auto_allow_snooping",                 false, O(m_bAutoAllowSnooping)},                       
 {"auto_copy_to_clipboard_in_html",      false, O(m_bAutoCopyInHTML)},                       
 {"auto_pause",                          true,  O(m_bAutoFreeze)},                       
+{"keep_pause_at_bottom",                false, O(m_bKeepFreezeAtBottom)},
 {"auto_repeat",                         false, O(m_bAutoRepeat)}, 
 {"auto_resize_command_window",          false, O(m_bAutoResizeCommandWindow)},                      
 {"auto_resize_minimum_lines",           1,     O(m_iAutoResizeMinimumLines), 1, 100},    
