@@ -738,7 +738,8 @@ public:
 	unsigned short  m_bShowBold;   // show bold, italic, underline in fonts
 	unsigned short  m_bAltArrowRecallsPartial;     // alt+up arrow recalls partially entered command
   unsigned short  m_iPixelOffset;     // pixel offset of text from side of window
-  unsigned short  m_bAutoFreeze;    // freeze if not at bottom of buffer  
+  unsigned short  m_bAutoFreeze;    // freeze if not at bottom of buffer 
+  unsigned short  m_bKeepFreezeAtBottom; // don't automatically unfreeze after returning to bottom of buffer
   unsigned short  m_bAutoRepeat;    // auto repeat last command 
   unsigned short  m_bDisableCompression;      // don't allow compressed worlds
   unsigned short  m_bLowerCaseTabCompletion;  // tab complete words in lower case    
