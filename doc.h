@@ -86,8 +86,16 @@ enum { NONE,          // normal text
        HAVE_COMPRESS_WILL, // received TELNET IAC COMPRESS WILL
        HAVE_FOREGROUND_256_START,   // received ESC[38;
        HAVE_FOREGROUND_256_FINISH,  // received ESC[38;5;
+       HAVE_FOREGROUND_24B_FINISH,  // received ESC[38;2;
+       HAVE_FOREGROUND_24BR_FINISH,  // received ESC[38;2;nnn;
+       HAVE_FOREGROUND_24BG_FINISH,  // received ESC[38;2;nnn;nnn;
+       HAVE_FOREGROUND_24BB_FINISH,  // received ESC[38;2;nnn;nnn;nnn
        HAVE_BACKGROUND_256_START,   // received ESC[48;
        HAVE_BACKGROUND_256_FINISH,  // received ESC[48;5;
+       HAVE_BACKGROUND_24B_FINISH,
+       HAVE_BACKGROUND_24BR_FINISH,
+       HAVE_BACKGROUND_24BG_FINISH,
+       HAVE_BACKGROUND_24BB_FINISH,
 
        // utf-8 modes
        HAVE_UTF8_CHARACTER,         // received 110 xxxxx, 1110 xxxx, or 11110 xxx

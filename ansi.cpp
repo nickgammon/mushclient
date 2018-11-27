@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "MUSHclient.h"
 
+#include "Color.h"
 #include "doc.h"
 
 /*
@@ -290,6 +291,11 @@ void CMUSHclientDoc::Interpret256ANSIcode (const int iCode)
         m_code = 0;
         m_phase = HAVE_FOREGROUND_256_FINISH;
         }
+      else if (iCode == 2)
+        {
+        m_code = 0;
+        m_phase = HAVE_FOREGROUND_24B_FINISH;
+        }
       else
         m_phase = NONE;
       return;
@@ -299,6 +305,11 @@ void CMUSHclientDoc::Interpret256ANSIcode (const int iCode)
         {
         m_code = 0;
         m_phase = HAVE_BACKGROUND_256_FINISH;
+        }
+      else if (iCode == 2)
+        {
+        m_code = 0;
+        m_phase = HAVE_BACKGROUND_24B_FINISH;
         }
       else
         m_phase = NONE;
@@ -324,6 +335,11 @@ COLORREF       iForeColour  = pOldStyle->iForeColour;
 COLORREF       iBackColour  = pOldStyle->iBackColour;
 CAction *      pAction      = pOldStyle->pAction;
 
+bool iForegroundMode = m_phase == HAVE_FOREGROUND_24B_FINISH ||
+    m_phase == HAVE_FOREGROUND_24BR_FINISH ||
+    m_phase == HAVE_FOREGROUND_24BG_FINISH ||
+    m_phase == HAVE_FOREGROUND_24BB_FINISH;
+
 
   // if they are in custom mode, we'll have to switch to RGB mode
 
@@ -334,10 +350,58 @@ CAction *      pAction      = pOldStyle->pAction;
     iFlags |= COLOUR_RGB;
     } // end of switching to RGB mode
 
+  CColor p;
+  if (iForegroundMode && (iFlags & INVERSE) || (!iForegroundMode && !(iFlags & INVERSE)))
+    p = CColor(iBackColour);
+  else
+    p = CColor(iForeColour);
 
+  switch (m_phase) {
+  case HAVE_FOREGROUND_24B_FINISH:
+    iFlags &= ~COLOURTYPE;  // clear custom bits
+    iFlags |= COLOUR_RGB;
+    p.SetRed(iCode);
+    m_phase = HAVE_FOREGROUND_24BR_FINISH;
+    break;
+
+  case HAVE_FOREGROUND_24BR_FINISH:
+    p.SetGreen(iCode);
+    m_phase = HAVE_FOREGROUND_24BG_FINISH;
+    break;
+
+  case HAVE_FOREGROUND_24BG_FINISH:
+    p.SetBlue(iCode);
+    m_phase = HAVE_FOREGROUND_24BB_FINISH;
+    break;
+  }
+
+
+  switch (m_phase) {
+  case HAVE_BACKGROUND_24B_FINISH:
+    iFlags &= ~COLOURTYPE;  // clear custom bits
+    iFlags |= COLOUR_RGB;
+    p.SetRed(iCode);
+    m_phase = HAVE_BACKGROUND_24BR_FINISH;
+    break;
+
+  case HAVE_BACKGROUND_24BR_FINISH:
+    p.SetGreen(iCode);
+    m_phase = HAVE_BACKGROUND_24BG_FINISH;
+    break;
+
+  case HAVE_BACKGROUND_24BG_FINISH:
+    p.SetBlue(iCode);
+    m_phase = HAVE_BACKGROUND_24BB_FINISH;
+    break;
+  }
+
+  if (iForegroundMode && (iFlags & INVERSE) || (!iForegroundMode && !(iFlags & INVERSE)))
+      iBackColour = p;
+  else
+      iForeColour = p;
 
     // if they are in RGB mode we have to do the RGB conversion now, not at display time
-  if ((iFlags & COLOURTYPE) == COLOUR_RGB)
+  if ((iFlags & COLOURTYPE) == COLOUR_RGB && (m_phase == HAVE_FOREGROUND_256_FINISH || m_phase == HAVE_BACKGROUND_256_FINISH))
     {
     switch (m_phase)
       {
@@ -356,7 +420,7 @@ CAction *      pAction      = pOldStyle->pAction;
         break;
       } // end of switch
     }   // end style in RGB
-  else
+  else if(m_phase == HAVE_FOREGROUND_256_FINISH || m_phase == HAVE_BACKGROUND_256_FINISH)
     {
     // must be in ANSI mode
     switch (m_phase)
@@ -375,11 +439,10 @@ CAction *      pAction      = pOldStyle->pAction;
         iBackColour = iCode;
       break;
       } // end of switch
-
-
     }
 
-  m_phase = DOING_CODE;
+  if(m_phase == HAVE_BACKGROUND_256_FINISH || m_phase == HAVE_FOREGROUND_256_FINISH || m_phase == HAVE_FOREGROUND_24BB_FINISH || m_phase == HAVE_BACKGROUND_24BB_FINISH)
+    m_phase = DOING_CODE;
 
 // if the net effect is that nothing changed (eg. blue following blue) leave
 // the same style running
