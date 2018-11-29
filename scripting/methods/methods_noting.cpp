@@ -339,6 +339,14 @@ int iCode = 0;
             case HAVE_FOREGROUND_256_FINISH:
             case HAVE_BACKGROUND_256_START:
             case HAVE_BACKGROUND_256_FINISH:
+            case HAVE_FOREGROUND_24B_FINISH:
+            case HAVE_FOREGROUND_24BR_FINISH:
+            case HAVE_FOREGROUND_24BG_FINISH:
+            case HAVE_FOREGROUND_24BB_FINISH:
+            case HAVE_BACKGROUND_24B_FINISH:
+            case HAVE_BACKGROUND_24BR_FINISH:
+            case HAVE_BACKGROUND_24BG_FINISH:
+            case HAVE_BACKGROUND_24BB_FINISH:
                   iCode *= 10;
                   iCode += c - '0';
                   break;
@@ -347,8 +355,9 @@ int iCode = 0;
           }  // end of digits
         break;  // end of digits
 
-      // either 'm' or ';' terminates the current number, eg. ESC [1;
+      // one of 'm', ';' or ':' terminates the current number, eg. ESC [1;
       case ';':
+      case ':':
       case 'm':
 
         // interpret the previous code in iCode
@@ -464,40 +473,109 @@ int iCode = 0;
             break;      // end of DOING_CODE
 
 
-          // we now have: ESC [ 38;5;nnn;
+          // we now have: ESC [ 38;5; or ESC [ 38;2;
           case HAVE_FOREGROUND_256_START:
-            if (iCode == 5)  // if it isn't 5 I don't know what the hell it is!
+            if (iCode == 5)  // 8-bit colour
               {
               ansiState = HAVE_FOREGROUND_256_FINISH;
               iCode = 0;  // start collecting the colour number
               }
-            else
+            else if (iCode == 2)           // 24-bit RGB
+              {
+              iCode = 0;  // start collecting the red component
+              ansiState = HAVE_FOREGROUND_24B_FINISH;
+              }
+            else          // if it isn't 2 or 5 I don't know what the hell it is!
+              {
+              iCode = 0;  // possibly starting a new code
               ansiState = DOING_CODE;  // give up and look for another code
+              }
             break;  // end of HAVE_FOREGROUND_256_START
 
           case HAVE_FOREGROUND_256_FINISH:
             rgbNormalForeGround = xterm_256_colours [iCode & 0xFF];
-            rgbBoldForeGround   = xterm_256_colours [iCode & 0xFF];  // both the same
+            rgbBoldForeGround   = rgbNormalForeGround;  // both the same
             SetNoteColourFore (rgbNormalForeGround);
+            iCode = 0;  // starting a new code
             ansiState = DOING_CODE; // no longer collecting 256-colours
             break;  // end of HAVE_FOREGROUND_256_FINISH
 
-          // we now have: ESC [ 48;5;nnn;
+          // have the red component of a 24-bit colour
+          case HAVE_FOREGROUND_24B_FINISH:
+            rgbNormalForeGround = RGB (iCode & 0xFF, 0, 0);
+            rgbBoldForeGround   = rgbNormalForeGround;  // both the same
+            SetNoteColourFore (rgbNormalForeGround);
+            ansiState = HAVE_FOREGROUND_24BR_FINISH; // now looking for green
+            iCode = 0;  // start collecting the green component
+            break;  // end of HAVE_FOREGROUND_24B_FINISH
+
+          // have the green component of a 24-bit colour
+          case HAVE_FOREGROUND_24BR_FINISH:
+            rgbNormalForeGround = RGB (GetRValue(rgbNormalForeGround), iCode & 0xFF, 0);
+            rgbBoldForeGround   = rgbNormalForeGround;  // both the same
+            SetNoteColourFore (rgbNormalForeGround);
+            ansiState = HAVE_FOREGROUND_24BG_FINISH; // now looking for blue
+            iCode = 0;  // start collecting the blue component
+            break;  // end of HAVE_FOREGROUND_24BR_FINISH
+
+          // have the blue component of a 24-bit colour
+          case HAVE_FOREGROUND_24BG_FINISH:
+            rgbNormalForeGround =  RGB (GetRValue(rgbNormalForeGround), GetGValue(rgbNormalForeGround), iCode & 0xFF);
+            rgbBoldForeGround   = rgbNormalForeGround;  // both the same
+            SetNoteColourFore (rgbNormalForeGround);
+            ansiState = DOING_CODE;                     // no longer collecting 24-bit colours
+            iCode = 0;  // starting a new code
+            break;  // end of HAVE_FOREGROUND_24BG_FINISH
+
+          // we now have: ESC [ 48;5;  or ESC [ 48;2;
           case HAVE_BACKGROUND_256_START:
-            if (iCode == 5)  // if it isn't 5 I don't know what the hell it is!
+            if (iCode == 5)  // 8-bit colour
               {
               ansiState = HAVE_BACKGROUND_256_FINISH;
               iCode = 0;  // start collecting the colour number
               }
-            else
+            else if (iCode == 2)            // 24-bit RGB
+              {
+              iCode = 0;  // start collecting the red component
+              ansiState = HAVE_BACKGROUND_24B_FINISH;
+              }
+            else          // if it isn't 2 or 5 I don't know what the hell it is!
+              {
+              iCode = 0;  // starting a new code
               ansiState = DOING_CODE;  // give up and look for another code
+              }
             break;  // end of HAVE_BACKGROUND_256_START
 
           case HAVE_BACKGROUND_256_FINISH:
             rgbNormalBackGround = xterm_256_colours [iCode & 0xFF];
             SetNoteColourBack (rgbNormalBackGround);
             ansiState = DOING_CODE; // no longer collecting 256-colours
+            iCode = 0;  // starting a new code
             break;  // end of HAVE_FOREGROUND_256_FINISH
+
+          // have the red component of a 24-bit colour
+          case HAVE_BACKGROUND_24B_FINISH:
+            rgbNormalBackGround = RGB (iCode & 0xFF, 0, 0);
+            SetNoteColourBack (rgbNormalBackGround);
+            ansiState = HAVE_BACKGROUND_24BR_FINISH; // now looking for green
+            iCode = 0;  // start collecting the green component
+            break;  // end of HAVE_BACKGROUND_24B_FINISH
+
+          // have the green component of a 24-bit colour
+          case HAVE_BACKGROUND_24BR_FINISH:
+            rgbNormalBackGround = RGB (GetRValue(rgbNormalBackGround), iCode & 0xFF, 0);
+            SetNoteColourBack (rgbNormalBackGround);
+            ansiState = HAVE_BACKGROUND_24BG_FINISH; // now looking for blue
+            iCode = 0;  // start collecting the blue component
+            break;  // end of HAVE_BACKGROUND_24BR_FINISH
+
+          // have the blue component of a 24-bit colour
+          case HAVE_BACKGROUND_24BG_FINISH:
+            rgbNormalBackGround =  RGB (GetRValue(rgbNormalBackGround), GetGValue(rgbNormalBackGround), iCode & 0xFF);
+            SetNoteColourBack (rgbNormalBackGround);
+            ansiState = DOING_CODE;                     // no longer collecting 24-bit colours
+            iCode = 0;  // starting a new code
+            break;  // end of HAVE_BACKGROUND_24BG_FINISH
 
           default:
             // just accumulate the text
