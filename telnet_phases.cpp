@@ -63,7 +63,7 @@ void CMUSHclientDoc::Phase_ANSI (const unsigned char c)
       InterpretANSIcode (m_code);
     m_phase = NONE;
     }
-  else if (c == ';')
+  else if (c == ';' || c == ':')  // separator, eg. ESC[ 38:5:<n>
     {
     if (m_phase != DOING_CODE)
       Interpret256ANSIcode (m_code);

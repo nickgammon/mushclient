@@ -283,15 +283,26 @@ CAction *      pAction      = pOldStyle->pAction;
 void CMUSHclientDoc::Interpret256ANSIcode (const int iCode)
   {
 
+  /*
+
+  See: https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit
+
+  ESC[ 38:5:<n> m Select foreground color
+  ESC[ 48:5:<n> m Select background color
+  ESC[ 38;2;<r>;<g>;<b> m Select RGB foreground color
+  ESC[ 48;2;<r>;<g>;<b> m Select RGB background color
+
+  */
+
   switch (m_phase)
     {
-    case HAVE_FOREGROUND_256_START:
-      if (iCode == 5)
+    case HAVE_FOREGROUND_256_START:  // ESC[ 38: (foreground)
+      if (iCode == 5)                // 8-bit colour
         {
         m_code = 0;
         m_phase = HAVE_FOREGROUND_256_FINISH;
         }
-      else if (iCode == 2)
+      else if (iCode == 2)           // 24-bit RGB
         {
         m_code = 0;
         m_phase = HAVE_FOREGROUND_24B_FINISH;
@@ -300,13 +311,13 @@ void CMUSHclientDoc::Interpret256ANSIcode (const int iCode)
         m_phase = NONE;
       return;
 
-    case HAVE_BACKGROUND_256_START:
-      if (iCode == 5)
+    case HAVE_BACKGROUND_256_START:   // ESC[ 48: (background)
+      if (iCode == 5)                 // 8-bit colour
         {
         m_code = 0;
-        m_phase = HAVE_BACKGROUND_256_FINISH;
+        m_phase = HAVE_BACKGROUND_256_FINISH;  
         }
-      else if (iCode == 2)
+      else if (iCode == 2)            // 24-bit RGB
         {
         m_code = 0;
         m_phase = HAVE_BACKGROUND_24B_FINISH;
@@ -441,7 +452,10 @@ bool iForegroundMode = m_phase == HAVE_FOREGROUND_24B_FINISH ||
       } // end of switch
     }
 
-  if(m_phase == HAVE_BACKGROUND_256_FINISH || m_phase == HAVE_FOREGROUND_256_FINISH || m_phase == HAVE_FOREGROUND_24BB_FINISH || m_phase == HAVE_BACKGROUND_24BB_FINISH)
+  if (m_phase == HAVE_BACKGROUND_256_FINISH || 
+      m_phase == HAVE_FOREGROUND_256_FINISH || 
+      m_phase == HAVE_FOREGROUND_24BB_FINISH || 
+      m_phase == HAVE_BACKGROUND_24BB_FINISH)
     m_phase = DOING_CODE;
 
 // if the net effect is that nothing changed (eg. blue following blue) leave
