@@ -1997,10 +1997,18 @@ CString strLine (lpszText, size);
         case HAVE_ESC:            Phase_ESC (c); continue;
         case HAVE_UTF8_CHARACTER: Phase_UTF8 (c); continue;
 
-        case HAVE_FOREGROUND_256_START:    // these 4 are similar to Phase_ANSI
+        case HAVE_FOREGROUND_256_START:    // these 12 are similar to Phase_ANSI
         case HAVE_FOREGROUND_256_FINISH:
         case HAVE_BACKGROUND_256_START:
         case HAVE_BACKGROUND_256_FINISH:
+        case HAVE_FOREGROUND_24B_FINISH:
+        case HAVE_FOREGROUND_24BR_FINISH:
+        case HAVE_FOREGROUND_24BG_FINISH:
+        case HAVE_FOREGROUND_24BB_FINISH:
+        case HAVE_BACKGROUND_24B_FINISH:
+        case HAVE_BACKGROUND_24BR_FINISH:
+        case HAVE_BACKGROUND_24BG_FINISH:
+        case HAVE_BACKGROUND_24BB_FINISH:
         case DOING_CODE:          
           Phase_ANSI (c); continue;
 
