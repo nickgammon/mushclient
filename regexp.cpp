@@ -103,7 +103,7 @@ int count;
     prog->m_extra = NULL;
     prog->m_iExecutionError = count; // remember reason
     ThrowErrorException (TFormat ("Error executing regular expression: %s",
-                         Convert_PCRE_Runtime_Error (count)));
+                         (LPCTSTR) Convert_PCRE_Runtime_Error (count)));
     }
 
 

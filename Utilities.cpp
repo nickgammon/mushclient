@@ -2527,7 +2527,7 @@ static char sPathName [_MAX_PATH];
   } // end of Make_Absolute_Path
 
 
-const char * Convert_PCRE_Runtime_Error (const int iError)
+const CString Convert_PCRE_Runtime_Error (const int iError)
   {
   switch (iError)
     {
