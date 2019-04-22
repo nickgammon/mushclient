@@ -508,6 +508,8 @@ CString strMsg;
       m_ctlList->SetItemData (nItem, (DWORD) pstrObjectName);
     }   // end of label changing
 
+  SetInternalName (pItem, strObjectName);  // set internal name
+
   // see if the user changed anything, anyway
   if (CheckIfChanged (&dlg, pItem))
     {

@@ -1152,7 +1152,7 @@ POSITION pos;
       m_iTriggersMatchedCount++;
       m_iTriggersMatchedThisSessionCount++;
       
-      CString strScriptSource = TFormat ("Trigger: %s", (LPCTSTR) trigger_item->strLabel);
+      CString strScriptSource = TFormat ("Trigger: %s", (LPCTSTR) trigger_item->strInternalName);
 
       if (trigger_item->iSendTo == eSendToScriptAfterOmit)
         {
