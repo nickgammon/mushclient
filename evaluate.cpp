@@ -877,6 +877,15 @@ bool CMUSHclientDoc::ProcessOneAliasSequence (const CString strCurrentLine,
                                    m_strLanguage)
                       );
 
+    // If current line is not a note line, force a line change (by displaying
+    // an empty string), so that the style change is on the note line and not
+    // the back of the previous line. This was added to stop an alias, which calls
+    // a Lua script which does outputting, failing because during outputting it
+    // terminated the previous line in the middle of a script.
+
+    if ((m_pCurrentLine->flags & NOTE_OR_COMMAND) != COMMENT)
+      DisplayMsg ("", 0, COMMENT);
+
   // echo the alias they typed, unless command echo off, or previously displayed
       // (if wanted - v3.38)
 
