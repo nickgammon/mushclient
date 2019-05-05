@@ -5218,8 +5218,9 @@ unsigned int iScrollLines;
   dc.DPtoLP(&point);
 
   // if over miniwindow, don't keep going
+  // delta amount (unsigned) is in the high-order word
 
-  if (Mouse_Wheel_MiniWindow (pDoc, point, zDelta < 0 ? MW_MOUSE_SCROLL_BACK : 0))
+  if (Mouse_Wheel_MiniWindow (pDoc, point, (zDelta < 0 ? MW_MOUSE_SCROLL_BACK : 0) | (abs (zDelta) << 16)))
     return 1;
 
     /*
