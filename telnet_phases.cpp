@@ -319,6 +319,11 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
           break;  // end of WILL_END_OF_RECORD
 
 
+    // character set negotiations
+    case TELOPT_CHARSET:
+        Send_IAC_DO (c);
+        break;
+
     default:
         if (Handle_Telnet_Request (c, "WILL"))
           {
@@ -618,8 +623,19 @@ void CMUSHclientDoc::Handle_TELOPT_MXP ()
 
 // IAC SB CHARSET REQUEST DELIMITER <name> DELIMITER
 /*
+
+For backwards compatibility:
+
 Server sends:  IAC DO CHARSET
 Client sends:  IAC WILL CHARSET
+
+  or:
+
+See: https://tools.ietf.org/html/rfc2066
+
+Server sends:  IAC WILL CHARSET
+Client sends:  IAC DO CHARSET
+
 Server sends:  IAC SB CHARSET REQUEST DELIM NAME IAC SE
 Client sends:  IAC SB CHARSET ACCEPTED NAME IAC SE
 or
