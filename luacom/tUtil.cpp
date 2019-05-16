@@ -92,7 +92,7 @@ const char * tUtil::bstr2string(BSTR bstr)
       if(!size)
         LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
 
-      str = new char[size];
+      str = new char[size + 1];
 
       result = WideCharToMultiByte(
         CP_UTF8,            // code page
@@ -108,6 +108,7 @@ const char * tUtil::bstr2string(BSTR bstr)
       if(!result)
         LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
 
+      str [size] = '\0';
     }
     else
     {
@@ -165,7 +166,7 @@ const char * tUtil::bstr2string(BSTR bstr, size_t& computedSize)
       if(!size)
         LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
 
-      str = new char[size];
+      str = new char[size + 1];
 
       result = WideCharToMultiByte(
         CP_UTF8,            // code page
@@ -180,7 +181,9 @@ const char * tUtil::bstr2string(BSTR bstr, size_t& computedSize)
 
       if(!result)
         LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
-      
+
+      str [size] = '\0';
+
       computedSize = size;	// Now holds the actual length of the string
     }
     else
@@ -200,7 +203,7 @@ const char * tUtil::bstr2string(BSTR bstr, size_t& computedSize)
     str[0] = '\0';
   }
 
-  tUtil::string_buffer.copyToBuffer(str, computedSize);
+  tUtil::string_buffer.copyToBuffer(str, computedSize + 1);
 
   delete[] str;
 
