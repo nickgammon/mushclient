@@ -883,7 +883,7 @@ bool CMUSHclientDoc::ProcessOneAliasSequence (const CString strCurrentLine,
     // a Lua script which does outputting, failing because during outputting it
     // terminated the previous line in the middle of a script.
 
-    if ((m_pCurrentLine->flags & NOTE_OR_COMMAND) != COMMENT)
+    if (m_pCurrentLine && (m_pCurrentLine->flags & NOTE_OR_COMMAND) != COMMENT)
       DisplayMsg ("", 0, COMMENT);
 
   // echo the alias they typed, unless command echo off, or previously displayed
