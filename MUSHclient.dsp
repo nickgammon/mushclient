@@ -175,6 +175,10 @@ SOURCE=.\mcdatetime.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\MDIClientWnd.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\MiniWindow.cpp
 # End Source File
 # Begin Source File
@@ -302,6 +306,10 @@ SOURCE=.\luacom\LuaCompat.h
 # Begin Source File
 
 SOURCE=.\luacom\src\library\LuaCompat.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MDIClientWnd.h
 # End Source File
 # Begin Source File
 
@@ -1566,6 +1574,15 @@ SOURCE=.\using_git.txt
 # End Source File
 # End Target
 # End Project
+# Section MUSHclient : {52A03A14-D2CC-0056-A8D2-560020D55600}
+# 	1:21:CG_IDR_POPUP_MUSHVIEW:125
+# End Section
+# Section MUSHclient : {00000000-000C-0000-0C00-00004944445F}
+# 	1:26:CG_IDR_POPUP_ACTIVITY_VIEW:127
+# End Section
+# Section MUSHclient : {00000000-0001-0000-0000-000000000000}
+# 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
+# End Section
 # Section MUSHclient : {F3B13065-16CC-11D0-B7D0-00A0247B3BFD}
 # 	0:8:TipDlg.h:D:\SOURCE\MUSHclient\TipDlg.h
 # 	0:10:TipDlg.cpp:D:\SOURCE\MUSHclient\TipDlg.cpp
@@ -1606,13 +1623,4 @@ SOURCE=.\using_git.txt
 # End Section
 # Section MUSHclient : {00000000-0000-0000-0000-000000000000}
 # 	1:22:CG_IDR_POPUP_SEND_VIEW:124
-# End Section
-# Section MUSHclient : {52A03A14-D2CC-0056-A8D2-560020D55600}
-# 	1:21:CG_IDR_POPUP_MUSHVIEW:125
-# End Section
-# Section MUSHclient : {00000000-000C-0000-0C00-00004944445F}
-# 	1:26:CG_IDR_POPUP_ACTIVITY_VIEW:127
-# End Section
-# Section MUSHclient : {00000000-0001-0000-0000-000000000000}
-# 	1:23:CG_IDR_POPUP_MAIN_FRAME:126
 # End Section
