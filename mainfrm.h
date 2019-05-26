@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "MDIClientWnd.h"
 #include "MyStatusBar.h"
 #include "MDITabs.h"
 
@@ -126,7 +127,11 @@ public:
 
   CHARFORMAT  m_defaultInfoBarFormat;
 
+  COLORREF    m_backgroundColour;  // MDI frame background colour, 0xFFFFFFFF for the default
+
 protected:  // control bar embedded members
+
+  CMDIClientWnd m_wndMDIClient;
 
   bool        m_bActive;  // is app active or not?
 

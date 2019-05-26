@@ -64,7 +64,7 @@ int ActivityToolBarResourceNames [6] = {
 BEGIN_MESSAGE_MAP(CMyToolBar, CToolBar)
 	//{{AFX_MSG_MAP(CMyToolBar)
 	ON_WM_NCPAINT()
-	//}}AFX_MSG_MAP
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CMyToolBar::OnNcPaint() 
@@ -257,6 +257,7 @@ m_wDeviceID = 0;    // no MCI device yet
 m_bFullScreen = false;	
 m_bFlashingWindow = false;
 m_iTabsCount = 0;
+m_backgroundColour = 0xFFFFFFFF;  // use default background colour
 
 ZeroMemory(&m_niData,sizeof(NOTIFYICONDATA));
 m_niData.cbSize = sizeof(NOTIFYICONDATA);
@@ -281,6 +282,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     ::TMessageBox ("Failed to create MDI Frame Window", MB_ICONSTOP);
 		return -1;
     }
+
+  if (!m_wndMDIClient.SubclassWindow(m_hWndMDIClient))
+	{
+		TRACE ("Failed to subclass MDI client window\n");
+		return (-1);
+	}
 
 	if (!m_wndToolBar.CreateEx(this, iToolbarFlags, WS_CHILD | WS_VISIBLE | CBRS_TOP
 		| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
@@ -2332,3 +2339,4 @@ void CMainFrame::CheckTimerFallback ()
      ProcessTimers ();
 
   } // end of CMainFrame::CheckTimerFallback
+

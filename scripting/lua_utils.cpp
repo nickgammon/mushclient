@@ -2106,6 +2106,15 @@ static int menufontsize (lua_State *L)
   return 1;  // return old size
   } // end of menufontsize
 
+// See: http://forums.codeguru.com/showthread.php?383142-change-background-color-of-mainframe
+
+static int setbackgroundcolour (lua_State *L)
+  {
+  Frame.m_backgroundColour = luaL_optnumber (L, 1, 0);
+  Frame.InvalidateRect(NULL);
+  return 0;  // return nothing
+  } // end of setbackgroundcolour
+
 #if 0
 static int registry (lua_State *L)
   {
@@ -2155,6 +2164,7 @@ static const struct luaL_Reg xmllib [] =
   {"msgbox",            msgbox},       // msgbox - not Unicode
   {"multilistbox",      multilistbox},
   {"reload_global_prefs", reload_global_prefs},
+  {"setbackgroundcolour", setbackgroundcolour},
   {"showdebugstatus",   showdebugstatus},
   {"sendtofront",       send_to_front},
   {"shellexecute",      shell_execute},
