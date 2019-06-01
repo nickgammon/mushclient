@@ -70,14 +70,14 @@ library MUSHclient
 			[id(44)] long SetCommand(BSTR Message);
 			[id(45)] BSTR GetNotes();
 			[id(46)] void SetNotes(BSTR Message);
-			[id(413), propget] long NormalColour(short WhichColour);
-			[id(413), propput] void NormalColour(short WhichColour, long nNewValue);
-			[id(414), propget] long BoldColour(short WhichColour);
-			[id(414), propput] void BoldColour(short WhichColour, long nNewValue);
-			[id(415), propget] long CustomColourText(short WhichColour);
-			[id(415), propput] void CustomColourText(short WhichColour, long nNewValue);
-			[id(416), propget] long CustomColourBackground(short WhichColour);
-			[id(416), propput] void CustomColourBackground(short WhichColour, long nNewValue);
+			[id(415), propget] long NormalColour(short WhichColour);
+			[id(415), propput] void NormalColour(short WhichColour, long nNewValue);
+			[id(416), propget] long BoldColour(short WhichColour);
+			[id(416), propput] void BoldColour(short WhichColour, long nNewValue);
+			[id(417), propget] long CustomColourText(short WhichColour);
+			[id(417), propput] void CustomColourText(short WhichColour, long nNewValue);
+			[id(418), propget] long CustomColourBackground(short WhichColour);
+			[id(418), propput] void CustomColourBackground(short WhichColour, long nNewValue);
 			[id(47)] void Redraw();
 			[id(48)] long ResetTimer(BSTR TimerName);
 			[id(49)] void SetOutputFont(BSTR FontName, short PointSize);
@@ -444,6 +444,8 @@ library MUSHclient
 			[id(410)] void SetMainTitle(BSTR Title);
 			[id(411)] void StopEvaluatingTriggers(BOOL AllPlugins);
 			[id(412)] void SetUnseenLines(long Counter);
+			[id(413)] void SetSelection(long StartLine, long EndLine, long StartColumn, long EndColumn);
+			[id(414)] void SetFrameBackgroundColour(long Colour);
 			//}}AFX_ODL_METHOD
 
 	};

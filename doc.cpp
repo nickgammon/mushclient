@@ -615,6 +615,8 @@ BEGIN_DISPATCH_MAP(CMUSHclientDoc, CDocument)
 	DISP_FUNCTION(CMUSHclientDoc, "SetMainTitle", SetMainTitle, VT_EMPTY, VTS_BSTR)
 	DISP_FUNCTION(CMUSHclientDoc, "StopEvaluatingTriggers", StopEvaluatingTriggers, VT_EMPTY, VTS_BOOL)
 	DISP_FUNCTION(CMUSHclientDoc, "SetUnseenLines", SetUnseenLines, VT_EMPTY, VTS_I4)
+	DISP_FUNCTION(CMUSHclientDoc, "SetSelection", SetSelection, VT_EMPTY, VTS_I4 VTS_I4 VTS_I4 VTS_I4)
+	DISP_FUNCTION(CMUSHclientDoc, "SetFrameBackgroundColour", SetFrameBackgroundColour, VT_EMPTY, VTS_I4)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "NormalColour", GetNormalColour, SetNormalColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "BoldColour", GetBoldColour, SetBoldColour, VT_I4, VTS_I2)
 	DISP_PROPERTY_PARAM(CMUSHclientDoc, "CustomColourText", GetCustomColourText, SetCustomColourText, VT_I4, VTS_I2)
@@ -7966,6 +7968,4 @@ void CMUSHclientDoc::FixInputWrap()
       }  // end of if CSendView
     }  // end of for each view
 } // end of CMUSHclientDoc::FixInputWrap()
-
-
 

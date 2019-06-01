@@ -487,6 +487,7 @@
 3 SetCustomColourName=FNC_SetCustomColourName
 3 SetEntity=FNC_SetEntity 
 3 SetForegroundImage=FNC_SetForegroundImage
+3 SetFrameBackgroundColour=FNC_SetFrameBackgroundColour
 3 SetInputFont=FNC_SetInputFont 
 3 SetMainTitle=FNC_SetMainTitle 
 3 SetNotes=FNC_SetNotes 
@@ -494,6 +495,7 @@
 3 SetOutputFont=FNC_SetOutputFont 
 3 SetStatus=FNC_SetStatus 
 3 SetScroll=FNC_SetScroll
+3 SetSelection=FNC_SetSelection
 3 SetTimerOption=FNC_SetTimerOption 
 3 SetTitle=FNC_SetTitle 
 3 SetToolBarPosition=FNC_SetToolBarPosition

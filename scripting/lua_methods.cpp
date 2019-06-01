@@ -5348,6 +5348,16 @@ static int L_SetForegroundImage (lua_State *L)
   return 1;  // number of result fields
   } // end of L_SetForegroundImage
 
+//----------------------------------------
+//  world.SetFrameBackgroundColour
+//----------------------------------------
+static int L_SetFrameBackgroundColour (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  pDoc->SetFrameBackgroundColour (my_checknumber (L, 1));
+  return 0;  // number of result fields
+  } // end of L_SetFrameBackgroundColour
+
 
 //----------------------------------------
 //  world.SetInputFont
@@ -5434,6 +5444,20 @@ static int L_SetScroll (lua_State *L)
       ));
   return 1;  // number of result fields
   } // end of L_SetScroll
+
+//----------------------------------------
+//  world.SetSelection
+//----------------------------------------
+static int L_SetSelection (lua_State *L)
+  {
+  CMUSHclientDoc *pDoc = doc (L);
+  pDoc->SetSelection (
+      my_checknumber (L, 1),
+      my_checknumber (L, 2),
+      my_checknumber (L, 3),
+      my_checknumber (L, 4));
+  return 0;  // number of result fields
+  } // end of L_SetSelection
 
 //----------------------------------------
 //  world.SetStatus
@@ -7032,7 +7056,9 @@ static const struct luaL_Reg worldlib [] =
   {"SetCustomColourName", L_SetCustomColourName},
   {"SetEntity", L_SetEntity},
   {"SetForegroundImage", L_SetForegroundImage},
+  {"SetFrameBackgroundColour", L_SetFrameBackgroundColour},
   {"SetInputFont", L_SetInputFont},
+  {"SetSelection", L_SetSelection},
   {"SetMainTitle", L_SetMainTitle},
   {"SetNotes", L_SetNotes},
   {"SetOption", L_SetOption},

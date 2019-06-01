@@ -10,6 +10,7 @@
 #include "..\..\childfrm.h"
 #include "..\..\sendvw.h"
 #include "..\..\dialogs\CompleteWordDlg.h"
+#include "..\..\MUSHview.h"
 #include <direct.h>
 
 // Implements:
@@ -43,7 +44,9 @@
 //    Save
 //    SendPkt
 //    SetChanged
+//    SetFrameBackgroundColour
 //    SetNotes
+//    SetSelection
 //    SetStatus
 //    Simulate
 //    StripANSI
@@ -699,3 +702,46 @@ BSTR CMUSHclientDoc::Menu(LPCTSTR Items, LPCTSTR Default)
 
 	return strResult.AllocSysString();
 }   // end of CMUSHclientDoc::Menu
+
+
+// Sets the selection in the first output window found
+
+void CMUSHclientDoc::SetSelection(long StartLine, long EndLine, long StartColumn, long EndColumn) 
+{
+
+  CMUSHView * pmyView = GetFirstOutputWindow ();
+
+  // return if unable
+  if (!pmyView)
+    return;
+
+  pmyView->m_selstart_line  = StartLine - 1;
+  pmyView->m_selend_line    = EndLine - 1;
+  pmyView->m_selstart_col   = StartColumn - 1;
+  pmyView->m_selend_col     = EndColumn - 1;
+
+  pmyView->m_pin_line       = pmyView->m_selstart_line;
+  pmyView->m_pin_col        = pmyView->m_selstart_col;
+
+  pmyView->SelectionChanged ();
+
+  CRgn newrgn;
+
+  if (!pmyView->get_selection (newrgn) && m_bAutoFreeze)
+     pmyView->m_freeze = true;   // freeze output so they can copy or print it
+
+  newrgn.DeleteObject ();
+
+  // Invalidate new stuff
+  UpdateAllViews (NULL);
+
+}   // end of CMUSHclientDoc::SetSelection
+
+
+// Sets the "frame" background colour. Same behaviour as utils.setbackgroundcolour ()
+
+void CMUSHclientDoc::SetFrameBackgroundColour(long Colour) 
+{
+  Frame.m_backgroundColour = Colour;
+  Frame.InvalidateRect(NULL);
+}   // end of CMUSHclientDoc::SetFrameBackgroundColour

@@ -2304,9 +2304,6 @@ public:
 #endif
 
 public:
-	short m_bLogNotes;
-	short m_log_input;
-	short m_bLogOutput;
 
 protected:
 
@@ -2422,8 +2419,11 @@ public:
 
     // Generated OLE dispatch map functions
 	//{{AFX_DISPATCH(CMUSHclientDoc)
+	short m_bLogNotes;
 	afx_msg void OnLogNotesChanged();
+	short m_log_input;
 	afx_msg void OnLogInputChanged();
+	short m_bLogOutput;
 	afx_msg void OnLogOutputChanged();
 	BOOL m_bMapping;
 	afx_msg void OnMappingChanged();
@@ -2842,6 +2842,8 @@ public:
 	afx_msg void SetMainTitle(LPCTSTR Title);
 	afx_msg void StopEvaluatingTriggers(BOOL AllPlugins);
 	afx_msg void SetUnseenLines(long Counter);
+	afx_msg void SetSelection(long StartLine, long EndLine, long StartColumn, long EndColumn);
+	afx_msg void SetFrameBackgroundColour(long Colour);
 	afx_msg long GetNormalColour(short WhichColour);
 	afx_msg void SetNormalColour(short WhichColour, long nNewValue);
 	afx_msg long GetBoldColour(short WhichColour);
