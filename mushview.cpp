@@ -279,6 +279,11 @@ CMUSHView::CMUSHView()
   m_selstart_col = 0;
   m_selend_line = 0;
   m_selend_col = 0;
+  m_old_selstart_line = 0;
+  m_old_selstart_col = 0;
+  m_old_selend_line = 0;
+  m_old_selend_col = 0;
+
   m_freeze = FALSE;
   m_bAtBufferEnd = false;
   m_last_line_drawn = 0;
@@ -7648,14 +7653,27 @@ void CMUSHView::NotifySelectionChanged(void)
   static bool bInSelectionChanged = false;
   if (bInSelectionChanged)  // don't recurse into infinite loops
     return;
+
+  // we seem to get called when there wasn't really a change
+  if ((m_selstart_line == m_old_selstart_line) &&
+      (m_selstart_col  == m_old_selstart_col) &&
+      (m_selend_line   == m_old_selend_line) &&
+      (m_selend_col    == m_old_selend_col))
+     return;  // not really changed
+
+  m_old_selstart_line = m_selstart_line;
+  m_old_selstart_col  = m_selstart_col;
+  m_old_selend_line   = m_selend_line;
+  m_old_selend_col    = m_selend_col;
+
   bInSelectionChanged = true;
-  
+
   CMUSHclientDoc* pDoc = GetDocument();
   ASSERT_VALID(pDoc);
 
   if (pDoc->m_ScriptEngine)
     pDoc->SendToAllPluginCallbacks(ON_PLUGIN_SELECTION_CHANGED);
-  
+
   bInSelectionChanged = false;
   // end of notify plugins
 }

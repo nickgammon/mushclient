@@ -133,7 +133,7 @@ string PluginCallbacksNames [] = {
    ON_PLUGIN_PLAYSOUND,             
    ON_PLUGIN_SAVE_STATE,            
    ON_PLUGIN_SCREENDRAW,            
-   ON_PLUGIN_SELECTION_CHANGED,     
+   ON_PLUGIN_SELECTION_CHANGED,
    ON_PLUGIN_SEND,                  
    ON_PLUGIN_SENT,                  
    ON_PLUGIN_TABCOMPLETE,           
