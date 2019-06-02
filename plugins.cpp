@@ -42,6 +42,7 @@ const string ON_PLUGIN_LOSEFOCUS             ("OnPluginLoseFocus");
 const string ON_PLUGIN_TRACE                 ("OnPluginTrace"); 
 const string ON_PLUGIN_BROADCAST             ("OnPluginBroadcast"); 
 const string ON_PLUGIN_SCREENDRAW            ("OnPluginScreendraw"); 
+const string ON_PLUGIN_SELECTION_CHANGED     ("OnPluginSelectionChanged");
 
 // sounds
 const string ON_PLUGIN_PLAYSOUND             ("OnPluginPlaySound"); 
@@ -132,6 +133,7 @@ string PluginCallbacksNames [] = {
    ON_PLUGIN_PLAYSOUND,             
    ON_PLUGIN_SAVE_STATE,            
    ON_PLUGIN_SCREENDRAW,            
+   ON_PLUGIN_SELECTION_CHANGED,     
    ON_PLUGIN_SEND,                  
    ON_PLUGIN_SENT,                  
    ON_PLUGIN_TABCOMPLETE,           

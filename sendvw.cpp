@@ -1456,6 +1456,7 @@ if (found)
   }   // end of being found
 
   // Invalidate new selection rectangle
+  m_topview->NotifySelectionChanged ();
   m_topview->Invalidate ();
 
   } // end of CSendView::DoFind
@@ -2947,9 +2948,8 @@ void CSendView::CheckForSelectionChange (void)
   m_topview->m_selstart_col = 0;
   m_topview->m_selend_line = 0;
   m_topview->m_selend_col = 0;
-
+  m_topview->NotifySelectionChanged ();
   m_topview->Invalidate ();
-
   }   // end of  CSendView::CheckForSelectionChange
 
 void CSendView::CancelSelection (void)

@@ -7643,8 +7643,26 @@ ASSERT_VALID(pDoc);
 
   } // end of  CMUSHView::HaveTextRectangle
 
+void CMUSHView::NotifySelectionChanged(void)
+{
+  static bool bInSelectionChanged = false;
+  if (bInSelectionChanged)  // don't recurse into infinite loops
+    return;
+  bInSelectionChanged = true;
+  
+  CMUSHclientDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
+
+  if (pDoc->m_ScriptEngine)
+    pDoc->SendToAllPluginCallbacks(ON_PLUGIN_SELECTION_CHANGED);
+  
+  bInSelectionChanged = false;
+  // end of notify plugins
+}
+
 void CMUSHView::SelectionChanged (void)
   {
+  NotifySelectionChanged();
 
   // no selection? do nothing
   if (!(m_selend_line > m_selstart_line || 
