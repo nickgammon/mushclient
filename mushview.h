@@ -174,6 +174,7 @@ bool GetSelection(CFile & f);
 bool GetSelection(CString & s);
 void SendMacro (int whichone);
 void SelectionChanged (void);
+void NotifySelectionChanged(void);
 void AutoWrapWindowWidth (CMUSHclientDoc* pDoc);
 void BookmarkLine (const long iLine);
 
