@@ -46,6 +46,11 @@ public:
       m_pin_line,   // this is where they started a selection (with the initial mouse down)
       m_pin_col;
 
+  int m_old_selstart_line,   // previous start of current selection
+      m_old_selstart_col,
+      m_old_selend_line,     // previous end of current selection
+      m_old_selend_col;
+
   int m_iPauseStatus;
 
   BOOL m_freeze;
@@ -174,6 +179,7 @@ bool GetSelection(CFile & f);
 bool GetSelection(CString & s);
 void SendMacro (int whichone);
 void SelectionChanged (void);
+void NotifySelectionChanged(void);
 void AutoWrapWindowWidth (CMUSHclientDoc* pDoc);
 void BookmarkLine (const long iLine);
 
