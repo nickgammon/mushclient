@@ -240,7 +240,7 @@ tMXP_colour MXP_colours [] =
   { "plum", 0xdda0dd },
   { "powderblue", 0xb0e0e6 },
   { "purple", 0x800080 },
-  { "rebeccapurple", 0x663399 },  // new in 3.70, see https://lists.w3.org/Archives/Public/www-style/2014Jun/0312.html
+  { "rebeccapurple", 0x663399 },  // new in 5.07, see https://lists.w3.org/Archives/Public/www-style/2014Jun/0312.html
   { "red", 0xff0000 },
   { "rosybrown", 0xbc8f8f },
   { "royalblue", 0x4169e1 },
