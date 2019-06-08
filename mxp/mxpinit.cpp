@@ -151,6 +151,7 @@ tMXP_colour MXP_colours [] =
   { "darkcyan", 0x008b8b },
   { "darkgoldenrod", 0xb8860b },
   { "darkgray", 0xa9a9a9 },
+  { "darkgrey", 0xa9a9a9 },    // new in 5.07
   { "darkgreen", 0x006400 },
   { "darkkhaki", 0xbdb76b },
   { "darkmagenta", 0x8b008b },
@@ -159,14 +160,16 @@ tMXP_colour MXP_colours [] =
   { "darkorchid", 0x9932cc },
   { "darkred", 0x8b0000 },
   { "darksalmon", 0xe9967a },
-  { "darkseagreen", 0x8dbc8f },
+  { "darkseagreen", 0x8fbc8f },   // changed in 5.07 from 0x8dbc8f
   { "darkslateblue", 0x483d8b },
   { "darkslategray", 0x2f4f4f },
-  { "darkturquoise", 0x00ded1 },
+  { "darkslategrey", 0x2f4f4f },  // new in 5.07
+  { "darkturquoise", 0x00ced1 },  // changed in 5.07 from 0x00ded1
   { "darkviolet", 0x9400d3 },
   { "deeppink", 0xff1493 },
   { "deepskyblue", 0x00bfff },
   { "dimgray", 0x696969 },
+  { "dimgrey", 0x696969 },    // new in 5.07
   { "dodgerblue", 0x1e90ff },
   { "firebrick", 0xb22222 },
   { "floralwhite", 0xfffaf0 },
@@ -177,6 +180,7 @@ tMXP_colour MXP_colours [] =
   { "gold", 0xffd700 },
   { "goldenrod", 0xdaa520 },
   { "gray", 0x808080 },
+  { "grey", 0x808080 },   // new in 5.07
   { "green", 0x008000 },
   { "greenyellow", 0xadff2f },
   { "honeydew", 0xf0fff0 },
@@ -201,6 +205,7 @@ tMXP_colour MXP_colours [] =
   { "lightseagreen", 0x20b2aa },
   { "lightskyblue", 0x87cefa },
   { "lightslategray", 0x778899 },
+  { "lightslategrey", 0x778899 },     // new in 5.07
   { "lightsteelblue", 0xb0c4de },
   { "lightyellow", 0xffffe0 },
   { "lime", 0x00ff00 },
@@ -236,7 +241,7 @@ tMXP_colour MXP_colours [] =
   { "papayawhip", 0xffefd5 },
   { "peachpuff", 0xffdab9 },
   { "peru", 0xcd853f },
-  { "pink", 0xffc8cb },
+  { "pink", 0xffc0cb },   // changed in 5.07 from 0xffc8cb
   { "plum", 0xdda0dd },
   { "powderblue", 0xb0e0e6 },
   { "purple", 0x800080 },
@@ -254,6 +259,7 @@ tMXP_colour MXP_colours [] =
   { "skyblue", 0x87ceeb },
   { "slateblue", 0x6a5acd },
   { "slategray", 0x708090 },   // new in 3.18
+  { "slategrey", 0x708090 },   // new in 5.07
   { "snow", 0xfffafa },
   { "springgreen", 0x00ff7f },
   { "steelblue", 0x4682b4 },
