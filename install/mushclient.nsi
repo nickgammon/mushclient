@@ -296,6 +296,38 @@ Section "Documentation"
 
 SectionEnd
 
+Section "Licences"
+  ; Which section type it is in
+  SectionIn 1 2 3  ; compact, typical, full
+
+  ; Set output path to the licences directory.
+  CreateDirectory "$INSTDIR\licences"
+  SetOutPath $INSTDIR\licences
+
+  File "..\licences\FIGlet licence.txt"
+  File "..\licences\GNU General Public License.txt"
+  File "..\licences\JSON licence.txt"
+  File "..\licences\Lua Colors licence.txt"
+  File "..\licences\Lua licence.txt"
+  File "..\licences\LuaCOM licence.txt"
+  File "..\licences\Luasocket licence.txt"
+  File "..\licences\MD5 licence.txt"
+  File "..\licences\MUSHclient licence.txt"
+  File "..\licences\Mersenne Twister licence.txt"
+  File "..\licences\PCRE licence.txt"
+  File "..\licences\README.txt"
+  File "..\licences\SHA license.txt"
+  File "..\licences\SHS licence.txt"
+  File "..\licences\SQLite licence.txt"
+  File "..\licences\bc licence.txt"
+  File "..\licences\big numbers licence.txt"
+  File "..\licences\libpng-LICENSE.txt"
+  File "..\licences\zLib licence.txt"
+
+
+SectionEnd
+
+
 Section "Fonts"
 
   ; Which section type it is in
@@ -687,6 +719,28 @@ Section Uninstall
   RMDir  "$INSTDIR\docs\LuaSocket_documentation"
 
   RMDir  "$INSTDIR\docs"
+
+  Delete "$INSTDIR\licences\FIGlet licence.txt"
+  Delete "$INSTDIR\licences\GNU General Public License.txt"
+  Delete "$INSTDIR\licences\JSON licence.txt"
+  Delete "$INSTDIR\licences\Lua Colors licence.txt"
+  Delete "$INSTDIR\licences\Lua licence.txt"
+  Delete "$INSTDIR\licences\LuaCOM licence.txt"
+  Delete "$INSTDIR\licences\Luasocket licence.txt"
+  Delete "$INSTDIR\licences\MD5 licence.txt"
+  Delete "$INSTDIR\licences\MUSHclient licence.txt"
+  Delete "$INSTDIR\licences\Mersenne Twister licence.txt"
+  Delete "$INSTDIR\licences\PCRE licence.txt"
+  Delete "$INSTDIR\licences\README.txt"
+  Delete "$INSTDIR\licences\SHA license.txt"
+  Delete "$INSTDIR\licences\SHS licence.txt"
+  Delete "$INSTDIR\licences\SQLite licence.txt"
+  Delete "$INSTDIR\licences\bc licence.txt"
+  Delete "$INSTDIR\licences\big numbers licence.txt"
+  Delete "$INSTDIR\licences\libpng-LICENSE.txt"
+  Delete "$INSTDIR\licences\zLib licence.txt"
+
+  RMDir  "$INSTDIR\licences"
 
   ; fonts
   Delete "$INSTDIR\fonts\*.flf"

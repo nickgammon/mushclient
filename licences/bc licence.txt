@@ -1,0 +1,5 @@
+big-number library for Lua 5.1 based on GNU bc-1.06 core library
+
+Luiz Henrique de Figueiredo <lhf@tecgraf.puc-rio.br>
+04 Apr 2010 22:40:22
+This code is hereby placed in the public domain.

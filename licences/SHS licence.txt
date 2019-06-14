@@ -1,0 +1,2 @@
+Written 2 September 1992. Peter C. Gutmann.     
+This implementation placed in the public domain.
