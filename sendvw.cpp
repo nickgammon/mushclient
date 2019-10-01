@@ -2470,14 +2470,17 @@ if (pDoc->m_bCtrlBackspaceDeletesLastWord)
   if (strCurrent.IsEmpty ())
     return;
 
-  CString strLast = strCurrent.Mid (nStartChar);  // after the selection
-  CString strFirst = strCurrent.Left (nStartChar);  // up to the selection
+  CString strLast = strCurrent.Mid (nStartChar);    // after the cursor
+  CString strFirst = strCurrent.Left (nStartChar);  // up to the cursor
   strFirst.TrimRight ();  // skip trailing spaces
-  int iPos = strFirst.ReverseFind (' ');
-  strFirst = strFirst.Left (iPos + 1);  // up to and including the space
+  int iPos = strFirst.ReverseFind (' ');    // find the preceding space
+  strFirst = strFirst.Left (iPos);  // up to the space
   strFirst += strLast;  // put last bit back
   GetEditCtrl().SetSel (0, -1);   // select all
   GetEditCtrl().ReplaceSel (strFirst, TRUE);
+  if (iPos < 0)  // if no space put cursor at start of line
+    iPos = 0;
+  GetEditCtrl().SetSel (iPos, iPos);   // put cursor at end of preceding word
 
   return;
   }
