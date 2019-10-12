@@ -50,7 +50,7 @@ CString strEntityContents = MXP_GetEntity (m_strMXPstring);
     {
 //  if the entity happens to be < & > etc. don't reprocess it
     m_bMXP = false;
-    DisplayMsg (strEntityContents, strEntityContents.GetLength (), 0);
+    DisplayMsg (strEntityContents, strEntityContents.GetLength (), 0, true);  // fake packet
     m_bMXP = true;
     }
 

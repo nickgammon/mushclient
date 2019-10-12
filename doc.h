@@ -1429,7 +1429,7 @@ public:
                const bool bQueueIt,
                const bool bLogIt);
 	void ReceiveMsg();
-	void DisplayMsg(LPCTSTR lpszText, int size, const int flags);
+	void DisplayMsg(LPCTSTR lpszText, int size, const int flags, const bool fake = false);
   void AddToLine (LPCTSTR lpszText, const int flags);
   void StartNewLine_KeepPreviousStyle (const int flags);
   void Phase_ESC (const unsigned char c);  

@@ -1346,7 +1346,7 @@ CString str = strText;
 
    SendPacket (str, str.GetLength ());
 
-}
+} // end of CMUSHclientDoc::DoSendMsg
 
 void CMUSHclientDoc::ReceiveMsg()
 {
@@ -1846,7 +1846,7 @@ void CMUSHclientDoc::SetNewLineColour (const int flags)
 
   } // end of CMUSHclientDoc::SetNewLineColour
 
-void CMUSHclientDoc::DisplayMsg(LPCTSTR lpszText, int size, const int flags)
+void CMUSHclientDoc::DisplayMsg(LPCTSTR lpszText, int size, const int flags, const bool fake)
 {
 const char * p ;
 unsigned char c;
@@ -1874,13 +1874,15 @@ CString strLine (lpszText, size);
       Debug_MUD ("++Received from MUD: ", strLine);
     #endif
 
-    // hex debug  (debug packets)
-    if (m_bDebugIncomingPackets)
+    // hex debug  (debug packets) - unless we have faked an input line from MXP processing or similar
+    if (m_bDebugIncomingPackets && !fake)
       Debug_Packets ("Incoming", lpszText, size, m_iInputPacketCount);
 
     m_iCurrentActionSource = eInputFromServer;
 
-    SendToAllPluginCallbacksRtn (ON_PLUGIN_PACKET_RECEIVED, strLine);
+    // let plugin change the input packet unless we have faked an input line from MXP processing or similar
+    if (!fake)
+      SendToAllPluginCallbacksRtn (ON_PLUGIN_PACKET_RECEIVED, strLine);
 
     m_iCurrentActionSource = eUnknownActionSource;
 
