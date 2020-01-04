@@ -739,33 +739,43 @@ long CMUSHclientDoc::SetScroll(long Position, BOOL Visible)
 
 CPoint pt (0, 0);
 int lastline = GetLastLine ();
-m_bScrollBarWanted = Visible;
+bool will_change_visibility = (Visible != m_bScrollBarWanted);
 
   for(POSITION pos = GetFirstViewPosition(); pos != NULL; )
 	  {
 	  CView* pView = GetNextView(pos);
-	  
+
 	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
   	  {
 		  CMUSHView* pmyView = (CMUSHView*)pView;
 
+      CPoint cur_pt = pmyView->GetScrollPosition();
+      bool will_scroll = (Position != cur_pt.y) && (Position != -2); // if -2, do not change position
       int highest = (lastline * m_FontHeight) - pmyView->GetOutputWindowHeight ();
+      will_scroll = will_scroll && ((Position != -1) || (cur_pt.y != highest));
 
-      // -1 goes to the end
-      if (Position == -1)
-        pt.y = highest; 
-      else
-        pt.y = Position;
+      if (will_change_visibility) {
+        m_bScrollBarWanted = Visible;
+        pmyView->EnableScrollBarCtrl (SB_VERT, Visible);
+      }
 
-      if (pt.y < 0)
-        pt.y = 0;
-      if (pt.y > highest)
-        pt.y = highest;
+      if (will_scroll) {
+        // -1 goes to the end
+        if (Position == -1)
+          pt.y = highest;
+        else
+          pt.y = Position;
 
-      pmyView->EnableScrollBarCtrl (SB_VERT, Visible);
-      if (Position != -2)      // if -2, do not change position
+        if (pt.y < 0)
+          pt.y = 0;
+        if (pt.y > highest)
+          pt.y = highest;
+
         pmyView->ScrollToPosition (pt, false);
-      pmyView->Invalidate ();
+      }
+
+      if (will_scroll || will_change_visibility)
+        pmyView->Invalidate ();
 
 	    }	  // end of being a CMUSHView
     }   // end of loop through views
