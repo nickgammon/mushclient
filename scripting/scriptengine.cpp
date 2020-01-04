@@ -68,8 +68,8 @@ bool CScriptEngine::Execute (DISPID & dispid,  // dispatch ID, will be set to DI
   SCRIPTSTATE ss;
 
   // do not trace OnPluginDrawOutputWindow or OnPluginTick because they can spam the output window
-  if (strcmp (szProcedure, "OnPluginDrawOutputWindow") != 0 &&
-      strcmp (szProcedure, "OnPluginTick") != 0) 
+  if (ON_PLUGIN_DRAW_OUTPUT_WINDOW != szProcedure &&
+      ON_PLUGIN_TICK != szProcedure)
     m_pDoc->Trace (TFormat ("Executing %s script \"%s\"", szType, szProcedure));
 
   //  Frame.SetStatusMessageNow (TFormat ("Executing %s subroutine \"%s\"", szType, szProcedure));
