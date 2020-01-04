@@ -484,7 +484,10 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,  // dispatch ID, will be set to
   LARGE_INTEGER start, 
                 finish;
 
-  m_pDoc->Trace (TFormat ("Executing %s script \"%s\"", szType, szProcedure));
+  // do not trace OnPluginDrawOutputWindow or OnPluginTick because they can spam the output window
+  if (strcmp (szProcedure, "OnPluginDrawOutputWindow") != 0 &&
+      strcmp (szProcedure, "OnPluginTick") != 0) 
+    m_pDoc->Trace (TFormat ("Executing %s script \"%s\"", szType, szProcedure));
 
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
@@ -702,7 +705,10 @@ bool CScriptEngine::ExecuteLua (DISPID & dispid,          // dispatch ID, will b
   LARGE_INTEGER start, 
                 finish;
 
-  m_pDoc->Trace (TFormat ("Executing %s script \"%s\"", szType, szProcedure));
+  // do not trace OnPluginDrawOutputWindow or OnPluginTick because they can spam the output window
+  if (strcmp (szProcedure, "OnPluginDrawOutputWindow") != 0 &&
+      strcmp (szProcedure, "OnPluginTick") != 0) 
+    m_pDoc->Trace (TFormat ("Executing %s script \"%s\"", szType, szProcedure));
 
   if (App.m_iCounterFrequency)
     QueryPerformanceCounter (&start);
