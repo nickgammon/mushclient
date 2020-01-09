@@ -4743,10 +4743,8 @@ int iDeltaY = m_scroll_position.y - pt.y;
   m_scroll_position = pt;
 
   // update scroll bar
-  GetScrollInfo (SB_VERT, &ScrollInfo, SIF_POS | SIF_ALL);
-  ScrollInfo.nPos = pt.y;
-  SetScrollInfo (SB_VERT, &ScrollInfo, pDoc->m_bScrollBarWanted);
-  m_ScrollbarPosition = ScrollInfo.nPos;
+  SetScrollPos (SB_VERT, pt.y, pDoc->m_bScrollBarWanted);
+  m_ScrollbarPosition = pt.y;
 
 
 //  GetScrollInfo (SB_HORZ, &ScrollInfo, SIF_POS);
