@@ -12,6 +12,7 @@ Amended: 18th November 2010 to add more timing and count of times called
          Also added zooming with the mouse wheel.
 Amended: 26th November 2010 to check timers are enabled when speedwalking.
 Amended: 11th November 2014 to allow for detecting mouse-overs of rooms
+Amended: 1st February 2020 to fix bug in drawing configuration sub-window
 
 Generic MUD mapper.
 
@@ -70,7 +71,7 @@ Room info should include:
 
 module (..., package.seeall)
 
-VERSION = 2.6   -- for querying by plugins
+VERSION = 2.7   -- for querying by plugins
 
 require "movewindow"
 require "copytable"
@@ -299,7 +300,7 @@ local function draw_configuration ()
   local suppress_colours = false
 
   for k, v in pairs (config) do
-    if v.colour then
+    if type (v) == 'table' and v.colour then
       width = math.max (width, WindowTextWidth (win, FONT_ID, v.name, true))
       lines = lines + 1
     end -- a colour item
@@ -370,7 +371,7 @@ local function draw_configuration ()
   if not suppress_colours then
 
     for k, v in pairsByKeys (config) do
-      if v.colour then
+      if  type (v) == 'table' and v.colour then
         WindowText   (win, FONT_ID, v.name, x, y, 0, 0, 0x000000, true)
         WindowRectOp (win,
                       miniwin.rect_fill,
