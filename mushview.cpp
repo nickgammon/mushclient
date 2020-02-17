@@ -5252,16 +5252,7 @@ bool bSmooth_saved = App.m_bSmoothScrolling;
   if (zDelta < 0) // line down
     {
     zDelta = 0 - zDelta;  // make positive
-    zDelta /= WHEEL_DELTA;
-    zDelta *= iScrollLines;
-
-/*   old way
-    for (int i = 0; i < zDelta; i++)
-      doLinedown ();
-
-*/
-
-// -- new way
+    long scrollAmount = ((long) zDelta * iScrollLines * pDoc->m_FontHeight) / WHEEL_DELTA;
 
     RECT r;
     int lastline;
@@ -5271,7 +5262,7 @@ bool bSmooth_saved = App.m_bSmoothScrolling;
 
     GetClientRect (&r);
 
-    ScrollPt.y += zDelta * pDoc->m_FontHeight;
+    ScrollPt.y += scrollAmount;
 
     // include partial last line if necessary
 
@@ -5283,26 +5274,13 @@ bool bSmooth_saved = App.m_bSmoothScrolling;
 
     ScrollToPosition (ScrollPt, false);
 
-// -- end new way
-
     App.m_bSmoothScrolling = bSmooth_saved;
     return 1;
     }
 
   // line up
 
-  zDelta /= WHEEL_DELTA;
-  zDelta *= iScrollLines;
-
-
-/*   old way
-
-  for (int i = 0; i < zDelta; i++)
-    doLineup ();
-
-*/
-
-// -- new way
+  long scrollAmount = ((long) zDelta * iScrollLines * pDoc->m_FontHeight) / WHEEL_DELTA;
 
   RECT r;
 
@@ -5310,14 +5288,12 @@ bool bSmooth_saved = App.m_bSmoothScrolling;
 
   GetClientRect (&r);
 
-  ScrollPt.y -= zDelta * pDoc->m_FontHeight;
+  ScrollPt.y -= scrollAmount;
 
   if (ScrollPt.y < 0)
     ScrollPt.y = 0;
 
   ScrollToPosition (ScrollPt, false);
-
-// -- end new way
 
   App.m_bSmoothScrolling = bSmooth_saved;
 
