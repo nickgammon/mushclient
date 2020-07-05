@@ -270,6 +270,7 @@ Section "Documentation"
   File "..\docs\lpeg-128.gif"
   File "..\docs\lsqlite3.html"
   File "..\docs\lua_license.txt"
+  File "..\docs\Figlet_license.txt"
   File "..\docs\luacom.pdf"
   File "..\docs\mersenne_twister.txt"
   File "..\docs\re.html"
@@ -694,6 +695,8 @@ Section Uninstall
 
   Delete "$INSTDIR\docs\lsqlite3.html"
   Delete "$INSTDIR\docs\lua_license.txt"
+  Delete "$INSTDIR\docs\Figlet_license.txt"
+
   Delete "$INSTDIR\docs\luacom.pdf"
   Delete "$INSTDIR\docs\mersenne_twister.txt"
   Delete "$INSTDIR\docs\re.html"
