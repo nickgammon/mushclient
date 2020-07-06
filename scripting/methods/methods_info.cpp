@@ -1400,7 +1400,7 @@ long CMUSHclientDoc::GetSelectionStartLine()
 	  {
 	  CView* pView = GetNextView(pos);
 	  
-	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)) && m_LineList.GetCount () > 0)
   	  {
 		  CMUSHView* pmyView = (CMUSHView*)pView;
       long startcol,
@@ -1434,7 +1434,7 @@ long CMUSHclientDoc::GetSelectionEndLine()
 	  {
 	  CView* pView = GetNextView(pos);
 	  
-	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)) && m_LineList.GetCount () > 0)
   	  {
 		  CMUSHView* pmyView = (CMUSHView*)pView;
       long startcol,
@@ -1470,7 +1470,7 @@ long CMUSHclientDoc::GetSelectionStartColumn()
 	  {
 	  CView* pView = GetNextView(pos);
 	  
-	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)) && m_LineList.GetCount () > 0)
   	  {
 		  CMUSHView* pmyView = (CMUSHView*)pView;
       long startcol,
@@ -1504,7 +1504,7 @@ long CMUSHclientDoc::GetSelectionEndColumn()
 	  {
 	  CView* pView = GetNextView(pos);
 	  
-	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)))
+	  if (pView->IsKindOf(RUNTIME_CLASS(CMUSHView)) && m_LineList.GetCount () > 0)
   	  {
 		  CMUSHView* pmyView = (CMUSHView*)pView;
       long startcol,
