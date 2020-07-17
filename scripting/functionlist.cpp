@@ -624,7 +624,8 @@ CString strCommand;
                    strFull);                // topic, eg. FNC_Note
 
   // show the help
-  ::WinHelp (Frame, pApp->m_pszHelpFilePath, HELP_COMMAND, (DWORD) (LPCTSTR) strCommand);
+  if (App.HelpAvailable (true))
+    ::WinHelp (Frame, pApp->m_pszHelpFilePath, HELP_COMMAND, (DWORD) (LPCTSTR) strCommand);
 
   } // end of ShowHelp 
 

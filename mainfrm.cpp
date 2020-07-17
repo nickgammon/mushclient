@@ -1141,7 +1141,7 @@ pCmdUI->SetCheck (App.m_bReconnectOnLinkFailure);
 
 void CMainFrame::OnHelpContents() 
 {
-	App.WinHelp(0L, HELP_FINDER);
+	App.HelpHelper(0L, HELP_FINDER);
 }
 
 void CMainFrame::OnUpdateBtnWorldsWorld0(CCmdUI* pCmdUI) 
@@ -1846,7 +1846,8 @@ void CMainFrame::OnUpdateConnectionConnecttoworldsinstartuplist(CCmdUI* pCmdUI)
 void CMainFrame::OnF1Test(void)
   {
   if (!App.m_bF1macro)
-    CMDIFrameWnd::OnHelp ();
+    App.HelpHelper (0);
+
   }  // end of CMainFrame::OnF1Test
 
 void CMainFrame::OnHelpDocumentationwebpage() 

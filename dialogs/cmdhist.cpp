@@ -120,7 +120,7 @@ void CCmdHistory::OnDblclkCommands()
 void CCmdHistory::OnHelpbutton() 
 {
 //	  OnCmdMsg(ID_HELP, CN_COMMAND, NULL, NULL);	
-	App.WinHelp(m_nIDHelp + HID_BASE_RESOURCE);
+	App.HelpHelper(m_nIDHelp + HID_BASE_RESOURCE);
 }
 
 void CCmdHistory::OnFind() 

@@ -71,6 +71,6 @@ END_MESSAGE_MAP()
 void CLogDlg::OnHelpbutton() 
 {
 //	  OnCmdMsg(ID_HELP, CN_COMMAND, NULL, NULL);	
-	App.WinHelp(m_nIDHelp + HID_BASE_COMMAND);
+	App.HelpHelper(m_nIDHelp + HID_BASE_COMMAND);
 
 }

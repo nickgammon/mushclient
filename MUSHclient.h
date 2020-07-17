@@ -288,6 +288,9 @@ public:
 
   void WorkOutFixedFont ();
 
+  bool HelpAvailable (bool showWarning);  // can we show help or not?
+  void HelpHelper( DWORD dwData, UINT nCmd = HELP_CONTEXT );
+
   /*
   virtual void OnFinalRelease()
     {

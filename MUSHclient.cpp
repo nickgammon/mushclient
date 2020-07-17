@@ -883,8 +883,8 @@ OSVERSIONINFO VersionInformation;
 
   pMainFrame->SendMessage (WM_COMMAND, ID_WORLDS_WORLD1, 0);
 
-  if (firsttime && !bWine)
-    App.WinHelp(ID_GETTING_STARTED + HID_BASE_COMMAND);	
+  if (firsttime && !bWine && HelpAvailable (false))
+    App.HelpHelper(ID_GETTING_STARTED + HID_BASE_COMMAND);
 
   App.ShowTipAtStartup();
 
@@ -1300,7 +1300,7 @@ void CMUSHclientApp::OnFileNew()
 
 void CMUSHclientApp::OnHelpGettingstarted() 
 {
-App.WinHelp(ID_GETTING_STARTED + HID_BASE_COMMAND);	
+App.HelpHelper(ID_GETTING_STARTED + HID_BASE_COMMAND);
 }
 
 bool GetSelection (CEdit * pEdit, CString & strSelection)
@@ -2194,3 +2194,36 @@ void CMUSHclientApp::WorkOutFixedFont ()
 
 
   } // end of CMUSHclientApp::WorkOutFixedFont
+
+
+// Winhelp not available in Windows 10, nor any alternative
+bool CMUSHclientApp::HelpAvailable (bool showWarning)
+  {
+  if (os_version.dwPlatformId == VER_PLATFORM_WIN32_NT && os_version.dwMajorVersion >= 10)
+    {
+    if (showWarning)
+      TMessageBox("Supplied help file is not compatible with Windows 10 and above.\r\n\r\n"
+                  "Suggest you install the plugin \"MUSHclient_Help\" for browsing the help file, "
+                  "and then type \"mchelp <subject>\"."
+                  "\r\n\r\nOr, view the online help at: http://mushclient.com/scripts/doc.php", MB_ICONINFORMATION); 
+    return false;
+    }
+
+
+  return true;
+  }
+
+// show help if we can
+void CMUSHclientApp::HelpHelper (DWORD dwData, UINT nCmd)
+  {
+
+  if (!HelpAvailable (true))
+    return;
+
+  // show help normally
+  if (dwData == 0)
+    OnHelp ();
+  else
+    App.WinHelp (dwData, nCmd);
+
+  } // end of CMUSHclientApp::HelpHelper
