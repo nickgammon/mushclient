@@ -2900,7 +2900,7 @@ class timer
       QueryPerformanceFrequency (&large_int_frequency);
       iCounterFrequency = large_int_frequency.QuadPart;
       QueryPerformanceCounter (&start);
-      TRACE (MAKE_STRING ("Start     : " << left << sReason << endl).c_str ());
+      TRACE (MAKE_STRING ("Start     : " << left << sReason << '\n').c_str ());
       };
 
     // destructor gets current time, displays difference
@@ -2916,7 +2916,7 @@ class timer
       // TRACE or ::AfxMessageBox (for release builds)
 
       TRACE (MAKE_STRING ( "Time taken: " << left << sReason << " = "
-           << fixed << fTime << " seconds." << endl ).c_str ());
+           << fixed << fTime << " seconds." << '\n' ).c_str ());
 
       }
   };    // end of class timer
