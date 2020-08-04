@@ -710,7 +710,8 @@ long CMUSHclientDoc::SetCursor(long Cursor)
     case -1:  ::SetCursor (NULL);                              break;    // no cursor
     case  0:  ::SetCursor (::LoadCursor (NULL, IDC_ARROW));    break;    // arrow
     case  1:  ::SetCursor (CStaticLink::g_hCursorLink);        break;    // hand
-    case  2:  ::SetCursor (App.g_hCursorIbeam);                break;    // I-beam
+    case  2:  ::SetCursor (::LoadCursor (NULL, IDC_IBEAM));    break;    // I-beam
+//    case  2:  ::SetCursor (App.g_hCursorIbeam);                break;    // I-beam
     case  3:  ::SetCursor (::LoadCursor (NULL, IDC_CROSS));    break;    // + (cross)
     case  4:  ::SetCursor (::LoadCursor (NULL, IDC_WAIT));     break;    // wait (hour-glass)
     case  5:  ::SetCursor (::LoadCursor (NULL, IDC_UPARROW));  break;    // up arrow
