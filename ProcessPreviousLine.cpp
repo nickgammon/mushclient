@@ -1108,9 +1108,9 @@ POSITION pos;
          putontoclipboard (trigger_item->wildcards [trigger_item->iClipboardArg].c_str (), m_bUTF_8);
 
       if (trigger_item->strLabel.IsEmpty ())
-        Trace ("Matched trigger \"%s\"", (LPCTSTR) trigger_item->trigger);
+        Trace ("Matched trigger \"%s\"\n", (LPCTSTR) trigger_item->trigger);
       else
-        Trace ("Matched trigger %s", (LPCTSTR) trigger_item->strLabel);
+        Trace ("Matched trigger %s\n", (LPCTSTR) trigger_item->strLabel);
 
     // play the trigger sound, if we matched on a trigger
 
