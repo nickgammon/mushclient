@@ -49,6 +49,10 @@ CString strFullMsg = "TRACE: ";
 
   strFullMsg += strMsg;
 
+  if (strMsg.Right(1) != "\n") {
+      strFullMsg += "\n"
+  }
+
 
   DisplayMsg (strFullMsg, strFullMsg.GetLength (), COMMENT);
 
