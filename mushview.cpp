@@ -1930,7 +1930,7 @@ long pixel;
   // don't stop half-way through a UTF-8 character
   if (pDoc->m_bUTF_8)
     while (col && (pLine->text [col] & 0xC0) == 0x80)
-      col--;
+      col++;
 
 // if we are 50% through this character, take the next one, otherwise take the previous one
 
