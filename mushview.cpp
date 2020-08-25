@@ -1916,7 +1916,7 @@ long pixel;
         pixel = calculate_width (line, col, pDoc, dc) + pDoc->m_iPixelOffset + pLine->m_iPreambleOffset;
 
         // for a UTF-8 character, bypass the whole character not just one byte
-        if (pDoc->m_bUTF_8)
+        if (pDoc->m_bUTF_8 && (col < pLine->len))
           {
           int c = pLine->text [col];
           if (c >= 128)
@@ -1929,7 +1929,7 @@ long pixel;
   col--;    // columns are zero-relative
   // don't stop half-way through a UTF-8 character
   if (pDoc->m_bUTF_8)
-    while (col && (pLine->text [col] & 0xC0) == 0x80)
+    while ((col > 0) && (col < pLine->len) && (pLine->text [col] & 0xC0) == 0x80)
       col++;
 
 // if we are 50% through this character, take the next one, otherwise take the previous one
@@ -1943,7 +1943,7 @@ long pixel;
       col--;
       // don't stop half-way through a UTF-8 character
       if (pDoc->m_bUTF_8)
-        while (col && (pLine->text [col] & 0xC0) == 0x80)
+        while ((col > 0) && (pLine->text [col] & 0xC0) == 0x80)
           col--;
       }
     }
