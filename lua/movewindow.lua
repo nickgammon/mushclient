@@ -274,13 +274,13 @@ local function make_check_map_position_handler (mwi)
          mwi.window_top > GetInfo (280) - mwi.margin then
            mwi.window_mode = miniwin.pos_center_right
            mwi.window_flags = 0
+
+           WindowPosition (win, 
+                           mwi.window_left, 
+                           mwi.window_top, 
+                           mwi.window_mode, 
+                           mwi.window_flags)
       end -- if not visible
-    
-      WindowPosition (win, 
-                      mwi.window_left, 
-                      mwi.window_top, 
-                      mwi.window_mode, 
-                      mwi.window_flags)
     
   end -- check_map_position
 
