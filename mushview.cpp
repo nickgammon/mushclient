@@ -3027,23 +3027,31 @@ void CMUSHView::did_jump (void)
 CMUSHclientDoc* pDoc = GetDocument();
 ASSERT_VALID(pDoc);
 
+bool selection_changed = false;
+
 m_selstart_line -= JUMP_SIZE;
 m_selend_line -= JUMP_SIZE;
 m_pin_line -= JUMP_SIZE;
 
 if (m_selstart_line < 0)
   {
+  if ((m_selstart_line != m_selend_line) || (m_selstart_col != m_selend_col))
+  {
+    selection_changed = true;
+  }
   m_selstart_line = 0;
   m_selstart_col = 0;
-  SelectionChanged ();
   }
 
 if (m_selend_line < 0)
   {
   m_selend_line = 0;
   m_selend_col = 0;
-  SelectionChanged ();
   }
+
+if (selection_changed) {
+  SelectionChanged ();
+}
 
 if (m_pin_line < 0)
   {
