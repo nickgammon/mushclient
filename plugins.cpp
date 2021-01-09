@@ -40,6 +40,7 @@ const string ON_PLUGIN_LOSEFOCUS             ("OnPluginLoseFocus");
 
 // capture stuff
 const string ON_PLUGIN_TRACE                 ("OnPluginTrace"); 
+const string ON_PLUGIN_PACKET_DEBUG          ("OnPluginPacketDebug"); 
 const string ON_PLUGIN_BROADCAST             ("OnPluginBroadcast"); 
 const string ON_PLUGIN_SCREENDRAW            ("OnPluginScreendraw"); 
 const string ON_PLUGIN_SELECTION_CHANGED     ("OnPluginSelectionChanged");
@@ -143,7 +144,8 @@ string PluginCallbacksNames [] = {
    ON_PLUGIN_TELNET_SUBNEGOTIATION, 
 
    ON_PLUGIN_TICK,                  
-   ON_PLUGIN_TRACE,                 
+   ON_PLUGIN_TRACE,
+   ON_PLUGIN_PACKET_DEBUG,
    ON_PLUGIN_WORLD_OUTPUT_RESIZED,  
    ON_PLUGIN_WORLD_SAVE,            
 

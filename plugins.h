@@ -188,6 +188,7 @@ extern const string ON_PLUGIN_LOSEFOCUS;            //  "OnPluginLoseFocus"
                                                                                       
 // capture stuff                                                                      
 extern const string ON_PLUGIN_TRACE;                //  "OnPluginTrace"                
+extern const string ON_PLUGIN_PACKET_DEBUG;         //  "OnPluginPacketDebug"                
 extern const string ON_PLUGIN_BROADCAST;            //  "OnPluginBroadcast"            
 extern const string ON_PLUGIN_SCREENDRAW;           //  "OnPluginScreendraw"           
 extern const string ON_PLUGIN_SELECTION_CHANGED;    //  "OnPluginSelectionChanged"     

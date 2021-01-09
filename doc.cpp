@@ -5691,17 +5691,21 @@ COleDateTime tNow = COleDateTime::GetCurrentTime();
   CString strTitle = "Packet debug - ";
   strTitle += m_mush_name;
 
-  AppendToTheNotepad (strTitle, 
-                      TFormat ("%s%s packet: %I64d (%i bytes) at %s%s%s", 
-                                ENDLINE,
-                                sCaption,
-                                iNumber,
-                                size,
-                                (LPCTSTR) strTime,
-                                ENDLINE,
-                                ENDLINE), 
-                      false,   // append
-                      eNotepadPacketDebug);
+
+  CString strMsg = TFormat ("%s%s packet: %I64d (%i bytes) at %s%s%s", 
+                                  ENDLINE,
+                                  sCaption,
+                                  iNumber,
+                                  size,
+                                  (LPCTSTR) strTime,
+                                  ENDLINE,
+                                  ENDLINE);
+
+  if (!SendToFirstPluginCallbacks (ON_PLUGIN_PACKET_DEBUG, strMsg))
+    AppendToTheNotepad (strTitle, 
+                        strMsg, 
+                        false,   // append
+                        eNotepadPacketDebug);
   
 // keep going until we have displayed it all
   while (size > 0)
@@ -5725,14 +5729,17 @@ COleDateTime tNow = COleDateTime::GetCurrentTime();
     *pa = 0;
     *ph = 0;
 
-    AppendToTheNotepad (strTitle, 
-                        CFormat ("%-*s  %s%s",
+    strMsg = CFormat ("%-*s  %s%s",
                                   MAX_DEBUG_CHARS,
                                   asciibuf, 
                                   hexbuf,
-                                  ENDLINE), 
-                      false,   // append
-                      eNotepadPacketDebug);
+                                  ENDLINE);
+
+  if (!SendToFirstPluginCallbacks (ON_PLUGIN_PACKET_DEBUG, strMsg))
+    AppendToTheNotepad (strTitle, 
+                       strMsg, 
+                        false,   // append
+                        eNotepadPacketDebug);
     }
 
   }  // end of CMUSHclientDoc::Debug_Packets 
