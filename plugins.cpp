@@ -928,7 +928,7 @@ void CMUSHclientDoc::OnFilePluginwizard()
   propSheet.m_Page2.m_bGenerateHelp = true;
   propSheet.m_Page6.m_bSaveState = iCount > 0;
   propSheet.m_Page7.m_strLanguage = m_strLanguage;
-  propSheet.m_Page7.m_bStandardConstants = m_bEnableScripts;
+  propSheet.m_Page7.m_bStandardConstants = FALSE;
 
   // load script file
   if (!m_strScriptFilename.IsEmpty ())

@@ -238,7 +238,7 @@ BOOL CPluginWizardPage3::OnInitDialog()
   	  m_ctlList.SetItemText(iItem, 2, t->contents); 
   	  m_ctlList.SetItemText(iItem, 3, t->strGroup); 
       m_ctlList.SetItemData (iItem, (unsigned long) t);
-      m_ctlList.SetItemState (iItem, LVIS_SELECTED, LVIS_SELECTED);
+      m_ctlList.SetItemState (iItem, 0, LVIS_SELECTED);  // deselect
       }
     iItem++;   
 
@@ -418,7 +418,7 @@ BOOL CPluginWizardPage4::OnInitDialog()
   	  m_ctlList.SetItemText(iItem, 2, a->contents); 
   	  m_ctlList.SetItemText(iItem, 3, a->strGroup); 
       m_ctlList.SetItemData (iItem, (unsigned long) a);
-      m_ctlList.SetItemState (iItem, LVIS_SELECTED, LVIS_SELECTED);
+      m_ctlList.SetItemState (iItem, 0, LVIS_SELECTED);  // deselect
       }
     iItem++;   
 
@@ -616,7 +616,7 @@ BOOL CPluginWizardPage5::OnInitDialog()
   	  m_ctlList.SetItemText(iItem, 2, t->strContents); 
   	  m_ctlList.SetItemText(iItem, 3, t->strGroup); 
       m_ctlList.SetItemData (iItem, (unsigned long) t);
-      m_ctlList.SetItemState (iItem, LVIS_SELECTED, LVIS_SELECTED);
+      m_ctlList.SetItemState (iItem, 0, LVIS_SELECTED);  // deselect
       }
     iItem++;   
 
@@ -833,7 +833,7 @@ BOOL CPluginWizardPage6::OnInitDialog()
       {
   	  m_ctlList.SetItemText(iItem, 1, v->strContents); 
       m_ctlList.SetItemData (iItem, (unsigned long) v);
-      m_ctlList.SetItemState (iItem, LVIS_SELECTED, LVIS_SELECTED);
+      m_ctlList.SetItemState (iItem, 0, LVIS_SELECTED);  // deselect
       }
     iItem++;   
 
@@ -1041,7 +1041,7 @@ int nItem = -1;
 #endif
 
   m_ctlLanguage.SetCurSel(nItem);
-	
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
