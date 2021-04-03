@@ -62,3 +62,16 @@ sqlite3ext.h
 #define SQLITE_ENABLE_FTS3_PARENTHESIS 1
 #define SQLITE_ENABLE_RTREE 1
 #define SQLITE_USE_URI 1
+
+4. If you get compile errors like C2059 'bad suffix on number' on older compilers, remove the LL suffix from constants.
+For example, change:
+
+    && i >= -2251799813685248LL && i < 2251799813685248LL);
+
+to:
+
+    && i >= -2251799813685248 && i < 2251799813685248);
+
+This currently happens on four lines in the source in sqlite3.c.
+(Visual Studio 6.0 uses a suffix of i64 or ui64 instead of LL or ULL).
+
