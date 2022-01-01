@@ -225,6 +225,13 @@ Scripts can also speak stuff by doing:
 
 <script>
 <![CDATA[
+no_sapi_msg = [[
+Could not open SAPI.
+Note for Linux and Mac OS users...
+Text to speech speech functionality depends on the Microsoft Speech API.
+This is not included by default in Wine, and SpeechSDK51.exe must be separately installed.
+You can install it with winetricks or from https://web.archive.org/web/20110805062427/https://download.microsoft.com/download/B/4/3/B4314928-7B71-4336-9DE7-6FA4CF00B7B3/SpeechSDK51.exe
+]]
 
 local punc_descs = {
   "Say all punctuation.",
@@ -382,13 +389,7 @@ function OnPluginInstall ()
   require "luacom"
 
   -- Instantiate a SAPI voice obejct
-  talk = assert(luacom.CreateObject("SAPI.SpVoice"), [[
-  Cannot open SAPI.
-  Note for Linux and Mac OS users.
-  Text to speech functionality depends on the Microsoft Speech API.
-  This is not included by default in Wine, and SpeechSDK51.exe must be separately installed.
-  You can download it from http://download.microsoft.com/download/B/4/3/B4314928-7B71-4336-9DE7-6FA4CF00B7B3/SpeechSDK51.exe
-  ]])
+  talk = assert(luacom.CreateObject("SAPI.SpVoice"), no_sapi_msg)
 
   SAPI_ENUMS = luacom.GetTypeInfo(talk):GetTypeLib():ExportEnumerations()
   NUM_SAPI_VOICES = talk:GetVoices().Count
