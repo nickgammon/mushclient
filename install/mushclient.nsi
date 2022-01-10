@@ -121,7 +121,8 @@ Section "-MUSHclient program (required)"
   WriteRegStr HKCU "Software\Gammon Software Solutions\MUSHclient\General Options" "InstallDir" $INSTDIR
 
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MUSHclient" "DisplayName" "MUSHclient (remove only)"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MUSHclient" "DisplayName" "MUSHclient"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MUSHclient" "Publisher" "Nick Gammon"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MUSHclient" "UninstallString" "$INSTDIR\uninstall.exe"
 
   ; directory for world files (worlds subdirectory)
