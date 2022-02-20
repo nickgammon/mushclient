@@ -197,7 +197,7 @@ local function make_dragmove_handler (mwi)
     end
     
     -- move the window to the new location - offset by how far mouse was into window
-    WindowPosition(win, posx, posy, 0, miniwin.create_absolute_location);
+    WindowPosition(win, posx, posy, 0, mwi.window_flags);
     
     -- move the friends if they still exist
     for i, v in ipairs(mwi.window_friends) do
@@ -211,9 +211,7 @@ local function make_dragmove_handler (mwi)
         
     mwi.window_left = posx  -- remember for saving state
     mwi.window_top = posy
-    mwi.window_mode = 0
-    mwi.window_flags = miniwin.create_absolute_location   -- absolute position
-    
+    mwi.window_mode = 0    
   end -- dragmove
 
 end -- make_dragmove_handler
@@ -273,7 +271,6 @@ local function make_check_map_position_handler (mwi)
          mwi.window_top < 0 or -- don't drag title out of view
          mwi.window_top > GetInfo (280) - mwi.margin then
            mwi.window_mode = miniwin.pos_center_right
-           mwi.window_flags = 0
 
            WindowPosition (win, 
                            mwi.window_left, 
