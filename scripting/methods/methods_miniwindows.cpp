@@ -577,7 +577,7 @@ static bool bInWindowAddHotspot = false;
                            Flags);
 
   // in mouse was over hotspot when it was created, do a "mouse move" to detect this
-  if (status == eOK)
+  if ((status == eOK) && !(GetCapture()))
     {
 
     // only check the current hotspot, not all of them
