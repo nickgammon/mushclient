@@ -1575,14 +1575,14 @@ static int L_ColourNote (lua_State *L)
     {
     if ((i + 2) < n)    // not end of line yet
       pDoc->ColourTell (
-            my_checkstring (L, i),       // TextColour
-            my_checkstring (L, i + 1),   // BackgroundColour
+            my_optstring (L, i, ""),       // TextColour
+            my_optstring (L, i + 1, ""),   // BackgroundColour
             my_checkstring (L, i + 2)    // Text
                           );
     else
       pDoc->ColourNote (
-            my_checkstring (L, i),       // TextColour
-            my_checkstring (L, i + 1),   // BackgroundColour
+            my_optstring (L, i, ""),       // TextColour
+            my_optstring (L, i + 1, ""),   // BackgroundColour
             my_checkstring (L, i + 2)    // Text
                           );
     }
@@ -1601,8 +1601,8 @@ static int L_ColourTell (lua_State *L)
   int i;
   for (i=1; i<=n; i += 3) 
     pDoc->ColourTell (
-          my_checkstring (L, i),       // TextColour
-          my_checkstring (L, i + 1),   // BackgroundColour
+          my_optstring (L, i, ""),       // TextColour
+          my_optstring (L, i + 1, ""),   // BackgroundColour
           my_checkstring (L, i + 2)    // Text
                       );
   return 0;  // number of result fields
