@@ -205,12 +205,6 @@ int nItem = 0;
 
   m_ctlPluginList.SortItems (CompareFunc, m_reverse << 8 | m_last_col); 
 
-// set the 1st item to be selected - we do this here because sorting the
-// list means our first item is not necessarily the 1st item in the list
-
- m_ctlPluginList.SetItemState (0, LVIS_FOCUSED | LVIS_SELECTED, 
-                                  LVIS_FOCUSED | LVIS_SELECTED);
-
   } // end of CPluginsDlg::LoadList
 
 void CPluginsDlg::OnColumnclickPluginsList(NMHDR* pNMHDR, LRESULT* pResult) 
