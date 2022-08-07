@@ -13,7 +13,7 @@ PNG built as follows:
 
 1. Download recent version from download.sourceforge.net
 
-    In this case: http://download.sourceforge.net/libpng/libpng-1.6.23.tar.gz
+    In this case: http://download.sourceforge.net/libpng/libpng-1.6.37.tar.gz
 
 
 2. Uncompress the archive with 7-Zip (if necessary), obtainable from:
