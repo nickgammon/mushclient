@@ -1,6 +1,6 @@
 zlib built as follows:
 
-1. Download recent version from http://zlib.net/zlib128.zip
+1. Download recent version from https://www.zlib.net/zlib1212.zip
 
 2. Unzip and untar the file
 
