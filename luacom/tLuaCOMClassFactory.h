@@ -5,15 +5,7 @@
 #if !defined(AFX_TLUACOMCLASSFACTORY_H__B2C2D8B2_FE51_4745_8C21_FFC29FE81F86__INCLUDED_)
 #define AFX_TLUACOMCLASSFACTORY_H__B2C2D8B2_FE51_4745_8C21_FFC29FE81F86__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#ifdef LUA_52
-    #include "..\..\lua52\src\lua.h"
-#else
-    #include "..\lua.h"
-#endif
+#include "lua.h"
 #include <unknwn.h> // IClassFactory
 
 //

@@ -32,9 +32,9 @@ tLuaCOMException::tLuaCOMException(Errors p_code, const char *p_file, int p_line
 {
   code = p_code;
 
-  file = p_file;
+  file = tStringBuffer(p_file);
   line = p_line;
-  usermessage = p_usermessage;
+  usermessage = tStringBuffer(p_usermessage);
 
   tUtil::log("luacom", getMessage());
 }
@@ -45,9 +45,9 @@ tLuaCOMException::~tLuaCOMException()
 
 
 
-const char * tLuaCOMException::getMessage()
+tStringBuffer tLuaCOMException::getMessage()
 {
-  static char string[5000];
+  char string[5000];
   char error_position[1000];
 
 
@@ -55,7 +55,7 @@ const char * tLuaCOMException::getMessage()
 
   if(file != NULL)
   {
-    sprintf(error_position, ":(%s,%d)", file, line);
+    sprintf(error_position, ":(%s,%d)", (const char*)file, line);
     strcat(string, error_position);
   }
   
@@ -67,10 +67,10 @@ const char * tLuaCOMException::getMessage()
     strncat(string, usermessage, sizeof(string) - strlen(string) - 1);
   }
 
-  return string;
+  return tStringBuffer(string);
 }
 
-const char *tLuaCOMException::GetErrorMessage(DWORD errorcode)
+tStringBuffer tLuaCOMException::GetErrorMessage(DWORD errorcode)
 {
   return tUtil::GetErrorMessage(errorcode);
 }

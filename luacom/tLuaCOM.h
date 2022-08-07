@@ -11,13 +11,8 @@
 
 extern "C"
 {
-#ifdef LUA_52
-    #include "..\..\lua52\src\lua.h"
-    #include "..\..\lua52\src\lauxlib.h"
-#else
-    #include "..\lua.h"
-    #include "..\lauxlib.h"
-#endif
+#include <lua.h>
+#include <lauxlib.h>
 }
 
 #include "luabeans.h"
@@ -82,10 +77,10 @@ public:
    bool getConstant(lua_State* L, const char* name);
    bool getDISPID(const char* name, DISPID* dispid);
 
-  static long NEXT_ID;
+  volatile static long NEXT_ID;
 protected:
-  ITypeComp* ptcomp;
-  ITypeComp* plib_tcomp;
+  tCOMPtr<ITypeComp> ptcomp;
+  tCOMPtr<ITypeComp> plib_tcomp;
   long lock_count;
   CLSID clsid;
   IConnectionPoint *conn_point;
@@ -101,8 +96,8 @@ protected:
   tLuaCOMTypeHandler * typehandler;
 
 
-  LPDISPATCH pdisp;
-  ITypeInfo* ptinfo;
+  tCOMPtr<IDispatch> pdisp;
+  tCOMPtr<ITypeInfo> ptinfo;
 
   // struct to hold all type information for a
   // member

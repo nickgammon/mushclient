@@ -9,6 +9,7 @@
 
 #include "tLuaObject.h"
 #include "tLuaCOMTypeHandler.h"
+#include "tCOMUtil.h"
 
 
 class tLuaTLB : public tLuaObject  
@@ -19,7 +20,7 @@ public:
 
 protected:
   int index(lua_State* L);
-  ITypeLib* typelib;
+  tCOMPtr<ITypeLib> typelib;
 
   static const char type_name[];
   static const char pointer_type_name[];
@@ -58,7 +59,7 @@ protected:
   static int GetImplType(tLuaObject* lua_obj, lua_State* L);
   static int GetImplTypeFlags(tLuaObject* lua_obj, lua_State* L);
 
-  ITypeInfo* typeinfo;
+  tCOMPtr<ITypeInfo> typeinfo;
   tLuaCOMTypeHandler* typehandler;
 
   static const char type_name[];

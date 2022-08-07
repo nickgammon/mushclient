@@ -1,26 +1,49 @@
-#pragma warning( disable : 4100)  // unreferenced formal parameter
-
 // tUtil.cpp: implementation of the tUtil class.
 //
 //////////////////////////////////////////////////////////////////////
 
-// RCS Info
-static char const * const rcsid = "$Id: tUtil.cpp,v 1.4 2008/01/10 17:44:55 ignacio Exp $";
-static char const * const rcsname = "$Name:  $";
-
-
 #include <assert.h>
-#if !defined(__WINE__) || defined(__MSVCRT__)
-#include <process.h>
-#endif
+#include <process.h>  // spawnlp
+#include <limits.h>
 
 #include "tUtil.h"
 #include "tLuaCOMException.h"
 
-tStringBuffer tUtil::string_buffer = tStringBuffer();
-FILE* tUtil::log_file = NULL;
+extern "C"
+{
+#include <lua.h>
+#include <lauxlib.h>
+}
+
+#ifndef _MSC_VER  // not MSVC++
+# define _spawnlp spawnlp
+#endif
 
 #define MAX_VALID_STRING_SIZE 1000
+
+// https://github.com/windtail/luacom/commit/3852e47c2f0fe77477cbde54541228cd2f7b8901
+// - in none-english environment (i am Chinese) we DO NOT use CP_UTF8, CP_ACP should be used
+// - while Cygwin default convert filename internally to UTF-8
+// - we have to use ASCII format for our lua source code, if you prefer UTF-8, you need luaiconv to convert UTF-8 to your ASCII format (GBK or other)
+#ifdef __CYGWIN__
+UINT code_page=CP_UTF8; // By default, Cygwin internally convert filename to UTF-8
+#else
+UINT code_page=CP_ACP;
+#endif
+
+FILE* tUtil::log_file = NULL;
+CRITICAL_SECTION log_file_cs;
+volatile bool g_log_file_cs_initialized = false;
+// log methods are all static; there's no clear initialization time;
+// so just always check that the CS is initialized before using it
+void CSInit()
+{
+  if(!g_log_file_cs_initialized)
+  {
+	  g_log_file_cs_initialized = true;
+	  InitializeCriticalSection(&log_file_cs);
+  }
+}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -28,27 +51,28 @@ FILE* tUtil::log_file = NULL;
 
 bool tUtil::IsValidString(LPCTSTR string)
 {
-  bool return_value = string != NULL &&
-    !IsBadStringPtr(string, MAX_VALID_STRING_SIZE);
+  bool return_value = string != NULL;
 
   assert(return_value);
 
   return return_value;
 }
 
-const char *tUtil::GetErrorMessage(DWORD errorcode)
+tStringBuffer tUtil::GetErrorMessage(DWORD errorcode)
 {
-  LPTSTR lpMsgBuf;
+  LPSTR lpMsgBuf;
   DWORD result = 0;
 
-  result = FormatMessage( 
+  result = FormatMessageA( 
     FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
     NULL,
     errorcode,
     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-    (LPTSTR) &lpMsgBuf,
+    (LPSTR)&lpMsgBuf,
     0,
     NULL);
+  // note: non-Unicode (FormatMessageA not FormatMessage/LPTSTR).  How would we
+  // propogate Unicode error messages to Lua?
 
   if(result == 0)
     return NULL;
@@ -59,155 +83,82 @@ const char *tUtil::GetErrorMessage(DWORD errorcode)
     result--;
   lpMsgBuf[result] = '\0';
 
-  tUtil::string_buffer.copyToBuffer((char *) lpMsgBuf);
+  tStringBuffer ret(lpMsgBuf);
 
   // Free the buffer.
   LocalFree( lpMsgBuf );
 
-  return tUtil::string_buffer.getBuffer();
+  return ret;
 }
 
-const char * tUtil::bstr2string(BSTR bstr)
+
+tStringBuffer tUtil::bstr2string(BSTR bstr, bool nullTerminated)
 {
   char* str = NULL;
-  long size = 0;
-  int result = 0;
-
+  size_t len = 0;
   try
   {
-    if(bstr != NULL)
+    if(bstr == NULL) // NULL BSTR indicates empty string.
     {
-      // gets the size of the buffer
-      size = WideCharToMultiByte(
-        CP_UTF8,            // code page
-        0,            // performance and mapping flags
-        bstr,    // wide-character string
-        -1,          // number of chars in string
-        str,     // buffer for new string
-        0,          // size of buffer
-        NULL,     // default for unmappable chars
-        NULL  // set when default char used
-      );
-
-      if(!size)
-        LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
-
-      str = new char[size + 1];
-
-      result = WideCharToMultiByte(
-        CP_UTF8,            // code page
-        0,            // performance and mapping flags
-        bstr,    // wide-character string
-        -1,          // number of chars in string
-        str,     // buffer for new string
-        size,          // size of buffer
-        NULL,     // default for unmappable chars
-        NULL  // set when default char used
-      );
-
-      if(!result)
-        LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
-
-      str [size] = '\0';
+      len = 0;
+      return "";
     }
     else
     {
-      str = new char[1];
-      str[0] = '\0';
-    }
-  }
-  catch(class tLuaCOMException& e)
-  {
-    UNUSED(e);
 
-    if(str)
-      delete[] str;
+      UINT lenWide = SysStringLen(bstr); // not including '\0' terminator
+      if (lenWide > INT_MAX) LUACOM_ERROR("string too long");
 
-    str = new char[1];
-    str[0] = '\0';
-  }
-
-  tUtil::string_buffer.copyToBuffer(str);
-
-  delete[] str;
-
-  return tUtil::string_buffer.getBuffer();
-}
-
-const char * tUtil::bstr2string(BSTR bstr, size_t& computedSize)
-{
-  char* str = NULL;
-  long size = 0;
-  int result = 0;
-
-  computedSize = 0;
-
-  try
-  {
-    if(bstr != NULL)
-    {
-      computedSize = SysStringLen(bstr);
-      if(!computedSize) {
+      if(lenWide == 0)
+      {
+        len = 0;
         return "";
       }
 
-      // gets the size of the buffer
-      size = WideCharToMultiByte(
-        CP_UTF8,            // code page
+      // gets string length
+      int lenMulti = WideCharToMultiByte(
+        code_page,            // code page
         0,            // performance and mapping flags
         bstr,    // wide-character string
-        computedSize,  // number of chars in string
+        static_cast<int>(lenWide),  // number of chars in string
         str,     // buffer for new string
-        0,          // size of buffer
+        0,          // size of buffer (0=return it)
         NULL,     // default for unmappable chars
         NULL  // set when default char used
       );
 
-      if(!size)
+      if(!lenMulti)
         LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
 
-      str = new char[size + 1];
+      struct C { C(int size) { s = new char[size]; }
+		~C() { delete [] s; } char * s; } str(lenMulti + (nullTerminated? 1 : 0));
 
-      result = WideCharToMultiByte(
-        CP_UTF8,            // code page
+      int result = WideCharToMultiByte(
+        code_page,            // code page
         0,            // performance and mapping flags
         bstr,    // wide-character string
-        computedSize,  // number of chars in string
-        str,     // buffer for new string
-        size,          // size of buffer
+        static_cast<int>(lenWide),  // number of chars in string
+        str.s,     // buffer for new string
+        lenMulti,          // size of buffer
         NULL,     // default for unmappable chars
         NULL  // set when default char used
       );
 
       if(!result)
         LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
-
-      str [size] = '\0';
-
-      computedSize = size;	// Now holds the actual length of the string
-    }
-    else
-    {
-      str = new char[1];
-      str[0] = '\0';
+      
+      if (nullTerminated) str.s[lenMulti] = '\0';
+	  len = lenMulti + (nullTerminated? 1 : 0);
+      return tStringBuffer(str.s, len);
     }
   }
   catch(class tLuaCOMException& e)
   {
     UNUSED(e);
-
-    if(str)
-      delete[] str;
-
-    str = new char[1];
-    str[0] = '\0';
+    len = 0;
+    return "";
   }
 
-  tUtil::string_buffer.copyToBuffer(str, computedSize + 1);
-
-  delete[] str;
-
-  return tUtil::string_buffer.getBuffer();
 }
 
 BSTR tUtil::string2bstr(const char * string, size_t len)
@@ -215,34 +166,35 @@ BSTR tUtil::string2bstr(const char * string, size_t len)
   if(!string)
     return NULL;
 
-  BSTR bstr;
-  if(len == 0)
+  try
   {
-    bstr = SysAllocStringLen(NULL, 0);
-  }
-  else
-  {
-    long wclength =
-      MultiByteToWideChar(CP_UTF8, 0, string, len, NULL, 0);
-    try
+    BSTR bstr;
+    if(len == 0)
     {
-      if(wclength == 0)
+      bstr = SysAllocStringLen(NULL, 0);
+    }
+    else
+    {
+      if (len != -1 && len > INT_MAX) LUACOM_ERROR("string too long");
+      int lenWide =
+        MultiByteToWideChar(code_page, 0, string, static_cast<int>(len), NULL, 0);
+      if(lenWide == 0)
         LUACOM_ERROR(tUtil::GetErrorMessage(GetLastError()));
+      bstr = SysAllocStringLen(NULL, lenWide); // plus initializes '\0' terminator
+      MultiByteToWideChar(  code_page, 0, string, static_cast<int>(len), bstr, lenWide);
     }
-    catch(class tLuaCOMException& e)
-    {
-      UNUSED(e);
-      return NULL;
-    }
-    bstr = SysAllocStringLen(NULL, wclength);
-    MultiByteToWideChar(CP_UTF8, 0, string, len, bstr, wclength);
+    return bstr;
   }
-
-  return bstr;
+  catch(class tLuaCOMException& e)
+  {
+    UNUSED(e);
+    return NULL;
+  }
 }
 
 bool tUtil::OpenLogFile(const char *name)
 {
+  CSInit();CriticalSectionObject cs(&log_file_cs); // prevent other threads from concurrent access
   tUtil::CloseLogFile();
 
   tUtil::log_file = fopen(name, "w");
@@ -255,6 +207,7 @@ bool tUtil::OpenLogFile(const char *name)
 
 void tUtil::CloseLogFile()
 {
+  CSInit();CriticalSectionObject cs(&log_file_cs); // prevent other threads from concurrent access
   if(tUtil::log_file)
   {
     fclose(tUtil::log_file);
@@ -264,6 +217,7 @@ void tUtil::CloseLogFile()
 
 void tUtil::log(const char *who, const char *what, ...)
 {
+  CSInit();CriticalSectionObject cs(&log_file_cs); // prevent other threads from concurrent access
   if(tUtil::log_file && who && what)
   {
     int size = 0;
@@ -294,7 +248,7 @@ void tUtil::log(const char *who, const char *what, ...)
 
     va_end(marker);
 
-    MessageBox(NULL, buffer, "LuaCOM Log", MB_OK | MB_ICONEXCLAMATION);
+    MessageBoxA(NULL, buffer, "LuaCOM Log", MB_OK | MB_ICONEXCLAMATION);
 
     delete[] buffer;
     buffer = NULL;
@@ -305,6 +259,7 @@ void tUtil::log(const char *who, const char *what, ...)
 
 void tUtil::log_verbose(const char *who, const char *what, ...)
 {
+  CSInit();CriticalSectionObject cs(&log_file_cs); // prevent other threads from concurrent access
 #ifdef VERBOSE
   if(tUtil::log_file && who && what)
   {
@@ -354,18 +309,28 @@ void tUtil::ShowHelp(const char *filename, unsigned long context)
       sprintf(context_param, "-mapid %d", context);
     else
       context_param[0] = '\0';
-#if !defined(__WINE__) && !defined(__CYGWIN__)
     _spawnlp(_P_NOWAIT, "hh.exe", "hh.exe", context_param, filename, NULL);
-#else
-    MessageBox(NULL, "FIX - not implemented - _spawnlp", "LuaCOM", MB_ICONEXCLAMATION);
-    #warning FIX - not implemented - _spawnlp
-#endif
   }
   else if(_stricmp(extension, ".hlp") == 0)
   {
     if(context != 0)
-      WinHelp(NULL, filename, HELP_CONTEXT, context);
+      WinHelpA(NULL, filename, HELP_CONTEXT, context);
     else
-      WinHelp(NULL, filename, HELP_FINDER, 0);
+      WinHelpA(NULL, filename, HELP_FINDER, 0);
   }
+}
+
+void tUtil::RegistrySetString(lua_State* L, const char& Key, const char* value)
+{
+	lua_pushlightuserdata(L, (void *)&Key);  /* push address */ 
+	lua_pushstring(L, value); 
+	/* registry[&Key] = value */ 
+    lua_settable(L, LUA_REGISTRYINDEX); 
+}
+
+tStringBuffer tUtil::RegistryGetString(lua_State* L, const char& Key)
+{
+	lua_pushlightuserdata(L, (void *)&Key);  /* push address */ 
+    lua_gettable(L, LUA_REGISTRYINDEX);  /* retrieve value */ 
+    return tStringBuffer(lua_tostring(L, -1));  /* convert to string */
 }

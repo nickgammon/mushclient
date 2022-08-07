@@ -5,25 +5,10 @@
 #if !defined(AFX_TLUAOBJECT_H__459DE88B_29C0_4245_AEA7_122F2749F202__INCLUDED_)
 #define AFX_TLUAOBJECT_H__459DE88B_29C0_4245_AEA7_122F2749F202__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 extern "C"
 {
-#ifdef LUA_52
-    #include "..\..\lua52\src\lua.h"
-#else
-    #include "..\lua.h"
-#endif
+#include <lua.h>
 }
-
-#define index_table_param -2
-#define index_index_param -1
-
-#define newindex_table_param -3
-#define newindex_index_param -2
-#define newindex_value_param -1
 
 
 #define INSTANCES_CACHE "__luacom_instances_cache"

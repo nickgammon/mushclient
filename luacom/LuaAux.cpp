@@ -7,16 +7,8 @@
 #include <string.h>
 
 #include "LuaAux.h"
-
-extern "C"
-{
 #include "LuaCompat.h"
-}
 
-
-// RCS Info
-static char const * const rcsid = "$Id: LuaAux.cpp,v 1.2 2007/12/20 06:51:15 dmanura Exp $";
-static char const * const rcsname = "$Name:  $";
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -46,7 +38,7 @@ void LuaAux::printLuaStack(lua_State *L)
     switch(lua_type(L,i))
     {
     case LUA_TNUMBER:
-      printf("%d: number = %f", i, lua_tonumber(L, i));
+      printf("%d: number = %g", i, lua_tonumber(L, i));
       break;
 
     case LUA_TSTRING:
@@ -102,9 +94,9 @@ void LuaAux::printLuaTable(lua_State *L, stkIndex t)
   }
 }
 
-const char* LuaAux::makeLuaErrorMessage(int return_value, const char* msg)
+tStringBuffer LuaAux::makeLuaErrorMessage(int return_value, const char* msg)
 {
-  static char message[1000];
+  char message[1000];
   message[0] = '\0';
 
   if(return_value == 0)

@@ -1,6 +1,6 @@
-// tLuaTLB.cpp: implementation of the tLuaTLB class.
-//
-//////////////////////////////////////////////////////////////////////
+/**
+  tLuaTLB.cpp: implementation of the tLuaTLB class.
+*/
 
 #include "tLuaTLB.h"
 
@@ -12,11 +12,7 @@
 
 #include "tLuaCOM.h"
 #include "tLuaCOMTypeHandler.h"
-
-extern "C"
-{
 #include "LuaCompat.h"
-}
 
 // dynamic_cast if RTTI enabled.
 // static_cast  if RTTI disabled.
@@ -46,13 +42,12 @@ tLuaTLB::tLuaTLB(lua_State* L, ITypeLib *p_typelib)
   method_table.Add("ExportConstants", ExportConstants, FUNC);
   method_table.Add("ExportEnumerations", ExportEnumerations, FUNC);
 
-  typelib = p_typelib;
+  typelib.Attach(p_typelib);
   typelib->AddRef();
 }
 
 tLuaTLB::~tLuaTLB()
 {
-  COM_RELEASE(typelib);
 }
 
 int tLuaTLB::index(lua_State* L)
@@ -89,7 +84,6 @@ int tLuaTLB::GetTypeInfoCount(tLuaObject* lua_obj, lua_State* L)
   int count = lua_tlb->typelib->GetTypeInfoCount();
 
   lua_pushnumber(L, count);
-
   return 1;
 }
 
@@ -100,14 +94,10 @@ int tLuaTLB::GetTypeInfo(tLuaObject* lua_obj, lua_State* L)
 
   UINT typeinfo_pos = (UINT)lua_tointeger(L, 2);
 
-  ITypeInfo* typeinfo = NULL;
-  HRESULT hr = lua_tlb->typelib->GetTypeInfo(typeinfo_pos , &typeinfo);
-
-  CHK_COM_CODE(hr);
+  tCOMPtr<ITypeInfo> typeinfo;
+  CHK_COM_CODE(lua_tlb->typelib->GetTypeInfo(typeinfo_pos , &typeinfo));
 
   tLuaTypeInfo::pushNew(L, typeinfo);
-  COM_RELEASE(typeinfo);
-
   return 1;
 }
 
@@ -118,15 +108,13 @@ int tLuaTLB::GetDocumentation(tLuaObject* lua_obj, lua_State* L)
   CHECKPRECOND(lua_tlb);
 
   HRESULT hr = S_OK;
+  
   BSTR name;
   BSTR helpstring;
-  BSTR helpfile;
   ULONG helpcontext;
-
-  hr = lua_tlb->typelib->GetDocumentation(-1, 
-    &name, &helpstring, &helpcontext, &helpfile);
-
-  CHK_COM_CODE(hr);
+  BSTR helpfile;
+  CHK_COM_CODE(lua_tlb->typelib->GetDocumentation(-1, 
+    &name, &helpstring, &helpcontext, &helpfile));
 
   lua_newtable(L);
 
@@ -156,17 +144,12 @@ int tLuaTLB::GetDocumentation(tLuaObject* lua_obj, lua_State* L)
 int tLuaTLB::ShowHelp(tLuaObject* lua_obj, lua_State* L)
 {
   tLuaTLB* lua_tlb = DYNAMIC_CAST<tLuaTLB*>(lua_obj);
-  
   CHECKPRECOND(lua_tlb);
 
-  HRESULT hr = S_OK;
-  BSTR helpfile;
   ULONG helpcontext;
-
-  hr = lua_tlb->typelib->GetDocumentation(
-    -1, NULL, NULL, &helpcontext, &helpfile);
-    
-  CHK_COM_CODE(hr);
+  BSTR helpfile;
+  CHK_COM_CODE(lua_tlb->typelib->GetDocumentation(
+    -1, NULL, NULL, &helpcontext, &helpfile));
   
   tUtil::ShowHelp(tUtil::bstr2string(helpfile), helpcontext);
 
@@ -179,42 +162,37 @@ int tLuaTLB::ExportConstants(tLuaObject* lua_obj, lua_State* L)
 {
   tLuaTLB* lua_tlb = DYNAMIC_CAST<tLuaTLB*>(lua_obj);
   CHECKPRECOND(lua_tlb);
+  
   CHECKPARAM(lua_type(L, -1) == LUA_TTABLE);
 
-  TYPEKIND tkind;
-  ITypeInfo* ptypeinfo  = NULL;
-  VARDESC* pvardesc     = NULL;
-  TYPEATTR* ptypeattr   = NULL;
-  BSTR name;
   HRESULT hr = S_OK;
-  tLuaCOMTypeHandler* typehandler = NULL;
 
   long count = lua_tlb->typelib->GetTypeInfoCount();
-  
   while(count--)
   {
+    TYPEKIND tkind;
     lua_tlb->typelib->GetTypeInfoType(count, &tkind);
 
     if(tkind == TKIND_ENUM)
     {
-      hr = lua_tlb->typelib->GetTypeInfo(count, &ptypeinfo);
-      CHK_COM_CODE(hr);
+      tCOMPtr<ITypeInfo> ptypeinfo;
+      CHK_COM_CODE(lua_tlb->typelib->GetTypeInfo(count, &ptypeinfo));
 
-      typehandler = new tLuaCOMTypeHandler(ptypeinfo);
+      tLuaCOMTypeHandler* typehandler = new tLuaCOMTypeHandler(ptypeinfo);
 
-      hr = ptypeinfo->GetTypeAttr(&ptypeattr);
-      CHK_COM_CODE(hr);
-
+      // get var_count
+      TYPEATTR* ptypeattr = NULL;
+      CHK_COM_CODE(ptypeinfo->GetTypeAttr(&ptypeattr));
       long var_count = ptypeattr->cVars;
-      
       ptypeinfo->ReleaseTypeAttr(ptypeattr);
       ptypeattr = NULL;
 
       while(var_count--)
       {
-        hr = ptypeinfo->GetVarDesc(var_count, &pvardesc);
-        CHK_COM_CODE(hr);
+        VARDESC* pvardesc = NULL;
+        CHK_COM_CODE(ptypeinfo->GetVarDesc(var_count, &pvardesc));
 
+        BSTR name;
         ptypeinfo->GetDocumentation(pvardesc->memid, &name, NULL, NULL, NULL);
 
         lua_pushstring(L, tUtil::bstr2string(name));
@@ -226,11 +204,9 @@ int tLuaTLB::ExportConstants(tLuaObject* lua_obj, lua_State* L)
         lua_settable(L, -3);
 
         ptypeinfo->ReleaseVarDesc(pvardesc);
-        pvardesc = NULL;
       }
 
       SAFEDELETE(typehandler);
-      COM_RELEASE(ptypeinfo);
     }
   }
 
@@ -242,40 +218,32 @@ int tLuaTLB::ExportEnumerations(tLuaObject* lua_obj, lua_State* L)
 {
   tLuaTLB* lua_tlb = DYNAMIC_CAST<tLuaTLB*>(lua_obj);
   CHECKPRECOND(lua_tlb);
+
   if(lua_gettop(L) == 0)
     lua_newtable(L);
   else CHECKPARAM(lua_type(L, -1) == LUA_TTABLE);
 
-  TYPEKIND tkind;
-  ITypeInfo* ptypeinfo  = NULL;
-  VARDESC* pvardesc     = NULL;
-  TYPEATTR* ptypeattr   = NULL;
-  BSTR name;
-  HRESULT hr = S_OK;
-  tLuaCOMTypeHandler* typehandler = NULL;
-
   long count = lua_tlb->typelib->GetTypeInfoCount();
-  
   while(count--)
   {
+    TYPEKIND tkind;
     lua_tlb->typelib->GetTypeInfoType(count, &tkind);
 
     if(tkind == TKIND_ENUM)
     {
+      tCOMPtr<ITypeInfo> ptypeinfo;
+      CHK_COM_CODE(lua_tlb->typelib->GetTypeInfo(count, &ptypeinfo));
 
-      hr = lua_tlb->typelib->GetTypeInfo(count, &ptypeinfo);
-      CHK_COM_CODE(hr);
-
-      hr = lua_tlb->typelib->GetDocumentation(count, &name, NULL, NULL, NULL);
-      CHK_COM_CODE(hr);
+      BSTR name;
+      CHK_COM_CODE(lua_tlb->typelib->GetDocumentation(count, &name, NULL, NULL, NULL));
       lua_pushstring(L, tUtil::bstr2string(name));
       SysFreeString(name);
       lua_newtable(L);
 
-      typehandler = new tLuaCOMTypeHandler(ptypeinfo);
+      tLuaCOMTypeHandler* typehandler = new tLuaCOMTypeHandler(ptypeinfo);
 
-      hr = ptypeinfo->GetTypeAttr(&ptypeattr);
-      CHK_COM_CODE(hr);
+      TYPEATTR* ptypeattr = NULL;
+      CHK_COM_CODE(ptypeinfo->GetTypeAttr(&ptypeattr));
 
       long var_count = ptypeattr->cVars;
       
@@ -284,8 +252,8 @@ int tLuaTLB::ExportEnumerations(tLuaObject* lua_obj, lua_State* L)
 
       while(var_count--)
       {
-        hr = ptypeinfo->GetVarDesc(var_count, &pvardesc);
-        CHK_COM_CODE(hr);
+        VARDESC* pvardesc = NULL;
+        CHK_COM_CODE(ptypeinfo->GetVarDesc(var_count, &pvardesc));
 
         ptypeinfo->GetDocumentation(pvardesc->memid, &name, NULL, NULL, NULL);
 
@@ -304,7 +272,6 @@ int tLuaTLB::ExportEnumerations(tLuaObject* lua_obj, lua_State* L)
       lua_settable(L, -3);
 
       SAFEDELETE(typehandler);
-      COM_RELEASE(ptypeinfo);
     }
   }
 
@@ -313,9 +280,10 @@ int tLuaTLB::ExportEnumerations(tLuaObject* lua_obj, lua_State* L)
 
 
 
-////////////////////////
-// tLuaTypeInfo class //
-////////////////////////
+///
+/// tLuaTypeInfo class
+///
+
 
 
 tLuaTypeInfo::tLuaTypeInfo(lua_State* L, ITypeInfo *p_typeinfo)
@@ -328,7 +296,7 @@ tLuaTypeInfo::tLuaTypeInfo(lua_State* L, ITypeInfo *p_typeinfo)
   method_table.Add("GetImplType", GetImplType, FUNC);
   method_table.Add("GetImplTypeFlags", GetImplTypeFlags, FUNC);
   
-  typeinfo = p_typeinfo;
+  typeinfo.Attach(p_typeinfo);
   typeinfo->AddRef();
 
   typehandler = new tLuaCOMTypeHandler(p_typeinfo);
@@ -337,7 +305,6 @@ tLuaTypeInfo::tLuaTypeInfo(lua_State* L, ITypeInfo *p_typeinfo)
 tLuaTypeInfo::~tLuaTypeInfo()
 {
   delete typehandler;
-  COM_RELEASE(typeinfo);
 }
 
 
@@ -382,8 +349,7 @@ int tLuaTypeInfo::GetFuncDesc(tLuaObject* lua_obj, lua_State* L)
   {
     TYPEATTR* ptypeattr = NULL;
 
-    hr = lua_typeinfo->typeinfo->GetTypeAttr(&ptypeattr);
-    CHK_COM_CODE(hr);
+    CHK_COM_CODE(lua_typeinfo->typeinfo->GetTypeAttr(&ptypeattr));
 
     flags = ptypeattr->wTypeFlags;
 
@@ -399,8 +365,7 @@ int tLuaTypeInfo::GetFuncDesc(tLuaObject* lua_obj, lua_State* L)
   {
     UINT i = (UINT)lua_tointeger(L, 2);
 
-    hr = lua_typeinfo->typeinfo->GetFuncDesc(i, &pfuncdesc);
-    CHK_COM_CODE(hr);
+    CHK_COM_CODE(lua_typeinfo->typeinfo->GetFuncDesc(i, &pfuncdesc));
   }
 
   if(pfuncdesc->wFuncFlags & FUNCFLAG_FRESTRICTED)
@@ -478,7 +443,6 @@ int tLuaTypeInfo::GetFuncDesc(tLuaObject* lua_obj, lua_State* L)
   lua_settable(L, -4);
 
   SHORT i = 0;
-
   while(i < pfuncdesc->cParams)
   {
     // creates table to hold information for this parameter
@@ -528,15 +492,15 @@ int tLuaTypeInfo::GetFuncDesc(tLuaObject* lua_obj, lua_State* L)
     USHORT paramFlags = pfuncdesc->lprgelemdescParam[i].paramdesc.wParamFlags;
 
     lua_pushstring(L, "in");
-    luaCompat_pushBool(L,paramFlags & PARAMFLAG_FIN);
+    lua_pushboolean(L,paramFlags & PARAMFLAG_FIN);
     lua_settable(L, -3);
 
     lua_pushstring(L, "out");
-    luaCompat_pushBool(L,paramFlags & PARAMFLAG_FOUT);
+    lua_pushboolean(L,paramFlags & PARAMFLAG_FOUT);
     lua_settable(L, -3);
 
     lua_pushstring(L, "opt");
-    luaCompat_pushBool(L,paramFlags & PARAMFLAG_FOPT);
+    lua_pushboolean(L,paramFlags & PARAMFLAG_FOPT);
     lua_settable(L, -3);
 
     lua_pushstring(L, "default");
@@ -565,9 +529,8 @@ int tLuaTypeInfo::GetFuncDesc(tLuaObject* lua_obj, lua_State* L)
     tdesc = 
       tLuaCOMTypeHandler::processTYPEDESC(lua_typeinfo->typeinfo, tdesc);
   }
-  catch(class tLuaCOMException& e)
+  catch(class tLuaCOMException&)
   {
-    UNUSED(e);
     incompatible_type = true;
   }
 
@@ -601,8 +564,7 @@ int tLuaTypeInfo::GetVarDesc(tLuaObject* lua_obj, lua_State* L)
   {
     UINT i = (UINT)lua_tointeger(L, 2);
 
-    hr = lua_typeinfo->typeinfo->GetVarDesc(i, &pvardesc);
-    CHK_COM_CODE(hr);
+    CHK_COM_CODE(lua_typeinfo->typeinfo->GetVarDesc(i, &pvardesc));
   }
 
   // table to hold the vardesc
@@ -643,30 +605,19 @@ int tLuaTypeInfo::GetImplType(tLuaObject* lua_obj, lua_State* L)
 {
   LUASTACK_SET(L);
 
-  HRESULT hr = S_OK;
-
   tLuaTypeInfo* lua_typeinfo = DYNAMIC_CAST<tLuaTypeInfo*>(lua_obj);
   CHECKPRECOND(lua_typeinfo);
+  
+  UINT i = (UINT)lua_tointeger(L, 2);
 
   // gets implemented type
-
-  ITypeInfo* ptinfo = NULL;
-  {
-    UINT i = (UINT)lua_tointeger(L, 2);
-
-    HREFTYPE hreftype;
-    hr = lua_typeinfo->typeinfo->GetRefTypeOfImplType(i, &hreftype);
-    CHK_COM_CODE(hr);
-
-    hr = lua_typeinfo->typeinfo->GetRefTypeInfo(hreftype, &ptinfo);
-    CHK_COM_CODE(hr);
-  }
+  tCOMPtr<ITypeInfo> ptinfo;
+  HREFTYPE hreftype;
+  CHK_COM_CODE(lua_typeinfo->typeinfo->GetRefTypeOfImplType(i, &hreftype));
+  CHK_COM_CODE(lua_typeinfo->typeinfo->GetRefTypeInfo(hreftype, &ptinfo));
 
   tLuaTypeInfo::pushNew(L, ptinfo);
-  COM_RELEASE(ptinfo);
- 
   LUASTACK_CLEAN(L, 1);
-
   return 1;
 }
 
@@ -682,25 +633,24 @@ int tLuaTypeInfo::GetImplTypeFlags(tLuaObject* lua_obj, lua_State* L)
   int typeflags = 0;
   UINT i = (UINT)lua_tointeger(L, 2);
 
-  hr = lua_typeinfo->typeinfo->GetImplTypeFlags(i, &typeflags);
-  CHK_COM_CODE(hr);
+  CHK_COM_CODE(lua_typeinfo->typeinfo->GetImplTypeFlags(i, &typeflags));
 
   lua_newtable(L);
 
   lua_pushstring(L, "default");
-  luaCompat_pushBool(L, typeflags & IMPLTYPEFLAG_FDEFAULT);
+  lua_pushboolean(L, typeflags & IMPLTYPEFLAG_FDEFAULT);
   lua_settable(L, -3);
 
   lua_pushstring(L, "source");
-  luaCompat_pushBool(L, typeflags & IMPLTYPEFLAG_FSOURCE);
+  lua_pushboolean(L, typeflags & IMPLTYPEFLAG_FSOURCE);
   lua_settable(L, -3);
 
   lua_pushstring(L, "restricted");
-  luaCompat_pushBool(L, typeflags & IMPLTYPEFLAG_FRESTRICTED);
+  lua_pushboolean(L, typeflags & IMPLTYPEFLAG_FRESTRICTED);
   lua_settable(L, -3);
 
   lua_pushstring(L, "defaultvtable");
-  luaCompat_pushBool(L, typeflags & IMPLTYPEFLAG_FDEFAULTVTABLE);
+  lua_pushboolean(L, typeflags & IMPLTYPEFLAG_FDEFAULTVTABLE);
   lua_settable(L, -3);
 
   LUASTACK_CLEAN(L, 1);
@@ -713,19 +663,16 @@ int tLuaTypeInfo::GetImplTypeFlags(tLuaObject* lua_obj, lua_State* L)
 int tLuaTypeInfo::GetDocumentation(tLuaObject* lua_obj, lua_State* L)
 {
   tLuaTypeInfo* lua_typeinfo = DYNAMIC_CAST<tLuaTypeInfo*>(lua_obj);
-  
   CHECKPRECOND(lua_typeinfo);
 
   HRESULT hr = S_OK;
+  
   BSTR name;
   BSTR helpstring;
-  BSTR helpfile;
   ULONG helpcontext;
-
-  hr = lua_typeinfo->typeinfo->GetDocumentation(MEMBERID_NIL, 
-    &name, &helpstring, &helpcontext, &helpfile);
-
-  CHK_COM_CODE(hr);
+  BSTR helpfile;
+  CHK_COM_CODE(lua_typeinfo->typeinfo->GetDocumentation(MEMBERID_NIL, 
+    &name, &helpstring, &helpcontext, &helpfile));
 
   lua_newtable(L);
 
@@ -759,8 +706,7 @@ int tLuaTypeInfo::GetTypeAttr(tLuaObject* lua_obj, lua_State* L)
 
   TYPEATTR* ptypeattr = NULL;
 
-  HRESULT hr = lua_typeinfo->typeinfo->GetTypeAttr(&ptypeattr);
-  CHK_COM_CODE(hr);
+  CHK_COM_CODE(lua_typeinfo->typeinfo->GetTypeAttr(&ptypeattr));
 
   // creates table to hold type attributes
   lua_newtable(L);
@@ -769,7 +715,7 @@ int tLuaTypeInfo::GetTypeAttr(tLuaObject* lua_obj, lua_State* L)
   {
     char *pGuid = NULL;
 
-    hr = tCOMUtil::GUID2String(ptypeattr->guid, &pGuid);
+    HRESULT hr = tCOMUtil::GUID2String(ptypeattr->guid, &pGuid);
     if(SUCCEEDED(hr))
     {
       lua_pushstring(L, "GUID");
@@ -806,27 +752,27 @@ int tLuaTypeInfo::GetTypeAttr(tLuaObject* lua_obj, lua_State* L)
   lua_settable(L, -4);
 
   lua_pushstring(L, "hidden");
-  luaCompat_pushBool(L, ptypeattr->wTypeFlags & TYPEFLAG_FHIDDEN);
+  lua_pushboolean(L, ptypeattr->wTypeFlags & TYPEFLAG_FHIDDEN);
   lua_settable(L, -3);
 
   lua_pushstring(L, "control");
-  luaCompat_pushBool(L, ptypeattr->wTypeFlags & TYPEFLAG_FCONTROL);
+  lua_pushboolean(L, ptypeattr->wTypeFlags & TYPEFLAG_FCONTROL);
   lua_settable(L, -3);
 
   lua_pushstring(L, "appobject");
-  luaCompat_pushBool(L, ptypeattr->wTypeFlags & TYPEFLAG_FAPPOBJECT);
+  lua_pushboolean(L, ptypeattr->wTypeFlags & TYPEFLAG_FAPPOBJECT);
   lua_settable(L, -3);
 
   lua_pushstring(L, "dispatchable");
-  luaCompat_pushBool(L, ptypeattr->wTypeFlags & TYPEFLAG_FDISPATCHABLE);
+  lua_pushboolean(L, ptypeattr->wTypeFlags & TYPEFLAG_FDISPATCHABLE);
   lua_settable(L, -3);
 
   lua_pushstring(L, "oleautomation");
-  luaCompat_pushBool(L, ptypeattr->wTypeFlags & TYPEFLAG_FOLEAUTOMATION);
+  lua_pushboolean(L, ptypeattr->wTypeFlags & TYPEFLAG_FOLEAUTOMATION);
   lua_settable(L, -3);
 
   lua_pushstring(L, "cancreate");
-  luaCompat_pushBool(L, ptypeattr->wTypeFlags & TYPEFLAG_FCANCREATE);
+  lua_pushboolean(L, ptypeattr->wTypeFlags & TYPEFLAG_FCANCREATE);
   lua_settable(L, -3);
 
 
@@ -841,20 +787,17 @@ int tLuaTypeInfo::GetTypeLib(tLuaObject* lua_obj, lua_State* L)
   LUASTACK_SET(L);
 
   tLuaTypeInfo* lua_typeinfo = DYNAMIC_CAST<tLuaTypeInfo*>(lua_obj);
-  
   CHECKPRECOND(lua_typeinfo);
 
   // stores a reference to the type library
-  ITypeLib* typelib = NULL;
+  tCOMPtr<ITypeLib> typelib;
   unsigned int dumb = 0;
-
   HRESULT hr = lua_typeinfo->typeinfo->GetContainingTypeLib(&typelib, &dumb);
 
   if(SUCCEEDED(hr))
   {
     tLuaTLB::pushNew(L, typelib);
   }
-  COM_RELEASE(typelib);
 
   LUASTACK_CLEAN(L, 1);
 

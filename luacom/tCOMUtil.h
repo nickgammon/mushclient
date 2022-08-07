@@ -5,12 +5,9 @@
 #ifndef __TCOMUTIL_H
 #define __TCOMUTIL_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include <windows.h>
 #include <oleauto.h>
+#include "tStringBuffer.h"
 
 class tCOMUtil  
 {
@@ -18,7 +15,7 @@ public:
   static HRESULT GUID2String(GUID& Guid, char** ppGuid);
   static const char* getPrintableTypeKind(const TYPEKIND tkind);
   static const char* getPrintableInvokeKind(const INVOKEKIND invkind);
-  static const char* getPrintableTypeDesc(const TYPEDESC& tdesc);
+  static tStringBuffer getPrintableTypeDesc(const TYPEDESC& tdesc);
   static void DumpTypeInfo(ITypeInfo* typeinfo);
     static bool GetRegKeyValue(const char* key, char** pValue);
   static bool SetRegKeyValue(const char* key, const char* subkey, const char* value);
@@ -64,6 +61,31 @@ protected:
 
 #define COM_RELEASE(x) {if(x){(x)->Release(); (x) = NULL;}}
 
+/**
+ Smart pointer for COM objects.
+ Calls Release() on destruction.
+ Has some similarities to CComPtr (atlcomcli.h) in ATL but does not require ATL.
+*/
+template <class T>
+class tCOMPtr
+{
+public:
+  tCOMPtr() : m_p(NULL) { }
+  tCOMPtr(const tCOMPtr & o) : m_p(o.m_p) { AddRef();};
+  tCOMPtr(T * p) : m_p(p) { AddRef();};
+  void operator=(const  tCOMPtr<T> & o) { Attach(o.m_p); AddRef(); }
+  ~tCOMPtr() { if (m_p) m_p->Release(); }
+  operator T* () const { return m_p; }
+  T& operator * () const { return *m_p; }
+  T* operator -> () const { return m_p; }
+  T** operator & () { return &m_p; }   // useful for QueryInterface
+  void Attach(T* p) { if (m_p) m_p->Release(); m_p = p; }
+  void Release() { if (m_p) m_p->Release(); m_p = NULL; }
+  T * Raw() { return m_p; }
+private:
+  void AddRef() { if (m_p) m_p->AddRef(); }
+  T * m_p;
+};
 
 
 #endif // __TCOMUTIL_H

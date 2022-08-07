@@ -7,17 +7,12 @@
  * Vinicius Almendra
  */
 
-// RCS Info
-static char const * const rcsid = "$Id: tLuaCOM.cpp,v 1.4 2008/05/16 15:15:49 mascarenhas Exp $";
-static char const * const rcsname = "$Name:  $";
-
 #include "tLuaCOM.h"
 #include "tLuaDispatch.h"
 #include "LuaAux.h"
 #include "tUtil.h"
 #include "tLuaCOMException.h"
 #include "tCOMUtil.h"
-
 #include "LuaCompat.h"
 
 #if defined(__CYGWIN__) || defined(__MINGW32__)
@@ -25,7 +20,7 @@ static char const * const rcsname = "$Name:  $";
 DEFINE_GUID(IID_IProxyManager, 0x00000008, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46);
 #endif
 
-long tLuaCOM::NEXT_ID = 0;
+volatile long tLuaCOM::NEXT_ID = 0;
 
 tLuaCOM::tLuaCOM(lua_State* L,
                  IDispatch *pdisp_arg,
@@ -34,18 +29,16 @@ tLuaCOM::tLuaCOM(lua_State* L,
                  )
 {
   HRESULT hr = S_OK;
-
+	
   // initialization
-  plib_tcomp              = NULL;
-  ptcomp                  = NULL;
   clsid                   = IID_NULL;
   lock_count              = 0;
   conn_point              = NULL;
 
-  pdisp = pdisp_arg;
+  pdisp.Attach(pdisp_arg);
   pdisp->AddRef(); 
 
-  ptinfo = ptinfo_arg;
+  ptinfo.Attach(ptinfo_arg);
 
   if(ptinfo)
   {
@@ -62,20 +55,17 @@ tLuaCOM::tLuaCOM(lua_State* L,
       // tries to get typecomp for type library
       // (useful to bind to constants)
 
-      ITypeLib* ptlib = NULL;
+      tCOMPtr<ITypeLib> ptlib;
       unsigned int dumb = 0;
-
       hr = ptinfo->GetContainingTypeLib(&ptlib, &dumb);
-
       if(SUCCEEDED(hr))
       {
         //ptlib->GetTypeComp(&plib_tcomp);
-        COM_RELEASE(ptlib);
-        COM_RELEASE(plib_tcomp);
+        plib_tcomp.Release();
       }
     }
     else
-      COM_RELEASE(ptinfo);  // BUG!!!
+      ptinfo.Release();  // BUG!!!
   }
 
   typehandler = new tLuaCOMTypeHandler(ptinfo_arg);
@@ -85,7 +75,7 @@ tLuaCOM::tLuaCOM(lua_State* L,
   for(i = 0; i < MAX_FUNCINFOS; i++)
     pFuncInfo[i].name = NULL;
 
-  ID = tLuaCOM::NEXT_ID++;
+  ID = InterlockedIncrement(&(tLuaCOM::NEXT_ID));
 
 #ifdef VERBOSE
   {
@@ -139,11 +129,6 @@ tLuaCOM::~tLuaCOM()
 
   delete typehandler;
   typehandler = NULL;
-
-  COM_RELEASE(ptcomp);
-  COM_RELEASE(plib_tcomp);
-  COM_RELEASE(ptinfo);
-  COM_RELEASE(pdisp);
 
   tUtil::log_verbose("tLuaCOM", "%.4d:destroyed", ID);
 }
@@ -271,7 +256,6 @@ bool tLuaCOM::getConstant(lua_State* L, const char* name)
   BINDPTR bindptr;
   DESCKIND desckind;
   BSTR wName;
-  ITypeInfo *info = NULL;
   bool result = false;
 
   unsigned int dumb = 0;
@@ -280,6 +264,7 @@ bool tLuaCOM::getConstant(lua_State* L, const char* name)
 
   unsigned long lhashval = LHashValOfName(LOCALE_SYSTEM_DEFAULT, wName);
 
+  tCOMPtr<ITypeInfo> info;
   hr = plib_tcomp->Bind(wName, lhashval, INVOKE_PROPERTYGET,
     &info, &desckind, &bindptr);
 
@@ -294,8 +279,6 @@ bool tLuaCOM::getConstant(lua_State* L, const char* name)
   }
   else
     result = false;
-
-  COM_RELEASE(info);
 
   return result;
 }
@@ -693,17 +676,15 @@ tLuaCOM * tLuaCOM::CreateLuaCOM(lua_State* L,
 ITypeInfo * tLuaCOM::GetDefaultEventsInterface()
 {
   CLSID clsid = GetCLSID();
-
   if(clsid == IID_NULL)
     return NULL;
   
-  ITypeInfo* coclassinfo = tCOMUtil::GetCoClassTypeInfo(pdisp, clsid);
-
+  tCOMPtr<ITypeInfo> coclassinfo;
+  coclassinfo.Attach(tCOMUtil::GetCoClassTypeInfo(pdisp, clsid));
   if(!coclassinfo)
     return NULL;
   
   ITypeInfo *ptinfo = tCOMUtil::GetDefaultInterfaceTypeInfo(coclassinfo, true);
-  COM_RELEASE(coclassinfo);
 
   return ptinfo;
 }
@@ -741,20 +722,17 @@ CLSID tLuaCOM::GetCLSID()
     return clsid;
 
   // tries to find the CLSID using IProvideClassInfo
-  ITypeInfo* coclassinfo = tCOMUtil::GetCoClassTypeInfo(pdisp);
-
+  tCOMPtr<ITypeInfo> coclassinfo;
+  coclassinfo.Attach(tCOMUtil::GetCoClassTypeInfo(pdisp));
   if(coclassinfo)
   {
     clsid = tCOMUtil::GetCLSID(coclassinfo);
-    COM_RELEASE(coclassinfo);
-
     if(clsid != IID_NULL)
       return clsid;
   }
 
   // Now searches the type library seeking the coclass to which
   // this interface belongs
-
   clsid = tCOMUtil::FindCLSID(ptinfo);
 
   return clsid;

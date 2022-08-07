@@ -1,13 +1,9 @@
-/*
- * tLuaDispatch.cpp
- *
- * Vinicius Almendra
- */
-
-// RCS Info
-static char const * const rcsid = "$Id: tLuaDispatch.cpp,v 1.9 2008/01/06 04:57:48 dmanura Exp $";
-static char const * const rcsname = "$Name:  $";
-
+/**
+ tLuaDispatch.cpp: tLuaDispatch class.
+ This is an IDispatch implementation that wraps a Lua object.
+ 
+ original author: Vinicius Almendra
+*/
 
 #include "tLuaDispatch.h"
 #include "tLuaCOM.h"
@@ -15,18 +11,14 @@ static char const * const rcsname = "$Name:  $";
 #include "tCOMUtil.h"
 #include "LuaAux.h"
 #include "tUtil.h"
-
-extern "C"
-{
 #include "LuaCompat.h"
-}
 
 // hacks for certain compilers
 #if defined(__MINGW32__) || defined(__CYGWIN__)
 #define GUIDKIND_DEFAULT_SOURCE_DISP_IID 1
 #endif
 
-long tLuaDispatch::NEXT_ID = 0;
+volatile long tLuaDispatch::NEXT_ID = 0;
 
 tLuaDispatch::ProvideClassInfo2::ProvideClassInfo2(ITypeInfo* p_coclassinfo,
                                                    IUnknown* p_pUnk)
@@ -106,17 +98,14 @@ STDMETHODIMP tLuaDispatch::ProvideClassInfo2::GetGUID(DWORD dwGuidKind,
 
 
 
-
-
-//---------------------------------------------------------------------
-//                     IUnknown Methods
-//---------------------------------------------------------------------
+///
+/// IUnknown Methods
+///
 
 
 STDMETHODIMP
 tLuaDispatch::QueryInterface(REFIID riid, void FAR* FAR* ppv)
 {
-
     if(IsEqualIID(riid, IID_IUnknown)  ||
        IsEqualIID(riid, IID_IDispatch) ||
        IsEqualIID(riid, interface_iid)) {
@@ -167,10 +156,10 @@ tLuaDispatch::Release()
   assert(m_refs > 0);
   if(--m_refs == 0)
   {
-    // destrava tabela LUA
-    lua_unref(L, table_ref);
+    // unlock Lua table.
+    luaL_unref(L, LUA_REGISTRYINDEX, table_ref);
 
-    // libera libs
+    // free libs
 
     while(num_methods--)
     {
@@ -199,9 +188,9 @@ tLuaDispatch::Release()
 }
 
 
-//---------------------------------------------------------------------
-//                     IDispatch Methods
-//---------------------------------------------------------------------
+///
+///  IDispatch Methods
+///
 
 
 
@@ -238,7 +227,6 @@ tLuaDispatch::GetIDsOfNames(
     DISPID FAR* rgdispid)
 {
     // this object only exposes a "default" interface.
-    //
     if(!IsEqualIID(riid, IID_NULL))
       return ResultFromScode(DISP_E_UNKNOWNINTERFACE);
 
@@ -257,12 +245,7 @@ tLuaDispatch::Invoke(
     unsigned int FAR* puArgErr)
 {
   HRESULT hresult         = 0;
-  int index               = 0;
-  stkIndex member         = -1;
-  int current_arg         = 0;
-  HRESULT retval          = NOERROR;
   const stkIndex baseidx = lua_gettop(L); // stack index on entry
-  stkIndex return_value_pos = 0;
 
   if(wFlags & ~(DISPATCH_METHOD | DISPATCH_PROPERTYGET | DISPATCH_PROPERTYPUT |
       DISPATCH_PROPERTYPUTREF))
@@ -271,8 +254,8 @@ tLuaDispatch::Invoke(
   if(!IsEqualIID(riid, IID_NULL))
     return ResultFromScode(DISP_E_UNKNOWNINTERFACE);
 
-  /* descobre qual o nome do metodo */
-
+  // lookup method dispatch ID.
+  int index = 0;
   for(index = 0; index < num_methods; index++)
   {
     if(funcinfo[index].funcdesc->memid == dispidMember &&
@@ -288,9 +271,10 @@ tLuaDispatch::Invoke(
   }
 
   // gets a reference to the implementation table
-  lua_getref(L, table_ref);
+  lua_rawgeti(L, LUA_REGISTRYINDEX, table_ref);
   int implementation_table = lua_gettop(L);
 
+  HRESULT retval = NOERROR;
   try
   {
     switch(wFlags)
@@ -303,11 +287,9 @@ tLuaDispatch::Invoke(
         pvarResult,
         pexcepinfo,
         puArgErr);
-
       break;
 
     case DISPATCH_METHOD | DISPATCH_PROPERTYGET:
-
       // sometimes the caller can't tell the difference between
       // a property get and a method call. We try first a
       // method call and then, if it's not successful, try
@@ -333,29 +315,24 @@ tLuaDispatch::Invoke(
             pexcepinfo,
             puArgErr);
         }
-
       }
       break;
 
     case DISPATCH_PROPERTYGET:
-
       retval = propertyget(
         funcinfo[index].name,
         funcinfo[index].funcdesc,
         pdispparams,
         pvarResult,
         pexcepinfo,puArgErr);
-
       break;
 
     case DISPATCH_PROPERTYPUT:
-
       retval = propertyput(
         funcinfo[index].name,
         pdispparams,
         pvarResult,
         pexcepinfo,puArgErr);
-
       break;
 
     case DISPATCH_PROPERTYPUTREF:
@@ -390,13 +367,13 @@ tLuaDispatch::Invoke(
 }
 
 STDMETHODIMP tLuaDispatch::PushIfSameState(lua_State *p_L) {
-  lua_getref(p_L, table_ref);
+  lua_rawgeti(L, LUA_REGISTRYINDEX, table_ref);
   if(lua_isnil(p_L, -1)) {
     lua_pop(p_L,1);
     return E_FAIL;
   }
   const void *p1 = lua_topointer(p_L, -1);
-  lua_getref(L, table_ref);
+  lua_rawgeti(L, LUA_REGISTRYINDEX, table_ref);
   const void *p2 = lua_topointer(L, -1);
   if(p1 == p2) {
     lua_pop(L, 1);
@@ -415,8 +392,8 @@ tLuaDispatch::tLuaDispatch(lua_State* p_L, ITypeInfo * pTypeinfo, int ref)
   L = p_L;
 
   // gets a locked reference to the implementation object
-  lua_getref(L, ref);
-  int locked_ref = lua_ref(L, 1);
+  lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
+  int locked_ref = luaL_ref(L, LUA_REGISTRYINDEX);
   table_ref = locked_ref;
 
   m_refs = 0;
@@ -425,13 +402,12 @@ tLuaDispatch::tLuaDispatch(lua_State* p_L, ITypeInfo * pTypeinfo, int ref)
 
   typeinfo->AddRef();
 
-  // inicializa conversor de tipos
+  // initialize type converter
   typehandler = new tLuaCOMTypeHandler(typeinfo);
 
   {
     TYPEATTR * ptypeattr = NULL;
     FUNCDESC *funcdesc = NULL;
-    unsigned int i, n;
 
     hr = typeinfo->GetTypeAttr(&ptypeattr);
 
@@ -440,17 +416,16 @@ tLuaDispatch::tLuaDispatch(lua_State* p_L, ITypeInfo * pTypeinfo, int ref)
     memcpy(&interface_iid, &ptypeattr->guid, sizeof(IID));
 
 
-    /* Obtem todas as descricoes das funcoes e guarda-as em
-       uma tabela */
+    // Obtain all the descriptions of the functions and store them in a table.
 
-    n = ptypeattr->cFuncs;
+    unsigned int n = ptypeattr->cFuncs;
     typeinfo->ReleaseTypeAttr(ptypeattr);
 
     funcinfo = new tFuncInfo[n];
 
     num_methods = 0;
 
-    for (i = 0; i < n;i++)
+    for (unsigned int i = 0; i < n;i++)
     {
       hr = typeinfo->GetFuncDesc(i, &funcdesc);
 
@@ -480,10 +455,8 @@ tLuaDispatch::tLuaDispatch(lua_State* p_L, ITypeInfo * pTypeinfo, int ref)
   cpc = NULL;
   classinfo2 = NULL;
 
-  ID = tLuaDispatch::NEXT_ID++;
+  ID = InterlockedIncrement(&(tLuaDispatch::NEXT_ID));
   tUtil::log_verbose("tLuaDispatch", "%.4d:created", ID);
-
-  // agora sim esta' inicializado
 
   return;
 }
@@ -497,9 +470,9 @@ tLuaDispatch * tLuaDispatch::CreateLuaDispatch(lua_State* L,
   tLuaDispatch *pdisp = 
     new tLuaDispatch(L, interface_typeinfo, ref);
 
-  lua_getref(L, ref);
-  luaCompat_pushPointer(L, idxDispatch);
-  luaCompat_pushPointer(L, pdisp);
+  lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
+  lua_pushlightuserdata(L, idxDispatch);
+  lua_pushlightuserdata(L, pdisp);
   lua_rawset(L,-3);
   lua_pop(L, 1);
 
@@ -509,10 +482,8 @@ tLuaDispatch * tLuaDispatch::CreateLuaDispatch(lua_State* L,
 }
 
 /*
- * Fills an EXCEPINFO structure
- *
- */
-
+ Fills an EXCEPINFO structure.
+*/
 void tLuaDispatch::FillExceptionInfo(EXCEPINFO *pexcepinfo, const char *text)
 {
   CHECKPARAM(text);
@@ -533,6 +504,7 @@ void tLuaDispatch::FillExceptionInfo(EXCEPINFO *pexcepinfo, const char *text)
 }
 
 
+// helper function for Invoke().
 // note: does not restore Lua stack
 HRESULT tLuaDispatch::propertyget(const char* name,
                                   FUNCDESC* funcdesc,
@@ -541,9 +513,8 @@ HRESULT tLuaDispatch::propertyget(const char* name,
                                   EXCEPINFO *pexcepinfo,
                                   unsigned int *puArgErr)
 {
-  /* le valor contido na tabela */
+  // the value contained in the table.
   lua_pushstring(L, name);
-
   lua_gettable(L, -2);
   stkIndex member = lua_gettop(L);
 
@@ -562,8 +533,8 @@ HRESULT tLuaDispatch::propertyget(const char* name,
     while(i--)
       typehandler->com2lua(L, pdispparams->rgvarg[i]);
 
-    const char* err = NULL;
-    luaCompat_call(L, pdispparams->cArgs + 1, 1, &err);
+    tStringBuffer err;
+    luaCompat_call(L, pdispparams->cArgs + 1, 1, err);
 
     if(err)
     {
@@ -572,7 +543,7 @@ HRESULT tLuaDispatch::propertyget(const char* name,
     }
   }
 
-  if(pdispparams->cArgs > 0) // propertyget parametrizado
+  if(pdispparams->cArgs > 0) // parameterized propertyget
   {
     if(lua_istable(L, member))
     {
@@ -584,11 +555,11 @@ HRESULT tLuaDispatch::propertyget(const char* name,
     }
     else
     {
-      // funciona como um propget normal, ignorando parametro
+      // functions as a normal propget, ignoring parameters
     }
   }
 
-  /* converte resultado para COM */
+  // Converts Lua result to DISPPARAMS.
 
   if(pvarResult != NULL)
   {
@@ -598,6 +569,7 @@ HRESULT tLuaDispatch::propertyget(const char* name,
   return S_OK;
 }
 
+// helper function for Invoke().
 // note: does not restore Lua stack
 HRESULT tLuaDispatch::propertyput(const char* name,
                                   DISPPARAMS *pdispparams,
@@ -624,8 +596,8 @@ HRESULT tLuaDispatch::propertyput(const char* name,
     while(i--)
       typehandler->com2lua(L, pdispparams->rgvarg[i]);
 
-    const char* err = NULL;
-    luaCompat_call(L, pdispparams->cArgs + 1, 0, &err);
+    tStringBuffer err;
+    luaCompat_call(L, pdispparams->cArgs + 1, 0, err);
 
     if(err)
     {
@@ -639,23 +611,23 @@ HRESULT tLuaDispatch::propertyput(const char* name,
 
     lua_pushstring(L, name);
 
-    // Valor a ser setado
+    // value to be set
     typehandler->com2lua(L, pdispparams->rgvarg[pdispparams->cArgs - 1]);
 
     lua_settable(L, -3);
   }
-  else if(pdispparams->cArgs == 2) // propertyput parametrizado
+  else if(pdispparams->cArgs == 2) // parameterized propertyput
   {
     stkIndex member = lua_gettop(L);
 
-    if(lua_istable(L, member) || lua_isuserdata(L, member)) // se for, 
+    if(lua_istable(L, member) || lua_isuserdata(L, member)) 
     {
       lua_pushvalue(L, member);
 
-      // indice
+      // index
       typehandler->com2lua(L, pdispparams->rgvarg[pdispparams->cArgs - 1]);
 
-      // Valor a ser setado
+      // value to be set
       typehandler->com2lua(L, pdispparams->rgvarg[pdispparams->cArgs - 2]);
 
       lua_settable(L, -3);
@@ -680,6 +652,7 @@ HRESULT tLuaDispatch::propertyput(const char* name,
 }
 
 
+// Helper function for Invoke().
 // note: does not restore Lua stack
 HRESULT tLuaDispatch::method(const char* name,
                              FUNCDESC* funcdesc,
@@ -699,10 +672,10 @@ HRESULT tLuaDispatch::method(const char* name,
     return DISP_E_MEMBERNOTFOUND;
   }
 
-  /* converte parametros e empilha */
+  // convert parameters and stacks
 
   // push self argument
-  lua_getref(L, table_ref);
+  lua_rawgeti(L, LUA_REGISTRYINDEX, table_ref);
   
   // push COM arguments
   typehandler->pushLuaArgs(
@@ -710,12 +683,9 @@ HRESULT tLuaDispatch::method(const char* name,
     pdispparams,
     funcdesc->lprgelemdescParam);
 
-  // chama funcao Lua
-  const char* errmsg = NULL;
-  int result = 0;
-
-  // call function
-  result = luaCompat_call(L, lua_gettop(L) - memberidx, LUA_MULTRET, &errmsg);
+  // call Lua function
+  tStringBuffer errmsg;
+  int result = luaCompat_call(L, lua_gettop(L) - memberidx, LUA_MULTRET, errmsg);
   if(result)
   {
     FillExceptionInfo(pexcepinfo, LuaAux::makeLuaErrorMessage(result, errmsg));

@@ -6,53 +6,86 @@
 
 #include "tStringBuffer.h"
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
-tStringBuffer::tStringBuffer()
+void tStringBuffer::Init()
 {
   size = 0;
   buffer = NULL;
 }
 
+void tStringBuffer::Reset()
+{
+  if(buffer != NULL)
+    delete[] buffer;
+  Init();
+}
+
+tStringBuffer::tStringBuffer()
+{
+  Init();
+}
+ 
+tStringBuffer::tStringBuffer(const char* source)
+{
+  Init();
+  copyToBuffer(source);
+}
+
+tStringBuffer::tStringBuffer(const char* source, size_t length)
+{
+	Init();
+	copyToBuffer(source, length);
+}
+
+tStringBuffer::tStringBuffer(const tStringBuffer& copy)
+{
+  Init();
+  copyToBuffer(copy.buffer, copy.size);
+}
+
+tStringBuffer& tStringBuffer::operator=(const tStringBuffer& other)
+{
+  Reset();
+  copyToBuffer(other.buffer, other.size);
+  return *this;
+}
+
+tStringBuffer::operator const char *()
+{
+  return buffer;
+}
+
 tStringBuffer::~tStringBuffer()
 {
-  if(buffer!=NULL)
-    delete[] buffer;
+  Reset();
 }
 
-void tStringBuffer::copyToBuffer(char * source)
+void tStringBuffer::copyToBuffer(const char * source)
 {
-  size_t new_size = strlen(source) + 1;
-
-  if(new_size > size)
+  Reset();
+  if(source)
   {
-    if(buffer != NULL)
-      delete[] buffer;
-
-    size = new_size;
+    size = strlen(source) + 1;
     buffer = new char[size];
+    strncpy(buffer, source, size);
   }
-
-  strncpy(buffer, source, new_size);
 }
 
-void tStringBuffer::copyToBuffer(char *source, size_t length)
+void tStringBuffer::copyToBuffer(const char *source, size_t length)
 {
-  if(length > size)
+  Reset();
+  if(source && length)
   {
-    if(buffer != NULL)
-      delete[] buffer;
-
     size = length;
     buffer = new char[size];
+    memcpy(buffer, source, length);
   }
-
-  memcpy(buffer, source, length);
 }
 
 const char * tStringBuffer::getBuffer()
 {
   return buffer;
+}
+const size_t tStringBuffer::getSize()
+{
+	return size;
 }

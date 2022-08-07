@@ -16,13 +16,8 @@
 
 extern "C"
 {
-#ifdef LUA_52
-    #include "..\..\lua52\src\lua.h"
-    #include "..\..\lua52\src\lauxlib.h"
-#else
-    #include "..\lua.h"
-    #include "..\lauxlib.h"
-#endif
+#include <lua.h>
+#include <lauxlib.h>
 }
 
 #include "luabeans.h"
@@ -119,7 +114,6 @@ protected:
   lua_State* L;
   IID interface_iid;
   tLuaCOMTypeHandler * typehandler;
-  static int tag;
 
   unsigned long m_refs;
 
@@ -129,7 +123,7 @@ protected:
     char *name;
   } *funcinfo;
 
-  class ProvideClassInfo2 : IProvideClassInfo2
+  class ProvideClassInfo2 : public IProvideClassInfo2
   {
   public:
     ProvideClassInfo2(ITypeInfo* p_coclassinfo, IUnknown* p_pUnk);
@@ -152,7 +146,7 @@ protected:
   int table_ref;
 
 private:
-  static long NEXT_ID;
+  volatile static long NEXT_ID;
   long ID;
 
 };

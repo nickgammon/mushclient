@@ -5,15 +5,7 @@
 #if !defined(AFX_TLUAOBJLIST_H__D9585072_945D_11D4_B881_0000B45D7541__INCLUDED_)
 #define AFX_TLUAOBJLIST_H__D9585072_945D_11D4_B881_0000B45D7541__INCLUDED_
 
-#if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
-
-#ifdef LUA_52
-    #include "..\..\lua52\src\lua.h"
-#else
-    #include "..\lua.h"
-#endif
+#include "lua.h"
 
 #include "tUtil.h"
 #include "LuaAux.h"
