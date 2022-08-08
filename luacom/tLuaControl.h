@@ -1,6 +1,6 @@
-/*
- * tLuaControl.h
- */
+/**
+ tLuaControl.h
+*/
 
 #ifndef __TLUACONTROL_H
 #define __TLUACONTROL_H
@@ -10,50 +10,56 @@
 #include <ocidl.h>
 
 #include "tLuaDispatch.h"
+#include "tCOMUtil.h"
 
-typedef ULONG ULONG_PTR;
-
-class tLuaControl: public tLuaDispatch, public IOleObject,
-        public IOleControl,	public IOleInPlaceObject,
+class tLuaControl:
+        public tLuaDispatch,
+        public IOleObject, public IOleControl, public IOleInPlaceObject,
         public IOleInPlaceActiveObject, public IViewObject2,
         public IPersistStreamInit, public IPersistStorage, public IQuickActivate
 {
 public:
+    // Construction/destruction methods	
+
     tLuaControl(lua_State* L, ITypeInfo *pTypeinfo, int ref);
     ~tLuaControl();
-    STDMETHOD(QueryInterface)(REFIID riid, void FAR* FAR* ppvObj);
-    STDMETHODIMP_(ULONG) AddRef(void);
-    STDMETHODIMP_(ULONG) Release(void);
+    static tLuaControl *CreateLuaControl(lua_State* L, ITypeInfo* typeinfo, int ref);
 
-    //=--------------------------------------------------------------------------=
-    // IPersist methods.  used by IPersistStream and IPersistStorage
-    //
+    // IUnknown methods.
+
+    STDMETHOD(QueryInterface)(REFIID riid, void** ppvObj);
+    STDMETHODIMP_(ULONG) AddRef();
+    STDMETHODIMP_(ULONG) Release();
+
+    // IPersist methods.
+
     STDMETHOD(GetClassID)(THIS_ LPCLSID lpClassID);
 
     // IPersistStreamInit methods
-    //
+
     STDMETHOD(IsDirty)(THIS);
     STDMETHOD(Load)(LPSTREAM pStm);
     STDMETHOD(Save)(LPSTREAM pStm, BOOL fClearDirty);
     STDMETHOD(GetSizeMax)(ULARGE_INTEGER FAR* pcbSize);
     STDMETHOD(InitNew)();
 
-    // IPersistStorage
-    //
+    // IPersistStorage methods
+
     STDMETHOD(InitNew)(IStorage  *pStg);
     STDMETHOD(Load)(IStorage  *pStg);
     STDMETHOD(Save)(IStorage  *pStgSave, BOOL fSameAsLoad);
     STDMETHOD(SaveCompleted)(IStorage  *pStgNew);
-    STDMETHOD(HandsOffStorage)(void);
+    STDMETHOD(HandsOffStorage)();
 
     // IOleControl methods
-    //
+
     STDMETHOD(GetControlInfo)(LPCONTROLINFO pCI);
     STDMETHOD(OnMnemonic)(LPMSG pMsg);
     STDMETHOD(OnAmbientPropertyChange)(DISPID dispid);
     STDMETHOD(FreezeEvents)(BOOL bFreeze);
 
-    // IOleObject implementation (yikes)
+    // IOleObject methods
+
     STDMETHOD(SetClientSite)(IOleClientSite* pcs);
     STDMETHOD(GetClientSite)(IOleClientSite** ppcs);
     STDMETHOD(SetHostNames)(LPCOLESTR szContainerApp, LPCOLESTR szContainerObj);
@@ -77,7 +83,8 @@ public:
     STDMETHOD(GetMiscStatus)(DWORD dwAspect, DWORD* pdwStatus);
     STDMETHOD(SetColorScheme)(LOGPALETTE* pLogpal);
 
-    // IOleInPlaceObject implementation
+    // IOleInPlaceObject methods
+
     STDMETHOD(GetWindow)(HWND* phwnd);
     STDMETHOD(ContextSensitiveHelp)(BOOL fEnterMode);
     STDMETHOD(InPlaceDeactivate)();
@@ -85,16 +92,17 @@ public:
     STDMETHOD(SetObjectRects)(LPCRECT lprcPosRect, LPCRECT lprcClipRect);
     STDMETHOD(ReactivateAndUndo)();
 
-    // IOleInPlaceActiveObject
+    // IOleInPlaceActiveObject methods
+
     STDMETHOD(TranslateAccelerator)(LPMSG lpmsg);
     STDMETHOD(OnFrameWindowActivate)(BOOL fActivate);
     STDMETHOD(OnDocWindowActivate)(BOOL fActivate);
     STDMETHOD(ResizeBorder)(LPCRECT prcBorder,
-            IOleInPlaceUIWindow *pUIWindow,
-            BOOL fFrameWindow);
+            IOleInPlaceUIWindow *pUIWindow, BOOL fFrameWindow);
     STDMETHOD(EnableModeless)(BOOL fEnable);
 
-    // IViewObject2
+    // IViewObject2 methods
+
     STDMETHOD(Draw)(DWORD dwDrawAspect, LONG lindex, void  *pvAspect,
                     DVTARGETDEVICE  *ptd, HDC hdcTargetDev, HDC hdcDraw,
                     LPCRECTL lprcBounds, LPCRECTL lprcWBounds,
@@ -111,118 +119,112 @@ public:
     STDMETHOD(GetExtent)(DWORD dwDrawAspect, LONG lindex, DVTARGETDEVICE __RPC_FAR *ptd, LPSIZEL lpsizel);
 
     // IQuickActivate methods
-    //
+
     STDMETHOD(QuickActivate)(QACONTAINER *pqacontainer, QACONTROL *pqacontrol);
     STDMETHOD(SetContentExtent)(LPSIZEL);
     STDMETHOD(GetContentExtent)(LPSIZEL);
-
-    HRESULT InPlaceActivate(BOOL lVerb);
-    void SetInPlaceVisible(BOOL fShow);
-    HWND CreateInPlaceWindow(int x, int y, BOOL fNoRedraw);
-    void DestroyWindow();
-
-    static tLuaControl *CreateLuaControl(
-      lua_State* L,
-      ITypeInfo* typeinfo,
-      int ref
-    );
+    
 private:
-    IOleAdviseHolder *m_pOleAdviseHolder;          // IOleObject::Advise holder object
-    IAdviseSink      *m_pViewAdviseSink;           // IViewAdvise sink for IViewObject2
+    HRESULT InPlaceActivate(bool lVerb);
+    void SetInPlaceVisible(bool fShow);
+    HWND CreateInPlaceWindow(int x, int y, bool fNoRedraw);
+    void DestroyWindow();	
 
-    IOleClientSite     *m_pClientSite;             // client site
-    IOleControlSite    *m_pControlSite;            // IOleControlSite ptr on client site
-    IOleInPlaceSite    *m_pInPlaceSite;            // IOleInPlaceSite for managing activation
-    IOleInPlaceFrame   *m_pInPlaceFrame;           // IOleInPlaceFrame ptr on client site
-    IOleInPlaceUIWindow *m_pInPlaceUIWindow;       // for negotiating border space with client
-    ISimpleFrameSite   *m_pSimpleFrameSite;        // simple frame site
-    IDispatch          *m_pDispAmbient;            // ambient dispatch pointer
-    SIZEL               m_Size;                    // the size of this control    
-    RECT                m_rcLocation;              // where we at
-    HWND                m_hwnd;                    // our window
-    HWND                m_hwndParent;              // our parent window
-    HRGN                m_hRgn;
+    tCOMPtr<IOleAdviseHolder> m_pOleAdviseHolder;     // OleObject::Advise holder object
+    tCOMPtr<IAdviseSink> m_pViewAdviseSink;           // sink for IViewObject2
+    tCOMPtr<IOleClientSite> m_pClientSite;            // client site
+    tCOMPtr<IOleControlSite> m_pControlSite;          // ptr on client site
+    tCOMPtr<IOleInPlaceSite> m_pInPlaceSite;          // for managing activation
+    tCOMPtr<IOleInPlaceFrame> m_pInPlaceFrame;        // ptr on client site
+    tCOMPtr<IOleInPlaceUIWindow> m_pInPlaceUIWindow;  // for negotiating border space with client
+    SIZEL m_Size;                   // the size of this control    
+    RECT m_rcLocation;              // location
+    HWND m_hwnd;                    // window handle
+    HWND m_hwndParent;              // parent window handle
+    HRGN m_hRgn;                    // GDI region
 
-    unsigned m_fDirty:1;                           // does the control need to be resaved?
-    unsigned m_fInPlaceActive:1;                   // are we in place active or not?
-    unsigned m_fInPlaceVisible:1;                  // we are in place visible or not?
-    unsigned m_fUIActive:1;                        // are we UI active or not.
-    unsigned m_fCreatingWindow:1;                  // indicates if we're in CreateWindowEx or not
-    unsigned m_fUsingWindowRgn:1;                  // for SetObjectRects and clipping
-    unsigned m_fViewAdvisePrimeFirst: 1;           // for IViewobject2::setadvise
-    unsigned m_fViewAdviseOnlyOnce: 1;             // for iviewobject2::setadvise
+    bool m_fDirty:1;                       // does the control need to be resaved?
+    bool m_fInPlaceActive:1;               // are we in place active or not?
+    bool m_fInPlaceVisible:1;              // are we in place visible or not?
+    bool m_fUIActive:1;                    // are we UI active or not?
+    bool m_fViewAdvisePrimeFirst:1;        // for IViewObject2::SetAdvise
+    bool m_fViewAdviseOnlyOnce:1;          // for IViewObject2::SetAdvise
 };
 
-class CEnumOLEVERB : public  IEnumOLEVERB {
-    ULONG _refCount;
-    int _nextVerb;
-    const OLEVERB* _verbs;
-    int _size;
+
+/**
+  Standard IEnumOLEVERB implementation backed by C array.
+  Closely parallels CEnumOLEVERB on http://spec.winprog.org/captcom/journal3/page3.html
+*/
+class CEnumOLEVERB : public IEnumOLEVERB
+{
 public:
-    CEnumOLEVERB(const OLEVERB* verbs, int size) : _refCount(0),
-        _nextVerb(0), _size(size), _verbs(verbs) {
-    }
+    // Construction
+
+    CEnumOLEVERB(const OLEVERB* verbs, ULONG verbsSize, ULONG verbsNext=0)
+         : mRefCount(0), mVerbs(verbs), mVerbsSize(verbsSize), mVerbsNext(verbsNext) {}
     ~CEnumOLEVERB() { }
-    ULONG _stdcall AddRef() { return ++_refCount; }
-    ULONG _stdcall Release() {
-        ULONG ret(_refCount); if(!ret) delete this; return ret;
+    
+    // IUnknown methods
+    
+    ULONG _stdcall AddRef() { return ++mRefCount; }
+    ULONG _stdcall Release()
+    {
+        ULONG ret = --mRefCount;
+        if(ret == 0) delete this;
+        return ret;   // careful: this->_refCount may be deleted
     }
-    HRESULT _stdcall QueryInterface(REFIID riid, void** ppv) {
+    HRESULT _stdcall QueryInterface(REFIID riid, void** ppv)
+    {
         if(!ppv) return E_POINTER;
-        if(riid == IID_IUnknown) *ppv = this;
-        else if(riid == IID_IEnumOLEVERB) *ppv = this;
-        else return *ppv = 0, E_NOINTERFACE;
-        return AddRef(), S_OK;
+        else if(riid == IID_IUnknown || riid == IID_IEnumOLEVERB)
+        { *ppv = this; AddRef(); return S_OK; }
+        else { *ppv = NULL; return E_NOINTERFACE; }
     }
+       
+    // IEnumOLEVERB methods
 
-    static HRESULT CreateInstance(const OLEVERB* verbs, int size,
-        IUnknown* pOuter, REFIID riid, void** ppv) {
-        if(!ppv) return E_POINTER;
-        if(pOuter) return *ppv = 0, CLASS_E_NOAGGREGATION;
-        CEnumOLEVERB* pEnum = new CEnumOLEVERB(verbs, size);
-        pEnum->AddRef();
-        HRESULT hr = pEnum->QueryInterface(riid, ppv);
-        pEnum->Release();
+    HRESULT _stdcall Clone(IEnumOLEVERB** ppenum)
+    {
+        *ppenum = new CEnumOLEVERB(mVerbs, mVerbsSize, mVerbsNext);
         return S_OK;
     }
-
-    static HRESULT CreateInstance(const OLEVERB* verbs, int size,
-        IEnumOLEVERB** ppEnumOLEVERB) {
-        return CreateInstance(verbs, size, 0, IID_IEnumOLEVERB,
-            reinterpret_cast<void**>(ppEnumOLEVERB));
-    }
-
-    HRESULT _stdcall Next(ULONG celt, OLEVERB* rgelt, ULONG* pceltFetched) {
-        if(!rgelt) return E_POINTER;
-        ULONG curPos(0);
-        for(int nextVerb(_nextVerb); (nextVerb < _size) && (curPos < celt);
-            ++nextVerb, ++curPos) {
-            rgelt[curPos] = _verbs[nextVerb];
-            rgelt[curPos].lpszVerbName = static_cast<wchar_t*>(
-                CoTaskMemAlloc(lstrlenW(_verbs[nextVerb].lpszVerbName) * 2 + 2));
-            lstrcpyW(rgelt[curPos].lpszVerbName, _verbs[nextVerb].lpszVerbName);
+    
+    HRESULT _stdcall Next(ULONG celt, OLEVERB* rgelt, ULONG* pceltFetched)
+    {
+        if(!rgelt) return E_POINTER; // unspecified behavior (violates precondition)
+        ULONG i;
+        for(i = 0; i < celt && mVerbsNext + i < mVerbsSize; ++i)
+        {
+            int verbsi = mVerbsNext + i;
+            rgelt[i] = mVerbs[verbsi];
+            rgelt[i].lpszVerbName = static_cast<wchar_t*>(
+                CoTaskMemAlloc(lstrlenW(mVerbs[verbsi].lpszVerbName) * 2 + 2));
+            lstrcpyW(rgelt[i].lpszVerbName, mVerbs[verbsi].lpszVerbName);
         }
-        _nextVerb += curPos;
-        if(pceltFetched) *pceltFetched = curPos;
-        return (curPos == celt) ? S_OK : S_FALSE;
+        mVerbsNext += i;
+        if(pceltFetched) *pceltFetched = i;
+        return (i == celt) ? S_OK : S_FALSE;
     }
 
-    HRESULT _stdcall Clone(IEnumOLEVERB** ppenum) {
-        HRESULT hr = CreateInstance(_verbs, _size, 0, IID_IEnumOLEVERB,
-            reinterpret_cast<void**>(ppenum));
-        if(hr) return hr;
-        (*ppenum)->Skip(_nextVerb);
+    HRESULT _stdcall Reset()
+    {
+        mVerbsNext = 0;
         return S_OK;
     }
 
-    HRESULT _stdcall Reset() {
-        return _nextVerb = 0, S_OK;
-    }
-
-    HRESULT _stdcall Skip(ULONG celt) {
-        _nextVerb = min(_size, _nextVerb + static_cast<int>(celt));
+    HRESULT _stdcall Skip(ULONG celt)
+    {
+        ULONG n = mVerbsNext + static_cast<ULONG>(celt);
+        mVerbsNext = n > mVerbsSize ? mVerbsSize : n;
         return S_OK;
     }
+
+private:
+    ULONG mRefCount;         // IUnknown reference counter
+    const OLEVERB* mVerbs;  // verbs array (memory not owned)
+    ULONG mVerbsSize;        // size of mVerbs array
+    ULONG mVerbsNext;        // mVerbs[mVerbsNext] is returned by Next()
 };
 
 #endif // __TLUACONTROL_H

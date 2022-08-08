@@ -1,5 +1,3 @@
-#pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
-
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
 *************************************************/

@@ -10,22 +10,24 @@
 #include "tLuaCOMException.h"
 #include "luacom_internal.h"
 #include "tUtil.h" 
-
-extern "C"
-{
 #include "LuaCompat.h"
-}
 
 #ifndef MODULENAME
 #define MODULENAME "__tLuaObject_object_types"
 #endif
+
+int const index_table_param = -2;
+int const index_index_param = -1;
+int const newindex_table_param = -3;
+int const newindex_index_param = -2;
+int const newindex_value_param = -1;
 
 const char TLUAOBJECT_POINTER_FIELD[] = "__TLUAOBJECT_pointer__";
 
 
 int tLuaObject::garbagecollect(lua_State *L)
 {
-  tLuaObject* lua_obj = (tLuaObject*) luaCompat_getTypedObject(L, -1);
+  tLuaObject* lua_obj = (tLuaObject*)*(void **)lua_touserdata(L, -1);
 
   delete lua_obj;
 
@@ -42,7 +44,7 @@ tLuaObject* tLuaObject::getObject(lua_State *L, int pos)
   // gets lua object
   lua_pushstring(L, TLUAOBJECT_POINTER_FIELD);
   lua_rawget(L, pos);
-  tLuaObject* lua_obj = (tLuaObject*) luaCompat_getTypedObject(L, -1);
+  tLuaObject* lua_obj = (tLuaObject*)*(void **)lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   LUASTACK_CLEAN(L, 0);
@@ -55,7 +57,7 @@ int tLuaObject::generic_index(lua_State *L)
   tLuaObject* lua_obj = tLuaObject::getObject(L, index_table_param);
 
   // gets the field name
-  const char* field_name = lua_tostring(L, index_index_param);
+  tStringBuffer field_name(lua_tostring(L, index_index_param));
 
   // finds in the method table
   tMethodType method_type;
@@ -69,7 +71,7 @@ int tLuaObject::generic_index(lua_State *L)
   switch(method_type)
   {
   case FUNC:
-    luaCompat_pushPointer(L, (void *) method);
+    lua_pushlightuserdata(L, (void *) method);
     lua_pushcclosure(L, closure, 1);
     return 1;
     break;
@@ -102,7 +104,7 @@ int tLuaObject::generic_PushNew(lua_State* L,
   lua_newtable(L);
   luaCompat_pushTypeByName(L, MODULENAME, type_name);
 
-  luaCompat_setType(L, -2);
+  lua_setmetatable(L, -2);
 
   lua_pushstring(L, TLUAOBJECT_POINTER_FIELD);
 
@@ -133,7 +135,6 @@ void tLuaObject::RegisterType(lua_State* L,
 
   luaCompat_newLuaType(L, MODULENAME, pointer_type_name);
 
-#ifdef LUA5
   // Registers the weak table to store the pairs
   // (pointer, LuaObject) to avoid duplication
   // of Lua objects. This step must be done
@@ -158,22 +159,22 @@ void tLuaObject::RegisterType(lua_State* L,
   }
   else
     lua_pop(L, 1);
-#endif  
 
   luaCompat_pushTypeByName(L, MODULENAME, type_name);
 
   lua_pushcfunction(L, tLuaObject::generic_index);
-  luaCompat_handleNoIndexEvent(L);
+  lua_setfield(L, -2, "__index");
 
+  lua_pushstring(L, "__newindex");
   lua_pushcfunction(L, tLuaObject::generic_newindex);
-  luaCompat_handleSettableEvent(L);
+  lua_settable(L, -3);
 
   lua_pop(L, 1);
 
   luaCompat_pushTypeByName(L, MODULENAME, pointer_type_name);
 
   lua_pushcfunction(L, tLuaObject::garbagecollect);
-  luaCompat_handleGCEvent(L);
+  lua_setfield(L, -2, "__gc");
 
   lua_pop(L, 1);
   
@@ -195,7 +196,7 @@ int tLuaObject::newindex(lua_State* L)
 int tLuaObject::closure(lua_State *L)
 {
   tLuaObjectMethod method = (tLuaObjectMethod) 
-    luaCompat_getPointer(L, luaCompat_upvalueIndex(L, 1, 1));
+    luaCompat_getPointer(L, lua_upvalueindex(1));
 
   tLuaObject* lua_obj = getObject(L, 1);
 
@@ -289,7 +290,6 @@ bool tLuaObject::pushCachedObject(lua_State *L, void *pointer)
 {
   LUASTACK_SET(L);
 
-#ifdef LUA5
   luaCompat_moduleGet(L, MODULENAME, INSTANCES_CACHE);
 
   lua_pushlightuserdata(L, pointer);
@@ -308,16 +308,12 @@ bool tLuaObject::pushCachedObject(lua_State *L, void *pointer)
   LUASTACK_CLEAN(L, 1);
 
   return true;
-#else
-  return false;
-#endif
 }
 
 void tLuaObject::cacheObject(lua_State *L, void* pointer)
 {
   LUASTACK_SET(L);
 
-#ifdef LUA5
   luaCompat_moduleGet(L, MODULENAME, INSTANCES_CACHE);
 
   lua_pushlightuserdata(L, pointer);
@@ -325,7 +321,6 @@ void tLuaObject::cacheObject(lua_State *L, void* pointer)
   lua_settable(L, -3);
 
   lua_remove(L, -1);
-#endif
 
   LUASTACK_CLEAN(L, 0);
 }

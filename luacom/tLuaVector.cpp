@@ -9,11 +9,7 @@
 #include "tLuaCOM.h"
 #include "LuaAux.h"
 #include "tLuaCOMException.h"
-
-extern "C"
-{
 #include "LuaCompat.h"
-}
 
 
 #define LUA_NOOBJECT 0
@@ -343,7 +339,7 @@ void tLuaVector::InitVectorFromTable(lua_State* L, stkIndex table)
       }
 
       // assures there will be enough stack space
-      luaCompat_needStack(L, 1);
+      lua_checkstack(L, 1);
       
       // se nao for tabela, termina processo de calculo de dimensoes
       // e guarda elemento

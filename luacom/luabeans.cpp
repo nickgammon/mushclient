@@ -3,22 +3,10 @@
 #include <string.h>
 extern "C"
 {
-#ifdef LUA_52
-  extern "C"
-    {
-    #include "..\..\lua52\src\lua.h"
-    #include "..\..\lua52\src\lauxlib.h"
-    }
-
-#else
-  extern "C"
-    {
-    #include "..\lua.h"
-    #include "..\lauxlib.h"
-    }
-#endif
-#include "LuaCompat.h"
+#include <lua.h>
+#include <lauxlib.h>
 }
+#include "LuaCompat.h"
 #include "luabeans.h"
 
 
@@ -26,10 +14,11 @@ extern "C"
 #include "LuaAux.h"
 #include "tUtil.h"
 
-char* LuaBeans::tag_name          = NULL;
-char* LuaBeans::udtag_name        = NULL;
-LuaBeans::Events* LuaBeans::pEvents         = NULL;
-const char* LuaBeans::module_name = NULL;
+// the address of each static is a unique memory location used as the key to the lua registry
+// see http://www.lua.org/pil/27.3.1.html
+const char LuaBeans::tag_name_key = 't';
+const char LuaBeans::udtag_name_key = 'u';
+const char LuaBeans::module_name_key = 'm';
 
 void LuaBeans::createBeans(lua_State *L,
                            const char* p_module_name,
@@ -39,59 +28,63 @@ void LuaBeans::createBeans(lua_State *L,
 
   char lua_name[500];
 
-  module_name = tUtil::strdup(p_module_name);
-
+  tStringBuffer module_name(p_module_name);
   sprintf(lua_name, "%s" ,name);
-  tag_name = tUtil::strdup(lua_name);
+  tStringBuffer tag_name(lua_name);
   luaCompat_newLuaType(L, module_name, tag_name);
 
   sprintf(lua_name,"%s_UDTAG",name);
-  udtag_name = tUtil::strdup(lua_name);
+  tStringBuffer udtag_name(lua_name);
   luaCompat_newLuaType(L, module_name, udtag_name);
+
+  // store values for later use (used to be DLL-statics)
+  tUtil::RegistrySetString(L, module_name_key, module_name);
+  tUtil::RegistrySetString(L, tag_name_key, tag_name);
+  tUtil::RegistrySetString(L, udtag_name_key, udtag_name);
+
   LUASTACK_CLEAN(L, 0);
 }
 
 
-void LuaBeans::Clean()
+/*void LuaBeans::Clean()
 {
   free(LuaBeans::tag_name);
   free(LuaBeans::udtag_name);
-}
+}*/
 
 void LuaBeans::registerObjectEvents(lua_State* L, class Events& events)
 {
   LUASTACK_SET(L);
 
-  luaCompat_pushTypeByName(L, module_name, tag_name);
+  tStringBuffer module_name(tUtil::RegistryGetString(L, module_name_key));
+  tStringBuffer tag_name(tUtil::RegistryGetString(L, tag_name_key));
+  tStringBuffer udtag_name(tUtil::RegistryGetString(L, udtag_name_key));
+  LUASTACK_DOCLEAN(L, 0);
 
-  if(events.gettable)
-  {
-    lua_pushcfunction(L, events.gettable);
-    luaCompat_handleGettableEvent(L);
-  }
+  luaCompat_pushTypeByName(L, module_name, tag_name);
 
   if(events.settable)
   {
     lua_pushcfunction(L, events.settable);
-    luaCompat_handleSettableEvent(L);
+    lua_setfield(L, -2, "__newindex");
   }
 
-  if(events.noindex)
+  if(events.index)
   {
-    lua_pushcfunction(L, events.noindex);
-    luaCompat_handleNoIndexEvent(L);
+    lua_pushcfunction(L, events.index);
+    lua_setfield(L, -2, "__index");
   }
 
   if(events.call)
   {
     lua_pushcfunction(L, events.call);
-    luaCompat_handleFuncCallEvent(L);
+    lua_setfield(L, -2, "__call");
   }
 
   if(events.gc)
   {
     lua_pushcfunction(L, events.gc);
-    luaCompat_handleGCEvent(L);
+    lua_setfield(L, -2, "__gc");
   }
 
   lua_pop(L, 1);
@@ -103,30 +96,29 @@ void LuaBeans::registerPointerEvents(lua_State* L, class Events& events)
 {
   LUASTACK_SET(L);
 
-  luaCompat_pushTypeByName(L, module_name, udtag_name);
+  tStringBuffer module_name(tUtil::RegistryGetString(L, module_name_key));
+  tStringBuffer tag_name(tUtil::RegistryGetString(L, tag_name_key));
+  tStringBuffer udtag_name(tUtil::RegistryGetString(L, udtag_name_key));
+  LUASTACK_DOCLEAN(L, 0);
 
-  if(events.gettable)
-  {
-    lua_pushcfunction(L, events.gettable);
-    luaCompat_handleGettableEvent(L);
-  }
+  luaCompat_pushTypeByName(L, module_name, udtag_name);
 
   if(events.settable)
   {
     lua_pushcfunction(L, events.settable);
-    luaCompat_handleSettableEvent(L);
+    lua_setfield(L, -2, "__newindex");
   }
 
-  if(events.noindex)
+  if(events.index)
   {
-    lua_pushcfunction(L, events.noindex);
-    luaCompat_handleNoIndexEvent(L);
+    lua_pushcfunction(L, events.index);
+    lua_setfield(L, -2, "__index");
   }
 
   if(events.gc)
   {
     lua_pushcfunction(L, events.gc);
-    luaCompat_handleGCEvent(L);
+    lua_setfield(L, -2, "__gc");
   }
 
   lua_pop(L, 1);
@@ -138,6 +130,11 @@ void LuaBeans::push(lua_State* L, void* userdata )
 {
   LUASTACK_SET(L);
 
+  tStringBuffer module_name(tUtil::RegistryGetString(L, module_name_key));
+  tStringBuffer tag_name(tUtil::RegistryGetString(L, tag_name_key));
+  tStringBuffer udtag_name(tUtil::RegistryGetString(L, udtag_name_key));
+  LUASTACK_DOCLEAN(L, 0);
+
   lua_newtable(L);
 
   lua_pushstring(L, "_USERDATA_REF_");
@@ -148,7 +145,7 @@ void LuaBeans::push(lua_State* L, void* userdata )
   lua_settable(L, -3);
 
   luaCompat_pushTypeByName(L, module_name, tag_name);
-  luaCompat_setType(L, -2);
+  lua_setmetatable(L, -2);
 
   LUASTACK_CLEAN(L, 1);
 }
@@ -157,7 +154,7 @@ void* LuaBeans::check_tag(lua_State* L, int index)
 {
   void* userdata = from_lua(L, index);
 
-  luaL_arg_check(L, (userdata!=NULL), index, "Object type is wrong");
+  luaL_argcheck(L, (userdata!=NULL), index, "Object type is wrong");
 
   return userdata;
 }
@@ -166,6 +163,11 @@ void* LuaBeans::from_lua(lua_State* L, int index)
 {
   LUASTACK_SET(L);
 
+  tStringBuffer module_name(tUtil::RegistryGetString(L, module_name_key));
+  tStringBuffer tag_name(tUtil::RegistryGetString(L, tag_name_key));
+  tStringBuffer udtag_name(tUtil::RegistryGetString(L, udtag_name_key));
+  LUASTACK_DOCLEAN(L, 0);
+
   void *obj = NULL;
 
   lua_pushvalue(L, index);
@@ -173,7 +175,7 @@ void* LuaBeans::from_lua(lua_State* L, int index)
   {
     lua_pushstring(L, "_USERDATA_REF_");
     lua_gettable(L, index);
-    obj = luaCompat_getTypedObject(L, -1);
+    obj = *(void **)lua_touserdata(L, -1);
     lua_pop(L, 1);
   }
   lua_pop(L, 1);
