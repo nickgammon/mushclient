@@ -205,6 +205,9 @@ int nItem = 0;
 
   m_ctlPluginList.SortItems (CompareFunc, m_reverse << 8 | m_last_col); 
 
+  // focus on the list but don't select anything
+  m_ctlPluginList.SetItemState (0, LVIS_FOCUSED, LVIS_FOCUSED);
+
   } // end of CPluginsDlg::LoadList
 
 void CPluginsDlg::OnColumnclickPluginsList(NMHDR* pNMHDR, LRESULT* pResult) 
