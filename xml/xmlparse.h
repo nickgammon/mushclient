@@ -5,7 +5,7 @@
 #include <float.h>
 #include <math.h>
 
-#define MAX_XML_DOCUMENT_SIZE (5000 * 1024)   // max XML file length - 5,000 Kb
+#define MAX_XML_DOCUMENT_SIZE (100 * 1024 * 1024)   // max XML file length - 100 MB
 #define MAX_XML_NAME_LENGTH 255        // max name of element (eg. <trigger> )
 
 class CXMLelement;
