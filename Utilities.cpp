@@ -3051,6 +3051,7 @@ unsigned char header [8];
   int png_transforms = PNG_TRANSFORM_STRIP_16 |    // Strip 16-bit samples to 8 bits
                        PNG_TRANSFORM_PACKING |     // Expand 1, 2 and 4-bit samples to bytes
                        PNG_TRANSFORM_EXPAND  |     // expand out to 8 bits if less
+                       PNG_TRANSFORM_GRAY_TO_RGB | // expand grayscale image to RGB
                        PNG_TRANSFORM_BGR;          // Flip RGB to BGR, RGBA to BGRA
 
   // read the file
