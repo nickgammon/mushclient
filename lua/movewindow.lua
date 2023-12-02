@@ -293,7 +293,7 @@ function movewindow.install (win, default_position, default_flags, nocheck, frie
   assert (not string.match (win, "[^A-Za-z0-9_]"), "Invalid window name in movewindow.install: " .. win)
   
   default_position = default_position or miniwin.pos_center_right -- on right, center top/bottom
-  default_flags = default_flags or 0
+  default_flags = default_flags or 2
   
   -- set up handlers and where window should be shown (from saved state, if any)
   local movewindow_info = {
