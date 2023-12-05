@@ -196,10 +196,10 @@ local function make_dragmove_handler (mwi)
         posy = GetInfo(280) - mwi.margin
     end
     
-	if bit.test(mwi.window_flags, miniwin.create_absolute_location) == false then
-		mwi.window_flags = mwi.window_flags + miniwin.create_absolute_location
-	end
-	
+    if bit.test(mwi.window_flags, miniwin.create_absolute_location) == false then
+        mwi.window_flags = mwi.window_flags + miniwin.create_absolute_location
+    end
+    
     -- move the window to the new location - offset by how far mouse was into window
     WindowPosition(win, posx, posy, 0, mwi.window_flags);
     
