@@ -6,7 +6,9 @@ branches:
   - master
 
 skip_tags: true
-configuration: Release
+configuration:
+  - Release
+  - Debug
 
 environment:
   auth_token:
@@ -17,9 +19,20 @@ build:
   parallel: true
   verbosity: normal
 
+artifacts:
+- path: WinRel\MUSHclient.exe
+  name: MUSHclient_Release
+  type: File
+- path: WinDebug\MUSHclient.exe
+  name: MUSHclient_Debug
+  type: File
+
 before_deploy:
-- '"C:\Program Files (x86)\Windows Kits\8.1\bin\x64\mt.exe" -manifest MUSHclient.exe.manifest -updateresource:WinRel\MUSHclient.exe;#1'
-- ps: Push-AppveyorArtifact WinRel\MUSHclient.exe -FileName MUSHclient.exe
+- ps: >
+    $path = if ($env:CONFIGURATION -eq "Release") { "WinRel\MUSHclient.exe" } else { "WinDbg\MUSHclient.exe" }
+    & "C:\Program Files (x86)\Windows Kits\8.1\bin\x64\mt.exe" -manifest MUSHclient.exe.manifest -updateresource:$path`;#1
+- ps: if ($env:CONFIGURATION -eq "Release") { Push-AppveyorArtifact WinRel\MUSHclient.exe -FileName MUSHclient.exe }
+- ps: if ($env:CONFIGURATION -eq "Debug") { Push-AppveyorArtifact WinDebug\MUSHclient.exe -FileName MUSHclient.exe }
 - git config --global credential.helper store
 - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:auth_token):x-oauth-basic@github.com`n"
 - git tag -f latest_commit HEAD
@@ -30,8 +43,12 @@ deploy:
   tag: latest_commit
   auth_token:
     secure: 8hkN/U/UWTSiR0XJovrM+FLbNe51eigL7viOQEP1Hy+5uP8kTthMF+2SUifn7OUM
-  artifact: MUSHclient.exe
+  artifact: MUSHclient_Release
   prerelease: true
   force_update: true
   on:
     branch: master
+    appveyor_repo_tag: false
+    configuration: Release
+    APPVEYOR_REPO_IS_FORK: false
+    
