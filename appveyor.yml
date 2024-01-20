@@ -51,7 +51,6 @@ deploy:
     branch: master
     appveyor_repo_tag: false
     configuration: Debug
-    APPVEYOR_REPO_IS_FORK: false
 - provider: GitHub
   tag: latest_commit
   auth_token:
@@ -63,4 +62,3 @@ deploy:
     branch: master
     appveyor_repo_tag: false
     configuration: Release
-    APPVEYOR_REPO_IS_FORK: false
