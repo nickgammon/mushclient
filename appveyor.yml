@@ -41,6 +41,18 @@ before_deploy:
 
 deploy:
 - provider: GitHub
+  tag: latest_commit_debug
+  auth_token:
+    secure: 8hkN/U/UWTSiR0XJovrM+FLbNe51eigL7viOQEP1Hy+5uP8kTthMF+2SUifn7OUM
+  artifact: MUSHclient_Debug,MUSHclient_Debug_PDB
+  prerelease: true
+  force_update: true
+  on:
+    branch: master
+    appveyor_repo_tag: false
+    configuration: Debug
+    APPVEYOR_REPO_IS_FORK: false
+- provider: GitHub
   tag: latest_commit
   auth_token:
     secure: 8hkN/U/UWTSiR0XJovrM+FLbNe51eigL7viOQEP1Hy+5uP8kTthMF+2SUifn7OUM
@@ -52,4 +64,3 @@ deploy:
     appveyor_repo_tag: false
     configuration: Release
     APPVEYOR_REPO_IS_FORK: false
-    
