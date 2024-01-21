@@ -20,7 +20,7 @@ build:
   verbosity: normal
 
 artifacts:
-- path: WinRel\MUSHclient.exe8hkN/U/UWTSiR0XJovrM+FLbNe51eigL7viOQEP1Hy+5uP8kTthMF+2SUifn7OUM
+- path: WinRel\MUSHclient.exe
   name: MUSHclient_Release
   type: File
 - path: WinDebug\MUSHclient.exe
