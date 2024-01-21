@@ -12,7 +12,7 @@ configuration:
 
 environment:
   auth_token:
-    secure: 8hkN/U/UWTSiR0XJovrM+FLbNe51eigL7viOQEP1Hy+5uP8kTthMF+2SUifn7OUM
+    secure: oYkN6ClBeCQpDctBb2K+mucEepsxl60sXzU6J9JZm2rvIwBFJBfx1A+RLeGH0ve1
   PRE_RELEASE: PRE_RELEASE
 build:
   project: MUSHclient_2017.sln
@@ -20,7 +20,7 @@ build:
   verbosity: normal
 
 artifacts:
-- path: WinRel\MUSHclient.exe
+- path: WinRel\MUSHclient.exe8hkN/U/UWTSiR0XJovrM+FLbNe51eigL7viOQEP1Hy+5uP8kTthMF+2SUifn7OUM
   name: MUSHclient_Release
   type: File
 - path: WinDebug\MUSHclient.exe
@@ -43,7 +43,7 @@ deploy:
 - provider: GitHub
   tag: latest_commit_debug
   auth_token:
-    secure: 8hkN/U/UWTSiR0XJovrM+FLbNe51eigL7viOQEP1Hy+5uP8kTthMF+2SUifn7OUM
+    secure: oYkN6ClBeCQpDctBb2K+mucEepsxl60sXzU6J9JZm2rvIwBFJBfx1A+RLeGH0ve1
   artifact: MUSHclient_Debug,MUSHclient_Debug_PDB
   prerelease: true
   force_update: true
@@ -54,7 +54,7 @@ deploy:
 - provider: GitHub
   tag: latest_commit
   auth_token:
-    secure: 8hkN/U/UWTSiR0XJovrM+FLbNe51eigL7viOQEP1Hy+5uP8kTthMF+2SUifn7OUM
+    secure: oYkN6ClBeCQpDctBb2K+mucEepsxl60sXzU6J9JZm2rvIwBFJBfx1A+RLeGH0ve1
   artifact: MUSHclient_Release
   prerelease: true
   force_update: true
