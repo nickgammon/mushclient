@@ -196,6 +196,10 @@ local function make_dragmove_handler (mwi)
         posy = GetInfo(280) - mwi.margin
     end
     
+    if bit.test(mwi.window_flags, miniwin.create_absolute_location) == false then
+        mwi.window_flags = mwi.window_flags + miniwin.create_absolute_location
+    end
+    
     -- move the window to the new location - offset by how far mouse was into window
     WindowPosition(win, posx, posy, 0, mwi.window_flags);
     
@@ -293,7 +297,7 @@ function movewindow.install (win, default_position, default_flags, nocheck, frie
   assert (not string.match (win, "[^A-Za-z0-9_]"), "Invalid window name in movewindow.install: " .. win)
   
   default_position = default_position or miniwin.pos_center_right -- on right, center top/bottom
-  default_flags = default_flags or 0
+  default_flags = default_flags or 2
   
   -- set up handlers and where window should be shown (from saved state, if any)
   local movewindow_info = {
