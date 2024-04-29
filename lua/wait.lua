@@ -154,7 +154,7 @@ end -- function match
 -- ----------------------------------------------------------
 -- wait.make: makes a coroutine and resumes it
 -- ----------------------------------------------------------
-function make (f)
+function make (f, ...)
   assert (type (f) == "function", "wait.make requires a function")
   
   -- More friendly failure, suggested by Fiendish
@@ -175,6 +175,6 @@ function make (f)
                 "Please check your configuration settings.")
     return nil, "Trigger/Timers not enabled"  -- bad return
   end  -- if have errors
-  coroutine.wrap (f) () -- make coroutine, resume it
+  coroutine.wrap (f) (...) -- make coroutine, resume it
   return true  -- good return
 end -- make
