@@ -12,7 +12,7 @@ configuration:
 
 environment:
   auth_token:
-    secure: oYkN6ClBeCQpDctBb2K+mucEepsxl60sXzU6J9JZm2rvIwBFJBfx1A+RLeGH0ve1
+    secure: lwpoWmqAvm162iIBUx2QKEMGjqbXUEhC3Eq90igXe/nagZvlPFdofQS3d8HP+Zx4
   PRE_RELEASE: PRE_RELEASE
 build:
   project: MUSHclient_2017.sln
@@ -43,7 +43,7 @@ deploy:
 - provider: GitHub
   tag: latest_commit_debug
   auth_token:
-    secure: oYkN6ClBeCQpDctBb2K+mucEepsxl60sXzU6J9JZm2rvIwBFJBfx1A+RLeGH0ve1
+    secure: lwpoWmqAvm162iIBUx2QKEMGjqbXUEhC3Eq90igXe/nagZvlPFdofQS3d8HP+Zx4
   artifact: MUSHclient_Debug,MUSHclient_Debug_PDB
   prerelease: true
   force_update: true
@@ -54,7 +54,7 @@ deploy:
 - provider: GitHub
   tag: latest_commit
   auth_token:
-    secure: oYkN6ClBeCQpDctBb2K+mucEepsxl60sXzU6J9JZm2rvIwBFJBfx1A+RLeGH0ve1
+    secure: lwpoWmqAvm162iIBUx2QKEMGjqbXUEhC3Eq90igXe/nagZvlPFdofQS3d8HP+Zx4
   artifact: MUSHclient_Release
   prerelease: true
   force_update: true
