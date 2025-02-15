@@ -784,7 +784,10 @@ void CMUSHclientDoc::Handle_TELOPT_TERMINAL_TYPE ()
          32 "OSC COLOR PALETTE" Client supports the OSC color palette.
          64 "SCREEN READER"     Client is using a screen reader.
         128 "PROXY"             Client is a proxy allowing different users to connect from the same IP address.
-         
+        256 "TRUECOLOR"         Client supports truecolor codes using semicolon notation.
+        512 "MNES"              Client supports the Mud New Environment Standard for information exchange.
+       1024 "MSLP"              Client supports the Mud Server Link Protocol for clickable link handling.
+       2048 "SSL"               Client supports SSL for data encryption, preferably TLS 1.3 or higher.
   */
 
   switch (m_ttype_sequence)
@@ -801,9 +804,9 @@ void CMUSHclientDoc::Handle_TELOPT_TERMINAL_TYPE ()
 
     case 2:
         if (m_bUTF_8)
-          strTemp = "MTTS 13";
+          strTemp = "MTTS 269"; // ANSI=1, UTF-8=4, 256=8, TRUECOLOR=256 = 256+8+4+1 = 269
         else
-          strTemp = "MTTS 9";
+          strTemp = "MTTS 265"; // ANSI=1,          256=8, TRUECOLOR=256 = 256+8  +1 = 265
         break;
 
     } // end of switch
