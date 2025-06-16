@@ -1,0 +1,106 @@
+name: Build and Deploy MUSHclient
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  SOLUTION_FILE_PATH: MUSHclient_2022.sln
+  BUILD_CONFIGURATION_RELEASE: Release
+  BUILD_CONFIGURATION_DEBUG: Debug
+  GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN || secrets.GITHUB_TOKEN }}  # For GitHub API
+  GH_TOKEN: ${{ secrets.PERSONAL_TOKEN || secrets.GITHUB_TOKEN }}  # For gh CLI
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        configuration: [Release, Debug]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build solution
+      run: msbuild /m /p:Configuration=${{ matrix.configuration }} /p:Platform=Win32 /p:PreferredToolArchitecture=x86 /p:BuildProjectReferences=true /verbosity:normal ${{ env.SOLUTION_FILE_PATH }}
+
+    - name: Upload Release artifacts
+      if: matrix.configuration == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: MUSHclient_Release
+        path: WinRel/MUSHclient.exe
+
+    - name: Upload Debug artifacts
+      if: matrix.configuration == 'Debug'
+      uses: actions/upload-artifact@v4
+      with:
+        name: MUSHclient_Debug
+        path: |
+          WinDebug/MUSHclient.exe
+          WinDebug/MUSHclient.pdb
+
+  deploy:
+    needs: build
+    runs-on: windows-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download Release artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: MUSHclient_Release
+        path: ./release
+
+    - name: Download Debug artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: MUSHclient_Debug
+        path: ./debug
+
+    - name: Delete tags and releases
+      shell: bash
+      run: |
+        gh api repos/${{ github.repository }}/git/refs/tags/latest_commit -X DELETE || echo "Tag latest_commit not found"
+        gh release delete latest_commit --yes || echo "Release latest_commit not found"
+        gh api repos/${{ github.repository }}/git/refs/tags/latest_commit_debug -X DELETE || echo "Tag latest_commit_debug not found"
+        gh release delete latest_commit_debug --yes || echo "Release latest_commit_debug not found"
+
+    - name: Create Release build release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: latest_commit
+        name: Latest Commit (Release)
+        prerelease: true
+        files: ./release/MUSHclient.exe
+        body: |
+          Automatic release build from latest commit.
+          
+          **Build Configuration:** Release
+          **Commit:** ${{ github.sha }}
+          **Build Date:** ${{ github.run_id }}
+
+    - name: Create Debug build release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: latest_commit_debug
+        name: Latest Commit (Debug)
+        prerelease: true
+        files: |
+          ./debug/MUSHclient.exe
+          ./debug/MUSHclient.pdb
+        body: |
+          Automatic debug build from latest commit.
+          
+          **Build Configuration:** Debug
+          **Commit:** ${{ github.sha }}
+          **Build Date:** ${{ github.run_id }}

@@ -24,8 +24,11 @@
         </security>
     </trustInfo>
 
+    <!-- Declare OS compatibility -->
     <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
         <application>
+            <!-- Windows 11 -->
+            <supportedOS Id="{d8fcd9e3-1760-4cd5-9f9c-44b3226fb1b4}"/>
             <!-- Windows 10 -->
             <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>
             <!-- Windows 8.1 -->
@@ -36,8 +39,22 @@
             <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>
             <!-- Windows Vista -->
             <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"/>
-            <!-- XP Ignores this section -->
+            <!-- Windows XP ignores this section entirely -->
         </application>
     </compatibility>
-    
+
+    <!-- Enable Common Controls v6 for visual styles -->
+    <dependency>
+        <dependentAssembly>
+            <assemblyIdentity
+                type="win32"
+                name="Microsoft.Windows.Common-Controls"
+                version="6.0.0.0"
+                processorArchitecture="x86"
+                publicKeyToken="6595b64144ccf1df"
+                language="*"
+            />
+        </dependentAssembly>
+    </dependency>
+
 </assembly>
