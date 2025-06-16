@@ -6219,7 +6219,7 @@ CAlias * pAlias;
 POSITION pos;
 
   GetAliasArray ().SetSize (iCount);
-  CAliasRevMap ().empty ();
+  GetAliasRevMap ().clear ();
 
   // extract pointers into a simple array
   for (i = 0, pos = GetAliasMap ().GetStartPosition(); pos; i++)
