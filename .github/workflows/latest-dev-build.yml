@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ master ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   SOLUTION_FILE_PATH: MUSHclient_2022.sln
   BUILD_CONFIGURATION_RELEASE: Release
