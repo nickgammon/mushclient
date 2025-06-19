@@ -1,6 +1,6 @@
 zlib built as follows:
 
-1. Download recent version from https://www.zlib.net/zlib1212.zip
+1. Download recent version from https://www.zlib.net/zlib131.zip
 
 2. Unzip and untar the file
 
@@ -43,16 +43,7 @@ add:
 #undef ZLIB_DLL      // NJG
 
 
-4. Edit: zlib.h and at the start add the lines:
-
-// pragmas added by Nick Gammon
-#pragma warning( disable : 4127)  // conditional expression is constant
-#pragma warning( disable : 4131)  // uses old-style declarator
-#pragma warning( disable : 4244)  // conversion from 'int' to 'unsigned short', possible loss of data
-#pragma warning( disable : 4702)  // unreachable code
-
-
-5. Edit gzguts.h and remove the #ifdef / #endif from these lines:
+4. Edit gzguts.h and remove the #ifdef / #endif from these lines:
 
 #ifdef WINAPI_FAMILY
 #  define open _open

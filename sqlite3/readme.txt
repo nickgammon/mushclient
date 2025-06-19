@@ -31,15 +31,6 @@ sqlite3.c
 sqlite3.h
 sqlite3ext.h
 
-
-3. Edit: sqlite3.c and add the following lines to the start of it:
-
-#define SQLITE_SOUNDEX 1
-#define SQLITE_ENABLE_FTS3 1
-#define SQLITE_ENABLE_FTS3_PARENTHESIS 1
-#define SQLITE_ENABLE_RTREE 1
-#define SQLITE_USE_URI 1
-
 4. If you get compile errors like C2059 'bad suffix on number' on older compilers, remove the LL suffix from constants.
 For example, change:
 
