@@ -32,7 +32,7 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Build solution
-      run: msbuild /m /p:Configuration=${{ matrix.configuration }} /p:Platform=Win32 /p:PreferredToolArchitecture=x86 /p:BuildProjectReferences=true /verbosity:normal ${{ env.SOLUTION_FILE_PATH }}
+      run: msbuild /m /p:Configuration=${{ matrix.configuration }} /p:Platform=Win32 /p:PreferredToolArchitecture=x86 /p:BuildProjectReferences=true /verbosity:normal /p:PRE_RELEASE=PRE_RELEASE ${{ env.SOLUTION_FILE_PATH }}
 
     - name: Upload Release artifacts
       if: matrix.configuration == 'Release'
