@@ -417,9 +417,6 @@ BOOL CMUSHclientApp::InitInstance()
    // set the current locale
    setlocale (LC_ALL, "" );
 
-// Set the debug-heap flag so that freed blocks are kept on the
-   // linked list, to catch any inadvertent use of freed memory
-   SET_CRT_DEBUG_FIELD( _CRTDBG_DELAY_FREE_MEM_DF );
    SET_CRT_DEBUG_FIELD( _CRTDBG_LEAK_CHECK_DF );
 //   SET_CRT_DEBUG_FIELD( _CRTDBG_CHECK_ALWAYS_DF );
 // speed warning: see:   _ASSERTE( _CrtCheckMemory( ) );
