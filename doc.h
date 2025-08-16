@@ -206,6 +206,7 @@ enum {
 #define TELOPT_TERMINAL_TYPE 24  // want to know terminal type
 #define TELOPT_COMPRESS 85   // telet negotiation code for starting compression v1
 #define TELOPT_COMPRESS2 86  // telet negotiation code for starting compression v2
+#define TELOPT_COMPRESS4 89  // telet negotiation code for starting compression v4 (Zstandard)
 #define TELOPT_MUD_SPECIFIC 102  // telet negotiation code MUD-specific negotiations
 #define SUPPORT_VERSIONS 0   // MCCP support-versions query
 #define VERSION_IS 1         // MCCP version number
@@ -1088,8 +1089,16 @@ public:
   long m_nCompressionOutputBufferSize; // size of decompression output buffer
 
 
-  int m_iMCCP_type;   // MCCP protocol type in use: 0 = none, 1 = v1, 2 = v2
+  int m_iMCCP_type;   // MCCP protocol type in use: 0 = none, 1 = v1, 2 = v2, 4 = v4 (Zstandard)
   bool m_bSupports_MCCP_2;    // if true we have agreed to support MCCP v 2
+  bool m_bSupports_MCCP_4;    // if true we have agreed to support MCCP v 4 (Zstandard)
+
+  // MCCP4 (Zstandard) stuff
+  void *m_zstd_dstream;         // ZSTD_DStream* decompression context
+  unsigned char *m_zstd_inbuf;  // input buffer
+  size_t m_zstd_incap;          // capacity of input buffer
+  unsigned char *m_zstd_outbuf; // output buffer
+  size_t m_zstd_outcap;         // capacity of output buffer
 
   // end MCCP stuff
 
@@ -1449,10 +1458,16 @@ public:
   void Handle_IAC_GA ();
 
   void Handle_TELOPT_COMPRESS2 ();
+  void Handle_TELOPT_COMPRESS4 ();
   void Handle_TELOPT_MUD_SPECIFIC ();
   void Handle_TELOPT_MXP ();
   void Handle_TELOPT_TERMINAL_TYPE ();
   void Handle_TELOPT_CHARSET ();
+  
+  // MCCP4 (Zstandard) support functions
+  bool InitZstd();
+  void CleanupZstd();
+  int ProcessZstdCompressed(const unsigned char* input, unsigned int inputSize);
 
   void Send_IAC_DO (const unsigned char c);
   void Send_IAC_DONT (const unsigned char c);
