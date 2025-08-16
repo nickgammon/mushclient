@@ -206,7 +206,7 @@ enum {
 #define TELOPT_TERMINAL_TYPE 24  // want to know terminal type
 #define TELOPT_COMPRESS 85   // telet negotiation code for starting compression v1
 #define TELOPT_COMPRESS2 86  // telet negotiation code for starting compression v2
-#define TELOPT_COMPRESS4 89  // telet negotiation code for starting compression v4 (Zstandard)
+#define TELOPT_COMPRESS4 88  // telet negotiation code for starting compression v4 (Zstandard)
 #define TELOPT_MUD_SPECIFIC 102  // telet negotiation code MUD-specific negotiations
 #define SUPPORT_VERSIONS 0   // MCCP support-versions query
 #define VERSION_IS 1         // MCCP version number
