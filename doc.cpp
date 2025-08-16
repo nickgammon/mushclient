@@ -1422,23 +1422,37 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
   m_iInputPacketCount++;       // count packets
   m_nBytesIn += count;    // count bytes in
 
-  if (m_bCompress)   // if we are compressing, put data into zlib buffer
+  if (m_bCompress)   // if we are compressing, handle based on compression type
     {
-    if ((COMPRESS_BUFFER_LENGTH - m_zCompress.avail_in) < (uInt) count)
+    if (m_iMCCP_type == 4)  // MCCP4 (Zstandard)
       {
-      OnConnectionDisconnect ();    // close the world
-      TMessageBox ("Insufficient memory in buffer to decompress text", MB_ICONEXCLAMATION);
-      return;
+      // Process Zstandard compressed data directly
+      int result = ProcessZstdCompressed((const unsigned char*)buff, count);
+      if (result < 0)
+        {
+        // Error processing Zstandard data - already handled in ProcessZstdCompressed
+        return;
+        }
+      // Stats already updated in ProcessZstdCompressed
       }
-    // shuffle existing input to-be-processed to start of buffer
-    if (m_zCompress.avail_in)
-      memmove (m_CompressInput, m_zCompress.next_in, m_zCompress.avail_in);
-    m_zCompress.next_in = m_CompressInput;
-    // add new stuff
-    memcpy (&m_zCompress.next_in [m_zCompress.avail_in], buff, count);
-    m_zCompress.avail_in += count;
-    // stats - count compressed bytes
-    m_nTotalCompressed += count;
+    else  // MCCP1/MCCP2 (zlib)
+      {
+      if ((COMPRESS_BUFFER_LENGTH - m_zCompress.avail_in) < (uInt) count)
+        {
+        OnConnectionDisconnect ();    // close the world
+        TMessageBox ("Insufficient memory in buffer to decompress text", MB_ICONEXCLAMATION);
+        return;
+        }
+      // shuffle existing input to-be-processed to start of buffer
+      if (m_zCompress.avail_in)
+        memmove (m_CompressInput, m_zCompress.next_in, m_zCompress.avail_in);
+      m_zCompress.next_in = m_CompressInput;
+      // add new stuff
+      memcpy (&m_zCompress.next_in [m_zCompress.avail_in], buff, count);
+      m_zCompress.avail_in += count;
+      // stats - count compressed bytes
+      m_nTotalCompressed += count;
+      }
     }
 
   // now display the message, unless we are getting compressed data
@@ -1460,8 +1474,12 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
       break;    // still not compressed - exit
 
     // is compressed now
+    
+    // For MCCP4 (Zstandard), decompression is already handled above
+    if (m_iMCCP_type == 4)
+      break;  // Zstandard processing is complete
 
-    // give up if nothing to display
+    // give up if nothing to display (zlib only)
     if (m_zCompress.avail_in <= 0)
        break;    // no data to process
 
@@ -1502,14 +1520,8 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
 
       } while (iCompressResult == Z_BUF_ERROR);
 
-    if (App.m_iCounterFrequency)
-      {
-      QueryPerformanceCounter (&finish);
-      m_iCompressionTimeTaken += finish.QuadPart - start.QuadPart;
-      }
-
-    // error?
-    if (iCompressResult < 0)
+      // error?
+      if (iCompressResult < 0)
       {
       char * pMsg = m_zCompress.msg;    // closing may clear the message
 
@@ -1542,10 +1554,19 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
       m_zCompress.avail_out = m_nCompressionOutputBufferSize;
       }
 
+    if (App.m_iCounterFrequency)
+      {
+      QueryPerformanceCounter (&finish);
+      m_iCompressionTimeTaken += finish.QuadPart - start.QuadPart;
+      }
+
     // if end of stream, turn decompression off
     if (iCompressResult == Z_STREAM_END)
       {    // we can stop decompressing
       m_bCompress = false;
+      // Clean up compression resources based on type
+      if (m_iMCCP_type == 4)
+        CleanupZstd();  // Clean up Zstandard resources
       // put remaining stuff back into buff
       memcpy (buff, m_zCompress.next_in, m_zCompress.avail_in);
       count = m_zCompress.avail_in;
@@ -6788,6 +6809,12 @@ void CMUSHclientDoc::ConnectionEstablished (void)
 	m_bEnableAutoSay = FALSE;		// auto-say off at start of session
   App.m_bUpdateActivity = TRUE;   // new activity!
   m_bCompress = FALSE;        // not compressing yet
+  // Clean up any existing compression
+  if (m_iMCCP_type == 4)
+    CleanupZstd();
+  m_iMCCP_type = 0;
+  m_bSupports_MCCP_2 = false;
+  m_bSupports_MCCP_4 = false;
   m_nTotalLinesSent = 0;    // no lines sent yet
   m_nTotalLinesReceived = 0;  // no lines received yet
   m_iTriggersMatchedThisSessionCount = 0;   
