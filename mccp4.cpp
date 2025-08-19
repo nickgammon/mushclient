@@ -119,13 +119,14 @@ int CMUSHclientDoc::ProcessZstdCompressed(const unsigned char* input, unsigned i
     
     ZSTD_inBuffer inBuf = { input, (size_t)inputSize, 0 };
     size_t totalDecompressed = 0;
-    
-    // Update compressed data statistics once at the start
-    m_nTotalCompressed += inputSize;
-    
-    // Temporary buffer to collect all decompressed data
+    bool frameEnded = false;
+
+    // Collect decompressed output; do expensive work after timing
     unsigned char* collectedOutput = NULL;
     size_t collectedSize = 0;
+    
+    // Update compressed-bytes stats with input size (like MCCP2 does before timing)
+    m_nTotalCompressed += inputSize;
     
     // Start timing ONLY the decompression (like MCCP2 does with inflate)
     LARGE_INTEGER start, finish;
@@ -155,22 +156,24 @@ int CMUSHclientDoc::ProcessZstdCompressed(const unsigned char* input, unsigned i
             m_bCompress = false;
             m_iMCCP_type = 0;
             CleanupZstd();
+            if (collectedOutput) free(collectedOutput);
             return -1;
         }
         
         // Collect decompressed output (but don't display yet - we're timing)
         if (outBuf.pos > 0)
         {
-            // Grow collection buffer if needed
-            collectedOutput = (unsigned char*)realloc(collectedOutput, collectedSize + outBuf.pos);
-            if (!collectedOutput)
+            unsigned char* p = (unsigned char*)realloc(collectedOutput, collectedSize + outBuf.pos);
+            if (!p)
             {
+                if (collectedOutput) free(collectedOutput);
                 // Memory allocation failure
                 m_bCompress = false;
                 m_iMCCP_type = 0;
                 CleanupZstd();
                 return -1;
             }
+            collectedOutput = p;
             
             // Copy this chunk to collection buffer
             memcpy(collectedOutput + collectedSize, m_zstd_outbuf, outBuf.pos);
@@ -180,20 +183,23 @@ int CMUSHclientDoc::ProcessZstdCompressed(const unsigned char* input, unsigned i
             m_nTotalUncompressed += outBuf.pos;
             totalDecompressed += outBuf.pos;
         }
-        
-        // If no more output is expected, break
+
+        // r == 0 => end of current Zstd frame (we may still have trailing raw Telnet bytes)
         if (decompressResult == 0)
-            break;
+        {
+            frameEnded = true;
+            break; // leave loop; remaining bytes are NOT compressed
+        }
     }
     
-    // End timing - ONLY the decompression, not display/logging
+    // End timing here - after decompression but before I/O and display processing
     if (App.m_iCounterFrequency)
     {
         QueryPerformanceCounter(&finish);
         m_iCompressionTimeTaken += finish.QuadPart - start.QuadPart;
     }
     
-    // NOW do the expensive operations outside of timing (like MCCP2 does)
+    // Process the decompressed data through the normal display system (outside of timing)
     if (collectedSize > 0 && collectedOutput)
     {
         // Log raw data if enabled
@@ -206,6 +212,16 @@ int CMUSHclientDoc::ProcessZstdCompressed(const unsigned char* input, unsigned i
         // Free the collection buffer
         free(collectedOutput);
     }
-    
-    return (int)totalDecompressed;
+
+    if (frameEnded)
+    {
+        // Reset DCtx for potential future COMPRESS4 start; exit MCCP mode now.
+        ZSTD_DCtx_reset((ZSTD_DCtx*)m_zstd_dstream, ZSTD_reset_session_only);
+        m_bCompress = false;
+        m_iMCCP_type = 0;
+    }
+
+    // Tell the caller how many INPUT bytes we consumed,
+    // so it can immediately process any leftover (raw Telnet) bytes.
+    return (int)inBuf.pos;
 }
