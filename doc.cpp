@@ -1535,6 +1535,13 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
       return;
       }
 
+    // End timing here - after decompression but before I/O and display processing
+    if (App.m_iCounterFrequency)
+      {
+      QueryPerformanceCounter (&finish);
+      m_iCompressionTimeTaken += finish.QuadPart - start.QuadPart;
+      }
+
     // work out how much we got, and display it
     int iLength = m_nCompressionOutputBufferSize - m_zCompress.avail_out;
     
@@ -1552,12 +1559,6 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
       DisplayMsg ((LPCTSTR) m_CompressOutput, iLength, 0);    // send uncompressed data to screen
       m_zCompress.next_out = m_CompressOutput;      // reset for more output
       m_zCompress.avail_out = m_nCompressionOutputBufferSize;
-      }
-
-    if (App.m_iCounterFrequency)
-      {
-      QueryPerformanceCounter (&finish);
-      m_iCompressionTimeTaken += finish.QuadPart - start.QuadPart;
       }
 
     // if end of stream, turn decompression off
