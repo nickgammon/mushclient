@@ -1510,6 +1510,12 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
 
          if (m_CompressOutput == NULL)
            {
+            // Stop timing before early return
+            if (App.m_iCounterFrequency)
+              {
+              QueryPerformanceCounter (&finish);
+              m_iCompressionTimeTaken += finish.QuadPart - start.QuadPart;
+              }
             OnConnectionDisconnect ();    // close the world
             free (m_CompressInput);       // may as well get rid of compression input as well
             m_CompressInput = NULL;
@@ -1519,6 +1525,13 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
          }  // end of Z_BUF_ERROR
 
       } while (iCompressResult == Z_BUF_ERROR);
+
+    // End timing here - after decompression but before error handling
+    if (App.m_iCounterFrequency)
+      {
+      QueryPerformanceCounter (&finish);
+      m_iCompressionTimeTaken += finish.QuadPart - start.QuadPart;
+      }
 
       // error?
       if (iCompressResult < 0)
@@ -1533,13 +1546,6 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
         UMessageBox (TFormat ("Could not decompress text from MUD: %i",
                           iCompressResult), MB_ICONEXCLAMATION);
       return;
-      }
-
-    // End timing here - after decompression but before I/O and display processing
-    if (App.m_iCounterFrequency)
-      {
-      QueryPerformanceCounter (&finish);
-      m_iCompressionTimeTaken += finish.QuadPart - start.QuadPart;
       }
 
     // work out how much we got, and display it
