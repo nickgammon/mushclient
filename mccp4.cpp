@@ -43,14 +43,7 @@ bool CMUSHclientDoc::InitZstd()
     if (!m_zstd_inbuf || !m_zstd_outbuf)
     {
         // Cleanup on allocation failure
-        if (m_zstd_inbuf) free(m_zstd_inbuf);
-        if (m_zstd_outbuf) free(m_zstd_outbuf);
-        ZSTD_freeDStream((ZSTD_DStream*)m_zstd_dstream);
-        m_zstd_dstream = NULL;
-        m_zstd_inbuf = NULL;
-        m_zstd_outbuf = NULL;
-        m_zstd_incap = 0;
-        m_zstd_outcap = 0;
+        CleanupZstd();
         return false;
     }
     
@@ -146,6 +139,13 @@ int CMUSHclientDoc::ProcessZstdCompressed(const unsigned char* input, unsigned i
         
         if (ZSTD_isError(decompressResult))
         {
+            // Stop timing before error handling
+            if (App.m_iCounterFrequency)
+            {
+                QueryPerformanceCounter(&finish);
+                m_iCompressionTimeTaken += finish.QuadPart - start.QuadPart;
+            }
+            
             // Decompression error
             CString strMessage;
             strMessage.Format(Translate("Zstandard decompression error: %s. World closed."), ZSTD_getErrorName(decompressResult));
@@ -166,6 +166,13 @@ int CMUSHclientDoc::ProcessZstdCompressed(const unsigned char* input, unsigned i
             unsigned char* p = (unsigned char*)realloc(collectedOutput, collectedSize + outBuf.pos);
             if (!p)
             {
+                // Stop timing before error handling
+                if (App.m_iCounterFrequency)
+                {
+                    QueryPerformanceCounter(&finish);
+                    m_iCompressionTimeTaken += finish.QuadPart - start.QuadPart;
+                }
+                
                 if (collectedOutput) free(collectedOutput);
                 // Memory allocation failure
                 m_bCompress = false;
