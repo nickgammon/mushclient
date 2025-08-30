@@ -1,1 +1,3 @@
+# Force Windows line endings (CRLF) for all text files
+* text=auto eol=crlf encoding=UTF-8
 *.lib binary
