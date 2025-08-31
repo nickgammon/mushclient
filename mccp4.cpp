@@ -75,33 +75,143 @@ void CMUSHclientDoc::CleanupZstd()
     m_zstd_outcap = 0;
 }
 
-// Handle TELOPT_COMPRESS4 subnegotiation (like MCCP2)
+// Handle TELOPT_COMPRESS4 subnegotiation with new protocol (the more future proof standard)
 void CMUSHclientDoc::Handle_TELOPT_COMPRESS4()
 {
     CString strMessage;  
-    // MCCP4: Received IAC SB COMPRESS4 IAC SE - starting compression
-    m_iMCCP_type = 4;  // MCCP v4 (Zstandard)
     
-    // Initialize compression library if not already done
-    if (!InitZstd())
+    // Check if we have subnegotiation data
+    if (m_IAC_subnegotiation_data.empty())
     {
-        strMessage = Translate("Cannot initialize Zstandard decompression. World closed.");
-        OnConnectionDisconnect();    // close the world
-        UMessageBox(strMessage, MB_ICONEXCLAMATION);
+        // Fallback mode: empty payload means "start zstd now" (backward compatibility)
+        TRACE("MCCP4: Fallback mode - empty payload, starting zstd\n");
+        m_MCCP4_active_encoding = "zstd";
+        
+        if (!InitZstd())
+        {
+            strMessage = Translate("Cannot initialize Zstandard decompression. World closed.");
+            OnConnectionDisconnect();
+            UMessageBox(strMessage, MB_ICONEXCLAMATION);
+            return;
+        }
+        
+        size_t const resetResult = ZSTD_DCtx_reset((ZSTD_DCtx*)m_zstd_dstream, ZSTD_reset_session_only);
+        if (ZSTD_isError(resetResult))
+        {
+            strMessage = Translate("Cannot reset Zstandard decompression stream. World closed.");
+            OnConnectionDisconnect();
+            UMessageBox(strMessage, MB_ICONEXCLAMATION);
+            return;
+        }
+        
+        m_iMCCP_type = 4;
+        m_bCompress = true;
+        m_MCCP4_negotiation_active = false;
         return;
     }
     
-    // Reset the decompression stream for new data
-    size_t const resetResult = ZSTD_DCtx_reset((ZSTD_DCtx*)m_zstd_dstream, ZSTD_reset_session_only);
-    if (ZSTD_isError(resetResult))
+    // Parse subnegotiation data
+    unsigned char suboption = (unsigned char)m_IAC_subnegotiation_data[0];
+    
+    switch (suboption)
     {
-        strMessage = Translate("Cannot reset Zstandard decompression stream. World closed.");
-        OnConnectionDisconnect();    // close the world
-        UMessageBox(strMessage, MB_ICONEXCLAMATION);
-        return;
+        case MCCP4_BEGIN_ENCODING:
+        {
+            // Extract encoding name from data
+            if (m_IAC_subnegotiation_data.size() < 2)
+            {
+                TRACE("MCCP4: Invalid BEGIN_ENCODING - no encoding name\n");
+                Send_IAC_DONT(TELOPT_COMPRESS4);
+                return;
+            }
+            
+            string encoding = m_IAC_subnegotiation_data.substr(1);
+            TRACE1("MCCP4: BEGIN_ENCODING %s\n", encoding.c_str());
+            
+            // Check if we support this encoding
+            if (m_MCCP4_accepted_encodings.find(encoding) == string::npos)
+            {
+                strMessage.Format("MCCP4: Server chose unsupported encoding '%s'. Aborting compression.", encoding.c_str());
+                TRACE1("%s\n", strMessage);
+                Send_IAC_DONT(TELOPT_COMPRESS4);
+                return;
+            }
+            
+            // Initialize the appropriate codec
+            if (encoding == "zstd")
+            {
+                if (!InitZstd())
+                {
+                    strMessage = Translate("Cannot initialize Zstandard decompression. World closed.");
+                    OnConnectionDisconnect();
+                    UMessageBox(strMessage, MB_ICONEXCLAMATION);
+                    return;
+                }
+                
+                size_t const resetResult = ZSTD_DCtx_reset((ZSTD_DCtx*)m_zstd_dstream, ZSTD_reset_session_only);
+                if (ZSTD_isError(resetResult))
+                {
+                    strMessage = Translate("Cannot reset Zstandard decompression stream. World closed.");
+                    OnConnectionDisconnect();
+                    UMessageBox(strMessage, MB_ICONEXCLAMATION);
+                    return;
+                }
+                m_iMCCP_type = 4;
+            }
+            else if (encoding == "deflate")
+            {
+                // Use existing MCCP2 deflate infrastructure
+                if (!m_bCompressInitOK && !m_bCompress)
+                    m_bCompressInitOK = InitZlib(m_zCompress);
+                
+                // Allocate compression buffers if not already allocated
+                if (!m_CompressOutput)
+                    m_CompressOutput = (Bytef *) malloc (m_nCompressionOutputBufferSize);
+                if (!m_CompressInput)
+                    m_CompressInput = (Bytef *) malloc (COMPRESS_BUFFER_LENGTH);
+                
+                if (!(m_bCompressInitOK && m_CompressOutput && m_CompressInput))
+                {
+                    strMessage = Translate("Cannot initialize deflate decompression. World closed.");
+                    OnConnectionDisconnect();
+                    UMessageBox(strMessage, MB_ICONEXCLAMATION);
+                    return;
+                }
+                
+                int izError = inflateReset(&m_zCompress);
+                if (izError != Z_OK)
+                {
+                    strMessage = Translate("Cannot reset deflate decompression stream. World closed.");
+                    OnConnectionDisconnect();
+                    UMessageBox(strMessage, MB_ICONEXCLAMATION);
+                    return;
+                }
+                m_iMCCP_type = 4;  // Still MCCP4, but using deflate
+            }
+            else
+            {
+                strMessage.Format("MCCP4: Unknown encoding '%s'. Aborting compression.", encoding.c_str());
+                TRACE1("%s\n", strMessage);
+                Send_IAC_DONT(TELOPT_COMPRESS4);
+                return;
+            }
+            
+            m_MCCP4_active_encoding = encoding;
+            m_bCompress = true;
+            m_MCCP4_negotiation_active = false;
+            TRACE1("MCCP4: Compression active with encoding %s\n", encoding.c_str());
+            break;
+        }
+        
+        default:
+        {
+            // Unknown suboption - send WONT and continue (non-fatal)
+            unsigned char wont_response[] = { IAC, SB, TELOPT_COMPRESS4, MCCP4_WONT, suboption, IAC, SE };
+            SendPacket(wont_response, sizeof wont_response);
+            TRACE1("MCCP4: Unknown suboption %d - sent WONT\n", (int)suboption);
+            break;
+        }
     }
-
-    m_bCompress = true;  // MCCP4: Zstandard decompression successfully activated
 }
 
 // Process Zstandard compressed data
@@ -222,10 +332,34 @@ int CMUSHclientDoc::ProcessZstdCompressed(const unsigned char* input, unsigned i
 
     if (frameEnded)
     {
-        // Reset DCtx for potential future COMPRESS4 start; exit MCCP mode now.
+        // Reset decoder state
         ZSTD_DCtx_reset((ZSTD_DCtx*)m_zstd_dstream, ZSTD_reset_session_only);
-        m_bCompress = false;
-        m_iMCCP_type = 0;
+        
+        // Check if remaining bytes in this buffer are raw telnet
+        if (inBuf.pos < inBuf.size) 
+        {
+            unsigned char nextByte = ((unsigned char*)inBuf.src)[inBuf.pos];
+            if (nextByte == 0xFF) // IAC - raw telnet follows in same buffer
+            {
+                // Disable compression so caller processes remaining bytes as raw telnet
+                m_bCompress = false;
+                m_iMCCP_type = 0;
+                TRACE("MCCP4: Frame ended with IAC in buffer - disabled compression\n");
+            }
+            else
+            {
+                // More compressed data follows - keep compression active for concatenated frames
+                TRACE("MCCP4: Frame ended with %d more bytes - keeping compression active for concatenated frames\n", 
+                      (int)(inBuf.size - inBuf.pos));
+                // Keep compression active and process remaining bytes as next frame
+                // Don't return early - let normal flow handle it
+            }
+        }
+        else
+        {
+            // No remaining bytes - keep compression active for next packet
+            TRACE("MCCP4: Frame ended - keeping compression active for next packet\n");
+        }
     }
 
     // Tell the caller how many INPUT bytes we consumed,
