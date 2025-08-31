@@ -208,6 +208,11 @@ enum {
 #define TELOPT_COMPRESS2 86  // telet negotiation code for starting compression v2
 #define TELOPT_COMPRESS4 88  // telet negotiation code for starting compression v4 (Zstandard)
 #define TELOPT_MUD_SPECIFIC 102  // telet negotiation code MUD-specific negotiations
+
+// MCCP4 subnegotiation constants
+#define MCCP4_ACCEPT_ENCODING 1
+#define MCCP4_BEGIN_ENCODING  2  // Server is actually sending 0x02 for this
+#define MCCP4_WONT            3  // Refuse to do MCCP4 compression.
 #define SUPPORT_VERSIONS 0   // MCCP support-versions query
 #define VERSION_IS 1         // MCCP version number
 #define VERSION_NONE 0   // see web page below for details
@@ -1092,6 +1097,11 @@ public:
   int m_iMCCP_type;   // MCCP protocol type in use: 0 = none, 1 = v1, 2 = v2, 4 = v4 (Zstandard)
   bool m_bSupports_MCCP_2;    // if true we have agreed to support MCCP v 2
   bool m_bSupports_MCCP_4;    // if true we have agreed to support MCCP v 4 (Zstandard)
+  
+  // MCCP4 protocol negotiation state
+  string m_MCCP4_accepted_encodings;  // client's advertised supported encodings
+  string m_MCCP4_active_encoding;     // currently active encoding (zstd/deflate)
+  bool m_MCCP4_negotiation_active;    // true if we're in MCCP4 negotiation
 
   // MCCP4 (Zstandard) stuff
   void *m_zstd_dstream;         // ZSTD_DStream* decompression context
@@ -1468,6 +1478,7 @@ public:
   bool InitZstd();
   void CleanupZstd();
   int ProcessZstdCompressed(const unsigned char* input, unsigned int inputSize);
+  void Send_MCCP4_Accept_Encoding();
 
   void Send_IAC_DO (const unsigned char c);
   void Send_IAC_DONT (const unsigned char c);
