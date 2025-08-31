@@ -1424,7 +1424,7 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
 
   if (m_bCompress)   // if we are compressing, handle based on compression type
     {
-    if (m_iMCCP_type == 4)  // MCCP4 (Zstandard)
+    if (m_iMCCP_type == 4 && m_MCCP4_active_encoding == "zstd")  // MCCP4 with Zstandard
       {
       // Process Zstandard compressed data directly
       int result = ProcessZstdCompressed((const unsigned char*)buff, count);
@@ -1434,8 +1434,23 @@ int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
         return;
         }
       // Stats already updated in ProcessZstdCompressed
+      
+      // If not all bytes were consumed and compression is now off,
+      // we need to process the remaining bytes as uncompressed data
+      if (result > 0 && result < count && !m_bCompress)
+        {
+        // Move remaining bytes to the beginning of the buffer
+        memmove(buff, buff + result, count - result);
+        count = count - result;
+        // Fall through to process remaining bytes as uncompressed
+        }
+      else
+        {
+        // All bytes consumed or still compressing - we're done
+        return;
+        }
       }
-    else  // MCCP1/MCCP2 (zlib)
+    else  // MCCP1/MCCP2/MCCP4-deflate (zlib)
       {
       if ((COMPRESS_BUFFER_LENGTH - m_zCompress.avail_in) < (uInt) count)
         {
@@ -2070,6 +2085,28 @@ CString strLine (lpszText, size);
             // data as it it was not compressed
             if (!bWasCompressing && m_bCompress)
               {
+              // MCCP4 with zstd doesn't use m_CompressInput - process remaining data immediately
+              if (m_iMCCP_type == 4 && m_MCCP4_active_encoding == "zstd")
+                {
+                // Skip the SE byte and process any remaining compressed data immediately
+                p++;    // skip SE
+                size--; // one less byte
+                if (size > 0)  // if there's remaining data, it's compressed
+                  {
+                  // Process the remaining compressed data immediately
+                  int result = ProcessZstdCompressed((const unsigned char*)p, size);
+                  if (result < 0)
+                    return;  // Error already handled
+                  // If not all bytes were consumed, there might be uncompressed data
+                  if (result > 0 && result < size && !m_bCompress)
+                    {
+                    // Process remaining uncompressed bytes
+                    DisplayMsg((const char*)(p + result), size - result, 0);
+                    }
+                  }
+                return;
+                }
+              
               p++;    // skip SE  (normally done at end of loop)
               size--; // one less of these
               if (size)  // copy compressed data to compression buffer
@@ -2092,6 +2129,28 @@ CString strLine (lpszText, size);
             // data as it it was not compressed
             if (!bWasCompressing && m_bCompress)
               {
+              // MCCP4 with zstd doesn't use m_CompressInput - process remaining data immediately
+              if (m_iMCCP_type == 4 && m_MCCP4_active_encoding == "zstd")
+                {
+                // Skip the SE byte and process any remaining compressed data immediately
+                p++;    // skip SE
+                size--; // one less byte
+                if (size > 0)  // if there's remaining data, it's compressed
+                  {
+                  // Process the remaining compressed data immediately
+                  int result = ProcessZstdCompressed((const unsigned char*)p, size);
+                  if (result < 0)
+                    return;  // Error already handled
+                  // If not all bytes were consumed, there might be uncompressed data
+                  if (result > 0 && result < size && !m_bCompress)
+                    {
+                    // Process remaining uncompressed bytes
+                    DisplayMsg((const char*)(p + result), size - result, 0);
+                    }
+                  }
+                return;
+                }
+              
               p++;    // skip SE  (normally done at end of loop)
               size--; // one less of these
               if (size)  // copy compressed data to compression buffer
