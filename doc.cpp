@@ -3926,7 +3926,7 @@ BOOL putontoclipboard (const CString & data, const bool bUnicode)
 
      int iLength = MultiByteToWideChar (CP_UTF8, 0, data, -1, NULL, 0);
 
-     HGLOBAL hData = GlobalAlloc (GMEM_MOVEABLE, (iLength + 1) * sizeof WCHAR);
+     HGLOBAL hData = GlobalAlloc (GMEM_MOVEABLE, iLength * sizeof WCHAR);
 
      if (!hData)
         {
