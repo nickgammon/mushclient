@@ -531,6 +531,8 @@ void CMUSHclientDoc:: LoadPrefsP15 (CPrefsP15 &page15)
        page15.m_strCompressionRatio += " MCCP v 1";
     else if (m_iMCCP_type == 2)
        page15.m_strCompressionRatio += " MCCP v 2";
+    else if (m_iMCCP_type == 4)
+       page15.m_strCompressionRatio += " MCCP v 4 (Zstandard)";
     page15.m_strCompressedIn = CFormat ("%I64d", m_nTotalCompressed);
     page15.m_strCompressedOut = CFormat ("%I64d", m_nTotalUncompressed);
     }
