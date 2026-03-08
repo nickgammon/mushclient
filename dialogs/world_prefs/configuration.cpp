@@ -112,6 +112,7 @@ void CMUSHclientDoc::LoadPrefsP1  (CPrefsP1  &page1)
   page1.m_iSocksProcessing = m_iSocksProcessing;
   page1.m_strProxyUserName = m_strProxyUserName;
   page1.m_strProxyPassword = m_strProxyPassword;
+  page1.m_bUseSSL = m_bUseSSL;
   } // end of CMUSHclientDoc::LoadPrefsP1
 
 void CMUSHclientDoc:: LoadPrefsP2  (CPrefsP2  &page2)  
@@ -1371,6 +1372,7 @@ void CMUSHclientDoc::SavePrefsP1  (CPrefsP1  &page1)
   m_iSocksProcessing = page1.m_iSocksProcessing;
   m_strProxyUserName   =     page1.m_strProxyUserName;
   m_strProxyPassword   =     page1.m_strProxyPassword;
+  m_bUseSSL            =     page1.m_bUseSSL;
 
   } // end of CMUSHclientDoc::SavePrefsP1
 

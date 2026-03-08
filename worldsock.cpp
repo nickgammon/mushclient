@@ -14,6 +14,9 @@
 
 #include <stddef.h>
 
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -30,6 +33,15 @@ CWorldSocket::CWorldSocket(CMUSHclientDoc* pDoc)
 void CWorldSocket::OnReceive(int nErrorCode)
 {
   m_pDoc->ReceiveMsg();
+
+  // SSL may have buffered more decrypted data than one SSL_read consumed.
+  // Since we won't get another FD_READ for already-buffered data, drain it now.
+  if (m_pDoc->m_pSSL && m_pDoc->m_bSSL_Connected)
+    {
+    while (SSL_pending (m_pDoc->m_pSSL) > 0)
+      m_pDoc->ReceiveMsg();
+    }
+
   CAsyncSocket::OnReceive(nErrorCode);
 }
 
@@ -37,33 +49,63 @@ void CWorldSocket::OnSend(int nErrorCode)
 {
 
 
-int count; 
+int count;
 
    if (nErrorCode)    // had an error, give up!
       return;
+
+  // if we are in the middle of a TLS handshake, continue it
+  if (m_pDoc->m_iConnectPhase == eConnectAwaitingSSLHandshake)
+    {
+    m_pDoc->ContinueSSLHandshake ();
+    return;
+    }
 
 // if we have outstanding data to send, do it
   if (m_outstanding_data.empty ())
     return;
 
-  count = Send (m_outstanding_data.data (), m_outstanding_data.length ());
-
-  if (count != SOCKET_ERROR)
-    m_pDoc->m_nBytesOut += count; // count bytes out
-
-  if (count > 0)    // good send - do rest later
-    m_outstanding_data.erase (0, count);
+  // SSL-aware send
+  if (m_pDoc->m_pSSL && m_pDoc->m_bSSL_Connected)
+    {
+    count = SSL_write (m_pDoc->m_pSSL, m_outstanding_data.data (),
+                       m_outstanding_data.length ());
+    if (count > 0)
+      {
+      m_pDoc->m_nBytesOut += count;
+      m_outstanding_data.erase (0, count);
+      }
+    else
+      {
+      int ssl_err = SSL_get_error (m_pDoc->m_pSSL, count);
+      if (ssl_err != SSL_ERROR_WANT_WRITE && ssl_err != SSL_ERROR_WANT_READ)
+        {
+        ShutDownSocket (*this);
+        m_outstanding_data.erase ();
+        }
+      }
+    }
   else
     {
-    int nError = GetLastError ();
-    if (count == SOCKET_ERROR && nError != WSAEWOULDBLOCK)
-      {
-      ShutDownSocket (*this);
-//       m_pSocket->OnClose (nError);      // ????
-      m_outstanding_data.erase ();
+    count = Send (m_outstanding_data.data (), m_outstanding_data.length ());
 
-      }   // end of an error other than "would block"
-    } // end of an error
+    if (count != SOCKET_ERROR)
+      m_pDoc->m_nBytesOut += count; // count bytes out
+
+    if (count > 0)    // good send - do rest later
+      m_outstanding_data.erase (0, count);
+    else
+      {
+      int nError = GetLastError ();
+      if (count == SOCKET_ERROR && nError != WSAEWOULDBLOCK)
+        {
+        ShutDownSocket (*this);
+  //       m_pSocket->OnClose (nError);      // ????
+        m_outstanding_data.erase ();
+
+        }   // end of an error other than "would block"
+      } // end of an error
+    }
 
 }
 
@@ -73,6 +115,8 @@ void CWorldSocket::OnClose(int nErrorCode)
 bool bWasClosed = m_pDoc->m_iConnectPhase == eConnectNotConnected;
 
   TRACE1 ("CWorldSocket::OnClose, error code %i\n", nErrorCode);
+
+  m_pDoc->SSLCleanup ();
 
   m_pDoc->m_iConnectPhase = eConnectDisconnecting;
 

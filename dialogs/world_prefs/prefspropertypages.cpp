@@ -94,6 +94,7 @@ CPrefsP1::CPrefsP1() : CPropertyPage(CPrefsP1::IDD)
 	m_iSocksProcessing = -1;
 	m_strProxyServerName = _T("");
 	m_iProxyServerPort = 0;
+	m_bUseSSL = FALSE;
 	//}}AFX_DATA_INIT
   m_page_number = 1;
   m_doc = NULL;
@@ -118,6 +119,7 @@ void CPrefsP1::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_PROXY_SERVER_NAME, m_strProxyServerName);
 	DDX_Text(pDX, IDC_PROXY_PORT, m_iProxyServerPort);
 	DDV_MinMaxLong(pDX, m_iProxyServerPort, 0, 65535);
+	DDX_Check(pDX, IDC_USE_SSL, m_bUseSSL);
 	//}}AFX_DATA_MAP
 
 
@@ -199,8 +201,31 @@ BOOL CPrefsP1::OnInitDialog()
 	m_BugReportLink.SubclassDlgItem(IDC_BUG_REPORT,  this);
   m_strBugReportAddress = BUG_REPORT_PAGE;
 
+  // dynamically create the "Use SSL/TLS" checkbox aligned with "Save World Automatically"
+  CWnd * pSaveAuto = GetDlgItem (IDC_SAVE_AUTOMATICALLY);
+  if (pSaveAuto)
+    {
+    CRect rcSave;
+    pSaveAuto->GetWindowRect (&rcSave);
+    ScreenToClient (&rcSave);
+
+    CRect rcSSL;
+    rcSSL.left = rcSave.left;
+    rcSSL.top = rcSave.bottom + 6;
+    rcSSL.right = rcSSL.left + 200;
+    rcSSL.bottom = rcSSL.top + (rcSave.bottom - rcSave.top);
+
+    CButton * pCheck = new CButton;
+    pCheck->Create ("Use SSL/TLS for this connection",
+                    WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_TABSTOP,
+                    rcSSL, this, IDC_USE_SSL);
+    pCheck->SetFont (GetFont ());
+    if (m_bUseSSL)
+      pCheck->SetCheck (BST_CHECKED);
+    }
+
   return CPropertyPage::OnInitDialog();
-	
+
 }
 
 
