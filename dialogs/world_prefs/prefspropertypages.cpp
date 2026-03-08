@@ -215,13 +215,14 @@ BOOL CPrefsP1::OnInitDialog()
     rcSSL.right = rcSSL.left + 200;
     rcSSL.bottom = rcSSL.top + (rcSave.bottom - rcSave.top);
 
-    CButton * pCheck = new CButton;
-    pCheck->Create ("Use SSL/TLS for this connection",
-                    WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_TABSTOP,
-                    rcSSL, this, IDC_USE_SSL);
-    pCheck->SetFont (GetFont ());
+    CButton check;
+    check.Create ("Use SSL/TLS for this connection",
+                  WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_TABSTOP,
+                  rcSSL, this, IDC_USE_SSL);
+    check.SetFont (GetFont ());
     if (m_bUseSSL)
-      pCheck->SetCheck (BST_CHECKED);
+      check.SetCheck (BST_CHECKED);
+    check.Detach ();  // let the HWND live; Windows destroys it with the dialog
     }
 
   return CPropertyPage::OnInitDialog();
