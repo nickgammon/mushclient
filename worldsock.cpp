@@ -32,14 +32,26 @@ CWorldSocket::CWorldSocket(CMUSHclientDoc* pDoc)
 
 void CWorldSocket::OnReceive(int nErrorCode)
 {
-  m_pDoc->ReceiveMsg();
+  // save m_pDoc locally — if the handshake fails, 'this' (the socket) gets
+  // deleted inside ReceiveMsg, so we must not touch 'this' afterwards
+  CMUSHclientDoc * pDoc = m_pDoc;
+
+  pDoc->ReceiveMsg();
+
+  // if the socket was destroyed (e.g. SSL handshake failure), don't touch anything
+  if (pDoc->m_pSocket == NULL)
+    return;
 
   // SSL may have buffered more decrypted data than one SSL_read consumed.
   // Since we won't get another FD_READ for already-buffered data, drain it now.
-  if (m_pDoc->m_pSSL && m_pDoc->m_bSSL_Connected)
+  if (pDoc->m_pSSL && pDoc->m_bSSL_Connected)
     {
-    while (SSL_pending (m_pDoc->m_pSSL) > 0)
-      m_pDoc->ReceiveMsg();
+    while (SSL_pending (pDoc->m_pSSL) > 0)
+      {
+      pDoc->ReceiveMsg();
+      if (pDoc->m_pSocket == NULL)
+        return;
+      }
     }
 
   CAsyncSocket::OnReceive(nErrorCode);
@@ -48,6 +60,9 @@ void CWorldSocket::OnReceive(int nErrorCode)
 void CWorldSocket::OnSend(int nErrorCode)
 {
 
+  // save m_pDoc locally — if the TLS handshake fails, 'this' (the socket) gets
+  // deleted inside ContinueSSLHandshake, so we must not touch 'this' afterwards
+  CMUSHclientDoc * pDoc = m_pDoc;
 
 int count;
 
@@ -55,10 +70,10 @@ int count;
       return;
 
   // if we are in the middle of a TLS handshake, continue it
-  if (m_pDoc->m_iConnectPhase == eConnectAwaitingSSLHandshake)
+  if (pDoc->m_iConnectPhase == eConnectAwaitingSSLHandshake)
     {
-    m_pDoc->ContinueSSLHandshake ();
-    return;
+    pDoc->ContinueSSLHandshake ();
+    return;  // always return - if handshake failed, socket may be destroyed
     }
 
 // if we have outstanding data to send, do it
@@ -66,18 +81,18 @@ int count;
     return;
 
   // SSL-aware send
-  if (m_pDoc->m_pSSL && m_pDoc->m_bSSL_Connected)
+  if (pDoc->m_pSSL && pDoc->m_bSSL_Connected)
     {
-    count = SSL_write (m_pDoc->m_pSSL, m_outstanding_data.data (),
+    count = SSL_write (pDoc->m_pSSL, m_outstanding_data.data (),
                        m_outstanding_data.length ());
     if (count > 0)
       {
-      m_pDoc->m_nBytesOut += count;
+      pDoc->m_nBytesOut += count;
       m_outstanding_data.erase (0, count);
       }
     else
       {
-      int ssl_err = SSL_get_error (m_pDoc->m_pSSL, count);
+      int ssl_err = SSL_get_error (pDoc->m_pSSL, count);
       if (ssl_err != SSL_ERROR_WANT_WRITE && ssl_err != SSL_ERROR_WANT_READ)
         {
         ShutDownSocket (*this);
@@ -90,7 +105,7 @@ int count;
     count = Send (m_outstanding_data.data (), m_outstanding_data.length ());
 
     if (count != SOCKET_ERROR)
-      m_pDoc->m_nBytesOut += count; // count bytes out
+      pDoc->m_nBytesOut += count; // count bytes out
 
     if (count > 0)    // good send - do rest later
       m_outstanding_data.erase (0, count);

@@ -7404,8 +7404,14 @@ void CMUSHclientDoc::ContinueSSLHandshake (void)
   strMsg.Format ("--- TLS handshake failed: %s ---", err_buf);
   Note (strMsg);
 
+  // save error for deferred prompt
+  m_strSSLLastError = err_buf;
+
   SSLCleanup ();
   OnConnectionDisconnect ();
+
+  // defer the fallback prompt via PostMessage so we're not inside a socket callback
+  Frame.PostMessage (WM_USER_SSL_FALLBACK_PROMPT, (WPARAM) this, 0);
 
   }   // end of CMUSHclientDoc::ContinueSSLHandshake
 

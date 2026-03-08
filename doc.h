@@ -612,6 +612,7 @@ public:
   struct ssl_st * m_pSSL;            // OpenSSL connection object
   struct ssl_ctx_st * m_pSSL_CTX;    // OpenSSL context object
   bool m_bSSL_Connected;             // true once TLS handshake is complete
+  CString m_strSSLLastError;         // saved for deferred fallback prompt
 
 // stuff saved to disk
 

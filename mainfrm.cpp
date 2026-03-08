@@ -1013,7 +1013,42 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 
  if (pMsg->message == WM_USER_SHOW_TIPS)
    {
-   OnHelpTipoftheday ();    
+   OnHelpTipoftheday ();
+   return TRUE;   // message was handled
+   }
+
+// ******************* TLS fallback prompt (deferred from socket callback) ********************
+
+ if (pMsg->message == WM_USER_SSL_FALLBACK_PROMPT && pMsg->wParam != 0)
+   {
+   // find which world this message was for (verify pointer is still valid)
+   POSITION pos = App.m_pWorldDocTemplate->GetFirstDocPosition();
+   CMUSHclientDoc* pDoc = NULL;
+
+   while (pos)
+     {
+     pDoc = (CMUSHclientDoc*) App.m_pWorldDocTemplate->GetNextDoc(pos);
+     if (pDoc == (CMUSHclientDoc *) pMsg->wParam)
+       break;
+     else
+       pDoc = NULL;
+     }
+
+   if (pDoc)
+     {
+     CString strPrompt;
+     strPrompt.Format ("TLS connection to \"%s\" failed.\n\n%s\n\n"
+                       "Connect without encryption?",
+                       (LPCTSTR) pDoc->m_mush_name,
+                       (LPCTSTR) pDoc->m_strSSLLastError);
+
+     if (UMessageBox (strPrompt, MB_YESNO | MB_ICONQUESTION) == IDYES)
+       {
+       pDoc->m_bUseSSL = false;
+       pDoc->ConnectSocket ();
+       }
+     }
+
    return TRUE;   // message was handled
    }
 
