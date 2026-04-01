@@ -41,6 +41,7 @@ public:
 	int		m_iSocksProcessing;
 	CString	m_strProxyServerName;
 	long	m_iProxyServerPort;
+	BOOL	m_bUseSSL;
 	//}}AFX_DATA
 
 

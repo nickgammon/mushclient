@@ -153,8 +153,9 @@ enum {
       eConnectAwaitingProxyResponse1, // 5: sent SOCKS authentication method, awaiting confirmation
       eConnectAwaitingProxyResponse2, // 6: sent SOCKS username/password, awaiting confirmation
       eConnectAwaitingProxyResponse3, // 7: sent SOCKS connect details, awaiting confirmation
-      eConnectConnectedToMud,         // 8: connected, we can play now
-      eConnectDisconnecting,          // 9: in process of disconnecting, don't attempt to reconnect
+      eConnectAwaitingSSLHandshake,   // 8: performing TLS handshake
+      eConnectConnectedToMud,         // 9: connected, we can play now
+      eConnectDisconnecting,          // 10: in process of disconnecting, don't attempt to reconnect
   };
       
 // values for m_iSocksProcessing - type of proxy server
@@ -607,6 +608,12 @@ class CMUSHclientDoc : public CDocument
 public:
 	CWorldSocket* m_pSocket;
 
+  // SSL/TLS runtime state (not saved to disk)
+  struct ssl_st * m_pSSL;            // OpenSSL connection object
+  struct ssl_ctx_st * m_pSSL_CTX;    // OpenSSL context object
+  bool m_bSSL_Connected;             // true once TLS handshake is complete
+  CString m_strSSLLastError;         // saved for deferred fallback prompt
+
 // stuff saved to disk
 
   CString m_server;
@@ -860,6 +867,8 @@ public:
   unsigned short m_iSocksProcessing;  // 0 = none, 1 = Socks 4, 2 = Socks 5
   CString m_strProxyUserName;     // user name for proxy authentication
   CString m_strProxyPassword;     // password for proxy authentication
+
+  unsigned short m_bUseSSL;       // use TLS/SSL for this connection
 
   // more new stuff
 
@@ -1861,6 +1870,10 @@ public:
   bool CheckExpectedProxyResponse (const char cExpected, const char cReceived);
   void SendProxyConnectSequence (void);
   bool SendProxyUserNameAndPassword (void);
+
+  void StartSSLHandshake (void);
+  void ContinueSSLHandshake (void);
+  void SSLCleanup (void);
 
   BOOL FixUpOutputBuffer (int nNewBufferSize);
   bool SendToMushHelper (CFile * f, 

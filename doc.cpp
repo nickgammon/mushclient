@@ -40,6 +40,11 @@
 
 #include <malloc.h>
 
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/x509.h>
+#include <wincrypt.h>
+
 UINT AFXAPI AfxGetFileTitle(LPCTSTR lpszPathName, LPTSTR lpszTitle, UINT nMax);
 
 #ifdef _WIN32
@@ -1351,26 +1356,65 @@ CString str = strText;
 void CMUSHclientDoc::ReceiveMsg()
 {
 char buff [9000];   // must be less than COMPRESS_BUFFER_LENGTH or it won't fit
-int count = m_pSocket->Receive (buff, sizeof (buff) - 1);
 
-  Frame.CheckTimerFallback ();   // see if time is up for timers to fire
-
-  if (count == SOCKET_ERROR)
+  // if we are in the middle of a TLS handshake, continue it
+  if (m_iConnectPhase == eConnectAwaitingSSLHandshake)
     {
-    // don't delete the socket if we are already closing it
-    if (m_iConnectPhase == eConnectDisconnecting)
-       return;
-
-    if (m_pSocket)
-      m_pSocket->OnClose (GetLastError ());
-
-		delete m_pSocket;
-		m_pSocket = NULL;
+    ContinueSSLHandshake ();
     return;
     }
 
-  if (count <= 0)
-    return;
+int count;
+
+  // SSL-aware receive
+  if (m_pSSL && m_bSSL_Connected)
+    {
+    count = SSL_read (m_pSSL, buff, sizeof (buff) - 1);
+    if (count <= 0)
+      {
+      int ssl_err = SSL_get_error (m_pSSL, count);
+      if (ssl_err == SSL_ERROR_WANT_READ || ssl_err == SSL_ERROR_WANT_WRITE)
+        return;  // retry on next async notification
+      if (ssl_err == SSL_ERROR_ZERO_RETURN)
+        {
+        // clean TLS shutdown
+        if (m_pSocket)
+          m_pSocket->OnClose (0);
+        return;
+        }
+      // error
+      if (m_iConnectPhase == eConnectDisconnecting)
+        return;
+      if (m_pSocket)
+        m_pSocket->OnClose (0);
+      delete m_pSocket;
+      m_pSocket = NULL;
+      return;
+      }
+    }
+  else
+    {
+    count = m_pSocket->Receive (buff, sizeof (buff) - 1);
+
+    if (count == SOCKET_ERROR)
+      {
+      // don't delete the socket if we are already closing it
+      if (m_iConnectPhase == eConnectDisconnecting)
+         return;
+
+      if (m_pSocket)
+        m_pSocket->OnClose (GetLastError ());
+
+		  delete m_pSocket;
+		  m_pSocket = NULL;
+      return;
+      }
+
+    if (count <= 0)
+      return;
+    }
+
+  Frame.CheckTimerFallback ();   // see if time is up for timers to fire
 
 //  TRACE1 ("Phase now = %i\n", m_iConnectPhase);
 //  TRACE2 ("Buff [0] = %i, Buff [1] = %i\n",
@@ -4109,6 +4153,11 @@ BOOL connected = nErrorCode == 0;
   // we have connected, and have no proxy server, so get on with it
   if (m_iSocksProcessing == eProxyServerNone)
     {
+    if (m_bUseSSL)
+      {
+      StartSSLHandshake ();
+      return;
+      }
     ConnectionEstablished ();
     return;
     }
@@ -4299,6 +4348,10 @@ void CMUSHclientDoc::OnConnectionDisconnect()
   App.m_bUpdateActivity = TRUE;   // new activity!
 
   MXP_Off (true);   // turn off MXP now
+
+// clean up SSL before closing the socket
+
+  SSLCleanup ();
 
 // close the socket
 
@@ -7215,6 +7268,12 @@ int iBytesToMove;
     iBytesToMove = 10;
     } // SOCKS 5
   
+  if (m_bUseSSL)
+    {
+    StartSSLHandshake ();
+    return iBytesToMove;
+    }
+
   m_iConnectPhase = eConnectConnectedToMud;
 
   // let's get on with it ...
@@ -7224,7 +7283,162 @@ int iBytesToMove;
 
   }   // end of CMUSHclientDoc::ProcessProxyResponse3
 
-bool CMUSHclientDoc::CheckExpectedProxyResponse (const char cExpected, 
+
+// ---------------------------------------------------------------------------
+// SSL/TLS support
+// ---------------------------------------------------------------------------
+
+// verify callback that always succeeds - we check the result after handshake
+static int ssl_verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
+  {
+  return 1;  // always continue, we'll warn about failures after handshake
+  }
+
+void CMUSHclientDoc::StartSSLHandshake (void)
+  {
+
+  TRACE ("CMUSHclientDoc::StartSSLHandshake\n");
+
+  m_iConnectPhase = eConnectAwaitingSSLHandshake;
+
+  // create SSL context
+  m_pSSL_CTX = SSL_CTX_new (TLS_client_method ());
+  if (!m_pSSL_CTX)
+    {
+    Note ("--- SSL error: unable to create SSL context ---");
+    OnConnectionDisconnect ();
+    return;
+    }
+
+  // set minimum TLS version to 1.2
+  SSL_CTX_set_min_proto_version (m_pSSL_CTX, TLS1_2_VERSION);
+
+  // enable certificate verification (warn-only, won't block connection)
+  SSL_CTX_set_verify (m_pSSL_CTX, SSL_VERIFY_PEER, ssl_verify_callback);
+
+  // load Windows root certificate store into OpenSSL
+  HCERTSTORE hStore = CertOpenSystemStore (0, "ROOT");
+  if (hStore)
+    {
+    X509_STORE * store = SSL_CTX_get_cert_store (m_pSSL_CTX);
+    PCCERT_CONTEXT pCertCtx = NULL;
+    while ((pCertCtx = CertEnumCertificatesInStore (hStore, pCertCtx)) != NULL)
+      {
+      const unsigned char * pDer = pCertCtx->pbCertEncoded;
+      X509 * x509 = d2i_X509 (NULL, &pDer, pCertCtx->cbCertEncoded);
+      if (x509)
+        {
+        X509_STORE_add_cert (store, x509);
+        X509_free (x509);
+        }
+      }
+    CertCloseStore (hStore, 0);
+    }
+
+  // create SSL object
+  m_pSSL = SSL_new (m_pSSL_CTX);
+  if (!m_pSSL)
+    {
+    Note ("--- SSL error: unable to create SSL object ---");
+    SSLCleanup ();
+    OnConnectionDisconnect ();
+    return;
+    }
+
+  // set the socket file descriptor
+  SSL_set_fd (m_pSSL, m_pSocket->m_hSocket);
+
+  // set SNI hostname
+  SSL_set_tlsext_host_name (m_pSSL, (LPCTSTR) m_server);
+
+  // initiate the handshake
+  SSL_set_connect_state (m_pSSL);
+
+  ContinueSSLHandshake ();
+
+  }   // end of CMUSHclientDoc::StartSSLHandshake
+
+
+void CMUSHclientDoc::ContinueSSLHandshake (void)
+  {
+
+  int ret = SSL_do_handshake (m_pSSL);
+
+  if (ret == 1)
+    {
+    // handshake succeeded
+    m_bSSL_Connected = true;
+
+    // check certificate verification result (warn only)
+    long verify_result = SSL_get_verify_result (m_pSSL);
+    if (verify_result != X509_V_OK)
+      {
+      CString strMsg;
+      strMsg.Format ("--- TLS certificate verification warning: %s ---",
+                     X509_verify_cert_error_string (verify_result));
+      Note (strMsg);
+      }
+
+    const char * version = SSL_get_version (m_pSSL);
+    const char * cipher  = SSL_get_cipher_name (m_pSSL);
+    CString strInfo;
+    strInfo.Format ("--- Connected via %s (%s) ---", version, cipher);
+    Note (strInfo);
+
+    m_iConnectPhase = eConnectConnectedToMud;
+    ConnectionEstablished ();
+    return;
+    }
+
+  int ssl_err = SSL_get_error (m_pSSL, ret);
+
+  if (ssl_err == SSL_ERROR_WANT_READ || ssl_err == SSL_ERROR_WANT_WRITE)
+    return;  // wait for next async callback (OnReceive or OnSend)
+
+  // handshake failed
+  unsigned long err_code = ERR_get_error ();
+  char err_buf [256];
+  ERR_error_string_n (err_code, err_buf, sizeof (err_buf));
+
+  CString strMsg;
+  strMsg.Format ("--- TLS handshake failed: %s ---", err_buf);
+  Note (strMsg);
+
+  // save error for deferred prompt
+  m_strSSLLastError = err_buf;
+
+  SSLCleanup ();
+  OnConnectionDisconnect ();
+
+  // defer the fallback prompt via PostMessage so we're not inside a socket callback
+  Frame.PostMessage (WM_USER_SSL_FALLBACK_PROMPT, (WPARAM) this, 0);
+
+  }   // end of CMUSHclientDoc::ContinueSSLHandshake
+
+
+void CMUSHclientDoc::SSLCleanup (void)
+  {
+
+  if (m_pSSL)
+    {
+    if (m_bSSL_Connected)
+      SSL_shutdown (m_pSSL);
+    SSL_free (m_pSSL);
+    m_pSSL = NULL;
+    }
+
+  if (m_pSSL_CTX)
+    {
+    SSL_CTX_free (m_pSSL_CTX);
+    m_pSSL_CTX = NULL;
+    }
+
+  m_bSSL_Connected = false;
+
+  }   // end of CMUSHclientDoc::SSLCleanup
+
+
+bool CMUSHclientDoc::CheckExpectedProxyResponse (const char cExpected,
                                                  const char cReceived)
   {
   if (cReceived != cExpected)

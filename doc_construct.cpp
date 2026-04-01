@@ -130,6 +130,10 @@ int i;
 
   m_iSocksProcessing = 0;   // no socks processing wanted
   m_iProxyServerPort = 1080; // default socks port
+  m_bUseSSL = false;
+  m_pSSL = NULL;
+  m_pSSL_CTX = NULL;
+  m_bSSL_Connected = false;
 
   // deprecated options  - set to zero for saving comparison (for XML testing)
 

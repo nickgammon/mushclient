@@ -73,7 +73,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)luacom\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)luacom\;$(SolutionDir)openssl\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0501;NO_HTMLHELP;_DEBUG;WIN32;_WINDOWS;LUA51;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;NO_WARN_MBCS_MFC_DEPRECATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -96,7 +96,8 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>dsound.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;Shlwapi.lib;libssl.lib;libcrypto.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)openssl\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(SolutionDir).\WinDebug\MUSHclient.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -124,7 +125,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)luacom\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)luacom\;$(SolutionDir)openssl\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0501;NO_HTMLHELP;NDEBUG;WIN32;_WINDOWS;ZLIB_DLL;LUA51;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;NO_WARN_MBCS_MFC_DEPRECATION;$(PRE_RELEASE);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -150,7 +151,8 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>dsound.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;Shlwapi.lib;libssl.lib;libcrypto.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)openssl\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(SolutionDir).\WinRel\MUSHclient.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\WinRel/MUSHclient.pdb</ProgramDatabaseFile>

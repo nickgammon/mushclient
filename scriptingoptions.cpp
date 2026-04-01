@@ -212,6 +212,7 @@ tConfigurationNumericOption OptionsTable [] = {
 {"use_default_timers",                  false, O(m_bUseDefaultTimers)},                 
 {"use_default_triggers",                false, O(m_bUseDefaultTriggers)},               
 {"use_mxp",                             eOnCommandMXP, O(m_iUseMXP), 0, 3, OPT_USE_MXP},
+{"use_ssl",                             false,  O(m_bUseSSL), 0, 0, OPT_PLUGIN_CANNOT_WRITE},
 {"utf_8",                               false,  O(m_bUTF_8)},                    
 {"validate_incoming_chat_calls",        false,  O(m_bValidateIncomingCalls)},               
 {"warn_if_scripting_inactive",          true,  O(m_bWarnIfScriptingInactive)},            

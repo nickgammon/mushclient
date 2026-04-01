@@ -803,10 +803,14 @@ void CMUSHclientDoc::Handle_TELOPT_TERMINAL_TYPE ()
         break;
 
     case 2:
+        {
+        int iMTTS = 265;  // ANSI=1, 256=8, TRUECOLOR=256 = 256+8+1
         if (m_bUTF_8)
-          strTemp = "MTTS 269"; // ANSI=1, UTF-8=4, 256=8, TRUECOLOR=256 = 256+8+4+1 = 269
-        else
-          strTemp = "MTTS 265"; // ANSI=1,          256=8, TRUECOLOR=256 = 256+8  +1 = 265
+          iMTTS |= 4;     // UTF-8
+        if (m_bSSL_Connected)
+          iMTTS |= 2048;  // TLS/SSL
+        strTemp.Format ("MTTS %d", iMTTS);
+        }
         break;
 
     } // end of switch
