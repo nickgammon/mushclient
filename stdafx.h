@@ -167,6 +167,9 @@ typedef map<string, tStringToStringMap *, array_less> tStringMapOfMaps;
 //
 #include "zlib\zlib.h"
 
+// MCCP4 (Zstandard) support
+#include "zstd/zstd.h"
+
 extern "C"
   {
 #include "scripting\shs.h"

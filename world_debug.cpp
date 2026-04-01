@@ -1263,12 +1263,20 @@ VARIANT CMUSHclientDoc::Debug(LPCTSTR Command)
 
     if (m_bCompress)
       {
-      Note (TFormat ("MCCP active, took %1.6f seconds to decompress", elapsed_time));
-      Note (TFormat ("MCCP received %I64d compressed bytes, decompressed to %I64d bytes.", m_nTotalCompressed, m_nTotalUncompressed));
+      CString strCompressionType;
+      switch (m_iMCCP_type)
+        {
+        case 1:  strCompressionType = "MCCP v1 (zlib)"; break;
+        case 2:  strCompressionType = "MCCP v2 (zlib)"; break;
+        case 4:  strCompressionType = "MCCP v4 (Zstandard)"; break;
+        default: strCompressionType = "Unknown compression"; break;
+        }
+      Note (TFormat ("%s active, took %1.6f seconds to decompress", (LPCTSTR)strCompressionType, elapsed_time));
+      Note (TFormat ("%s received %I64d compressed bytes, decompressed to %I64d bytes.", (LPCTSTR)strCompressionType, m_nTotalCompressed, m_nTotalUncompressed));
       if (m_nTotalUncompressed)
         {
         double fRatio = (double) m_nTotalCompressed / (double) m_nTotalUncompressed * 100.0;
-        Note (TFormat ("MCCP compression ratio was: %6.1f%% (lower is better)", fRatio));
+        Note (TFormat ("%s compression ratio was: %6.1f%% (lower is better)", (LPCTSTR)strCompressionType, fRatio));
         }
       }
     else
@@ -2200,6 +2208,7 @@ void CMUSHclientDoc::DebugHelper (const CString strAction, CString strArgument)
     telnet_meanings [0x2A] = "Charset";                 // 42 Character set
     telnet_meanings [0x55] = "MCCP1";       //  85 MUD Compression Protocol v1
     telnet_meanings [0x56] = "MCCP2";       //  86 MUD Compression Protocol v2
+    telnet_meanings [0x58] = "MCCP4";       //  88 MUD Compression Protocol v4 (Zstandard)
     telnet_meanings [0x5A] = "MSP";         //  90 (MUD Sound Protocol)
     telnet_meanings [0x5B] = "MXP";         //  91 (MUD eXtension Protocol)
     telnet_meanings [0x5D] = "ZMP";         //  93 (ZMP Protocol)
