@@ -8,42 +8,45 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
 
 env:
   SOLUTION_FILE_PATH: MUSHclient_2022.sln
   BUILD_CONFIGURATION_RELEASE: Release
   BUILD_CONFIGURATION_DEBUG: Debug
-  GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN || secrets.GITHUB_TOKEN }}  # For GitHub API
-  GH_TOKEN: ${{ secrets.PERSONAL_TOKEN || secrets.GITHUB_TOKEN }}  # For gh CLI
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
     strategy:
       matrix:
         configuration: [Release, Debug]
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
     - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v2
+      uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce # v2
 
     - name: Build solution
       run: msbuild /m /p:Configuration=${{ matrix.configuration }} /p:Platform=Win32 /p:PreferredToolArchitecture=x86 /p:BuildProjectReferences=true /verbosity:normal /p:PRE_RELEASE=PRE_RELEASE ${{ env.SOLUTION_FILE_PATH }}
 
     - name: Upload Release artifacts
       if: matrix.configuration == 'Release'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: MUSHclient_Release
-        path: WinRel/MUSHclient.exe
+        path: |
+          WinRel/MUSHclient.exe
+          WinRel/MUSHclient.pdb
 
     - name: Upload Debug artifacts
       if: matrix.configuration == 'Debug'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: MUSHclient_Debug
         path: |
@@ -54,49 +57,90 @@ jobs:
     needs: build
     runs-on: windows-latest
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    permissions:
+      contents: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN || secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.PERSONAL_TOKEN || secrets.GITHUB_TOKEN }}
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
     - name: Download Release artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         name: MUSHclient_Release
         path: ./release
 
     - name: Download Debug artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         name: MUSHclient_Debug
         path: ./debug
 
+    - name: Verify current master commit
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        current_sha=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/master" --jq '.object.sha')
+        if [[ "$current_sha" != "$GITHUB_SHA" ]]; then
+          printf 'Refusing to replace rolling releases from stale commit %s; current master is %s.\n' "$GITHUB_SHA" "$current_sha" >&2
+          exit 1
+        fi
+
     - name: Delete tags and releases
       shell: bash
       run: |
-        gh api repos/${{ github.repository }}/git/refs/tags/latest_commit -X DELETE || echo "Tag latest_commit not found"
-        gh release delete latest_commit --yes || echo "Release latest_commit not found"
-        gh api repos/${{ github.repository }}/git/refs/tags/latest_commit_debug -X DELETE || echo "Tag latest_commit_debug not found"
-        gh release delete latest_commit_debug --yes || echo "Release latest_commit_debug not found"
+        set -euo pipefail
+
+        delete_rolling_release() {
+          local tag="$1"
+          local response
+          local release_id
+
+          if response=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${tag}" --jq '.id' 2>&1); then
+            release_id="$response"
+            gh api "repos/${GITHUB_REPOSITORY}/releases/${release_id}" --method DELETE
+          elif [[ "$response" != *"HTTP 404"* ]]; then
+            printf '%s\n' "$response" >&2
+            return 1
+          fi
+
+          if response=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${tag}" --jq '.ref' 2>&1); then
+            gh api "repos/${GITHUB_REPOSITORY}/git/refs/tags/${tag}" --method DELETE
+          elif [[ "$response" != *"HTTP 404"* ]]; then
+            printf '%s\n' "$response" >&2
+            return 1
+          fi
+        }
+
+        delete_rolling_release latest_commit
+        delete_rolling_release latest_commit_debug
 
     - name: Create Release build release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
       with:
         tag_name: latest_commit
+        target_commitish: ${{ github.sha }}
         name: Latest Commit (Release)
         prerelease: true
-        files: ./release/MUSHclient.exe
+        files: |
+          ./release/MUSHclient.exe
+          ./release/MUSHclient.pdb
         body: |
           Automatic release build from latest commit.
           
           **Build Configuration:** Release
           **Commit:** ${{ github.sha }}
-          **Build Date:** ${{ github.run_id }}
+          **Workflow Run ID:** ${{ github.run_id }}
 
     - name: Create Debug build release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
       with:
         tag_name: latest_commit_debug
+        target_commitish: ${{ github.sha }}
         name: Latest Commit (Debug)
         prerelease: true
         files: |
@@ -107,4 +151,4 @@ jobs:
           
           **Build Configuration:** Debug
           **Commit:** ${{ github.sha }}
-          **Build Date:** ${{ github.run_id }}
+          **Workflow Run ID:** ${{ github.run_id }}
