@@ -240,6 +240,27 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
 
   switch (c)
     {
+    case TELOPT_COMPRESS4:
+      // MCCP4 (Zstandard) - prefer this over zlib-based compression
+      if (!m_bCompress && !m_bDisableCompression)
+        {
+        // Don't agree if we're already using another compression method
+        if (!m_bSupports_MCCP_2)
+          {
+          Send_IAC_DO (c);
+          m_bSupports_MCCP_4 = true;
+          }
+        else
+          {
+          Send_IAC_DONT (c);
+          }
+        }
+      else
+        {
+        Send_IAC_DONT (c);
+        }
+      break;    // end of TELOPT_COMPRESS4
+
     case TELOPT_COMPRESS2:
     case TELOPT_COMPRESS:
       // initialise compression library if not already decompressing
@@ -259,14 +280,15 @@ void CMUSHclientDoc::Phase_WILL (const unsigned char c)
           }
 
         if (m_CompressOutput && m_CompressInput &&     // we got memory - we can do it
-            !(c == TELOPT_COMPRESS && m_bSupports_MCCP_2)) // don't agree to MCCP1 and MCCP2
+            !(c == TELOPT_COMPRESS && m_bSupports_MCCP_2) && // don't agree to MCCP1 and MCCP2
+            !m_bSupports_MCCP_4) // don't agree if we already have MCCP4
           {
           Send_IAC_DO (c);
           if (c == TELOPT_COMPRESS2)
             m_bSupports_MCCP_2 = true;
           }
         else
-          {   // not enough memory or already agreed to MCCP 2 - no compression
+          {   // not enough memory or already agreed to MCCP 2/4 - no compression
           Send_IAC_DONT (c);
           }
         }   // end of compression wanted and zlib engine initialised
@@ -541,6 +563,10 @@ void CMUSHclientDoc::Phase_SUBNEGOTIATION_IAC (const unsigned char c)
     {
     case TELOPT_COMPRESS2:      
       Handle_TELOPT_COMPRESS2 ();     
+      break;
+
+    case TELOPT_COMPRESS4:      
+      Handle_TELOPT_COMPRESS4 ();     
       break;
 
     case TELOPT_MXP:            
