@@ -131,29 +131,14 @@ void CGenPropertyPage::SetUpPage (CString strObjectType,
 
 int CGenPropertyPage::GetSelectedItemCount () const
   {
-
-  int iCount = 0;
-
   if (m_bWantTreeControl)
     {
-
-    for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
-         hGroup;
-         hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
-      {
-
-      for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
-          hItem;
-          hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
-            {
-            if (m_cTreeCtrl.GetItemState (hItem, TVIS_SELECTED) & TVIS_SELECTED)
-              iCount++;
-            }   // end for each item
-
-      }  // end for each group
-
-
-    return iCount;
+    // The native tree is single-select. Its root items are groups;
+    // only their children represent aliases, triggers or timers.
+    HTREEITEM hItem = m_cTreeCtrl.GetSelectedItem ();
+    return hItem && m_cTreeCtrl.GetParentItem (hItem) &&
+           (m_cTreeCtrl.GetItemState (hItem, TVIS_SELECTED) & TVIS_SELECTED)
+             ? 1 : 0;
     } // end of tree control
 
 
@@ -172,21 +157,16 @@ int CGenPropertyPage::GetSelectedGroupCount () const
 
   if (m_bWantTreeControl)
     {
+    HTREEITEM hGroup = m_cTreeCtrl.GetSelectedItem ();
+    if (!hGroup || m_cTreeCtrl.GetParentItem (hGroup) ||
+        !(m_cTreeCtrl.GetItemState (hGroup, TVIS_SELECTED) & TVIS_SELECTED))
+      return 0;
 
-    for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
-         hGroup;
-         hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
-      {
-
-      if (m_cTreeCtrl.GetItemState (hGroup, TVIS_SELECTED) & TVIS_SELECTED)
-        {
-        for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
-            hItem;
-            hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
-              iCount++;
-        return iCount;
-        } // end of group selected
-      }  // end for each group
+    for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
+         hItem;
+         hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
+      iCount++;
+    return iCount;
     } // end of tree control
 
   return 0;    // no group selected, or not a tree view
@@ -197,26 +177,11 @@ int CGenPropertyPage::GetSelectedGroupCount () const
 
 int CGenPropertyPage::GetItemCount () const
   {
-
-  int iCount = 0;
-
   if (m_bWantTreeControl)
     {
-
-    for (HTREEITEM hGroup = m_cTreeCtrl.GetRootItem ();
-         hGroup;
-         hGroup = m_cTreeCtrl.GetNextSiblingItem (hGroup))
-      {
-
-      for (HTREEITEM hItem = m_cTreeCtrl.GetChildItem (hGroup);
-          hItem;
-          hItem = m_cTreeCtrl.GetNextSiblingItem (hItem))
-            iCount++;
-
-      }  // end for each group
-
-
-    return iCount;
+    // GetCount includes group roots. There is exactly one root per
+    // entry in m_GroupsMap, and all other nodes are actual entries.
+    return (int) m_cTreeCtrl.GetCount () - (int) m_GroupsMap.size ();
     } // end of tree control
 
   // here for list view
